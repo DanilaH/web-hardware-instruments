@@ -1,0 +1,321 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro';
+---
+
+<ToolShell labelledBy="mouse-dpi-tool-heading">
+  <h2 id="mouse-dpi-tool-heading" class="mouse-tool__sr">Mouse DPI Test measurement</h2>
+
+  <div class="mouse-tool" data-mouse-dpi-test data-state="ready">
+    <div class="mouse-tool__status-row">
+      <span class="mouse-tool__signal" aria-hidden="true"></span>
+      <strong data-mouse-status role="status" aria-live="polite" aria-atomic="true">Ready</strong>
+      <span class="mouse-tool__status-note">Uses local browser movement only.</span>
+    </div>
+
+    <p class="mouse-tool__instruction" data-mouse-instruction>
+      Set the physical distance, then start the measurement.
+    </p>
+
+    <div class="mouse-tool__layout">
+      <form class="mouse-controls" data-mouse-dpi-form>
+        <div class="distance-control">
+          <label for="mouse-distance">Distance</label>
+          <div class="distance-control__fields">
+            <input
+              id="mouse-distance"
+              data-distance
+              type="number"
+              value="10"
+              min="0.01"
+              step="any"
+              inputmode="decimal"
+              required
+            />
+            <select data-distance-unit aria-label="Distance unit">
+              <option value="cm" selected>cm</option>
+              <option value="in">in</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="primary-action" type="submit" data-start>Start test</button>
+
+        <p class="capture-note" data-capture-note>
+          Raw Pointer Lock is preferred; the tool falls back when it is unavailable.
+        </p>
+      </form>
+
+      <div class="mouse-measurement">
+        <div class="movement-panel">
+          <div class="movement-panel__heading">
+            <span>Relative horizontal input</span>
+            <span>not physical distance</span>
+          </div>
+          <MouseMovementGuide />
+        </div>
+
+        <div class="dpi-result">
+          <span>Estimated DPI</span>
+          <strong class="measurement-value" data-dpi-result>—</strong>
+        </div>
+      </div>
+    </div>
+
+    <p class="mouse-tool__sr" data-mouse-accessible-summary>
+      Mouse DPI Test is ready. Set a distance and start the measurement.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountMouseDpiTest } from './mouse-dpi-test-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-mouse-dpi-test]');
+  if (root) {
+    const controller = mountMouseDpiTest(root);
+
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+  }
+</script>
+
+<style>
+  .mouse-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .mouse-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .mouse-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .mouse-tool__status-note {
+    margin-left: auto;
+  }
+
+  .mouse-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .mouse-tool[data-state='starting'] .mouse-tool__signal,
+  .mouse-tool[data-state='active'] .mouse-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .mouse-tool[data-state='cancelled'] .mouse-tool__signal,
+  .mouse-tool[data-state='error'] .mouse-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .mouse-tool__instruction {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .mouse-tool__layout {
+    display: grid;
+    grid-template-columns: minmax(14rem, 0.62fr) minmax(0, 1.38fr);
+    gap: var(--space-5);
+    min-height: 18rem;
+    padding-block: var(--space-4);
+    border-block: 1px solid #e3e6e7;
+  }
+
+  .mouse-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-4);
+    padding-right: var(--space-5);
+    border-right: 1px solid #e3e6e7;
+  }
+
+  .distance-control label,
+  .movement-panel__heading,
+  .dpi-result > span {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .distance-control__fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 5.25rem;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  .distance-control input,
+  .distance-control select {
+    min-height: 2.75rem;
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .distance-control input {
+    padding: 0 var(--space-3);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .distance-control select {
+    padding: 0 var(--space-2);
+  }
+
+  .distance-control input:focus-visible,
+  .distance-control select:focus-visible,
+  .primary-action:focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  .primary-action {
+    min-height: 2.85rem;
+    border: 1px solid var(--color-signal);
+    border-radius: var(--radius-sm);
+    background: var(--color-signal);
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .primary-action:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  .capture-note {
+    min-height: 2.7rem;
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .mouse-measurement {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: var(--space-4);
+  }
+
+  .movement-panel {
+    display: grid;
+    align-content: center;
+    min-height: 10rem;
+    padding: var(--space-3) var(--space-4);
+    background-image:
+      linear-gradient(#f0f2f2 1px, transparent 1px),
+      linear-gradient(90deg, #f0f2f2 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #fafbfb;
+  }
+
+  .movement-panel__heading {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .movement-panel__heading span:last-child {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .dpi-result {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 5.5rem;
+    padding-top: var(--space-3);
+    border-top: 1px solid #e3e6e7;
+  }
+
+  .dpi-result strong {
+    color: var(--color-text);
+    font-size: clamp(3.25rem, 6vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+  }
+
+  .mouse-tool[data-state='result'] .dpi-result strong {
+    color: var(--color-signal);
+  }
+
+  .mouse-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .mouse-tool__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .mouse-tool__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .mouse-tool__layout {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .mouse-controls {
+      padding: 0 0 var(--space-4);
+      border-right: 0;
+      border-bottom: 1px solid #e3e6e7;
+    }
+
+    .movement-panel {
+      padding-inline: var(--space-2);
+    }
+
+    .movement-panel__heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+  }
+</style>
