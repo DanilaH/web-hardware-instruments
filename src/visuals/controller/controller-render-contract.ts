@@ -34,6 +34,7 @@ export interface StandardControllerRenderData {
 }
 
 export interface FallbackButtonRenderData {
+  text: string;
   label: string;
   pressed: boolean;
   value: number;
