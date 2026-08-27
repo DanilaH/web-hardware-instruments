@@ -90,6 +90,7 @@ export const createFpsMeasurement = (): FpsMeasurement => {
       };
     }
 
+    const currentTimestamp = latestTimestamp;
     let fps: number | null = null;
     let medianFrameTimeMs: number | null = null;
 
@@ -108,13 +109,13 @@ export const createFpsMeasurement = (): FpsMeasurement => {
 
     if (
       fps !== null &&
-      (lastTraceTimestamp === null || latestTimestamp - lastTraceTimestamp >= TRACE_INTERVAL_MS)
+      (lastTraceTimestamp === null || currentTimestamp - lastTraceTimestamp >= TRACE_INTERVAL_MS)
     ) {
-      trace.push({ timestamp: latestTimestamp, value: fps });
-      lastTraceTimestamp = latestTimestamp;
+      trace.push({ timestamp: currentTimestamp, value: fps });
+      lastTraceTimestamp = currentTimestamp;
     }
 
-    trace = trace.filter((point) => point.timestamp >= latestTimestamp - TRACE_HISTORY_MS);
+    trace = trace.filter((point) => point.timestamp >= currentTimestamp - TRACE_HISTORY_MS);
 
     return {
       phase,
