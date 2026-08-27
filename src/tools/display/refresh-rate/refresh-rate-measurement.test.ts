@@ -52,6 +52,49 @@ describe('Refresh Rate measurement', () => {
     expect(result.estimatedHz).toBe(100);
   });
 
+  it('keeps long positive deltas as valid samples', () => {
+    const measurement = createRefreshRateMeasurement();
+    measurement.push(0);
+    measurement.push(500);
+    measurement.push(510);
+    measurement.push(1510);
+    measurement.push(1520);
+
+    const result = measurement.getSnapshot();
+    expect(result.intervals.map((sample) => sample.deltaMs)).toEqual([10, 1000, 10]);
+    expect(result.estimatedHz).toBe(100);
+  });
+
+  it('shows a closest common mode at exactly the 3% tolerance', () => {
+    const measurement = createRefreshRateMeasurement();
+    const estimate = 60 * 1.03;
+    const delta = 1000 / estimate;
+
+    measurement.push(0);
+    measurement.push(500);
+    measurement.push(500 + delta);
+    measurement.push(500 + delta * 2);
+
+    const result = measurement.getSnapshot();
+    expect(result.estimatedHz).toBeCloseTo(estimate, 8);
+    expect(result.closestCommonMode).toBe(60);
+  });
+
+  it('omits closest common mode just outside the 3% tolerance', () => {
+    const measurement = createRefreshRateMeasurement();
+    const estimate = 60 * 1.0301;
+    const delta = 1000 / estimate;
+
+    measurement.push(0);
+    measurement.push(500);
+    measurement.push(500 + delta);
+    measurement.push(500 + delta * 2);
+
+    const result = measurement.getSnapshot();
+    expect(result.estimatedHz).toBeCloseTo(estimate, 8);
+    expect(result.closestCommonMode).toBeNull();
+  });
+
   it('omits closest common mode when the nearest mode is outside the 3% rule', () => {
     const measurement = createRefreshRateMeasurement();
     measurement.push(0);
