@@ -47,6 +47,12 @@ describe('controller deadzone measurement', () => {
     expect(formatCenterNoisePercent(result?.centerNoise ?? 0)).toBe('1.9%');
   });
 
+  it('does not round an exact whole-percent suggestion up again', () => {
+    const result = calculateDeadzoneMeasurement([{ x: 0.03, y: 0 }]);
+    expect(result?.suggestedDeadzone).toBeCloseTo(0.04);
+    expect(result?.suggestedPercent).toBe(4);
+  });
+
   it('caps the suggested deadzone at 100 percent', () => {
     const result = calculateDeadzoneMeasurement([{ x: 1, y: 1 }]);
     expect(result?.suggestedDeadzone).toBe(1);
