@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0 foundation is implemented with Astro static output, strict TypeScript, plain CSS, centralized SEO/site configuration, and no backend. The next implementation slice is `GamepadService` + `/gamepad-tester`, followed by the mandatory human visual review.
+Phase 0 foundation is implemented. The current vertical slice implements `GamepadService` + `/gamepad-tester` and is the mandatory visual checkpoint before any other diagnostic page is built.
 
 ## Start here
 
@@ -23,13 +23,14 @@ For product strategy, implementation boundaries, and agent rules, read:
 
 ```text
 Phase 0 foundation — complete
-→ GamepadService
-→ /gamepad-tester
-→ human visual review at 1366×768 and 1440×900
-→ only then propagate the visual system
+GamepadService — implemented
+/gamepad-tester — implemented, awaiting human visual/hardware review
+→ STOP
+→ review at 1366×768 and 1440×900
+→ only after approval continue to FrameSampler + FPS/Refresh
 ```
 
-Do not implement all tools in parallel.
+Do not propagate the current spacing, palette, controller geometry, or other visual decisions to later tools before the human checkpoint passes.
 
 ## First production release
 
@@ -76,6 +77,19 @@ pnpm test
 The production origin is intentionally still the reserved `https://hardware-testing.invalid` value in `src/config/site.ts`.
 
 Site-wide indexing is also disabled there with `indexingEnabled: false`. Before the first production release, set the real production origin and enable indexing in the same reviewed change. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling.
+
+## Validation boundary for Gamepad Tester
+
+Automated tests can validate normalization, lifecycle, semantic mapping, build, and type safety. They do **not** replace real controller QA.
+
+Before approving the Gamepad Tester checkpoint, manually verify where hardware is available:
+
+- a standard Xbox-style controller;
+- a PlayStation-style controller if available;
+- a generic/non-standard controller if available;
+- multiple controllers;
+- reconnect/disconnect behavior;
+- buttons, triggers, D-pad, and both sticks.
 
 ## Non-normative history
 
