@@ -80,10 +80,10 @@ export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
       return;
     }
 
-    const snapshot = measurement.push(event.timestamp);
+    measurement.push(event.timestamp);
     if (lastPresentedAt === null || event.timestamp - lastPresentedAt >= PRESENTATION_INTERVAL_MS) {
       lastPresentedAt = event.timestamp;
-      renderMeasurement(snapshot);
+      renderMeasurement(measurement.getSnapshot());
     }
   };
 
