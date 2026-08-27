@@ -100,11 +100,11 @@ relative capture feedback
 estimated result
 ```
 
-## Phase 4 — First production launch
+## Phase 4 — Public-deployment preparation
 
-Build the homepage as a compact directory of the working tools.
+Prepare the homepage as a compact directory of working tools and complete the code-side launch review.
 
-First production release contains:
+The initial implemented release set is:
 
 ```text
 /
@@ -116,19 +116,32 @@ First production release contains:
 /privacy
 ```
 
-Before launch:
+Code-side launch preparation includes:
 
 - concise below-fold content where useful;
 - SEO metadata/canonicals;
-- full UX review;
-- real-device smoke for tools in the current release;
+- contextual internal links;
+- full UX review where automation/hardware permits;
 - production build;
-- Search Console setup;
-- sitemap submission.
+- preserving the single-origin/indexing switch.
 
-Do not publish placeholder links for the remaining full-v1 tools.
+Public deployment is intentionally deferred until a real domain is purchased. Until then:
 
-The purpose of this release is to begin crawl/indexing/Search Console feedback as early as possible.
+- keep the reserved placeholder origin;
+- keep indexing disabled;
+- do not claim Search Console setup or sitemap submission;
+- continue approved full-v1 development.
+
+Immediately before actual public deployment:
+
+- set the real production origin;
+- complete required real-device/browser smoke honestly;
+- enable indexing in the same reviewed change;
+- deploy;
+- set up Google Search Console;
+- submit the generated sitemap.
+
+Do not publish placeholder links for unfinished tools.
 
 ## Phase 5 — Controller diagnostics
 
@@ -143,12 +156,7 @@ Build:
 
 Keep them narrow. No advanced dashboard.
 
-After each page is production-ready:
-
-- add it to homepage/internal linking;
-- add it to sitemap;
-- deploy it;
-- let Search Console begin collecting data.
+Each page must independently pass implementation review, automated validation, and target-layout review before it is considered production-ready in code.
 
 ## Phase 6 — Keyboard
 
@@ -168,11 +176,13 @@ Run:
 
 - target viewport UX review;
 - browser tests;
-- real-device smoke;
+- real-device smoke where hardware is available;
 - accessibility review;
 - performance review;
 - SEO crawl;
 - internal-link review.
+
+After the code audit, close the deferred deployment gate before any public indexed release.
 
 ## Post-launch behavior
 

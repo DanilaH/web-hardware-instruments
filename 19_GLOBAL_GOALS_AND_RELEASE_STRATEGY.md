@@ -123,31 +123,21 @@ Do not create:
 
 Tool first. Search content supports the tool.
 
-# 7. First production release
+# 7. Public deployment boundary
 
-Do not wait for the entire planned catalog before collecting real search evidence.
+The original staged-release intent was to publish the first four tools before finishing the full catalog so Search Console could begin collecting evidence early. Public deployment is now intentionally deferred until a real domain is purchased immediately before deployment.
 
-The first production release contains:
+This changes sequencing, not the launch-quality requirements:
 
-```text
-/
-/gamepad-tester
-/fps-test
-/refresh-rate-test
-/mouse-dpi-test
-/about
-/privacy
-```
+- full-v1 development may continue while the reserved placeholder origin and `noindex` protection remain active;
+- do not invent or temporarily publish a fake production origin merely to preserve the earlier release sequence;
+- before the first public indexed deployment, set the real production origin, complete required real-device/browser smoke, enable indexing, deploy, set up Google Search Console, and submit the generated sitemap.
 
-These pages represent the strongest initial research-backed entry points and multiple independent hardware subcategories.
-
-The homepage lists only these working tools at first.
-
-Search Console should start collecting indexing/impression/query evidence immediately after this release.
+The first public deployment may therefore contain every approved tool that has passed its implementation/review gates by that time.
 
 # 8. Full v1
 
-After the first production release, add:
+Approved remaining full-v1 tools:
 
 ```text
 /controller-stick-drift-test
@@ -155,9 +145,9 @@ After the first production release, add:
 /keyboard-tester
 ```
 
-Each page ships independently when polished rather than waiting for a bundled relaunch.
+Build each page independently and keep each polished enough to ship on its own. Do not use the deferred deployment decision as permission to bundle unfinished work or weaken review gates.
 
-Full v1 is complete when all seven approved tools are live.
+Full v1 is complete when all seven approved tools are production-ready in code and the final audit is complete. Public indexing/deployment remains a separate explicit boundary immediately afterward.
 
 # 9. Expansion rule
 

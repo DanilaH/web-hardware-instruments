@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0 and the first four production tools are implemented. The current slice is the first production-launch gate. Real-device/browser smoke, a real production origin, Search Console setup, and sitemap submission remain explicit launch requirements rather than completed claims.
+Phase 0 and the first four production tools are implemented. Public deployment is intentionally deferred until a real domain is purchased. Development continues through the remaining approved full-v1 tools while the placeholder origin and site-wide `noindex` protection remain in place.
 
 ## Start here
 
@@ -27,25 +27,29 @@ GamepadService + /gamepad-tester — complete
 human visual checkpoint — approved
 FrameSampler + /fps-test + /refresh-rate-test — complete
 MouseMovementService + /mouse-dpi-test — complete
+code-side first-launch preparation — complete
 
-current gate:
-first production launch
-→ four-tool launch review
-→ real-device/browser smoke
-→ set real production origin
-→ enable indexing
-→ Search Console setup
-→ sitemap submission
-
-only after the launch gate is complete:
+current development:
 /controller-stick-drift-test
-/controller-deadzone-test
+→ /controller-deadzone-test
 → /keyboard-tester
+→ full-v1 audit
+
+before actual public deployment:
+→ buy/set real production domain
+→ replace placeholder origin
+→ required real-device/browser smoke
+→ enable indexing
+→ deploy
+→ Google Search Console setup
+→ submit generated sitemap
 ```
 
-Do not start Drift, Deadzone, or Keyboard work before the first production release gate is handled.
+The deferred deployment gate is not waived. It is moved to the actual deployment boundary so full-v1 implementation can continue without inventing a production domain early.
 
-## First production release
+## Public release routes
+
+Already implemented:
 
 ```text
 /
@@ -57,7 +61,7 @@ Do not start Drift, Deadzone, or Keyboard work before the first production relea
 /privacy
 ```
 
-Later full-v1 additions:
+Remaining approved full-v1 additions:
 
 ```text
 /controller-stick-drift-test
@@ -87,15 +91,15 @@ pnpm typecheck
 pnpm test
 ```
 
-The production origin is intentionally still the reserved `https://hardware-testing.invalid` value in `src/config/site.ts`.
+The production origin intentionally remains the reserved `https://hardware-testing.invalid` value in `src/config/site.ts` until the real domain is purchased immediately before deployment.
 
-Site-wide indexing is also disabled there with `indexingEnabled: false`. Before the first production release, set the real production origin and enable indexing in the same reviewed change. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling.
+Site-wide indexing remains disabled with `indexingEnabled: false`. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling. The real origin and `indexingEnabled: true` must be introduced together in one reviewed pre-deployment change.
 
 ## Validation boundary for Gamepad Tester
 
 Automated tests validate normalization, lifecycle, semantic mapping, build, and type safety. They do **not** replace real controller QA.
 
-Before production launch, manually verify where hardware is available:
+Before public deployment, manually verify where hardware is available:
 
 - a standard Xbox-style controller;
 - a PlayStation-style controller if available;
@@ -108,7 +112,7 @@ Before production launch, manually verify where hardware is available:
 
 Automated tests validate `FrameSampler` lifecycle/reset behavior and the exact FPS/Refresh Rate formulas, rolling windows, median rules, and common-mode threshold. A headless Chrome smoke also confirmed live measurement transitions and target-layout integrity at approximately 60 Hz on 1366×768, 1440×900, and 390×844.
 
-That does **not** replace manual display/browser QA. Before production launch, verify where possible:
+That does **not** replace manual display/browser QA. Before public deployment, verify where possible:
 
 - at least one 120/144 Hz display path in addition to 60 Hz;
 - moving the page between monitors with different refresh rates;
@@ -123,7 +127,7 @@ Do not claim high-refresh, multi-monitor, or cross-browser validation until thos
 
 Automated tests validate capture-mode fallback, movement acquisition lifecycle, cancellation semantics, distance conversion, and the DPI formula. They do **not** prove physical mouse-distance accuracy or cross-browser Pointer Lock behavior.
 
-Before production launch, manually verify where possible:
+Before public deployment, manually verify where possible:
 
 - raw Pointer Lock with `unadjustedMovement: true` on a supported desktop browser;
 - regular Pointer Lock fallback;
@@ -136,17 +140,17 @@ Before production launch, manually verify where possible:
 
 Do not claim direct hardware DPI access. The result remains `Estimated DPI` in every mode.
 
-## Production-launch blockers
+## Deferred deployment gate
 
-The code-side launch review can proceed without publishing the site. The launch itself must remain blocked until all of these are true:
+Before any public indexed deployment, all of these remain mandatory:
 
 - a real production origin replaces `https://hardware-testing.invalid`;
-- required real-device/browser smoke above is completed honestly;
+- required real-device/browser smoke is completed honestly;
 - indexing is enabled only for the real production origin;
 - the production property is set up in Google Search Console;
 - the generated sitemap is submitted after deployment.
 
-Do not use the reserved `.invalid` origin for a public indexed deployment, and do not skip the launch gate merely to continue the later roadmap phases.
+Do not use the reserved `.invalid` origin for a public indexed deployment.
 
 ## Non-normative history
 

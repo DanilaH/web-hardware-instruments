@@ -1,0 +1,71 @@
+---
+interface Props {
+  label: string;
+  side: 'left' | 'right';
+}
+
+const { label, side } = Astro.props;
+---
+
+<div class="stick-drift-plot" data-stick-drift-plot={side} data-live="false">
+  <span class="stick-drift-plot__label">{label}</span>
+  <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <circle class="stick-drift-plot__boundary" cx="50" cy="50" r="42" />
+    <line class="stick-drift-plot__axis" x1="8" y1="50" x2="92" y2="50" />
+    <line class="stick-drift-plot__axis" x1="50" y1="8" x2="50" y2="92" />
+    <circle class="stick-drift-plot__center" cx="50" cy="50" r="1.6" />
+    <g data-stick-drift-trail></g>
+    <circle class="stick-drift-plot__point" data-stick-drift-point cx="50" cy="50" r="3.2" />
+  </svg>
+</div>
+
+<style>
+  .stick-drift-plot {
+    min-width: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .stick-drift-plot__label {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  svg {
+    width: 100%;
+    max-height: 14.5rem;
+    aspect-ratio: 1;
+  }
+
+  .stick-drift-plot__boundary,
+  .stick-drift-plot__axis {
+    fill: none;
+    stroke: #d8dcde;
+    stroke-width: 0.8;
+  }
+
+  .stick-drift-plot__axis {
+    stroke-dasharray: 2.5 2.5;
+  }
+
+  .stick-drift-plot__center {
+    fill: #aeb4b7;
+  }
+
+  .stick-drift-plot__point {
+    fill: #aeb4b7;
+    stroke: var(--color-surface);
+    stroke-width: 1.2;
+  }
+
+  .stick-drift-plot[data-live='true'] .stick-drift-plot__point {
+    fill: var(--color-signal);
+  }
+
+  :global(.stick-drift-trail-point) {
+    fill: var(--color-signal);
+  }
+</style>
