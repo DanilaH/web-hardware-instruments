@@ -218,6 +218,16 @@ centerNoise = percentile95(r)
 suggestedDeadzone = min(1, centerNoise + 0.01)
 ```
 
+For MVP, `percentile95` uses the deterministic nearest-rank definition:
+
+```text
+sort radial magnitudes ascending
+rank = ceil(0.95 * sampleCount)
+percentile95 = sorted[rank - 1]
+```
+
+No interpolation is applied between samples.
+
 Display:
 
 - center noise as percentage, one decimal place;
