@@ -3,10 +3,12 @@ import { describe, expect, it } from 'vitest';
 import type { GamepadSnapshot } from '../../../browser/gamepad-service';
 import {
   createAccessibleControllerSummary,
+  createAccessibleFallbackSummary,
+  createFallbackControllerView,
   createStandardControllerView,
 } from './gamepad-view-model';
 
-const createSnapshot = (): GamepadSnapshot => ({
+const createSnapshot = (overrides: Partial<GamepadSnapshot> = {}): GamepadSnapshot => ({
   sourceIndex: 3,
   mapping: 'standard',
   buttons: Array.from({ length: 17 }, (_, index) => ({
@@ -14,6 +16,7 @@ const createSnapshot = (): GamepadSnapshot => ({
     value: index === 6 ? 0.4 : index === 7 ? 0.75 : index === 0 || index === 12 ? 1 : 0,
   })),
   axes: [0.5, -0.25, -1, 1],
+  ...overrides,
 });
 
 describe('createStandardControllerView', () => {
@@ -32,6 +35,37 @@ describe('createStandardControllerView', () => {
   it('creates a concise text equivalent for the live controller state', () => {
     expect(createAccessibleControllerSummary(createStandardControllerView(createSnapshot()))).toBe(
       'Face bottom, D-pad up. Left stick x 50%, y -25%. Right stick x -100%, y 100%. Left trigger 40%. Right trigger 75%.',
+    );
+  });
+});
+
+describe('createFallbackControllerView', () => {
+  it('prepares numbered button and normalized axis render data without physical-layout assumptions', () => {
+    const view = createFallbackControllerView(
+      createSnapshot({
+        mapping: 'non-standard',
+        buttons: [
+          { pressed: true, value: 1 },
+          { pressed: false, value: 0.25 },
+        ],
+        axes: [-1, 0.25, 1],
+      }),
+    );
+
+    expect(view).toEqual({
+      buttons: [
+        { label: 'Button 1', pressed: true, value: 1 },
+        { label: 'Button 2', pressed: false, value: 0.25 },
+      ],
+      axes: [
+        { label: 'Axis 1', percent: -100, positionPercent: 0 },
+        { label: 'Axis 2', percent: 25, positionPercent: 62.5 },
+        { label: 'Axis 3', percent: 100, positionPercent: 100 },
+      ],
+    });
+
+    expect(createAccessibleFallbackSummary(view)).toBe(
+      'Controller detected with a non-standard mapping. 1 button is currently pressed.',
     );
   });
 });
