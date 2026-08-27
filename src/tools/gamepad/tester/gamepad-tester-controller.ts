@@ -9,10 +9,14 @@ import {
 } from '../../../visuals/controller/controller-renderer';
 import {
   createAccessibleControllerSummary,
+  createAccessibleFallbackSummary,
+  createFallbackControllerView,
   createStandardControllerView,
 } from './gamepad-view-model';
 
 export interface ToolController {
+  start(): void;
+  stop(): void;
   destroy(): void;
 }
 
@@ -173,13 +177,14 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
       return;
     }
 
+    const view = createFallbackControllerView(gamepad);
     mappingNote.hidden = false;
     mappingNote.textContent =
       'Basic input view — this controller does not expose the standard mapping, so physical button and axis positions are not assumed.';
     showOnly('fallback');
     standardRenderer.reset();
-    fallbackRenderer.render(gamepad);
-    accessibleState.textContent = `Controller detected with a non-standard mapping. ${gamepad.buttons.filter((button) => button.pressed).length} buttons are currently pressed.`;
+    fallbackRenderer.render(view);
+    accessibleState.textContent = createAccessibleFallbackSummary(view);
   };
 
   const renderState = (state: GamepadServiceState): void => {
@@ -225,6 +230,16 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   service.start();
 
   return {
+    start: () => {
+      if (!destroyed) {
+        service.start();
+      }
+    },
+    stop: () => {
+      if (!destroyed) {
+        service.stop();
+      }
+    },
     destroy: () => {
       if (destroyed) {
         return;
