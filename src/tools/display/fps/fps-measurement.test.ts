@@ -21,11 +21,12 @@ describe('FPS measurement', () => {
 
     measurement.push(500);
     measurement.push(600);
+    measurement.push(750);
     const result = measurement.getSnapshot();
 
     expect(result.phase).toBe('measuring');
-    expect(result.fps).toBe(10);
-    expect(result.medianFrameTimeMs).toBe(100);
+    expect(result.fps).toBeCloseTo(8, 6);
+    expect(result.medianFrameTimeMs).toBe(125);
   });
 
   it('uses only the most recent 1000 ms of timestamps', () => {
@@ -37,6 +38,7 @@ describe('FPS measurement', () => {
       measurement.push(timestamp);
     }
 
+    measurement.push(1850);
     const result = measurement.getSnapshot();
     expect(result.fps).toBe(10);
     expect(result.medianFrameTimeMs).toBe(100);
@@ -49,7 +51,6 @@ describe('FPS measurement', () => {
 
     for (let timestamp = 600; timestamp <= 10_000; timestamp += 100) {
       measurement.push(timestamp);
-      measurement.getSnapshot();
     }
 
     const trace = measurement.getSnapshot().trace;
@@ -67,12 +68,24 @@ describe('FPS measurement', () => {
     expect(trace.at(-1)!.timestamp).toBeLessThanOrEqual(10_000);
   });
 
+  it('keeps getSnapshot read-only', () => {
+    const measurement = createFpsMeasurement();
+    measurement.push(0);
+    measurement.push(500);
+    measurement.push(750);
+
+    const first = measurement.getSnapshot();
+    const second = measurement.getSnapshot();
+
+    expect(second).toEqual(first);
+  });
+
   it('clears window and trace state on reset and requires a fresh warmup', () => {
     const measurement = createFpsMeasurement();
     measurement.push(0);
     measurement.push(500);
-    measurement.push(600);
-    expect(measurement.getSnapshot().fps).toBe(10);
+    measurement.push(750);
+    expect(measurement.getSnapshot().fps).not.toBeNull();
 
     measurement.reset();
     expect(measurement.getSnapshot()).toMatchObject({
@@ -95,9 +108,22 @@ describe('FPS measurement', () => {
     measurement.push(500);
     measurement.push(600);
     measurement.push(600);
-    measurement.push(700);
+    measurement.push(750);
     const result = measurement.getSnapshot();
 
-    expect(result.medianFrameTimeMs).toBe(100);
+    expect(result.medianFrameTimeMs).toBe(125);
+  });
+
+  it('ignores non-finite timestamps without disturbing the timing window', () => {
+    const measurement = createFpsMeasurement();
+    measurement.push(0);
+    measurement.push(Number.NaN);
+    measurement.push(Number.POSITIVE_INFINITY);
+    measurement.push(500);
+    measurement.push(750);
+
+    const result = measurement.getSnapshot();
+    expect(result.fps).toBe(4);
+    expect(result.medianFrameTimeMs).toBe(250);
   });
 });
