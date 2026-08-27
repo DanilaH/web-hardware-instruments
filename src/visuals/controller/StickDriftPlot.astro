@@ -8,7 +8,10 @@ const { label, side } = Astro.props;
 ---
 
 <div class="stick-drift-plot" data-stick-drift-plot={side} data-live="false">
-  <span class="stick-drift-plot__label">{label}</span>
+  <div class="stick-drift-plot__heading">
+    <span class="stick-drift-plot__label">{label}</span>
+    <span class="stick-drift-plot__scale">20% radius</span>
+  </div>
   <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
     <circle class="stick-drift-plot__boundary" cx="50" cy="50" r="42" />
     <line class="stick-drift-plot__axis" x1="8" y1="50" x2="92" y2="50" />
@@ -26,17 +29,26 @@ const { label, side } = Astro.props;
     gap: var(--space-2);
   }
 
-  .stick-drift-plot__label {
+  .stick-drift-plot__heading {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
     color: var(--color-muted);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.055em;
   }
 
+  .stick-drift-plot__scale {
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
   svg {
     width: 100%;
-    max-height: 14.5rem;
+    max-height: 13rem;
     aspect-ratio: 1;
   }
 

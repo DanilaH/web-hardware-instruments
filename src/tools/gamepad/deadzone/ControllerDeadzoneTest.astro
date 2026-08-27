@@ -70,8 +70,15 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
   if (root) {
     const controller = mountControllerDeadzoneTest(root);
     window.addEventListener('pagehide', (event) => {
-      if (!event.persisted) {
-        controller.destroy();
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
       }
     });
   }

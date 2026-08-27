@@ -15,7 +15,7 @@ Read these documents before changing product code:
 7. `11_IMPLEMENTATION_PLAN.md`
 8. `14_DEFINITION_OF_DONE.md`
 
-Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business goals, scope, and release order.
+Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business goals, scope, release order, and the current deferred-deployment boundary.
 
 Use `18_DECISIONS_AND_BOUNDARIES.md` for exact implementation behavior, algorithms, lifecycle semantics, fallbacks, and technical boundaries.
 
@@ -46,7 +46,7 @@ Vitest for unit tests
 
 Playwright is approved only when a critical browser-flow/lifecycle test materially benefits from browser automation. Do not add it merely because it is common in frontend projects.
 
-Expected scripts after scaffolding:
+Expected scripts:
 
 ```text
 pnpm dev
@@ -55,19 +55,34 @@ pnpm typecheck
 pnpm test
 ```
 
-## Current task order
+## Current project state
 
-Do not build the entire catalog in parallel.
+All seven approved full-v1 tools are implemented:
 
 ```text
-Phase 0 foundation
-→ GamepadService
-→ /gamepad-tester
-→ STOP
-→ human visual review at 1366×768 and 1440×900
+/gamepad-tester
+/controller-stick-drift-test
+/controller-deadzone-test
+/mouse-dpi-test
+/fps-test
+/refresh-rate-test
+/keyboard-tester
 ```
 
-Only after the Gamepad Tester visual checkpoint is approved should the design language be propagated to the remaining tools.
+The code-side full-v1 audit/polish gate is the final development boundary before public deployment preparation.
+
+Do **not** restart the old staged implementation sequence or create additional tools merely because they are technically possible.
+
+Until the real production domain is purchased immediately before deployment:
+
+- keep `https://hardware-testing.invalid` as the reserved placeholder origin;
+- keep `indexingEnabled = false`;
+- do not claim production deployment, Search Console setup, sitemap submission, real-device QA, or cross-browser QA that has not actually happened;
+- limit further product-code changes to review fixes, correctness issues, or explicitly approved scope.
+
+Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser smoke, indexing, deployment, GSC, and sitemap gate.
+
+After launch, do not expand the catalog until research/Search Console evidence justifies a specific next tool.
 
 ## Non-normative documents
 

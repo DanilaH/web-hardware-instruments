@@ -1,28 +1,10 @@
-import type { GamepadSnapshot } from '../../../browser/gamepad-service';
-import type { StickPosition } from '../drift/stick-drift-measurement';
-
-export type StickSide = 'left' | 'right';
+import type { StickPosition } from '../stick-position';
 
 export interface DeadzoneMeasurementResult {
   centerNoise: number;
   suggestedDeadzone: number;
   suggestedPercent: number;
 }
-
-export const getStandardStickPosition = (
-  gamepad: GamepadSnapshot,
-  side: StickSide,
-): StickPosition | null => {
-  if (gamepad.mapping !== 'standard' || gamepad.axes.length < 4) {
-    return null;
-  }
-
-  const offset = side === 'left' ? 0 : 2;
-  return {
-    x: gamepad.axes[offset] ?? 0,
-    y: gamepad.axes[offset + 1] ?? 0,
-  };
-};
 
 export const percentile95NearestRank = (values: readonly number[]): number | null => {
   if (values.length === 0 || values.some((value) => !Number.isFinite(value))) {

@@ -77,6 +77,8 @@ Browser capability services must not import tool-specific calculations or render
 
 Renderers consume already-prepared view data and must not acquire hardware data themselves.
 
+When native snapshots need tool semantics, adapt them at the tool boundary before pure calculations or renderers consume them. For example, controller diagnostics convert a `GamepadSnapshot` into small left/right stick-position data before drift/deadzone math or stick renderers use it.
+
 ## Shared infrastructure
 
 ### Gamepad
@@ -274,12 +276,14 @@ FPS and Refresh Rate share acquisition/lifecycle semantics but apply different i
 Owns:
 
 ```text
-keydown
-keyup
-pressed-key state acquisition
-blur / visibility cleanup
+keydown / keyup acquisition
+normalized code / key / repeat events
+blur / visibility clear signals
+listener lifecycle
 subscription
 ```
+
+The Keyboard Tester controller owns the current pressed-code `Set`, last detected key/code, and DOM highlighting. The capability service must not own presentation state.
 
 Used by Keyboard Tester and future keyboard diagnostics.
 
@@ -353,7 +357,6 @@ It prevents:
 - separate tools measuring the same capability differently.
 
 This is a small correctness boundary, not an architecture project.
-
 
 ## Capability service lifecycle
 

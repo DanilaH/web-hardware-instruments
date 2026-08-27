@@ -1,176 +1,182 @@
-# Hardware Testing Browser Utilities
+# Hardware Tests
 
-A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
+A static Astro site with lightweight browser-based hardware diagnostics.
 
-All seven approved full-v1 diagnostic tools are implemented in code. The current development stage is the full-v1 audit. Public deployment remains intentionally deferred until a real domain is purchased, with the placeholder origin and site-wide `noindex` protection kept in place until then.
+## Current product status
 
-## Start here
+Full-v1 implementation and the code-side full-v1 audit are complete. Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
-For product strategy, implementation boundaries, and agent rules, read:
-
-1. `AGENTS.md` — mandatory agent bootstrap and reading order
-2. `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business, scope, release order
-3. `18_DECISIONS_AND_BOUNDARIES.md` — exact implementation behavior and algorithms
-4. `13_AGENT_RULES.md` — mandatory coding constraints
-5. `16_UX_ACCEPTANCE.md` — UX release gates
-6. `03_TOOL_SPECS.md` — tool behavior
-7. `06_ARCHITECTURE.md` — project structure and dependency direction
-8. `11_IMPLEMENTATION_PLAN.md` — development sequence
-
-`00_README.md` remains the full v6.1 handoff index.
-
-## Current implementation sequence
+Implemented tool routes:
 
 ```text
-Phase 0 foundation — complete
-GamepadService + /gamepad-tester — complete
-human visual checkpoint — approved
-FrameSampler + /fps-test + /refresh-rate-test — complete
-MouseMovementService + /mouse-dpi-test — complete
-code-side first-launch preparation — complete
-/controller-stick-drift-test — complete
-/controller-deadzone-test — complete
-/keyboard-tester — complete
-
-current development:
-full-v1 audit
-
-before actual public deployment:
-→ buy/set real production domain
-→ replace placeholder origin
-→ required real-device/browser smoke
-→ enable indexing
-→ deploy
-→ Google Search Console setup
-→ submit generated sitemap
-```
-
-The deferred deployment gate is not waived. It is moved to the actual deployment boundary so full-v1 implementation and audit can finish without inventing a production domain early.
-
-## Implemented routes
-
-```text
-/
 /gamepad-tester
 /controller-stick-drift-test
 /controller-deadzone-test
-/keyboard-tester
+/mouse-dpi-test
 /fps-test
 /refresh-rate-test
-/mouse-dpi-test
+/keyboard-tester
+```
+
+Supporting routes:
+
+```text
+/
 /about
 /privacy
 ```
 
-## Toolchain
+The site remains intentionally non-indexable until a real production domain is purchased immediately before deployment.
+
+Current production placeholder:
 
 ```text
-Node.js 24 LTS
-pnpm 11
-Astro
-Astro check
-TypeScript 6.x while Astro check requires its programmatic API
-Vitest
-Playwright only when a critical browser-flow test requires it
+https://hardware-testing.invalid
+indexingEnabled = false
 ```
 
-Commands:
+Do not replace the placeholder with an invented temporary domain and do not enable indexing before the real production origin is known.
+
+## Source of truth
+
+Coding agents start with `AGENTS.md`.
+
+For exact behavior and release decisions:
 
 ```text
+18_DECISIONS_AND_BOUNDARIES.md          exact algorithms / lifecycle / technical boundaries
+19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md product strategy / scope / release boundary
+00_README.md                            full handoff/document map
+```
+
+## Before public deployment
+
+The remaining release work is deliberately external to feature development:
+
+- purchase/set the real production domain;
+- run real-device/browser smoke tests, including controller and mouse hardware;
+- verify high-refresh and multi-monitor display behavior where hardware is available;
+- verify latest Chrome, Edge, and Firefox desktop; record graceful-degradation gaps for Safari/mobile;
+- enable indexing only after the real origin is configured;
+- deploy over HTTPS;
+- connect Google Search Console and submit the generated sitemap;
+- run final production smoke.
+
+Automated/headless checks and mock browser input are useful for correctness and layout, but must not be described as real hardware validation.
+
+## Development
+
+Requirements:
+
+```text
+Node.js 24
+pnpm 11
+```
+
+Install and run:
+
+```bash
 pnpm install
 pnpm dev
+```
+
+Quality checks:
+
+```bash
 pnpm build
 pnpm typecheck
 pnpm test
 ```
 
-The production origin intentionally remains the reserved `https://hardware-testing.invalid` value in `src/config/site.ts` until the real domain is purchased immediately before deployment.
+## Architecture
 
-Site-wide indexing remains disabled with `indexingEnabled: false`. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling. The real origin and `indexingEnabled: true` must be introduced together in one reviewed pre-deployment change.
+The MVP uses exactly four browser capability services:
 
-## Validation boundary for controller tools
+```text
+GamepadService
+FrameSampler
+KeyboardInputService
+MouseMovementService
+```
 
-Automated tests validate normalization, lifecycle foundations, standard-axis semantics, Stick Drift math, Deadzone p95/suggestion math, build, and type safety. They do **not** replace real controller QA.
+Typical dependency direction:
 
-Before public deployment, manually verify where hardware is available:
+```text
+page
+ ↓
+tool controller / UI binder
+ ├── browser capability service
+ ├── pure measurement helpers
+ └── prepared render data → renderer
+```
 
-- a standard Xbox-style controller;
-- a PlayStation-style controller if available;
-- a generic/non-standard controller if available;
-- multiple controllers;
-- reconnect/disconnect behavior;
-- Gamepad Tester buttons, triggers, D-pad, and both sticks;
-- Stick Drift 3-second sampling, hidden-tab cancellation, disconnect cancellation, and both-stick results;
-- Deadzone left/right selection, 3-second sampling, radial ring/result behavior, hidden-tab cancellation, and disconnect cancellation.
+Native snapshots are adapted at the tool boundary before pure calculations or renderers consume tool semantics.
 
-Do not claim real-device validation for hardware paths that have only been tested with mocks or static review.
+Production UI intentionally does not use React, Vue, Svelte, Tailwind, a charting library, global state library, backend, database, auth, paid APIs, AI, or WebHID.
 
-## Validation boundary for Keyboard Tester
+See the numbered source-of-truth documents, especially:
 
-Automated tests validate `KeyboardInputService` listener lifecycle, keydown/keyup normalization, repeat signaling, blur/visibility clearing, restart behavior, and permanent destroy semantics. They do **not** prove every physical keyboard layout or reserved shortcut path.
+```text
+06_ARCHITECTURE.md
+11_IMPLEMENTATION_PLAN.md
+12_LAUNCH_PLAN.md
+14_DEFINITION_OF_DONE.md
+16_UX_ACCEPTANCE.md
+17_FUNCTIONAL_VISUAL_SYSTEM.md
+18_DECISIONS_AND_BOUNDARIES.md
+19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md
+```
 
-Before public deployment, manually verify where practical:
+## Measurement boundaries
 
-- letter, number, modifier, Space, Enter, Backspace, and arrow highlighting;
-- multiple simultaneously held keys;
-- repeated keydown does not inflate the held-key count;
-- keyup removes held state;
-- blur and hidden-tab transitions clear held state;
-- Tab navigation remains normal;
-- latest Chrome, Edge, and Firefox desktop;
-- at least one non-US keyboard layout if available, confirming that physical `code` highlighting remains useful even when printed labels differ.
+### Gamepad Tester
 
-Do not diagnose an OS/browser-reserved shortcut as broken hardware merely because the page cannot observe it.
+Uses the browser Gamepad API. Standard-mapped controllers receive the rich generic controller view. Non-standard controllers receive only a numbered fallback; physical button/axis placement is never guessed.
 
-## Validation boundary for display tests
+### Stick Drift
 
-Automated tests validate `FrameSampler` lifecycle/reset behavior and the exact FPS/Refresh Rate formulas, rolling windows, median rules, and common-mode threshold. A headless Chrome smoke also confirmed live measurement transitions and target-layout integrity at approximately 60 Hz on 1366×768, 1440×900, and 390×844.
+Requires standard mapping. Samples both sticks for three seconds and reports observed center offset from mean X/Y. The center-detail plots are visual zooms; the numeric percentage is the measurement result. There is no pass/fail or severity label.
 
-That does **not** replace manual display/browser QA. Before public deployment, verify where possible:
+### Deadzone
 
-- at least one 120/144 Hz display path in addition to 60 Hz;
-- moving the page between monitors with different refresh rates;
-- background/foreground reset and fresh warmup behavior;
-- latest Chrome, Edge, and Firefox desktop;
-- Safari graceful behavior where available;
-- power-saving / variable-refresh conditions when practical.
+Requires standard mapping. Samples one selected stick for three seconds, calculates nearest-rank p95 radial center noise, then shows the documented heuristic starting deadzone (`noise + 1 percentage point`, capped at 100%, displayed rounded up).
 
-Do not claim high-refresh, multi-monitor, or cross-browser validation until those checks are actually performed.
+### Mouse DPI
 
-## Validation boundary for Mouse DPI Test
+Always reports **Estimated DPI**. The user supplies physical travel distance; the browser contributes relative horizontal movement only. Raw Pointer Lock is preferred, regular Pointer Lock and unlocked movement are fallbacks. The visual guide never pretends to know physical centimeter/inch progress.
 
-Automated tests validate capture-mode fallback, movement acquisition lifecycle, cancellation semantics, distance conversion, and the DPI formula. They do **not** prove physical mouse-distance accuracy or cross-browser Pointer Lock behavior.
+### FPS
 
-Before public deployment, manually verify where possible:
+Measures observed frame delivery of this browser page using `requestAnimationFrame` callback timestamps. It is not another game's FPS and not a GPU benchmark.
 
-- raw Pointer Lock with `unadjustedMovement: true` on a supported desktop browser;
-- regular Pointer Lock fallback;
-- unlocked movement fallback;
-- Start activation never finishes the same measurement;
-- the next eligible click finishes an active measurement;
-- Escape, focus loss, visibility loss, and Pointer Lock loss cancel cleanly;
-- cm/in conversion preserves the represented physical distance;
-- at least one known-DPI mouse/ruler smoke test.
+### Refresh Rate
 
-Do not claim direct hardware DPI access. The result remains `Estimated DPI` in every mode.
+Estimates browser-visible display cadence from rAF timing. It is not a direct EDID/hardware refresh-rate readout.
 
-## Deferred deployment gate
+### Keyboard
 
-Before any public indexed deployment, all of these remain mandatory:
+Observes `keydown`/`keyup` on the dedicated page. `KeyboardEvent.code` drives physical highlighting, `key` is textual context, Tab remains normal, and reserved OS/browser shortcuts may be unobservable.
 
-- a real production origin replaces `https://hardware-testing.invalid`;
-- required real-device/browser smoke is completed honestly;
-- indexing is enabled only for the real production origin;
-- the production property is set up in Google Search Console;
-- the generated sitemap is submitted after deployment.
+## Privacy
 
-Do not use the reserved `.invalid` origin for a public indexed deployment.
+Raw controller, keyboard, mouse, and frame-timing data is not uploaded or stored by the site.
 
-## Non-normative history
+If product analytics are enabled later, they must remain coarse and must not include raw hardware/input streams or raw gamepad IDs.
 
-These files are review history only and must not be treated as implementation requirements:
+## Validation boundary
 
-- `AUDIT_V4.md`
-- `GLOBAL_GOAL_AUDIT_V5.md`
+Automated coverage includes pure calculations and browser-capability lifecycle behavior. The final code-side audit also used temporary headless visual checks with mocked browser input only to verify UI state and geometry; that temporary review infrastructure is not part of the product branch.
 
-`RESEARCH_EVIDENCE_2026-08.md` records the SEO/business evidence behind the initial tool selection. It is context, not an implementation specification.
+Manual pre-deployment validation still includes:
+
+```text
+real controllers
+real mouse capture
+120/144/240+ Hz where available
+multi-monitor behavior
+latest Chrome / Edge / Firefox desktop
+Safari/mobile graceful degradation
+background/foreground navigation behavior
+```
+
+Untested cases must remain explicitly documented rather than inferred from mocks.

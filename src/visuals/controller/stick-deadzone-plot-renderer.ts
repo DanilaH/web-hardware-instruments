@@ -1,4 +1,4 @@
-import type { StickPosition } from '../../tools/gamepad/drift/stick-drift-measurement';
+import type { StickPlotPosition } from './stick-plot-contract';
 
 const CENTER = 50;
 const TRAVEL = 42;
@@ -36,7 +36,7 @@ export class StickDeadzonePlotRenderer {
     this.label = requireElement<HTMLElement>(root, '[data-deadzone-plot-label]');
   }
 
-  renderPosition(position: StickPosition): void {
+  renderPosition(position: StickPlotPosition): void {
     if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) {
       return;
     }

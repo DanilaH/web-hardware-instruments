@@ -24,7 +24,7 @@ const relatedTools = [
 >
   <section class="deadzone-page">
     <h1 class="page-heading">Controller Deadzone Test</h1>
-    <p class="page-intro">Measure center noise on one analog stick and get a simple starting deadzone estimate.</p>
+    <p class="page-intro">Measure analog stick center noise and get a starting deadzone estimate.</p>
 
     <ControllerDeadzoneTest />
   </section>
@@ -44,7 +44,7 @@ const relatedTools = [
       The test measures the radial distance of each browser-reported stick sample from the exact center and uses the 95th percentile as observed center noise. The suggested starting deadzone adds one percentage point to that observed noise, capped at 100%, then rounds the displayed suggestion up to a whole percentage point.
     </p>
     <p>
-      The suggestion is a heuristic starting value, not a universal correct deadzone. Games and controller software can apply their own response curves, deadzones, and filtering.
+      The radial plot is a zoom of the central 20% radius rather than the full stick travel range, so small center noise remains visible. The suggestion is a heuristic starting value, not a universal correct deadzone. Games and controller software can apply their own response curves, deadzones, and filtering.
     </p>
 
     <h2>Browser and mapping limitations</h2>

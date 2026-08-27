@@ -119,7 +119,6 @@
   "open_decisions": [
     "brand/domain",
     "static hosting provider",
-    "exact signal accent",
     "optional analytics provider",
     "future ad provider"
   ],
@@ -130,19 +129,11 @@
     "tool_usability": "global"
   },
   "release_strategy": {
-    "first_production": [
-      "/",
-      "/gamepad-tester",
-      "/fps-test",
-      "/refresh-rate-test",
-      "/mouse-dpi-test",
-      "/about",
-      "/privacy"
-    ],
-    "full_v1_additions": [
-      "/controller-stick-drift-test",
-      "/controller-deadzone-test",
-      "/keyboard-tester"
-    ]
+    "development_state": "all seven approved full-v1 tools implemented; code-side audit/polish is the final development gate",
+    "public_deployment": "deferred until a real production domain is purchased immediately before deployment",
+    "placeholder_origin": "https://hardware-testing.invalid",
+    "indexing_enabled_before_real_origin": false,
+    "first_public_release": "may include the complete approved full-v1 catalog once real-device/browser and deployment gates pass",
+    "post_launch_expansion": "requires fresh research or Search Console evidence"
   }
 }

@@ -1,14 +1,4 @@
-import type { GamepadSnapshot } from '../../../browser/gamepad-service';
-
-export interface StickPosition {
-  x: number;
-  y: number;
-}
-
-export interface StandardStickPositions {
-  left: StickPosition;
-  right: StickPosition;
-}
+import type { StickPosition } from '../stick-position';
 
 export interface StickDriftResult {
   meanX: number;
@@ -20,19 +10,6 @@ export interface ControllerDriftResult {
   left: StickDriftResult;
   right: StickDriftResult;
 }
-
-export const getStandardStickPositions = (
-  gamepad: GamepadSnapshot,
-): StandardStickPositions | null => {
-  if (gamepad.mapping !== 'standard' || gamepad.axes.length < 4) {
-    return null;
-  }
-
-  return {
-    left: { x: gamepad.axes[0] ?? 0, y: gamepad.axes[1] ?? 0 },
-    right: { x: gamepad.axes[2] ?? 0, y: gamepad.axes[3] ?? 0 },
-  };
-};
 
 export const calculateStickDrift = (
   samples: readonly StickPosition[],

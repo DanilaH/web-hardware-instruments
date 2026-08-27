@@ -1,13 +1,28 @@
 # Launch Plan
 
+## Current release boundary
+
+All seven approved full-v1 tools are implemented in code. Public deployment is intentionally deferred until a real production domain is purchased immediately before release.
+
+Until that point:
+
+- keep `https://hardware-testing.invalid` as the reserved placeholder origin;
+- keep indexing disabled;
+- do not publish an invented temporary production domain;
+- do not claim Google Search Console or sitemap submission;
+- do not substitute mocked/headless checks for required real-device/browser QA.
+
+The first public release may contain the complete approved full-v1 catalog once the pre-launch checks below pass.
+
 ## Pre-launch
 
-- production domain configured
+- real production domain configured
 - HTTPS works
 - canonical origin finalized
-- every route included in the current release returns 200
-- temporary routes removed/noindexed
-- sitemap correct
+- `indexingEnabled` reviewed and enabled only with the real origin
+- every route included in the release returns 200
+- no placeholder/temporary routes are indexable
+- sitemap correct for the real origin
 - robots correct
 - favicon/app icons present
 - metadata complete
@@ -16,22 +31,23 @@
 - no raw device data sent to analytics
 - unsupported browser states tested
 - mobile smoke complete
-- real controller QA complete if a controller tool is included in the current release
-- real keyboard QA complete if Keyboard Tester is included in the current release
-- display QA complete if FPS Test or Refresh Rate Test is included in the current release
-- mouse DPI caveats reviewed if Mouse DPI Test is included in the current release
+- real controller QA complete for Gamepad Tester, Stick Drift, and Deadzone where required hardware is available
+- real keyboard QA complete for Keyboard Tester
+- display QA complete for FPS Test and Refresh Rate Test, including high-refresh/multi-monitor behavior where hardware is available
+- Mouse DPI capture/fallback behavior and physical-distance caveats manually reviewed
+- latest Chrome, Edge, and Firefox desktop smoke complete
+- Safari/mobile graceful-degradation gaps recorded honestly where applicable
 
 ## Search Console
 
 Immediately after deployment:
 
-1. verify domain property;
-2. submit sitemap;
-3. inspect homepage;
-4. inspect every tool URL included in the release;
+1. verify the production domain property;
+2. submit the generated sitemap;
+3. inspect the homepage;
+4. inspect every released tool URL;
 5. request indexing only if appropriate;
-6. monitor indexing and Search Console performance;
-7. submit/inspect later tool URLs as they are deployed.
+6. monitor indexing and Search Console performance.
 
 ## Initial monitoring
 
@@ -67,13 +83,13 @@ Avoid:
 
 ## Expansion trigger
 
-Add a new tool when at least one condition is true:
+Add a new tool only when at least one strong condition is true:
 
 - research independently validates its search opportunity;
 - Search Console reveals recurring adjacent demand;
-- it materially improves the existing cluster;
-- it is extremely cheap and useful without diluting site quality.
+- it materially improves the existing cluster.
 
+Technical ease alone is not enough.
 
 ## Future ad-placement boundary
 
@@ -86,15 +102,6 @@ When monetization is introduced later:
 - no ad may cover or shift the live visualization/result;
 - first preferred placement is below the completed primary tool/result;
 - ad layout must preserve the one-screen diagnostic UX for the tool itself.
-
-
-## Release strategy
-
-Do not block the first production deployment on all seven full-v1 tools.
-
-The first search-validation release is defined in `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
-
-Later full-v1 tools are added as real production pages, not placeholders.
 
 ## Ad-layout future proofing
 

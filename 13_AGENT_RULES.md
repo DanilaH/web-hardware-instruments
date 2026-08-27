@@ -196,7 +196,6 @@ abstract device platform
 
 The goal is reuse and lifecycle correctness, not architectural ceremony.
 
-
 ## 17. Do not invent measurement semantics
 
 Do not invent:
@@ -235,7 +234,6 @@ Canvas    → FPS / refresh traces
 DOM/CSS   → controls / text / keyboard
 ```
 
-
 ## 19. Optimize for low maintenance
 
 Do not introduce:
@@ -249,10 +247,18 @@ Do not introduce:
 
 A feature that adds ongoing operational work requires explicit approval.
 
-## 20. Ship search evidence early
+## 20. Respect the deferred deployment boundary
 
-Do not keep production blocked merely because later full-v1 pages are unfinished.
+All seven approved full-v1 tools are implemented. Do not reopen the old staged-release sequence or add more tools before the current full-v1 code audit and public-deployment gate are closed.
 
-Follow the staged release order in `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
+Until immediately before public deployment:
 
-Never create placeholder/coming-soon SEO pages for unfinished tools.
+- keep the reserved placeholder origin;
+- keep indexing disabled;
+- do not invent a temporary production domain;
+- do not claim Search Console/sitemap submission before deployment;
+- do not claim real hardware or browser coverage that has not actually been tested.
+
+When a real domain is available, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the reviewed origin/indexing change, real-device/browser smoke, deployment, GSC, and sitemap submission.
+
+After launch, choose any additional tool only from fresh research/Search Console evidence. Never create placeholder/coming-soon SEO pages.

@@ -119,7 +119,8 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
   }
 
   .mouse-tool[data-state='starting'] .mouse-tool__signal,
-  .mouse-tool[data-state='active'] .mouse-tool__signal {
+  .mouse-tool[data-state='active'] .mouse-tool__signal,
+  .mouse-tool[data-state='result'] .mouse-tool__signal {
     border-color: var(--color-signal);
     background: var(--color-signal);
   }
@@ -309,6 +310,14 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
     .mouse-controls {
       padding: 0 0 var(--space-4);
       border-right: 0;
+      border-bottom: 1px solid #e3e6e7;
+    }
+
+    .mouse-tool[data-state='result'] .dpi-result {
+      order: -1;
+      min-height: 4.5rem;
+      padding: 0 0 var(--space-4);
+      border-top: 0;
       border-bottom: 1px solid #e3e6e7;
     }
 
