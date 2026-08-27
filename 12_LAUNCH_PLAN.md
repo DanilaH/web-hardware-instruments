@@ -16,10 +16,10 @@
 - no raw device data sent to analytics
 - unsupported browser states tested
 - mobile smoke complete
-- real controller QA complete
-- real keyboard QA complete
-- display QA complete
-- mouse DPI caveats reviewed
+- real controller QA complete if a controller tool is included in the current release
+- real keyboard QA complete if Keyboard Tester is included in the current release
+- display QA complete if FPS Test or Refresh Rate Test is included in the current release
+- mouse DPI caveats reviewed if Mouse DPI Test is included in the current release
 
 ## Search Console
 
