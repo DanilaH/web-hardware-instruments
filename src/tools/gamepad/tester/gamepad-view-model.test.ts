@@ -54,8 +54,8 @@ describe('createFallbackControllerView', () => {
 
     expect(view).toEqual({
       buttons: [
-        { label: 'Button 1', pressed: true, value: 1 },
-        { label: 'Button 2', pressed: false, value: 0.25 },
+        { text: '1', label: 'Button 1', pressed: true, value: 1 },
+        { text: '2', label: 'Button 2', pressed: false, value: 0.25 },
       ],
       axes: [
         { label: 'Axis 1', percent: -100, positionPercent: 0 },
