@@ -1,0 +1,165 @@
+<svg
+  class="controller-visual"
+  viewBox="0 0 640 330"
+  role="img"
+  aria-hidden="true"
+  focusable="false"
+  data-controller-svg
+>
+  <g class="controller-shoulders">
+    <rect x="112" y="50" width="150" height="24" rx="10" data-controller-button="left-shoulder" />
+    <rect x="378" y="50" width="150" height="24" rx="10" data-controller-button="right-shoulder" />
+  </g>
+
+  <g class="controller-triggers">
+    <g>
+      <rect class="trigger-track" x="132" y="18" width="98" height="22" rx="8" />
+      <rect
+        class="trigger-fill"
+        x="132"
+        y="18"
+        width="98"
+        height="22"
+        rx="8"
+        data-controller-trigger="left"
+      />
+    </g>
+    <g>
+      <rect class="trigger-track" x="410" y="18" width="98" height="22" rx="8" />
+      <rect
+        class="trigger-fill"
+        x="410"
+        y="18"
+        width="98"
+        height="22"
+        rx="8"
+        data-controller-trigger="right"
+      />
+    </g>
+  </g>
+
+  <path
+    class="controller-body"
+    d="M161 72C117 76 84 109 71 153L43 252c-9 32 31 55 54 31l60-62c16-17 37-26 60-26h206c23 0 44 9 60 26l60 62c23 24 63 1 54-31l-28-99c-13-44-46-77-90-81-72-7-166-10-278 0Z"
+  />
+
+  <g class="controller-center-buttons">
+    <rect x="276" y="111" width="32" height="19" rx="8" data-controller-button="back" />
+    <rect x="332" y="111" width="32" height="19" rx="8" data-controller-button="start" />
+    <circle cx="320" cy="91" r="14" data-controller-button="home" />
+  </g>
+
+  <g class="controller-dpad" transform="translate(150 150)">
+    <rect x="-17" y="-52" width="34" height="42" rx="7" data-controller-button="dpad-up" />
+    <rect x="-17" y="10" width="34" height="42" rx="7" data-controller-button="dpad-down" />
+    <rect x="-52" y="-17" width="42" height="34" rx="7" data-controller-button="dpad-left" />
+    <rect x="10" y="-17" width="42" height="34" rx="7" data-controller-button="dpad-right" />
+    <circle class="controller-dpad__center" cx="0" cy="0" r="16" />
+  </g>
+
+  <g class="controller-face" transform="translate(491 150)">
+    <circle cx="0" cy="45" r="18" data-controller-button="face-bottom" />
+    <circle cx="45" cy="0" r="18" data-controller-button="face-right" />
+    <circle cx="-45" cy="0" r="18" data-controller-button="face-left" />
+    <circle cx="0" cy="-45" r="18" data-controller-button="face-top" />
+  </g>
+
+  <g class="controller-stick-well" transform="translate(234 221)">
+    <circle r="42" />
+    <circle class="controller-stick-guide" r="24" />
+    <g class="controller-stick" data-controller-stick="left" data-controller-button="left-stick">
+      <circle r="20" />
+      <circle class="controller-stick-dot" r="4" />
+    </g>
+  </g>
+
+  <g class="controller-stick-well" transform="translate(407 221)">
+    <circle r="42" />
+    <circle class="controller-stick-guide" r="24" />
+    <g class="controller-stick" data-controller-stick="right" data-controller-button="right-stick">
+      <circle r="20" />
+      <circle class="controller-stick-dot" r="4" />
+    </g>
+  </g>
+</svg>
+
+<style>
+  .controller-visual {
+    display: block;
+    width: min(100%, 640px);
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .controller-body {
+    fill: #f8f9f9;
+    stroke: var(--color-text);
+    stroke-width: 2;
+  }
+
+  .controller-shoulders rect,
+  .controller-center-buttons rect,
+  .controller-center-buttons circle,
+  .controller-dpad rect,
+  .controller-face circle,
+  .controller-stick circle {
+    fill: var(--color-surface);
+    stroke: #92999d;
+    stroke-width: 2;
+  }
+
+  .controller-shoulders rect.is-active,
+  .controller-center-buttons rect.is-active,
+  .controller-center-buttons circle.is-active,
+  .controller-dpad rect.is-active,
+  .controller-face circle.is-active,
+  .controller-stick.is-active > circle:first-child {
+    fill: color-mix(in srgb, var(--color-signal) 18%, white);
+    stroke: var(--color-signal);
+    stroke-width: 3;
+  }
+
+  .controller-dpad__center {
+    fill: #e5e8e9;
+    stroke: none;
+  }
+
+  .controller-stick-well > circle:first-child {
+    fill: #f0f2f2;
+    stroke: #c4c9cb;
+    stroke-width: 2;
+  }
+
+  .controller-stick-guide {
+    fill: none;
+    stroke: #d2d6d8;
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+
+  .controller-stick-dot {
+    fill: var(--color-signal) !important;
+    stroke: none !important;
+  }
+
+  .trigger-track {
+    fill: #e3e6e7;
+    stroke: #b6bdc0;
+    stroke-width: 1;
+  }
+
+  .trigger-fill {
+    --trigger-value: 0;
+    fill: var(--color-signal);
+    transform-box: fill-box;
+    transform-origin: left center;
+    transform: scaleX(var(--trigger-value));
+  }
+
+  @media (max-width: 40rem) {
+    .controller-visual {
+      width: 100%;
+    }
+  }
+</style>
