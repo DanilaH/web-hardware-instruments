@@ -4,6 +4,7 @@ const CENTER = 50;
 const TRAVEL = 42;
 const DETAIL_RADIUS = 0.2;
 const TRAIL_LIMIT = 24;
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
@@ -20,12 +21,21 @@ const toPlotCoordinate = (value: number): number => {
 
 export class StickDriftPlotRenderer {
   private readonly point: SVGCircleElement;
-  private readonly trail: SVGGElement;
   private readonly trailPoints: StickPlotPosition[] = [];
+  private readonly trailElements: readonly SVGCircleElement[];
 
   constructor(private readonly root: HTMLElement) {
     this.point = requireElement<SVGCircleElement>(root, '[data-stick-drift-point]');
-    this.trail = requireElement<SVGGElement>(root, '[data-stick-drift-trail]');
+    const trail = requireElement<SVGGElement>(root, '[data-stick-drift-trail]');
+
+    this.trailElements = Array.from({ length: TRAIL_LIMIT }, () => {
+      const circle = document.createElementNS(SVG_NAMESPACE, 'circle');
+      circle.setAttribute('class', 'stick-drift-trail-point');
+      circle.setAttribute('r', '1.7');
+      circle.setAttribute('display', 'none');
+      trail.append(circle);
+      return circle;
+    });
   }
 
   render(position: StickPlotPosition, recordTrail: boolean): void {
@@ -51,23 +61,23 @@ export class StickDriftPlotRenderer {
     this.point.setAttribute('cy', CENTER.toString());
     this.root.dataset.live = 'false';
     this.trailPoints.length = 0;
-    this.trail.replaceChildren();
+    this.renderTrail();
   }
 
   private renderTrail(): void {
-    const fragment = document.createDocumentFragment();
     const count = this.trailPoints.length;
 
-    this.trailPoints.forEach((position, index) => {
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('class', 'stick-drift-trail-point');
+    this.trailElements.forEach((circle, index) => {
+      const position = this.trailPoints[index];
+      if (!position) {
+        circle.setAttribute('display', 'none');
+        return;
+      }
+
+      circle.removeAttribute('display');
       circle.setAttribute('cx', toPlotCoordinate(position.x).toFixed(2));
       circle.setAttribute('cy', toPlotCoordinate(position.y).toFixed(2));
-      circle.setAttribute('r', '1.7');
       circle.setAttribute('opacity', (((index + 1) / count) * 0.55).toFixed(2));
-      fragment.append(circle);
     });
-
-    this.trail.replaceChildren(fragment);
   }
 }
