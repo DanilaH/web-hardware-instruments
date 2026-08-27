@@ -18,31 +18,6 @@ The project is not done unless every primary tool page passes all of these:
 
 Failure on this section blocks completion even if the code is technically correct.
 
-## First production launch gate
-
-The site may go to production before full v1 when these routes are complete:
-
-```text
-/
-/gamepad-tester
-/fps-test
-/refresh-rate-test
-/mouse-dpi-test
-/about
-/privacy
-```
-
-For the first production release:
-
-- every listed tool is fully functional;
-- UX/QA/SEO requirements in this document apply to the released tools;
-- homepage lists only released tools;
-- sitemap contains only real indexable routes;
-- Search Console is connected;
-- no placeholder routes are published.
-
-Full v1 completion remains a separate milestone containing all seven tools.
-
 ## Full v1 product
 
 Full v1 required routes:
@@ -61,6 +36,26 @@ Full v1 required routes:
 ```
 
 Every tool must be a real implementation, not a placeholder.
+
+All seven approved tool implementations must pass the code-side audit before the project is considered full-v1 complete in code.
+
+## Public deployment gate
+
+Public deployment is a separate boundary after full-v1 code completion. It is intentionally deferred until a real production domain is purchased.
+
+Before any public indexed release:
+
+- replace `https://hardware-testing.invalid` with the real production origin;
+- keep indexing disabled until that real origin is reviewed in the same change;
+- complete required real-device/browser QA honestly;
+- verify all released routes return 200;
+- verify canonical, robots, and sitemap output against the real origin;
+- deploy over HTTPS;
+- connect Google Search Console;
+- submit the generated sitemap;
+- run final production smoke.
+
+Do not treat mock/headless browser checks as proof of real hardware coverage.
 
 ## Gamepad Tester
 
@@ -149,7 +144,8 @@ No raw event log.
 - `KeyboardInputService` owns keyboard event acquisition;
 - `MouseMovementService` owns mouse/pointer acquisition;
 - no duplicate native acquisition loops/listeners across tools;
-- cleanup for rAF/listeners/timers;
+- native snapshots are adapted at the tool boundary before pure calculations/renderers consume tool semantics;
+- cleanup for rAF/listeners/timers/locks;
 - no unnecessary dependencies/backend.
 
 ## SEO
@@ -157,9 +153,8 @@ No raw event log.
 - unique title/meta/H1;
 - primary tool remains above the fold;
 - static explanatory HTML below tool;
-- canonical;
-- sitemap;
-- robots;
+- canonical plumbing is ready for the real origin;
+- sitemap/robots switch with the reviewed indexing configuration;
 - no synonym routes.
 
 ## Performance
@@ -167,7 +162,9 @@ No raw event log.
 - fast initial interaction;
 - no large unnecessary runtime;
 - no primary-tool layout shift;
-- no decorative payload bloat.
+- no decorative payload bloat;
+- bounded histories/trails;
+- avoid avoidable DOM churn in measurement hot paths.
 
 ## Accessibility
 
@@ -175,30 +172,22 @@ No raw event log.
 - visible focus;
 - labels;
 - no color-only state;
-- result text equivalents.
+- result text equivalents;
+- functional visualizations retain textual/numeric equivalents where needed.
 
 ## Privacy
 
 - raw hardware/input streams remain local;
-- privacy copy matches reality.
+- privacy copy matches reality;
+- raw gamepad IDs are not displayed, stored, or sent.
 
 ## QA
 
 - automated tests pass;
-- browser smoke pass;
 - target viewport UX pass;
-- real-device checks performed where hardware is available;
-- untested hardware/browser cases documented.
-
-## Production
-
-- final domain;
-- HTTPS;
-- Search Console;
-- sitemap submitted;
-- custom analytics verified if enabled;
-- production smoke complete.
-
+- browser smoke pass where automation is appropriate;
+- real-device checks performed before deployment where hardware is required/available;
+- untested hardware/browser cases documented rather than inferred.
 
 ## Exact-boundary compliance
 
@@ -207,4 +196,5 @@ No raw event log.
 - CSS/runtime dependency boundaries are respected;
 - standard/non-standard gamepad behavior matches the spec;
 - display tools reset on document visibility loss;
-- no DPI visualization claims physical progress that the browser cannot know.
+- no DPI visualization claims physical progress that the browser cannot know;
+- visual zooms are labelled so they do not overstate measurement magnitude.
