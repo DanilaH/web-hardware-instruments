@@ -6,7 +6,7 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
 <ToolShell labelledBy="gamepad-tool-status">
   <div class="gamepad-tool" data-gamepad-tester data-state="waiting">
     <div class="gamepad-tool__topline">
-      <div class="gamepad-tool__status-copy">
+      <div class="gamepad-tool__status-copy" role="status" aria-live="polite">
         <div class="gamepad-tool__status-row">
           <span class="gamepad-tool__signal" aria-hidden="true"></span>
           <strong id="gamepad-tool-status" data-gamepad-status>No controller detected</strong>
@@ -39,7 +39,7 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
       <span class="gamepad-tool__mapping">Standard mapping uses the generic controller view.</span>
     </div>
 
-    <p class="gamepad-tool__sr" aria-live="polite" data-gamepad-accessible-state>
+    <p class="gamepad-tool__sr" data-gamepad-accessible-state>
       No controller detected. Connect a controller and press any button.
     </p>
   </div>
