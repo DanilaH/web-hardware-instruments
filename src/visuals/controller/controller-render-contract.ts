@@ -31,7 +31,6 @@ export interface StandardControllerRenderData {
     left: StickRenderData;
     right: StickRenderData;
   };
-  pressedLabels: readonly string[];
 }
 
 export interface FallbackButtonRenderData {
