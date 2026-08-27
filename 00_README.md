@@ -1,1 +1,241 @@
-IyBIYXJkd2FyZSBUZXN0aW5nIOKAlCBBZ2VudCBIYW5kb2ZmIHY2CgojIyBQdXJwb3NlCgpCdWlsZCBhIGxpZ2h0d2VpZ2h0IGJyb3dzZXItb25seSBoYXJkd2FyZSBkaWFnbm9zdGljcyB3ZWJzaXRlIG1hZGUgb2Ygc21hbGwsIGZvY3VzZWQgdG9vbHMuCgpUaGlzIGlzIG5vdCBhIGRhc2hib2FyZCwgYmVuY2htYXJrIHN1aXRlLCBoYXJkd2FyZSBwb3J0YWwsIG9yIGdlbmVyaWMgU2FhUyBwcm9kdWN0LgoKRWFjaCBwYWdlIG11c3Qgc29sdmUgb25lIGNvbmNyZXRlIGpvYiBpbW1lZGlhdGVseSBpbiB0aGUgYnJvd3Nlci4KCkluaXRpYWwgY2x1c3RlcjoKCi0gR2FtZXBhZCAvIENvbnRyb2xsZXIgdGVzdGluZwotIFN0aWNrIGRyaWZ0Ci0gQ29udHJvbGxlciBkZWFkem9uZQotIE1vdXNlIERQSSBlc3RpbWF0aW9uCi0gRlBTIC8gZnJhbWUtcmF0ZSB0ZXN0aW5nCi0gUmVmcmVzaC1yYXRlIGVzdGltYXRpb24KLSBLZXlib2FyZCB0ZXN0aW5nCgojIyBHbG9iYWwgcHJvZHVjdC9idXNpbmVzcyBnb2FsCgpUaGlzIGlzIGludGVuZGVkIHRvIGJlY29tZSBhIGxvdy1tYWludGVuYW5jZSBvcmdhbmljLXNlYXJjaCB1dGlsaXR5IGFzc2V0LCBub3QgYSBTYWFTIHByb2R1Y3QuCgpQcmltYXJ5IGFjcXVpc2l0aW9uIGlzIHNlYXJjaC4gSW5pdGlhbCBjb250ZW50L2tleXdvcmQgdGFyZ2V0aW5nIGlzIEVuZ2xpc2ggd2l0aCBhIFVTIHNlYXJjaC1tYXJrZXQgZm9jdXMsIHdoaWxlIHRoZSB0b29scyB0aGVtc2VsdmVzIHNob3VsZCByZW1haW4gZ2xvYmFsbHkgdXNhYmxlLgoKVGhlIGxvbmctdGVybSBtb25ldGl6YXRpb24gaHlwb3RoZXNpcyBpcyBkaXNwbGF5IGFkdmVydGlzaW5nIGFmdGVyIG1lYW5pbmdmdWwgb3JnYW5pYyB0cmFmZmljIGV4aXN0cy4KClRoZXJlZm9yZSB0aGUgcHJvamVjdCBvcHRpbWl6ZXMgZm9yOgoKYGBgdGV4dAp1c2VmdWwgc2VhcmNoIGxhbmRpbmcgcGFnZXMKZmFzdCB0YXNrIGNvbXBsZXRpb24KdmVyeSBsb3cgb3BlcmF0aW5nIGNvc3QKdmVyeSBsb3cgbWFpbnRlbmFuY2UKZWFybHkgU2VhcmNoIENvbnNvbGUgZmVlZGJhY2sKc2FmZSBleHBhbnNpb24gaW50byBhZGphY2VudCB2YWxpZGF0ZWQgdG9vbHMKYGBgCgpJdCBkb2VzIG5vdCBvcHRpbWl6ZSBmb3IgYWNjb3VudHMsIHN1YnNjcmlwdGlvbnMsIGFydGlmaWNpYWwgZHdlbGwgdGltZSwgZmVhdHVyZSBkZXB0aCwgb3IgYSBsYXJnZSBhcHBsaWNhdGlvbiBhcmNoaXRlY3R1cmUuCgojIyBIaWdoZXN0LXByaW9yaXR5IHJlcXVpcmVtZW50OiBvYnZpb3VzLCBvbmUtc2NyZWVuIFVYCgpUaGUgbW9zdCBpbXBvcnRhbnQgcHJvZHVjdCByZXF1aXJlbWVudCBpcyBub3QgZmVhdHVyZSBjb3VudC4gSXQgaXMgdGFzayBjbGFyaXR5LgoKQSBmaXJzdC10aW1lIHZpc2l0b3IgYXJyaXZpbmcgZnJvbSBzZWFyY2ggc2hvdWxkIHVuZGVyc3RhbmQgd2hhdCB0byBkbyB3aXRoaW4gYSBmZXcgc2Vjb25kcyBhbmQgYmUgYWJsZSB0byBwZXJmb3JtIHRoZSBtYWluIHRlc3Qgd2l0aG91dCByZWFkaW5nIGRvY3VtZW50YXRpb24uCgpPbiBkZXNrdG9wLCB0aGUgcHJpbWFyeSBpbnRlcmFjdGlvbiBtdXN0IGZpdCBpbnRvIG9uZSB2aWV3cG9ydC4KClRhcmdldCBhY2NlcHRhbmNlIHZpZXdwb3J0OgoKYGBgdGV4dAoxMzY2IMOXIDc2OCBtaW5pbXVtIGRlc2t0b3AgdGFyZ2V0CjE0NDAgw5cgOTAwIHByZWZlcnJlZCB0YXJnZXQKYGBgCgpBdCB0aG9zZSBzaXplcywgYWZ0ZXIgdGhlIGNvbXBhY3Qgc2l0ZSBoZWFkZXIsIHRoZSB1c2VyIHNob3VsZCBiZSBhYmxlIHRvIHNlZToKCmBgYHRleHQKSDEKb25lIHNob3J0IGluc3RydWN0aW9uCnRoZSBjb21wbGV0ZSBwcmltYXJ5IGludGVyYWN0aW9uCnRoZSBwcmltYXJ5IHJlc3VsdCBhcmVhCmBgYAoKd2l0aG91dCBzY3JvbGxpbmcuCgpMb25nIGV4cGxhbmF0aW9ucywgbGltaXRhdGlvbnMsIEZBUXMsIFNFTyBjb3B5LCByZWxhdGVkIHRvb2xzLCBhbmQgdGVjaG5pY2FsIGRldGFpbHMgYmVsb25nIGJlbG93IHRoZSBwcmltYXJ5IHRvb2wuCgpUaGUgcHJpbWFyeSB0b29sIG1heSBiZSB2aXN1YWxseSByaWNoIHdoZW4gdGhlIHZpc3VhbCBkaXJlY3RseSByZXByZXNlbnRzIHRoZSBtZWFzdXJlbWVudC4gUHJlZmVyIG9uZSBtZWFuaW5nZnVsIGxpdmUgdmlzdWFsaXphdGlvbiBvdmVyIHNldmVyYWwgbWV0cmljIGNhcmRzLgoKRG8gbm90IG9wdGltaXplIGZvciBhcnRpZmljaWFsIGR3ZWxsIHRpbWUuIE9wdGltaXplIGZvciBzdWNjZXNzZnVsIHRhc2sgY29tcGxldGlvbi4gQSBjbGVhciB1c2VmdWwgdG9vbCBuYXR1cmFsbHkgY3JlYXRlcyBtZWFuaW5nZnVsIGVuZ2FnZW1lbnQuCgojIyBEZWZhdWx0IHBhZ2Ugc2hhcGUKCmBgYHRleHQKQ29tcGFjdCBoZWFkZXIKCkgxCm9uZS1zZW50ZW5jZSBpbnN0cnVjdGlvbgoK4pSM4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAIFBSSU1BUlkgVE9PTCDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilJAK4pSCIG9uZSBvYnZpb3VzIHRhc2sgICAgICAgICAgICAgICAgICAgICAgICAgICAgIOKUggrilIIgb25lIHByaW1hcnkgYWN0aW9uIGlmIGFuIGFjdGlvbiBpcyBuZWVkZWQgICAg4pSCCuKUgiBpbW1lZGlhdGUgZmVlZGJhY2sgICAgICAgICAgICAgICAgICAgICAgICAgICDilIIK4pSCIGtleSByZXN1bHQgaW4gdGhlIHNhbWUgcmVnaW9uICAgICAgICAgICAgICAgIOKUggrilJTilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilJgKCkJlbG93IHRoZSBmb2xkOgotIHdoYXQgdGhlIHJlc3VsdCBtZWFucwotIGxpbWl0YXRpb25zCi0gaG93IGl0IHdvcmtzCi0gRkFRIC8gcHJvYmxlbS1maXJzdCBjb250ZW50Ci0gcmVsYXRlZCB0b29scwpgYGAKCiMjIFNpbXBsaWNpdHkgcnVsZQoKSWYgaW5mb3JtYXRpb24gZG9lcyBub3QgaGVscCB0aGUgdXNlciBwZXJmb3JtIHRoZSBjdXJyZW50IHRlc3Qgb3IgaW50ZXJwcmV0IHRoZSBwcmltYXJ5IHJlc3VsdCwgaXQgc2hvdWxkIG5vdCBiZSB2aXNpYmxlIGluIHRoZSBtYWluIHRvb2wgYnkgZGVmYXVsdC4KCkV4YW1wbGVzIG9mIGRhdGEgdGhhdCBtYXkgYmVsb25nIGJlbG93IHRoZSBmb2xkIG9yIGluIGEgY29tcGFjdCBvcHRpb25hbCDigJxEZXRhaWxz4oCdIGRpc2Nsb3N1cmU6CgpgYGB0ZXh0CnJhdyBheGlzIGFycmF5cwpyYXcgdGltaW5nIHN0YXRpc3RpY3MKdmFyaWFuY2UKdGVjaG5pY2FsIGV2ZW50IGNvZGVzCm1lYXN1cmVtZW50IG1ldGhvZG9sb2d5CmBgYAoKRG8gbm90IHR1cm4gZGlhZ25vc3RpYyBwYWdlcyBpbnRvIGRhc2hib2FyZHMuCgojIyBDb3JlIGNvbnN0cmFpbnRzCgotIFN0YXRpYyBmcm9udGVuZCBmaXJzdAotIFR5cGVTY3JpcHQKLSBOYXRpdmUgYnJvd3NlciBBUElzCi0gTm8gYmFja2VuZCBmb3IgTVZQCi0gTm8gZGF0YWJhc2UKLSBObyB1c2VyIGFjY291bnRzCi0gTm8gYXV0aGVudGljYXRpb24KLSBObyBwYXltZW50IGZsb3cKLSBObyBwYWlkIGV4dGVybmFsIEFQSSBkZXBlbmRlbmN5Ci0gTm8gQUkgZmVhdHVyZXMKLSBObyBkZXZpY2UgZmluZ2VycHJpbnRpbmcKLSBSYXcgbWVhc3VyZW1lbnRzIHJlbWFpbiBsb2NhbAotIE5vIGZhbHNlIGNsYWltcyBvZiBoYXJkd2FyZSBwcmVjaXNpb24KLSBObyB1bm5lY2Vzc2FyeSBsaWJyYXJpZXMKLSBObyB2aXN1YWwgb3IgZmVhdHVyZSBjb21wbGV4aXR5IHRoYXQgZGVsYXlzIHRoZSBwcmltYXJ5IHRhc2sKCiMjIFJlY29tbWVuZGVkIHN0YWNrCgotIEFzdHJvCi0gVHlwZVNjcmlwdAotIHNtYWxsIGZyYW1ld29yay1mcmVlIGludGVyYWN0aXZlIG1vZHVsZXMKLSBuYXRpdmUgYnJvd3NlciBBUElzCi0gYSB0aW55IHR5cGVkIGJyb3dzZXIgY2FwYWJpbGl0eSBzZXJ2aWNlL2FkYXB0ZXIgbGF5ZXIKLSBTVkcgd2hlcmUgdmlzdWFsIGRldmljZSBmZWVkYmFjayBpcyB1c2VmdWwKLSBDYW52YXMgb25seSB3aGVuIHJlcGVhdGVkIGRyYXdpbmcgY2xlYXJseSBiZW5lZml0cyBmcm9tIGl0Ci0gc3RhdGljIGhvc3RpbmcKClJlYWN0IGlzIG5vdCByZXF1aXJlZC4KCiMjIEZ1bGwgdjEgcm91dGVzCgpgYGB0ZXh0Ci8KL2dhbWVwYWQtdGVzdGVyCi9jb250cm9sbGVyLXN0aWNrLWRyaWZ0LXRlc3QKL2NvbnRyb2xsZXItZGVhZHpvbmUtdGVzdAovbW91c2UtZHBpLXRlc3QKL2Zwcy10ZXN0Ci9yZWZyZXNoLXJhdGUtdGVzdAova2V5Ym9hcmQtdGVzdGVyCi9hYm91dAovcHJpdmFjeQpgYGAKClRoZXNlIGFyZSBzZXBhcmF0ZSBwYWdlcyBiZWNhdXNlIHRoZXkgc29sdmUgZGlzdGluY3Qgam9icy4gRG8gbm90IGNyZWF0ZSBhZGRpdGlvbmFsIHBhZ2VzIGZvciBzeW5vbnltcy4KCiMjIFBoYXNlIDIgb25seQoKYGBgdGV4dAovZGVhZC1waXhlbC10ZXN0Ci9tb3VzZS1idXR0b24tdGVzdAovbW91c2Utc2Nyb2xsLXRlc3QKL2RvdWJsZS1jbGljay10ZXN0Ci9rZXlib2FyZC1yb2xsb3Zlci10ZXN0Ci9mcmFtZS1za2lwcGluZy10ZXN0Ci90b3VjaC1zY3JlZW4tdGVzdApgYGAKCkRvIG5vdCBpbXBsZW1lbnQgUGhhc2UgMiBkdXJpbmcgTVZQIHVubGVzcyBleHBsaWNpdGx5IHJlcXVlc3RlZC4KCiMjIERvY3VtZW50IG1hcAoKLSBgMDFfUFJPRFVDVC5tZGAg4oCUIHByb2R1Y3QgYW5kIFVYIHByaW9yaXRpZXMKLSBgMDJfSU5GT1JNQVRJT05fQVJDSElURUNUVVJFLm1kYCDigJQgcm91dGVzIGFuZCBwYWdlIHJlbGF0aW9uc2hpcHMKLSBgMDNfVE9PTF9TUEVDUy5tZGAg4oCUIGV4YWN0IE1WUCBiZWhhdmlvcgotIGAwNF9VWF9VSS5tZGAg4oCUIHN0cmljdCBpbnRlcmFjdGlvbi9sYXlvdXQgcnVsZXMKLSBgMDVfU0VPX0NPTlRFTlQubWRgIOKAlCBTRU8vY29udGVudCBydWxlcwotIGAwNl9BUkNISVRFQ1RVUkUubWRgIOKAlCB0ZWNobmljYWwgYXJjaGl0ZWN0dXJlCi0gYDA3X0JST1dTRVJfQVBJUy5tZGAg4oCUIEFQSSBsaW1pdGF0aW9ucwotIGAwOF9BTkFMWVRJQ1MubWRgIOKAlCBtZWFzdXJlbWVudCBwbGFuCi0gYDA5X1RFU1RJTkdfUUEubWRgIOKAlCBRQQotIGAxMF9QRVJGT1JNQU5DRV9BQ0NFU1NJQklMSVRZLm1kYCDigJQgcGVyZm9ybWFuY2UvYWNjZXNzaWJpbGl0eQotIGAxMV9JTVBMRU1FTlRBVElPTl9QTEFOLm1kYCDigJQgZGV2ZWxvcG1lbnQgc2VxdWVuY2UKLSBgMTJfTEFVTkNIX1BMQU4ubWRgIOKAlCBsYXVuY2ggY2hlY2tsaXN0Ci0gYDEzX0FHRU5UX1JVTEVTLm1kYCDigJQgbWFuZGF0b3J5IGFnZW50IGNvbnN0cmFpbnRzCi0gYDE0X0RFRklOSVRJT05fT0ZfRE9ORS5tZGAg4oCUIGFjY2VwdGFuY2UgY3JpdGVyaWEKLSBgMTVfQkFDS0xPRy5tZGAg4oCUIGRlZmVycmVkIHNjb3BlCi0gYDE2X1VYX0FDQ0VQVEFOQ0UubWRgIOKAlCBleHBsaWNpdCBVWCBhY2NlcHRhbmNlIHRlc3RzCi0gYDE3X0ZVTkNUSU9OQUxfVklTVUFMX1NZU1RFTS5tZGAg4oCUIGZ1bmN0aW9uYWwgYmVhdXR5IGFuZCB2aXN1YWwgbGFuZ3VhZ2UKLSBgMThfREVDSVNJT05TX0FORF9CT1VOREFSSUVTLm1kYCDigJQgZXhhY3QgdGVjaG5pY2FsL3Byb2R1Y3QgYm91bmRhcmllcyBhbmQgbWVhc3VyZW1lbnQgYWxnb3JpdGhtcwotIGAxOV9HTE9CQUxfR09BTFNfQU5EX1JFTEVBU0VfU1RSQVRFR1kubWRgIOKAlCBidXNpbmVzcy9TRU8gZ29hbHMsIGxhdW5jaCBzZXF1ZW5jZSwgYW5kIHNjb3BlIHByaW9yaXRpZXMKCiMjIEJyb3dzZXIgQVBJIGFjcXVpc2l0aW9uIGxheWVyCgpEbyBub3QgYWNjZXNzIGJyb3dzZXIgQVBJcyBhZCBob2MgZnJvbSBtYW55IFVJIG1vZHVsZXMuCgpFYWNoIGJyb3dzZXIgY2FwYWJpbGl0eSBzaG91bGQgaGF2ZSBvbmUgdmVyeSBzbWFsbCB0eXBlZCBzZXJ2aWNlL2FkYXB0ZXIgdGhhdCBvd25zIGFjcXVpc2l0aW9uIGFuZCBsaWZlY3ljbGUuCgpgYGB0ZXh0CkdhbWVwYWRTZXJ2aWNlCiAgICDihpIgbmF2aWdhdG9yLmdldEdhbWVwYWRzKCkKCkZyYW1lU2FtcGxlcgogICAg4oaSIHJlcXVlc3RBbmltYXRpb25GcmFtZSgpCiAgICDihpIgcGVyZm9ybWFuY2Uubm93KCkKCktleWJvYXJkSW5wdXRTZXJ2aWNlCiAgICDihpIga2V5ZG93biAvIGtleXVwCgpNb3VzZU1vdmVtZW50U2VydmljZQogICAg4oaSIHBvaW50ZXIvbW91c2UgbW92ZW1lbnQgZXZlbnRzCmBgYAoKVGhlc2Ugd3JhcHBlcnMgZXhpc3Qgb25seSB0byBjZW50cmFsaXplOgoKLSBmZWF0dXJlIGRldGVjdGlvbjsKLSBuYXRpdmUgbGlzdGVuZXJzL3BvbGxpbmc7Ci0gbm9ybWFsaXphdGlvbiBpbnRvIHR5cGVkIHNhbXBsZXM7Ci0gc3Vic2NyaXB0aW9ucy9jYWxsYmFja3M7Ci0gZm9jdXMvdmlzaWJpbGl0eSBoYW5kbGluZyB3aGVyZSByZWxldmFudDsKLSBzdGFydC9zdG9wIGxpZmVjeWNsZTsKLSBjbGVhbnVwLgoKS2VlcCB0aGVtIHRoaW4uCgpEbyBub3QgdHVybiB0aGlzIGludG8gcmVwb3NpdG9yaWVzLCBkZXBlbmRlbmN5IGluamVjdGlvbiwgYSBnZW5lcmljIGV2ZW50IGJ1cywgYSBnbG9iYWwgYEhhcmR3YXJlTWFuYWdlcmAsIG9yIGFuIGFic3RyYWN0IGRldmljZSBmcmFtZXdvcmsuCgoKIyMgU291cmNlLW9mLXRydXRoIHJ1bGUKCk5vcm1hdGl2ZSBpbXBsZW1lbnRhdGlvbiByZXF1aXJlbWVudHMgYXJlIG9ubHkgdGhlIG51bWJlcmVkIGRvY3VtZW50cyBgMDBfLi4uYCB0aHJvdWdoIGAxOV8uLi5gIHBsdXMgYHByb2plY3QtbWFuaWZlc3QuanNvbmAuCgpPbGQgcmV2aWV3L2hpc3Rvcnkgbm90ZXMgYXJlIGludGVudGlvbmFsbHkgZXhjbHVkZWQgZnJvbSB0aGlzIGJ1bmRsZSBzbyBhbiBhZ2VudCBjYW5ub3QgYWNjaWRlbnRhbGx5IHRyZWF0IHN1cGVyc2VkZWQgZGVjaXNpb25zIGFzIGN1cnJlbnQgcmVxdWlyZW1lbnRzLgoKVXNlIGAxOV9HTE9CQUxfR09BTFNfQU5EX1JFTEVBU0VfU1RSQVRFR1kubWRgIGZvciBidXNpbmVzcy9zY29wZS9yZWxlYXNlIHByaW9yaXRpZXMgYW5kIGAxOF9ERUNJU0lPTlNfQU5EX0JPVU5EQVJJRVMubWRgIGZvciBleGFjdCBpbXBsZW1lbnRhdGlvbiBiZWhhdmlvci4gSWYgdGhvc2UgdHdvIGFwcGVhciB0byBjb25mbGljdCwgc3RvcCBhbmQgcmVwb3J0IHRoZSBjb25mbGljdCByYXRoZXIgdGhhbiBndWVzc2luZy4KCmBBVURJVF9WNC5tZGAgaXMgaW5jbHVkZWQgb25seSBhcyBhIG5vbi1ub3JtYXRpdmUgaHVtYW4gcmV2aWV3IHJlcG9ydDsgYWdlbnRzIHNob3VsZCBub3QgdHJlYXQgaXQgYXMgcHJvZHVjdCByZXF1aXJlbWVudHMuCg==
+# Hardware Testing — Agent Handoff v6
+
+## Purpose
+
+Build a lightweight browser-only hardware diagnostics website made of small, focused tools.
+
+This is not a dashboard, benchmark suite, hardware portal, or generic SaaS product.
+
+Each page must solve one concrete job immediately in the browser.
+
+Initial cluster:
+
+- Gamepad / Controller testing
+- Stick drift
+- Controller deadzone
+- Mouse DPI estimation
+- FPS / frame-rate testing
+- Refresh-rate estimation
+- Keyboard testing
+
+## Global product/business goal
+
+This is intended to become a low-maintenance organic-search utility asset, not a SaaS product.
+
+Primary acquisition is search. Initial content/keyword targeting is English with a US search-market focus, while the tools themselves should remain globally usable.
+
+The long-term monetization hypothesis is display advertising after meaningful organic traffic exists.
+
+Therefore the project optimizes for:
+
+```text
+useful search landing pages
+fast task completion
+very low operating cost
+very low maintenance
+early Search Console feedback
+safe expansion into adjacent validated tools
+```
+
+It does not optimize for accounts, subscriptions, artificial dwell time, feature depth, or a large application architecture.
+
+## Highest-priority requirement: obvious, one-screen UX
+
+The most important product requirement is not feature count. It is task clarity.
+
+A first-time visitor arriving from search should understand what to do within a few seconds and be able to perform the main test without reading documentation.
+
+On desktop, the primary interaction must fit into one viewport.
+
+Target acceptance viewport:
+
+```text
+1366 × 768 minimum desktop target
+1440 × 900 preferred target
+```
+
+At those sizes, after the compact site header, the user should be able to see:
+
+```text
+H1
+one short instruction
+the complete primary interaction
+the primary result area
+```
+
+without scrolling.
+
+Long explanations, limitations, FAQs, SEO copy, related tools, and technical details belong below the primary tool.
+
+The primary tool may be visually rich when the visual directly represents the measurement. Prefer one meaningful live visualization over several metric cards.
+
+Do not optimize for artificial dwell time. Optimize for successful task completion. A clear useful tool naturally creates meaningful engagement.
+
+## Default page shape
+
+```text
+Compact header
+
+H1
+one-sentence instruction
+
+┌──────────────── PRIMARY TOOL ────────────────┐
+│ one obvious task                             │
+│ one primary action if an action is needed    │
+│ immediate feedback                           │
+│ key result in the same region                │
+└──────────────────────────────────────────────┘
+
+Below the fold:
+- what the result means
+- limitations
+- how it works
+- FAQ / problem-first content
+- related tools
+```
+
+## Simplicity rule
+
+If information does not help the user perform the current test or interpret the primary result, it should not be visible in the main tool by default.
+
+Examples of data that may belong below the fold or in a compact optional “Details” disclosure:
+
+```text
+raw axis arrays
+raw timing statistics
+variance
+technical event codes
+measurement methodology
+```
+
+Do not turn diagnostic pages into dashboards.
+
+## Core constraints
+
+- Static frontend first
+- TypeScript
+- Native browser APIs
+- No backend for MVP
+- No database
+- No user accounts
+- No authentication
+- No payment flow
+- No paid external API dependency
+- No AI features
+- No device fingerprinting
+- Raw measurements remain local
+- No false claims of hardware precision
+- No unnecessary libraries
+- No visual or feature complexity that delays the primary task
+
+## Recommended stack
+
+- Astro
+- TypeScript
+- small framework-free interactive modules
+- native browser APIs
+- a tiny typed browser capability service/adapter layer
+- SVG where visual device feedback is useful
+- Canvas only when repeated drawing clearly benefits from it
+- static hosting
+
+React is not required.
+
+## Full v1 routes
+
+```text
+/
+/gamepad-tester
+/controller-stick-drift-test
+/controller-deadzone-test
+/mouse-dpi-test
+/fps-test
+/refresh-rate-test
+/keyboard-tester
+/about
+/privacy
+```
+
+These are separate pages because they solve distinct jobs. Do not create additional pages for synonyms.
+
+## Phase 2 only
+
+```text
+/dead-pixel-test
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/keyboard-rollover-test
+/frame-skipping-test
+/touch-screen-test
+```
+
+Do not implement Phase 2 during MVP unless explicitly requested.
+
+## Document map
+
+- `01_PRODUCT.md` — product and UX priorities
+- `02_INFORMATION_ARCHITECTURE.md` — routes and page relationships
+- `03_TOOL_SPECS.md` — exact MVP behavior
+- `04_UX_UI.md` — strict interaction/layout rules
+- `05_SEO_CONTENT.md` — SEO/content rules
+- `06_ARCHITECTURE.md` — technical architecture
+- `07_BROWSER_APIS.md` — API limitations
+- `08_ANALYTICS.md` — measurement plan
+- `09_TESTING_QA.md` — QA
+- `10_PERFORMANCE_ACCESSIBILITY.md` — performance/accessibility
+- `11_IMPLEMENTATION_PLAN.md` — development sequence
+- `12_LAUNCH_PLAN.md` — launch checklist
+- `13_AGENT_RULES.md` — mandatory agent constraints
+- `14_DEFINITION_OF_DONE.md` — acceptance criteria
+- `15_BACKLOG.md` — deferred scope
+- `16_UX_ACCEPTANCE.md` — explicit UX acceptance tests
+- `17_FUNCTIONAL_VISUAL_SYSTEM.md` — functional beauty and visual language
+- `18_DECISIONS_AND_BOUNDARIES.md` — exact technical/product boundaries and measurement algorithms
+- `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business/SEO goals, launch sequence, and scope priorities
+
+## Browser API acquisition layer
+
+Do not access browser APIs ad hoc from many UI modules.
+
+Each browser capability should have one very small typed service/adapter that owns acquisition and lifecycle.
+
+```text
+GamepadService
+    → navigator.getGamepads()
+
+FrameSampler
+    → requestAnimationFrame()
+    → performance.now()
+
+KeyboardInputService
+    → keydown / keyup
+
+MouseMovementService
+    → pointer/mouse movement events
+```
+
+These wrappers exist only to centralize:
+
+- feature detection;
+- native listeners/polling;
+- normalization into typed samples;
+- subscriptions/callbacks;
+- focus/visibility handling where relevant;
+- start/stop lifecycle;
+- cleanup.
+
+Keep them thin.
+
+Do not turn this into repositories, dependency injection, a generic event bus, a global `HardwareManager`, or an abstract device framework.
+
+
+## Source-of-truth rule
+
+Normative implementation requirements are only the numbered documents `00_...` through `19_...` plus `project-manifest.json`.
+
+Old review/history notes are intentionally excluded from this bundle so an agent cannot accidentally treat superseded decisions as current requirements.
+
+Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business/scope/release priorities and `18_DECISIONS_AND_BOUNDARIES.md` for exact implementation behavior. If those two appear to conflict, stop and report the conflict rather than guessing.
+
+`AUDIT_V4.md` is included only as a non-normative human review report; agents should not treat it as product requirements.
