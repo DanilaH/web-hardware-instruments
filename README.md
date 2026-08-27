@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-The project is currently in the pre-implementation documentation stage. The approved stack is Astro + strict TypeScript + native browser APIs, with static output and no backend.
+Phase 0 foundation is implemented with Astro static output, strict TypeScript, plain CSS, centralized SEO/site configuration, and no backend. The next implementation slice is `GamepadService` + `/gamepad-tester`, followed by the mandatory human visual review.
 
 ## Start here
 
@@ -22,7 +22,7 @@ For product strategy, implementation boundaries, and agent rules, read:
 ## Current implementation sequence
 
 ```text
-Phase 0 — project foundation
+Phase 0 foundation — complete
 → GamepadService
 → /gamepad-tester
 → human visual review at 1366×768 and 1440×900
@@ -55,21 +55,27 @@ Later full-v1 additions:
 
 ```text
 Node.js 24 LTS
-pnpm
+pnpm 11
 Astro
 Astro check
+TypeScript 6.x while Astro check requires its programmatic API
 Vitest
 Playwright only when a critical browser-flow test requires it
 ```
 
-Expected commands after scaffolding:
+Commands:
 
 ```text
+pnpm install
 pnpm dev
 pnpm build
 pnpm typecheck
 pnpm test
 ```
+
+The production origin is intentionally still the reserved `https://hardware-testing.invalid` value in `src/config/site.ts`.
+
+Site-wide indexing is also disabled there with `indexingEnabled: false`. Before the first production release, set the real production origin and enable indexing in the same reviewed change. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling.
 
 ## Non-normative history
 

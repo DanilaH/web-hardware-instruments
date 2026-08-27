@@ -1,0 +1,11 @@
+---
+interface Props {
+  labelledBy?: string;
+}
+
+const { labelledBy } = Astro.props;
+---
+
+<section class="tool-shell" aria-labelledby={labelledBy}>
+  <slot />
+</section>
