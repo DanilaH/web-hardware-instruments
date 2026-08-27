@@ -81,11 +81,7 @@ export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
     }
 
     const snapshot = measurement.push(event.timestamp);
-    if (
-      lastPresentedAt === null ||
-      event.timestamp - lastPresentedAt >= PRESENTATION_INTERVAL_MS ||
-      snapshot.phase === 'warming'
-    ) {
+    if (lastPresentedAt === null || event.timestamp - lastPresentedAt >= PRESENTATION_INTERVAL_MS) {
       lastPresentedAt = event.timestamp;
       renderMeasurement(snapshot);
     }
