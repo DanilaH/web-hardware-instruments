@@ -20,7 +20,8 @@ describe('FPS measurement', () => {
     });
 
     measurement.push(500);
-    const result = measurement.push(600);
+    measurement.push(600);
+    const result = measurement.getSnapshot();
 
     expect(result.phase).toBe('measuring');
     expect(result.fps).toBe(10);
@@ -48,6 +49,7 @@ describe('FPS measurement', () => {
 
     for (let timestamp = 600; timestamp <= 10_000; timestamp += 100) {
       measurement.push(timestamp);
+      measurement.getSnapshot();
     }
 
     const trace = measurement.getSnapshot().trace;
@@ -81,7 +83,8 @@ describe('FPS measurement', () => {
     });
 
     measurement.push(2000);
-    const stillWarming = measurement.push(2400);
+    measurement.push(2400);
+    const stillWarming = measurement.getSnapshot();
     expect(stillWarming.phase).toBe('warming');
     expect(stillWarming.fps).toBeNull();
   });
@@ -92,7 +95,8 @@ describe('FPS measurement', () => {
     measurement.push(500);
     measurement.push(600);
     measurement.push(600);
-    const result = measurement.push(700);
+    measurement.push(700);
+    const result = measurement.getSnapshot();
 
     expect(result.medianFrameTimeMs).toBe(100);
   });
