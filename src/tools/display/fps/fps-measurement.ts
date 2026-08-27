@@ -18,22 +18,10 @@ export interface FpsMeasurementSnapshot {
 }
 
 export interface FpsMeasurement {
-  push(timestamp: number): FpsMeasurementSnapshot;
-  reset(): FpsMeasurementSnapshot;
+  push(timestamp: number): void;
+  reset(): void;
   getSnapshot(): FpsMeasurementSnapshot;
 }
-
-const createSnapshot = (
-  phase: FpsMeasurementSnapshot['phase'],
-  fps: number | null,
-  medianFrameTimeMs: number | null,
-  trace: readonly TimedValue[],
-): FpsMeasurementSnapshot => ({
-  phase,
-  fps,
-  medianFrameTimeMs,
-  trace: [...trace],
-});
 
 const calculateDeltas = (timestamps: readonly number[]): number[] => {
   const deltas: number[] = [];
@@ -56,39 +44,51 @@ const calculateDeltas = (timestamps: readonly number[]): number[] => {
 
 export const createFpsMeasurement = (): FpsMeasurement => {
   let warmupStartedAt: number | null = null;
+  let phase: FpsMeasurementSnapshot['phase'] = 'warming';
+  let latestTimestamp: number | null = null;
   let windowTimestamps: number[] = [];
   let trace: TimedValue[] = [];
   let lastTraceTimestamp: number | null = null;
-  let snapshot = createSnapshot('warming', null, null, []);
 
-  const reset = (): FpsMeasurementSnapshot => {
+  const reset = (): void => {
     warmupStartedAt = null;
+    phase = 'warming';
+    latestTimestamp = null;
     windowTimestamps = [];
     trace = [];
     lastTraceTimestamp = null;
-    snapshot = createSnapshot('warming', null, null, []);
-    return snapshot;
   };
 
-  const push = (timestamp: number): FpsMeasurementSnapshot => {
+  const push = (timestamp: number): void => {
     if (!Number.isFinite(timestamp)) {
-      return snapshot;
+      return;
     }
 
     if (warmupStartedAt === null) {
       warmupStartedAt = timestamp;
-      snapshot = createSnapshot('warming', null, null, trace);
-      return snapshot;
+      return;
     }
 
     if (timestamp - warmupStartedAt < WARMUP_MS) {
-      snapshot = createSnapshot('warming', null, null, trace);
-      return snapshot;
+      return;
     }
 
+    phase = 'measuring';
+    latestTimestamp = timestamp;
     windowTimestamps.push(timestamp);
     const cutoff = timestamp - WINDOW_MS;
     windowTimestamps = windowTimestamps.filter((sample) => sample >= cutoff);
+  };
+
+  const getSnapshot = (): FpsMeasurementSnapshot => {
+    if (phase === 'warming' || latestTimestamp === null) {
+      return {
+        phase: 'warming',
+        fps: null,
+        medianFrameTimeMs: null,
+        trace: [],
+      };
+    }
 
     let fps: number | null = null;
     let medianFrameTimeMs: number | null = null;
@@ -108,20 +108,25 @@ export const createFpsMeasurement = (): FpsMeasurement => {
 
     if (
       fps !== null &&
-      (lastTraceTimestamp === null || timestamp - lastTraceTimestamp >= TRACE_INTERVAL_MS)
+      (lastTraceTimestamp === null || latestTimestamp - lastTraceTimestamp >= TRACE_INTERVAL_MS)
     ) {
-      trace.push({ timestamp, value: fps });
-      lastTraceTimestamp = timestamp;
+      trace.push({ timestamp: latestTimestamp, value: fps });
+      lastTraceTimestamp = latestTimestamp;
     }
 
-    trace = trace.filter((point) => point.timestamp >= timestamp - TRACE_HISTORY_MS);
-    snapshot = createSnapshot('measuring', fps, medianFrameTimeMs, trace);
-    return snapshot;
+    trace = trace.filter((point) => point.timestamp >= latestTimestamp - TRACE_HISTORY_MS);
+
+    return {
+      phase,
+      fps,
+      medianFrameTimeMs,
+      trace: [...trace],
+    };
   };
 
   return {
     push,
     reset,
-    getSnapshot: () => snapshot,
+    getSnapshot,
   };
 };
