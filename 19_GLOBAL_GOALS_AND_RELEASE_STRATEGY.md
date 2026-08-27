@@ -137,15 +137,19 @@ The first public deployment may therefore contain every approved tool that has p
 
 # 8. Full v1
 
-Approved remaining full-v1 tools:
+Approved full-v1 catalog:
 
 ```text
+/gamepad-tester
 /controller-stick-drift-test
 /controller-deadzone-test
 /keyboard-tester
+/fps-test
+/refresh-rate-test
+/mouse-dpi-test
 ```
 
-Build each page independently and keep each polished enough to ship on its own. Do not use the deferred deployment decision as permission to bundle unfinished work or weaken review gates.
+Build and review each page independently and keep each polished enough to ship on its own. Do not use the deferred deployment decision as permission to bundle unfinished work or weaken review gates.
 
 Full v1 is complete when all seven approved tools are production-ready in code and the final audit is complete. Public indexing/deployment remains a separate explicit boundary immediately afterward.
 
