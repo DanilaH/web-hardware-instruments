@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FpsTest from '../tools/display/fps/FpsTest.astro';
+---
+
+<BaseLayout
+  title="FPS Test — Check Browser Frame Rate"
+  description="Measure the frame rate this browser page is currently delivering, with a live recent trace and median frame time."
+  canonicalPath="/fps-test"
+>
+  <section class="display-page">
+    <h1 class="page-heading">FPS Test</h1>
+    <p class="page-intro">See the frame rate this browser page is delivering right now.</p>
+
+    <FpsTest />
+  </section>
+
+  <section class="display-info reading-width" aria-labelledby="fps-meaning">
+    <h2 id="fps-meaning">What this FPS test measures</h2>
+    <p>
+      The test observes <code>requestAnimationFrame</code> delivery for this page. It is useful for seeing the browser page's current frame cadence and recent drops, but it cannot read FPS from another game or application.
+    </p>
+
+    <h2>Why the number can change</h2>
+    <p>
+      Browser work, background activity, power-saving behavior, display changes, and a hidden tab can all affect observed frame delivery. When the page becomes hidden, the measurement is discarded and starts with a fresh warmup when sampling resumes.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .display-page {
+    max-width: var(--shell-width);
+  }
+
+  .display-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .display-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .display-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .display-info p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-muted);
+  }
+
+  .display-info code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+</style>
