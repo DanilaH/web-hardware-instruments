@@ -1,0 +1,186 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
+---
+
+<ToolShell labelledBy="keyboard-tool-heading">
+  <h2 id="keyboard-tool-heading" class="keyboard-tool__sr">Keyboard Tester controls</h2>
+
+  <div class="keyboard-tool" data-keyboard-tester data-state="ready">
+    <div class="keyboard-tool__status-row">
+      <span class="keyboard-tool__signal" aria-hidden="true"></span>
+      <strong data-keyboard-status>Listening for keys</strong>
+      <span class="keyboard-tool__status-note">No Start button needed.</span>
+    </div>
+
+    <p class="keyboard-tool__instruction">Press any key to test it.</p>
+
+    <div class="keyboard-tool__visual-wrap">
+      <KeyboardGrid />
+    </div>
+
+    <div class="keyboard-tool__results">
+      <div class="keyboard-result keyboard-result--primary">
+        <span>Last detected key</span>
+        <strong class="measurement-value" data-keyboard-last-key>—</strong>
+      </div>
+      <div class="keyboard-result">
+        <span>Physical code</span>
+        <strong class="measurement-value" data-keyboard-last-code>—</strong>
+      </div>
+      <div class="keyboard-result">
+        <span>Keys held</span>
+        <strong class="measurement-value" data-keyboard-pressed-count>0</strong>
+      </div>
+    </div>
+
+    <p class="keyboard-tool__note" data-keyboard-note>
+      Key labels are a compact reference. Physical highlighting follows the browser-reported key code.
+    </p>
+
+    <p class="keyboard-tool__sr" data-keyboard-accessible-summary>
+      Keyboard Tester is listening. Press any key to test it.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountKeyboardTester } from './keyboard-tester-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-keyboard-tester]');
+  if (root) {
+    const controller = mountKeyboardTester(root);
+    window.addEventListener('pagehide', (event) => {
+      if (!event.persisted) {
+        controller.destroy();
+      }
+    });
+  }
+</script>
+
+<style>
+  .keyboard-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .keyboard-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .keyboard-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .keyboard-tool__status-note {
+    margin-left: auto;
+  }
+
+  .keyboard-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-signal);
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .keyboard-tool[data-state='unavailable'] .keyboard-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .keyboard-tool__instruction,
+  .keyboard-tool__note {
+    margin: 0;
+  }
+
+  .keyboard-tool__instruction {
+    font-size: 0.95rem;
+  }
+
+  .keyboard-tool__visual-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .keyboard-tool__results {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(7rem, 0.55fr);
+    gap: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid #e3e6e7;
+  }
+
+  .keyboard-result {
+    min-width: 0;
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .keyboard-result span {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .keyboard-result strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #aeb4b7;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .keyboard-tool[data-state='detected'] .keyboard-result--primary strong {
+    color: var(--color-signal);
+  }
+
+  .keyboard-tool__note {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+  }
+
+  .keyboard-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .keyboard-tool__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .keyboard-tool__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .keyboard-tool__results {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .keyboard-result--primary {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
