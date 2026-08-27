@@ -1,0 +1,262 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import StickDriftPlot from '../../../visuals/controller/StickDriftPlot.astro';
+---
+
+<ToolShell labelledBy="stick-drift-tool-heading">
+  <h2 id="stick-drift-tool-heading" class="drift-tool__sr">Controller Stick Drift Test</h2>
+
+  <div class="drift-tool" data-stick-drift-test data-state="waiting">
+    <div class="drift-tool__topline">
+      <div class="drift-tool__status-copy">
+        <div class="drift-tool__status-row">
+          <span class="drift-tool__signal" aria-hidden="true"></span>
+          <strong data-drift-status>No controller detected</strong>
+        </div>
+        <p data-drift-instruction>Connect a controller and press any button.</p>
+      </div>
+
+      <label class="drift-tool__selector" data-drift-selector-wrap hidden>
+        <span>Controller</span>
+        <select data-drift-selector aria-label="Select controller"></select>
+      </label>
+    </div>
+
+    <div class="drift-tool__plots" aria-hidden="true">
+      <StickDriftPlot label="Left stick" side="left" />
+      <StickDriftPlot label="Right stick" side="right" />
+    </div>
+
+    <div class="drift-tool__results">
+      <div class="drift-result">
+        <span>Left stick</span>
+        <strong class="measurement-value" data-drift-result-left>—</strong>
+        <small>Observed center offset</small>
+      </div>
+      <div class="drift-result">
+        <span>Right stick</span>
+        <strong class="measurement-value" data-drift-result-right>—</strong>
+        <small>Observed center offset</small>
+      </div>
+    </div>
+
+    <div class="drift-tool__action-row">
+      <button type="button" class="primary-action" data-drift-start disabled>Start test</button>
+      <span class="drift-tool__progress" data-drift-progress>3-second sample</span>
+    </div>
+
+    <p class="drift-tool__limitation" data-drift-limitation hidden></p>
+
+    <p class="drift-tool__sr" aria-live="polite" aria-atomic="true" data-drift-status-live></p>
+    <p class="drift-tool__sr" data-drift-accessible-summary>
+      No controller detected. Connect a controller and press any button.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountControllerStickDriftTest } from './controller-stick-drift-test-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-stick-drift-test]');
+  if (root) {
+    const controller = mountControllerStickDriftTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (!event.persisted) {
+        controller.destroy();
+      }
+    });
+  }
+</script>
+
+<style>
+  .drift-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .drift-tool__topline {
+    min-height: 3rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .drift-tool__status-copy,
+  .drift-tool__status-copy p {
+    margin: 0;
+  }
+
+  .drift-tool__status-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .drift-tool__status-row strong {
+    font-size: 0.95rem;
+  }
+
+  .drift-tool__status-copy p {
+    margin-top: 0.2rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .drift-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .drift-tool[data-state='ready'] .drift-tool__signal,
+  .drift-tool[data-state='sampling'] .drift-tool__signal,
+  .drift-tool[data-state='result'] .drift-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .drift-tool[data-state='cancelled'] .drift-tool__signal,
+  .drift-tool[data-state='unavailable'] .drift-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .drift-tool__selector {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 9.5rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .drift-tool__selector select {
+    min-height: 2.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding-inline: var(--space-2);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .drift-tool__plots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .drift-tool__results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-3);
+  }
+
+  .drift-result {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 0.15rem var(--space-3);
+  }
+
+  .drift-result > span,
+  .drift-result small {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .drift-result strong {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    color: #aeb4b7;
+    font-size: clamp(1.75rem, 4vw, 2.8rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .drift-tool[data-state='result'] .drift-result strong {
+    color: var(--color-signal);
+  }
+
+  .drift-tool__action-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .primary-action {
+    min-height: 2.75rem;
+    min-width: 8.5rem;
+    border: 1px solid var(--color-signal);
+    border-radius: var(--radius-sm);
+    background: var(--color-signal);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .primary-action:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .drift-tool__progress,
+  .drift-tool__limitation {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
+
+  .drift-tool__limitation {
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid #e3e6e7;
+  }
+
+  .drift-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .drift-tool__topline {
+      flex-direction: column;
+    }
+
+    .drift-tool__selector {
+      width: 100%;
+    }
+
+    .drift-tool__plots,
+    .drift-tool__results {
+      grid-template-columns: 1fr;
+    }
+
+    .drift-tool__plots {
+      max-width: 18rem;
+    }
+
+    .drift-tool__action-row {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+</style>
