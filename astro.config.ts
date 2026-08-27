@@ -6,5 +6,5 @@ import { siteConfig } from './src/config/site';
 export default defineConfig({
   output: 'static',
   site: siteConfig.origin,
-  integrations: [sitemap()],
+  integrations: siteConfig.indexingEnabled ? [sitemap()] : [],
 });
