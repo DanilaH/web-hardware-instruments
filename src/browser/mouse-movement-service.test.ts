@@ -4,9 +4,12 @@ import {
   createMouseMovementService,
   type MouseMovementServiceEnvironment,
   type MouseMovementServiceEvent,
+  type PointerLockRequestResult,
 } from './mouse-movement-service';
 
-const createEnvironment = (lockOutcomes: boolean[]) => {
+type LockOutcome = boolean | PointerLockRequestResult;
+
+const createEnvironment = (lockOutcomes: LockOutcome[]) => {
   let lockedTarget: HTMLElement | null = null;
   let visibility: DocumentVisibilityState = 'visible';
   let mouseMoveListener: ((movementX: number, movementY: number) => void) | null = null;
@@ -20,11 +23,15 @@ const createEnvironment = (lockOutcomes: boolean[]) => {
   const environment: MouseMovementServiceEnvironment = {
     requestPointerLock: async (target, raw) => {
       lockRequests.push(raw);
-      const locked = lockOutcomes.shift() ?? false;
-      if (locked) {
+      const outcome = lockOutcomes.shift() ?? false;
+      const result: PointerLockRequestResult =
+        typeof outcome === 'boolean'
+          ? { locked: outcome, rawConfirmed: outcome && raw }
+          : outcome;
+      if (result.locked) {
         lockedTarget = target;
       }
-      return locked;
+      return result;
     },
     exitPointerLock: () => {
       exitCount += 1;
@@ -87,7 +94,7 @@ const createEnvironment = (lockOutcomes: boolean[]) => {
 const target = {} as HTMLElement;
 
 describe('MouseMovementService', () => {
-  it('prefers raw Pointer Lock and emits finite movement only after capture is active', async () => {
+  it('prefers confirmed raw Pointer Lock and emits finite movement only after capture is active', async () => {
     const fixture = createEnvironment([true]);
     const service = createMouseMovementService(fixture.environment);
     const events: MouseMovementServiceEvent[] = [];
@@ -100,6 +107,14 @@ describe('MouseMovementService', () => {
     fixture.move(Number.NaN, 2);
 
     expect(events).toEqual([{ type: 'movement', movementX: 12, movementY: -3 }]);
+  });
+
+  it('treats an unconfirmed legacy raw request as regular Pointer Lock', async () => {
+    const fixture = createEnvironment([{ locked: true, rawConfirmed: false }]);
+    const service = createMouseMovementService(fixture.environment);
+
+    expect(await service.start(target)).toBe('pointer-lock');
+    expect(fixture.lockRequests).toEqual([true]);
   });
 
   it('falls back from raw to regular Pointer Lock', async () => {
