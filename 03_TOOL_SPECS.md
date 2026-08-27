@@ -49,6 +49,17 @@ Show:
 
 For non-standard mappings, Gamepad Tester uses a compact basic fallback view instead of pretending the generic controller layout is correct.
 
+The fallback shows numbered button indicators and numbered normalized axis indicators/bars. It must not imply physical button/axis placement.
+
+When multiple controllers are visible, use neutral selector labels such as:
+
+```text
+Controller 1
+Controller 2
+```
+
+Do not use raw `gamepad.id` as the visible selector label.
+
 That is enough for the primary tool.
 
 The controller SVG is not decorative: it is the main live diagnostic visualization.
@@ -226,7 +237,27 @@ Only:
 - `Start test`;
 - context-dependent `Cancel/Reset` only when needed.
 
+Distance behavior:
+
+- value must be finite and greater than zero;
+- decimals are allowed;
+- switching `cm ↔ in` converts the current value so the represented physical distance stays the same.
+
 Do not show trial history, advanced calibration, charts, or multiple measurement modes in MVP.
+
+## Capture behavior
+
+Preferred acquisition mode requests Pointer Lock with `unadjustedMovement: true` from the Start user gesture.
+
+If raw/unadjusted movement is not supported, fall back to regular Pointer Lock; if Pointer Lock itself is unavailable, fall back to normal page-level movement events while the measurement session is active.
+
+Accumulation begins only after the selected capture mode is active.
+
+The finish click becomes armed only after capture is active. The Start activation event must never be interpreted as the finish click for the same measurement.
+
+In unlocked fallback, collect movement only while the measurement session is active. Do not invent a physical-distance rail or constrained centimeter movement region.
+
+Escape, capture/focus loss, cancellation, or teardown cancels the active measurement and clears accumulation.
 
 ## Important wording
 
@@ -239,10 +270,6 @@ Estimated DPI
 Never imply direct hardware DPI access.
 
 ## Below the fold
-
-Preferred acquisition mode requests Pointer Lock with `unadjustedMovement: true` from the Start user gesture.
-
-If raw/unadjusted movement is not supported, fall back to regular Pointer Lock; if Pointer Lock itself is unavailable, fall back to normal movement events.
 
 The result remains an estimate in every mode. Fallback modes may be affected by:
 
@@ -290,14 +317,11 @@ Use a compact 5–10 second live FPS trace as part of the primary visualization.
 
 ## Technical calculation
 
-Use:
+Use the timestamp supplied to the `requestAnimationFrame` callback as the measurement clock.
 
-```ts
-requestAnimationFrame
-performance.now()
-```
+Do not mix `performance.now()` timestamps into the FPS calculation window.
 
-with a 500 ms warmup.
+Use a 500 ms warmup.
 
 Primary FPS is calculated from the most recent 1000 ms window:
 
@@ -305,11 +329,11 @@ Primary FPS is calculated from the most recent 1000 ms window:
 fps = (frameCount - 1) * 1000 / (lastTimestamp - firstTimestamp)
 ```
 
-Median frame time is the median `requestAnimationFrame` delta over the same rolling window.
+Median frame time is the median positive finite `requestAnimationFrame` delta over the same rolling window.
 
 The live trace stores one rolling FPS point every 250 ms and keeps only the most recent 8 seconds.
 
-If the document becomes hidden, pause and reset the measurement when it becomes visible again.
+If `FrameSampler` signals a reset because visibility was lost, clear measurement/trace state and perform a fresh warmup when sampling resumes.
 
 The page must explicitly state below the primary result:
 
@@ -352,13 +376,16 @@ No `Measure again` control is needed in MVP; the estimate updates automatically 
 ## Technical behavior
 
 - reuse `FrameSampler`;
+- use rAF callback timestamps supplied by the sampler;
 - discard the first 500 ms as warmup;
 - use a rolling 1500 ms visible-tab window;
+- a valid frame delta is finite and greater than zero;
 - estimate refresh interval as the median valid frame delta;
+- do not add a separate outlier-removal threshold/filter in MVP;
 - calculate `estimatedHz = 1000 / medianDelta`;
 - display Hz rounded to one decimal place;
 - optionally show `Closest common mode` only when the nearest configured common mode is within 3% of the estimate;
-- pause and reset when the document is hidden.
+- on a `FrameSampler` reset, clear result/trace state and perform a fresh warmup when sampling resumes.
 
 ## Below the fold
 
