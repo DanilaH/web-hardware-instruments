@@ -252,6 +252,29 @@ describe('GamepadService', () => {
     expect(fixture.listeners.get('gamepaddisconnected')?.size).toBe(1);
   });
 
+  it('refreshes hardware state after a stopped period before resuming acquisition', () => {
+    const fixture = createEnvironment([]);
+    const service = createGamepadService(fixture.environment);
+    const visibleIndexes: number[][] = [];
+
+    service.subscribe((state) => {
+      if (state.status === 'ready') {
+        visibleIndexes.push(state.gamepads.map((gamepad) => gamepad.sourceIndex));
+      }
+    });
+
+    expect(service.start()).toBe(true);
+    expect(visibleIndexes.at(-1)).toEqual([]);
+
+    service.stop();
+    fixture.setPads([createGamepad({ index: 5 })]);
+
+    expect(service.start()).toBe(true);
+    expect(visibleIndexes.at(-1)).toEqual([5]);
+    expect(fixture.listeners.get('gamepadconnected')?.size).toBe(1);
+    expect(fixture.listeners.get('gamepaddisconnected')?.size).toBe(1);
+  });
+
   it('destroy is idempotent and prevents restarting acquisition', () => {
     const fixture = createEnvironment([createGamepad()]);
     const service = createGamepadService(fixture.environment);
