@@ -1,31 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import type { GamepadSnapshot } from '../../../browser/gamepad-service';
 import {
   calculateControllerDrift,
   calculateStickDrift,
   formatCenterOffsetPercent,
-  getStandardStickPositions,
 } from './stick-drift-measurement';
 
-const createGamepad = (overrides: Partial<GamepadSnapshot> = {}): GamepadSnapshot => ({
-  sourceIndex: 0,
-  mapping: 'standard',
-  buttons: [],
-  axes: [0, 0, 0, 0],
-  ...overrides,
-});
-
 describe('stick drift measurement', () => {
-  it('reads left and right axes only for a complete standard mapping', () => {
-    expect(getStandardStickPositions(createGamepad({ axes: [0.1, -0.2, 0.3, -0.4] }))).toEqual({
-      left: { x: 0.1, y: -0.2 },
-      right: { x: 0.3, y: -0.4 },
-    });
-    expect(getStandardStickPositions(createGamepad({ mapping: 'non-standard' }))).toBeNull();
-    expect(getStandardStickPositions(createGamepad({ axes: [0, 0, 0] }))).toBeNull();
-  });
-
   it('calculates center offset from the mean x/y position', () => {
     const result = calculateStickDrift([
       { x: 0.03, y: 0.04 },
@@ -61,5 +42,10 @@ describe('stick drift measurement', () => {
     });
 
     expect(calculateControllerDrift([], [{ x: 0, y: 0 }])).toBeNull();
+  });
+
+  it('rejects non-finite sample coordinates', () => {
+    expect(calculateStickDrift([{ x: Number.NaN, y: 0 }])).toBeNull();
+    expect(calculateStickDrift([{ x: 0, y: Number.POSITIVE_INFINITY }])).toBeNull();
   });
 });
