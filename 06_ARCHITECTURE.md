@@ -97,6 +97,12 @@ One shared frame sampler should power:
 - Refresh Rate Test
 - future Frame Skipping Test
 
+`FrameSampler` owns the native rAF acquisition loop and display visibility lifecycle. It emits normalized timing events plus an explicit reset semantic when the current timing session becomes invalid.
+
+Tool controllers consume those events and own their own warmup/window/calculation/trace state. FPS and Refresh Rate must not add independent `visibilitychange` listeners to implement duplicate measurement-reset behavior.
+
+The exact reset contract is defined in `18_DECISIONS_AND_BOUNDARIES.md`.
+
 ### Analytics
 
 Use one event wrapper.
@@ -246,10 +252,10 @@ Owns:
 
 ```text
 requestAnimationFrame()
-performance timing
+rAF callback timestamps
 start/stop
 visibility handling
-sample subscription
+sample/reset subscription
 cleanup
 ```
 
@@ -261,7 +267,7 @@ Refresh Rate Test
 Frame Skipping Test later
 ```
 
-FPS and Refresh Rate should share the acquisition logic but apply different interpretation/presentation.
+FPS and Refresh Rate share acquisition/lifecycle semantics but apply different interpretation/presentation.
 
 ### `KeyboardInputService`
 
@@ -332,18 +338,7 @@ interface GamepadService {
 }
 ```
 
-Example:
-
-```ts
-interface FrameSampler {
-  start(): void;
-  stop(): void;
-  subscribe(listener: (sample: FrameSample) => void): Unsubscribe;
-  destroy(): void;
-}
-```
-
-Exact interfaces may differ if a simpler shape is better.
+FrameSampler should expose one typed subscription stream with sample/reset semantics. Exact syntax may differ; `18_DECISIONS_AND_BOUNDARIES.md` owns the behavior.
 
 Do not add methods for hypothetical future needs.
 
