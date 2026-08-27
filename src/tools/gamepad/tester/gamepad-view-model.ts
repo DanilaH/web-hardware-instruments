@@ -76,6 +76,7 @@ export const createFallbackControllerView = (
   snapshot: GamepadSnapshot,
 ): FallbackControllerRenderData => ({
   buttons: snapshot.buttons.map((button, index) => ({
+    text: String(index + 1),
     label: `Button ${index + 1}`,
     pressed: button.pressed,
     value: button.value,
