@@ -1,0 +1,236 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+---
+
+<ToolShell labelledBy="refresh-tool-heading">
+  <h2 id="refresh-tool-heading" class="display-tool__sr">Refresh Rate Test measurement</h2>
+
+  <div class="display-tool display-tool--refresh" data-refresh-rate-test data-state="warming">
+    <div class="display-tool__status-row">
+      <span class="display-tool__signal" aria-hidden="true"></span>
+      <strong data-display-status role="status" aria-live="polite" aria-atomic="true">Warming up</strong>
+      <span class="display-tool__status-note">Estimates automatically while this page is visible.</span>
+    </div>
+
+    <div class="refresh-result-row">
+      <div class="refresh-primary-result">
+        <div class="metric-label">Estimated refresh rate</div>
+        <div class="refresh-value measurement-value" data-refresh-result>—</div>
+      </div>
+
+      <div class="common-mode" data-common-mode-row data-visible="false" aria-hidden="true">
+        <span>Closest common mode</span>
+        <strong class="measurement-value" data-common-mode></strong>
+      </div>
+    </div>
+
+    <div class="cadence-panel">
+      <div class="trace-label" aria-hidden="true">
+        <span>Recent frame interval</span>
+        <span>median reference</span>
+      </div>
+      <canvas
+        class="display-trace display-trace--refresh"
+        data-refresh-trace
+        aria-hidden="true"
+      ></canvas>
+    </div>
+
+    <p class="refresh-note">
+      Browser-visible cadence estimate — not a direct EDID or monitor hardware readout.
+    </p>
+
+    <p class="display-tool__sr" data-display-accessible-summary>
+      Refresh-rate measurement is warming up.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountRefreshRateTest } from './refresh-rate-test-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-refresh-rate-test]');
+  if (root) {
+    const controller = mountRefreshRateTest(root);
+
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
+      }
+    });
+  }
+</script>
+
+<style>
+  .display-tool {
+    --trace-grid: #e2e6e7;
+    --trace-signal: var(--color-signal);
+    --trace-neutral: #899296;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .display-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .display-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .display-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .display-tool[data-state='live'] .display-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .display-tool[data-state='unavailable'] .display-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .display-tool__status-note {
+    margin-left: auto;
+  }
+
+  .refresh-result-row {
+    min-height: 8.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block: var(--space-3) var(--space-4);
+    border-top: 1px solid #e3e6e7;
+  }
+
+  .metric-label,
+  .common-mode span {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+  }
+
+  .refresh-value {
+    margin-top: 0.2rem;
+    font-size: clamp(3.6rem, 7vw, 5.6rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+  }
+
+  .common-mode {
+    min-width: 12rem;
+    padding-left: var(--space-5);
+    border-left: 1px solid #e3e6e7;
+  }
+
+  .common-mode[data-visible='false'] {
+    visibility: hidden;
+  }
+
+  .common-mode strong {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 1.55rem;
+    line-height: 1;
+  }
+
+  .cadence-panel {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 8.5rem;
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    border-block: 1px solid #e3e6e7;
+    background: #fafbfb;
+  }
+
+  .trace-label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: var(--color-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .display-trace {
+    width: 100%;
+    height: 6rem;
+    display: block;
+  }
+
+  .refresh-note {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .display-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .display-tool__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .display-tool__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .refresh-result-row {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .refresh-value {
+      font-size: 3.6rem;
+    }
+
+    .common-mode {
+      width: 100%;
+      min-height: 3.7rem;
+      padding: var(--space-3) 0 0;
+      border-left: 0;
+      border-top: 1px solid #e3e6e7;
+    }
+
+    .display-trace {
+      height: 5.5rem;
+    }
+  }
+</style>
