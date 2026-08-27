@@ -82,12 +82,19 @@ export class FallbackControllerRenderer {
       if (!element) return;
       element.classList.toggle('is-active', button.pressed);
       element.style.setProperty('--button-value', String(button.value));
+      element.setAttribute(
+        'aria-label',
+        `Button ${index + 1}, ${button.pressed ? 'pressed' : 'released'}`,
+      );
     });
 
     snapshot.axes.forEach((axis, index) => {
       const marker = this.axisMarkers[index];
       if (!marker) return;
+      const percent = Math.round(axis * 100);
       marker.style.left = `${((axis + 1) / 2) * 100}%`;
+      marker.setAttribute('aria-valuenow', String(percent));
+      marker.setAttribute('aria-valuetext', `${percent}%`);
     });
   }
 
@@ -112,7 +119,8 @@ export class FallbackControllerRenderer {
     this.buttonElements = snapshot.buttons.map((_, index) => {
       const button = document.createElement('div');
       button.className = 'gamepad-fallback__button';
-      button.setAttribute('aria-label', `Button ${index + 1}`);
+      button.setAttribute('role', 'img');
+      button.setAttribute('aria-label', `Button ${index + 1}, released`);
       button.textContent = String(index + 1);
       buttonGrid.append(button);
       return button;
@@ -143,6 +151,12 @@ export class FallbackControllerRenderer {
       center.className = 'gamepad-fallback__axis-center';
       const marker = document.createElement('span');
       marker.className = 'gamepad-fallback__axis-marker';
+      marker.setAttribute('role', 'meter');
+      marker.setAttribute('aria-label', `Axis ${index + 1}`);
+      marker.setAttribute('aria-valuemin', '-100');
+      marker.setAttribute('aria-valuemax', '100');
+      marker.setAttribute('aria-valuenow', '0');
+      marker.setAttribute('aria-valuetext', '0%');
       track.append(center, marker);
 
       row.append(label, track);
