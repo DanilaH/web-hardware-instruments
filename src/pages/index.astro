@@ -1,5 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const tools = [
+  {
+    href: '/gamepad-tester',
+    glyph: 'G',
+    name: 'Gamepad Tester',
+    description: 'Test controller buttons, sticks, D-pad, and triggers.',
+  },
+  {
+    href: '/fps-test',
+    glyph: 'F',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s frame delivery and recent drops.',
+  },
+  {
+    href: '/refresh-rate-test',
+    glyph: 'Hz',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -13,21 +34,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </section>
 
   <section class="home-tools" aria-labelledby="available-tools">
-    <h2 id="available-tools">Available tool</h2>
-    <a class="tool-link" href="/gamepad-tester">
-      <span class="tool-link__glyph" aria-hidden="true">+</span>
-      <span>
-        <strong>Gamepad Tester</strong>
-        <small>Test controller buttons, sticks, D-pad, and triggers.</small>
-      </span>
-      <span class="tool-link__arrow" aria-hidden="true">→</span>
-    </a>
+    <h2 id="available-tools">Available tools</h2>
+    <div class="tool-list">
+      {tools.map((tool) => (
+        <a class="tool-link" href={tool.href}>
+          <span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span>
+          <span>
+            <strong>{tool.name}</strong>
+            <small>{tool.description}</small>
+          </span>
+          <span class="tool-link__arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .home-tools {
-    max-width: 34rem;
+    max-width: 38rem;
     margin-top: var(--space-6);
   }
 
@@ -38,6 +63,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
+  }
+
+  .tool-list {
+    display: grid;
+    gap: var(--space-3);
   }
 
   .tool-link {
@@ -64,7 +94,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     border: 1px solid var(--color-border);
     border-radius: 50%;
     color: var(--color-signal);
-    font: 1.2rem/1 var(--font-mono);
+    font: 0.82rem/1 var(--font-mono);
   }
 
   .tool-link strong,
