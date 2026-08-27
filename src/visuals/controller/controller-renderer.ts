@@ -120,7 +120,7 @@ export class FallbackControllerRenderer {
       button.className = 'gamepad-fallback__button';
       button.setAttribute('role', 'img');
       button.setAttribute('aria-label', `${buttonView.label}, released`);
-      button.textContent = buttonView.label.replace('Button ', '');
+      button.textContent = buttonView.text;
       buttonGrid.append(button);
       return button;
     });
