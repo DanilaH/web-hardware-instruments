@@ -16,6 +16,8 @@ export interface ToolController {
   destroy(): void;
 }
 
+type StatusPresentationKey = 'waiting' | 'connected' | 'unsupported' | 'error';
+
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
   if (!element) {
@@ -27,6 +29,7 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
 export const mountGamepadTester = (root: HTMLElement): ToolController => {
   const status = requireElement<HTMLElement>(root, '[data-gamepad-status]');
   const instruction = requireElement<HTMLElement>(root, '[data-gamepad-instruction]');
+  const statusLive = requireElement<HTMLElement>(root, '[data-gamepad-status-live]');
   const selectorWrap = requireElement<HTMLElement>(root, '[data-gamepad-selector-wrap]');
   const selector = requireElement<HTMLSelectElement>(root, '[data-gamepad-selector]');
   const standardArea = requireElement<HTMLElement>(root, '[data-standard-controller]');
@@ -42,7 +45,26 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
 
   let selectedSourceIndex: number | null = null;
   let lastControllerListSignature = '';
+  let lastStatusPresentation: StatusPresentationKey | null = null;
   let destroyed = false;
+
+  const setStatusPresentation = (
+    key: StatusPresentationKey,
+    state: 'waiting' | 'connected' | 'unavailable',
+    statusText: string,
+    instructionText: string,
+  ): void => {
+    root.dataset.state = state;
+
+    if (lastStatusPresentation === key) {
+      return;
+    }
+
+    status.textContent = statusText;
+    instruction.textContent = instructionText;
+    statusLive.textContent = `${statusText}. ${instructionText}`;
+    lastStatusPresentation = key;
+  };
 
   const showOnly = (mode: 'standard' | 'fallback' | 'unavailable'): void => {
     standardArea.hidden = mode !== 'standard';
@@ -96,9 +118,12 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   };
 
   const renderWaiting = (): void => {
-    root.dataset.state = 'waiting';
-    status.textContent = 'No controller detected';
-    instruction.textContent = 'Connect a controller and press any button.';
+    setStatusPresentation(
+      'waiting',
+      'waiting',
+      'No controller detected',
+      'Connect a controller and press any button.',
+    );
     selectorWrap.hidden = true;
     mappingNote.hidden = true;
     unavailableArea.hidden = true;
@@ -110,12 +135,14 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   };
 
   const renderUnavailable = (kind: 'unsupported' | 'error'): void => {
-    root.dataset.state = 'unavailable';
-    status.textContent = kind === 'unsupported' ? 'Gamepad API unavailable' : 'Gamepad access unavailable';
-    instruction.textContent =
+    const statusText =
+      kind === 'unsupported' ? 'Gamepad API unavailable' : 'Gamepad access unavailable';
+    const instructionText =
       kind === 'unsupported'
         ? 'This browser does not expose the Gamepad API.'
         : 'Gamepad access is blocked or unavailable in this browser context.';
+
+    setStatusPresentation(kind, 'unavailable', statusText, instructionText);
     selectorWrap.hidden = true;
     mappingNote.hidden = true;
     selectedSourceIndex = null;
@@ -123,13 +150,16 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
     standardRenderer.reset();
     fallbackRenderer.clear();
     showOnly('unavailable');
-    accessibleState.textContent = `${status.textContent}. ${instruction.textContent}`;
+    accessibleState.textContent = `${statusText}. ${instructionText}`;
   };
 
   const renderConnected = (gamepad: GamepadSnapshot, gamepads: readonly GamepadSnapshot[]): void => {
-    root.dataset.state = 'connected';
-    status.textContent = 'Controller detected';
-    instruction.textContent = 'Press buttons and move the sticks to test them.';
+    setStatusPresentation(
+      'connected',
+      'connected',
+      'Controller detected',
+      'Press buttons and move the sticks to test them.',
+    );
     rebuildSelector(gamepads);
 
     if (gamepad.mapping === 'standard') {
