@@ -2,6 +2,7 @@ import type { StickPosition } from '../../tools/gamepad/drift/stick-drift-measur
 
 const CENTER = 50;
 const TRAVEL = 42;
+const CENTER_DETAIL_RADIUS = 0.2;
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
@@ -11,8 +12,14 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
   return element;
 };
 
-const toPlotCoordinate = (value: number): number => CENTER + value * TRAVEL;
-const toRadius = (value: number): number => Math.min(1, Math.max(0, value)) * TRAVEL;
+const normalizeForCenterDetail = (value: number): number =>
+  Math.min(1, Math.max(-1, value / CENTER_DETAIL_RADIUS));
+
+const toPlotCoordinate = (value: number): number =>
+  CENTER + normalizeForCenterDetail(value) * TRAVEL;
+
+const toRadius = (value: number): number =>
+  Math.min(1, Math.max(0, value / CENTER_DETAIL_RADIUS)) * TRAVEL;
 
 export class StickDeadzonePlotRenderer {
   private readonly point: SVGCircleElement;
