@@ -118,4 +118,18 @@
   .deadzone-plot__legend-suggested {
     border-color: var(--color-signal) !important;
   }
+
+  @media (max-width: 44rem) {
+    .deadzone-plot__heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .deadzone-plot__heading span:last-child {
+      order: -1;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+  }
 </style>
