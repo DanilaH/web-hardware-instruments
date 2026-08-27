@@ -1,6 +1,20 @@
 ---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import RefreshRateTest from '../tools/display/refresh-rate/RefreshRateTest.astro';
+
+const relatedTools = [
+  {
+    href: '/fps-test',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s frame delivery and recent drops.',
+  },
+  {
+    href: '/gamepad-tester',
+    name: 'Gamepad Tester',
+    description: 'Test controller buttons, sticks, D-pad, and triggers.',
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -26,6 +40,8 @@ import RefreshRateTest from '../tools/display/refresh-rate/RefreshRateTest.astro
       Multi-monitor setups, browser scheduling, power-saving modes, variable refresh behavior, and display changes can affect the cadence visible to the page. Hidden-tab timing is discarded and the estimate starts fresh when sampling resumes.
     </p>
   </section>
+
+  <RelatedTools tools={relatedTools} />
 </BaseLayout>
 
 <style>
