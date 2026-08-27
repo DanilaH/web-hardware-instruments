@@ -36,6 +36,7 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           sleep 1
           BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,844 --screenshot=visual-check/gamepad-390x844.png http://127.0.0.1:4321/gamepad-tester/
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1366,768 --screenshot=visual-check/gamepad-1366x768.png http://127.0.0.1:4321/gamepad-tester/
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,900 --screenshot=visual-check/gamepad-1440x900.png http://127.0.0.1:4321/gamepad-tester/
 
