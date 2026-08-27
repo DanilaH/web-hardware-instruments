@@ -5,6 +5,10 @@ import type {
   StandardControllerRenderData,
 } from '../../../visuals/controller/controller-render-contract';
 
+export interface StandardControllerViewData extends StandardControllerRenderData {
+  pressedLabels: readonly string[];
+}
+
 const BUTTONS: ReadonlyArray<{
   index: number;
   name: StandardButtonName;
@@ -39,7 +43,7 @@ const toPercent = (value: number): number => Math.round(value * 100);
 
 export const createStandardControllerView = (
   snapshot: GamepadSnapshot,
-): StandardControllerRenderData => {
+): StandardControllerViewData => {
   const buttons = Object.fromEntries(
     BUTTONS.map(({ index, name }) => [name, getPressed(snapshot, index)]),
   ) as Record<StandardButtonName, boolean>;
@@ -84,7 +88,7 @@ export const createFallbackControllerView = (
 });
 
 export const createAccessibleControllerSummary = (
-  view: StandardControllerRenderData,
+  view: StandardControllerViewData,
 ): string => {
   const pressed =
     view.pressedLabels.length > 0 ? view.pressedLabels.join(', ') : 'No buttons pressed';
