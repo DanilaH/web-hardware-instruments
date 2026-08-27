@@ -6,7 +6,6 @@ import {
 import { MouseMovementGuideRenderer } from '../../../visuals/mouse/mouse-movement-guide-renderer';
 import {
   calculateEstimatedDpi,
-  convertDistance,
   distanceToInches,
   type DistanceUnit,
 } from './mouse-dpi-measurement';
@@ -18,6 +17,8 @@ export interface MouseDpiToolController {
 
 type ToolState = 'ready' | 'starting' | 'active' | 'result' | 'cancelled' | 'error';
 
+const CM_PER_INCH = 2.54;
+
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
   if (!element) {
@@ -27,7 +28,7 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
 };
 
 const formatDistance = (value: number): string => {
-  const rounded = Math.round(value * 1000) / 1000;
+  const rounded = Math.round(value * 1_000_000) / 1_000_000;
   return rounded.toString();
 };
 
@@ -138,8 +139,10 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     service.stop();
     setControlsDisabled(false);
 
-    const distance = Number(distanceInput.value);
-    const estimate = calculateEstimatedDpi(signedHorizontalUnits, distance, currentUnit);
+    const estimate =
+      physicalDistanceInches === null
+        ? null
+        : calculateEstimatedDpi(signedHorizontalUnits, physicalDistanceInches, 'in');
     renderer.render({ horizontalUnits: signedHorizontalUnits });
 
     if (estimate === null) {
@@ -211,16 +214,11 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     }
 
     if (physicalDistanceInches !== null) {
-      const currentPhysicalValue =
-        currentUnit === 'in' ? physicalDistanceInches : physicalDistanceInches * 2.54;
-      const converted = convertDistance(currentPhysicalValue, currentUnit, nextUnit);
-      if (converted !== null) {
-        distanceInput.value = formatDistance(converted);
-      }
+      const converted = nextUnit === 'in' ? physicalDistanceInches : physicalDistanceInches * CM_PER_INCH;
+      distanceInput.value = formatDistance(converted);
     }
 
     currentUnit = nextUnit;
-    physicalDistanceInches = distanceToInches(Number(distanceInput.value), currentUnit);
   };
 
   const handleSubmit = async (event: SubmitEvent): Promise<void> => {
