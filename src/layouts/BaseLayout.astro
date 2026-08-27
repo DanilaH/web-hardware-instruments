@@ -1,0 +1,32 @@
+---
+import SiteFooter from '../components/layout/SiteFooter.astro';
+import SiteHeader from '../components/navigation/SiteHeader.astro';
+import SeoHead from '../components/seo/SeoHead.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+  noindex?: boolean;
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <SeoHead {...props} />
+  </head>
+  <body>
+    <SiteHeader />
+    <main class="page-main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
