@@ -33,12 +33,25 @@ const formatDistance = (value: number): string => {
 
 const captureModeNote = (mode: MouseCaptureMode): string => {
   if (mode === 'raw-pointer-lock') {
-    return 'Raw pointer input is active for this measurement.';
+    return 'Raw pointer input is active. Press Escape to cancel.';
   }
   if (mode === 'pointer-lock') {
-    return 'Pointer Lock is active. OS acceleration may affect the estimate.';
+    return 'Pointer Lock is active. OS acceleration may affect the estimate. Press Escape to cancel.';
   }
-  return 'Browser movement fallback is active. Acceleration and screen edges may affect the estimate.';
+  return 'Browser movement fallback is active. Acceleration and screen edges may affect the estimate. Press Escape to cancel.';
+};
+
+const completedCaptureModeNote = (mode: MouseCaptureMode | null): string => {
+  if (mode === 'raw-pointer-lock') {
+    return 'This measurement used raw pointer input.';
+  }
+  if (mode === 'pointer-lock') {
+    return 'This measurement used Pointer Lock; OS acceleration may affect the estimate.';
+  }
+  if (mode === 'unlocked') {
+    return 'This measurement used browser movement fallback; acceleration and screen edges may affect the estimate.';
+  }
+  return 'The result uses only movement recorded during the active measurement.';
 };
 
 export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => {
@@ -61,6 +74,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
   let currentUnit: DistanceUnit = unitSelect.value === 'in' ? 'in' : 'cm';
   let physicalDistanceInches = distanceToInches(Number(distanceInput.value), currentUnit);
   let signedHorizontalUnits = 0;
+  let activeCaptureMode: MouseCaptureMode | null = null;
   let sessionVersion = 0;
   let finishClickHandler: ((event: MouseEvent) => void) | null = null;
 
@@ -92,6 +106,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     captureNote.textContent = 'Raw Pointer Lock is preferred; the tool falls back when it is unavailable.';
     result.textContent = '—';
     signedHorizontalUnits = 0;
+    activeCaptureMode = null;
     renderer.reset();
     accessibleSummary.textContent = 'Mouse DPI Test is ready. Set a distance and start the measurement.';
   };
@@ -101,6 +116,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     clearFinishClick();
     service.stop();
     signedHorizontalUnits = 0;
+    activeCaptureMode = null;
     renderer.reset();
     setControlsDisabled(false);
     startButton.textContent = 'Start test';
@@ -117,6 +133,8 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     }
 
     clearFinishClick();
+    const completedMode = activeCaptureMode;
+    activeCaptureMode = null;
     service.stop();
     setControlsDisabled(false);
 
@@ -138,8 +156,9 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     result.textContent = dpiText;
     startButton.textContent = 'Measure again';
     instruction.textContent = 'Measurement complete. Repeat the same physical distance if you want another estimate.';
+    captureNote.textContent = completedCaptureModeNote(completedMode);
     setState('result', 'Estimate ready');
-    accessibleSummary.textContent = `Estimated DPI ${dpiText}.`;
+    accessibleSummary.textContent = `Estimated DPI ${dpiText}. ${completedCaptureModeNote(completedMode)}`;
   };
 
   const armFinishClick = (): void => {
@@ -180,6 +199,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
   const unsubscribe = service.subscribe(handleServiceEvent);
 
   const handleDistanceInput = (): void => {
+    distanceInput.setCustomValidity('');
     const value = Number(distanceInput.value);
     physicalDistanceInches = distanceToInches(value, currentUnit);
   };
@@ -220,9 +240,11 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
 
     const version = ++sessionVersion;
     signedHorizontalUnits = 0;
+    activeCaptureMode = null;
     renderer.reset();
     result.textContent = '—';
     setControlsDisabled(true);
+    startButton.textContent = 'Capturing…';
     setState('starting', 'Starting capture');
     instruction.textContent = 'Allow pointer capture if your browser requests it.';
     captureNote.textContent = 'Preparing the best available movement capture mode…';
@@ -243,6 +265,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
       return;
     }
 
+    activeCaptureMode = mode;
     const distanceText = distanceInput.value;
     setState('active', 'Capture active');
     instruction.textContent = `Move your mouse horizontally exactly ${distanceText} ${currentUnit}, then click once to finish.`;
