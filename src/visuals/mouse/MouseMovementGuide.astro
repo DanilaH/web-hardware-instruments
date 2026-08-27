@@ -1,0 +1,70 @@
+<div class="mouse-guide" data-mouse-movement-guide data-active="false" aria-hidden="true">
+  <svg viewBox="0 0 100 34" role="presentation" focusable="false">
+    <line class="mouse-guide__axis" x1="8" y1="17" x2="92" y2="17" />
+    <line class="mouse-guide__origin" x1="50" y1="10" x2="50" y2="24" />
+    <path class="mouse-guide__arrow" d="M 8 17 L 13 13 M 8 17 L 13 21" />
+    <path class="mouse-guide__arrow" d="M 92 17 L 87 13 M 92 17 L 87 21" />
+    <circle class="mouse-guide__dot" data-mouse-guide-dot cx="50" cy="17" r="3.4" />
+  </svg>
+
+  <div class="mouse-guide__labels">
+    <span>relative left</span>
+    <span>origin</span>
+    <span>relative right</span>
+  </div>
+</div>
+
+<style>
+  .mouse-guide {
+    width: 100%;
+  }
+
+  .mouse-guide svg {
+    width: 100%;
+    height: 7.5rem;
+    display: block;
+  }
+
+  .mouse-guide__axis,
+  .mouse-guide__origin,
+  .mouse-guide__arrow {
+    fill: none;
+    stroke: #b9c0c3;
+    stroke-width: 0.8;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .mouse-guide__origin {
+    stroke: #8e989c;
+  }
+
+  .mouse-guide__dot {
+    fill: #cfd4d6;
+    stroke: #8e989c;
+    stroke-width: 0.7;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .mouse-guide[data-active='true'] .mouse-guide__dot {
+    fill: var(--color-signal);
+    stroke: var(--color-signal);
+  }
+
+  .mouse-guide__labels {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--space-2);
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .mouse-guide__labels span:nth-child(2) {
+    text-align: center;
+  }
+
+  .mouse-guide__labels span:last-child {
+    text-align: right;
+  }
+</style>
