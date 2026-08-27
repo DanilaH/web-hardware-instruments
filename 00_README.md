@@ -1,4 +1,4 @@
-# Hardware Testing — Agent Handoff v6
+# Hardware Testing — Agent Handoff v6.1
 
 ## Purpose
 
@@ -38,6 +38,12 @@ safe expansion into adjacent validated tools
 ```
 
 It does not optimize for accounts, subscriptions, artificial dwell time, feature depth, or a large application architecture.
+
+## Agent entry point
+
+Coding agents should begin with `AGENTS.md`.
+
+`README.md` is the short human-facing project entry point.
 
 ## Highest-priority requirement: obvious, one-screen UX
 
@@ -141,6 +147,8 @@ Do not turn diagnostic pages into dashboards.
 
 React is not required.
 
+Approved scaffolding toolchain is fixed in `18_DECISIONS_AND_BOUNDARIES.md` and `11_IMPLEMENTATION_PLAN.md`.
+
 ## Full v1 routes
 
 ```text
@@ -174,6 +182,8 @@ Do not implement Phase 2 during MVP unless explicitly requested.
 
 ## Document map
 
+- `README.md` — short human-facing project entry point
+- `AGENTS.md` — mandatory coding-agent bootstrap
 - `01_PRODUCT.md` — product and UX priorities
 - `02_INFORMATION_ARCHITECTURE.md` — routes and page relationships
 - `03_TOOL_SPECS.md` — exact MVP behavior
@@ -193,6 +203,7 @@ Do not implement Phase 2 during MVP unless explicitly requested.
 - `17_FUNCTIONAL_VISUAL_SYSTEM.md` — functional beauty and visual language
 - `18_DECISIONS_AND_BOUNDARIES.md` — exact technical/product boundaries and measurement algorithms
 - `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business/SEO goals, launch sequence, and scope priorities
+- `RESEARCH_EVIDENCE_2026-08.md` — non-normative research snapshot behind initial tool selection
 
 ## Browser API acquisition layer
 
@@ -205,8 +216,8 @@ GamepadService
     → navigator.getGamepads()
 
 FrameSampler
-    → requestAnimationFrame()
-    → performance.now()
+    → requestAnimationFrame() callback timestamp
+    → visibility/reset lifecycle
 
 KeyboardInputService
     → keydown / keyup
@@ -229,13 +240,14 @@ Keep them thin.
 
 Do not turn this into repositories, dependency injection, a generic event bus, a global `HardwareManager`, or an abstract device framework.
 
-
 ## Source-of-truth rule
 
-Normative implementation requirements are only the numbered documents `00_...` through `19_...` plus `project-manifest.json`.
-
-Old review/history notes are intentionally excluded from this bundle so an agent cannot accidentally treat superseded decisions as current requirements.
+Normative implementation requirements are the numbered product documents `00_...` through `19_...` plus `project-manifest.json`, with the conflict-resolution priority below.
 
 Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business/scope/release priorities and `18_DECISIONS_AND_BOUNDARIES.md` for exact implementation behavior. If those two appear to conflict, stop and report the conflict rather than guessing.
 
-`AUDIT_V4.md` is included only as a non-normative human review report; agents should not treat it as product requirements.
+The following files are explicitly non-normative review/research history and must not be treated as product requirements:
+
+- `AUDIT_V4.md`
+- `GLOBAL_GOAL_AUDIT_V5.md`
+- `RESEARCH_EVIDENCE_2026-08.md`
