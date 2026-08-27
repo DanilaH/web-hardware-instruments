@@ -1,6 +1,20 @@
 ---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GamepadTester from '../tools/gamepad/tester/GamepadTester.astro';
+
+const relatedTools = [
+  {
+    href: '/mouse-dpi-test',
+    name: 'Mouse DPI Test',
+    description: 'Estimate mouse DPI from a measured physical movement distance.',
+  },
+  {
+    href: '/fps-test',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s current frame delivery.',
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -23,6 +37,8 @@ import GamepadTester from '../tools/gamepad/tester/GamepadTester.astro';
     <p>Controllers with the standard browser mapping use the generic physical layout. Other mappings use numbered buttons and axes instead of guessing which physical control each value represents.</p>
     <p>Gamepad exposure can vary by browser, operating system, and controller. A controller may need an initial button press or axis movement before the browser exposes it to the page.</p>
   </section>
+
+  <RelatedTools tools={relatedTools} />
 </BaseLayout>
 
 <style>
