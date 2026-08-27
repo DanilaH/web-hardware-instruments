@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0 foundation is implemented. The current vertical slice implements `GamepadService` + `/gamepad-tester` and is the mandatory visual checkpoint before any other diagnostic page is built.
+Phase 0 foundation and the Gamepad Tester vertical slice are implemented. The Gamepad visual checkpoint has been approved; real-controller smoke testing remains a pre-launch validation item rather than a completed claim. The current implementation slice is `FrameSampler` + `/fps-test` + `/refresh-rate-test`.
 
 ## Start here
 
@@ -23,14 +23,21 @@ For product strategy, implementation boundaries, and agent rules, read:
 
 ```text
 Phase 0 foundation — complete
-GamepadService — implemented
-/gamepad-tester — implemented, awaiting human visual/hardware review
-→ STOP
-→ review at 1366×768 and 1440×900
-→ only after approval continue to FrameSampler + FPS/Refresh
+GamepadService + /gamepad-tester — complete
+human visual checkpoint — approved
+real-controller smoke — still required before production launch
+
+current slice:
+FrameSampler
+→ /fps-test
+→ /refresh-rate-test
+→ review
+
+next only after this slice is accepted:
+MouseMovementService + /mouse-dpi-test
 ```
 
-Do not propagate the current spacing, palette, controller geometry, or other visual decisions to later tools before the human checkpoint passes.
+Do not start Mouse DPI, Drift, Deadzone, or Keyboard work in parallel with the current display slice.
 
 ## First production release
 
@@ -80,9 +87,9 @@ Site-wide indexing is also disabled there with `indexingEnabled: false`. Before 
 
 ## Validation boundary for Gamepad Tester
 
-Automated tests can validate normalization, lifecycle, semantic mapping, build, and type safety. They do **not** replace real controller QA.
+Automated tests validate normalization, lifecycle, semantic mapping, build, and type safety. They do **not** replace real controller QA.
 
-Before approving the Gamepad Tester checkpoint, manually verify where hardware is available:
+Before production launch, manually verify where hardware is available:
 
 - a standard Xbox-style controller;
 - a PlayStation-style controller if available;
