@@ -66,6 +66,18 @@ describe('FrameSampler', () => {
     expect(fixture.frames.size).toBe(1);
   });
 
+  it('keeps repeated start calls idempotent with one loop and one listener', () => {
+    const fixture = createEnvironment();
+    const sampler = createFrameSampler(fixture.environment);
+
+    expect(sampler.start()).toBe(true);
+    expect(sampler.start()).toBe(true);
+    expect(sampler.start()).toBe(true);
+
+    expect(fixture.frames.size).toBe(1);
+    expect(fixture.visibilityListeners.size).toBe(1);
+  });
+
   it('emits one reset on visibility loss, cancels sampling, and resumes cleanly', () => {
     const fixture = createEnvironment();
     const sampler = createFrameSampler(fixture.environment);
