@@ -1,8 +1,8 @@
-import type { GamepadSnapshot } from '../../browser/gamepad-service';
 import type {
+  FallbackControllerRenderData,
   StandardButtonName,
-  StandardControllerViewData,
-} from '../../tools/gamepad/tester/gamepad-view-model';
+  StandardControllerRenderData,
+} from './controller-render-contract';
 
 const STICK_TRAVEL = 11;
 
@@ -25,7 +25,7 @@ export class StandardControllerRenderer {
     this.rightTrigger = this.requireElement(root, '[data-controller-trigger="right"]');
   }
 
-  render(view: StandardControllerViewData): void {
+  render(view: StandardControllerRenderData): void {
     this.buttonElements.forEach((element, name) => {
       element.classList.toggle('is-active', view.buttons[name]);
     });
@@ -70,31 +70,30 @@ export class FallbackControllerRenderer {
 
   constructor(private readonly root: HTMLElement) {}
 
-  render(snapshot: GamepadSnapshot): void {
-    const signature = `${snapshot.buttons.length}:${snapshot.axes.length}`;
+  render(view: FallbackControllerRenderData): void {
+    const signature = `${view.buttons.length}:${view.axes.length}`;
     if (signature !== this.signature) {
-      this.rebuild(snapshot);
+      this.rebuild(view);
       this.signature = signature;
     }
 
-    snapshot.buttons.forEach((button, index) => {
+    view.buttons.forEach((button, index) => {
       const element = this.buttonElements[index];
       if (!element) return;
       element.classList.toggle('is-active', button.pressed);
       element.style.setProperty('--button-value', String(button.value));
       element.setAttribute(
         'aria-label',
-        `Button ${index + 1}, ${button.pressed ? 'pressed' : 'released'}`,
+        `${button.label}, ${button.pressed ? 'pressed' : 'released'}`,
       );
     });
 
-    snapshot.axes.forEach((axis, index) => {
+    view.axes.forEach((axis, index) => {
       const marker = this.axisMarkers[index];
       if (!marker) return;
-      const percent = Math.round(axis * 100);
-      marker.style.left = `${((axis + 1) / 2) * 100}%`;
-      marker.setAttribute('aria-valuenow', String(percent));
-      marker.setAttribute('aria-valuetext', `${percent}%`);
+      marker.style.left = `${axis.positionPercent}%`;
+      marker.setAttribute('aria-valuenow', String(axis.percent));
+      marker.setAttribute('aria-valuetext', `${axis.percent}%`);
     });
   }
 
@@ -105,7 +104,7 @@ export class FallbackControllerRenderer {
     this.axisMarkers = [];
   }
 
-  private rebuild(snapshot: GamepadSnapshot): void {
+  private rebuild(view: FallbackControllerRenderData): void {
     const buttonsGroup = document.createElement('div');
     buttonsGroup.className = 'gamepad-fallback__group';
 
@@ -116,12 +115,12 @@ export class FallbackControllerRenderer {
 
     const buttonGrid = document.createElement('div');
     buttonGrid.className = 'gamepad-fallback__buttons';
-    this.buttonElements = snapshot.buttons.map((_, index) => {
+    this.buttonElements = view.buttons.map((buttonView) => {
       const button = document.createElement('div');
       button.className = 'gamepad-fallback__button';
       button.setAttribute('role', 'img');
-      button.setAttribute('aria-label', `Button ${index + 1}, released`);
-      button.textContent = String(index + 1);
+      button.setAttribute('aria-label', `${buttonView.label}, released`);
+      button.textContent = buttonView.label.replace('Button ', '');
       buttonGrid.append(button);
       return button;
     });
@@ -137,13 +136,13 @@ export class FallbackControllerRenderer {
 
     const axesList = document.createElement('div');
     axesList.className = 'gamepad-fallback__axes';
-    this.axisMarkers = snapshot.axes.map((_, index) => {
+    this.axisMarkers = view.axes.map((axisView) => {
       const row = document.createElement('div');
       row.className = 'gamepad-fallback__axis';
 
       const label = document.createElement('span');
       label.className = 'gamepad-fallback__axis-label';
-      label.textContent = `Axis ${index + 1}`;
+      label.textContent = axisView.label;
 
       const track = document.createElement('div');
       track.className = 'gamepad-fallback__axis-track';
@@ -152,7 +151,7 @@ export class FallbackControllerRenderer {
       const marker = document.createElement('span');
       marker.className = 'gamepad-fallback__axis-marker';
       marker.setAttribute('role', 'meter');
-      marker.setAttribute('aria-label', `Axis ${index + 1}`);
+      marker.setAttribute('aria-label', axisView.label);
       marker.setAttribute('aria-valuemin', '-100');
       marker.setAttribute('aria-valuemax', '100');
       marker.setAttribute('aria-valuenow', '0');
