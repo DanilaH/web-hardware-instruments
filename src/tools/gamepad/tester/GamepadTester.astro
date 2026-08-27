@@ -1,0 +1,324 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import StandardControllerVisual from '../../../visuals/controller/StandardControllerVisual.astro';
+---
+
+<ToolShell labelledBy="gamepad-tool-heading">
+  <h2 id="gamepad-tool-heading" class="gamepad-tool__sr">Gamepad Tester controls</h2>
+
+  <div class="gamepad-tool" data-gamepad-tester data-state="waiting">
+    <div class="gamepad-tool__topline">
+      <div class="gamepad-tool__status-copy">
+        <div class="gamepad-tool__status-row">
+          <span class="gamepad-tool__signal" aria-hidden="true"></span>
+          <strong data-gamepad-status>No controller detected</strong>
+        </div>
+        <p data-gamepad-instruction>Connect a controller and press any button.</p>
+      </div>
+
+      <label class="gamepad-tool__selector" data-gamepad-selector-wrap hidden>
+        <span>Controller</span>
+        <select data-gamepad-selector aria-label="Select controller"></select>
+      </label>
+    </div>
+
+    <div class="gamepad-tool__visual" data-standard-controller data-live="false">
+      <StandardControllerVisual />
+    </div>
+
+    <div class="gamepad-fallback" data-fallback-controller hidden>
+      <div data-fallback-content></div>
+    </div>
+
+    <div class="gamepad-tool__unavailable" data-gamepad-unavailable hidden>
+      <p>Try a current desktop browser with Gamepad API access.</p>
+    </div>
+
+    <p class="gamepad-tool__mapping-note" data-gamepad-mapping-note hidden></p>
+
+    <div class="gamepad-tool__footer">
+      <span>Runs locally in your browser. Raw controller data is not uploaded.</span>
+    </div>
+
+    <p
+      class="gamepad-tool__sr"
+      aria-live="polite"
+      aria-atomic="true"
+      data-gamepad-status-live
+    ></p>
+    <p class="gamepad-tool__sr" data-gamepad-accessible-state>
+      No controller detected. Connect a controller and press any button.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountGamepadTester } from './gamepad-tester-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-gamepad-tester]');
+  if (root) {
+    const controller = mountGamepadTester(root);
+
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+
+      controller.destroy();
+    });
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
+      }
+    });
+  }
+</script>
+
+<style>
+  .gamepad-tool {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .gamepad-tool__topline {
+    min-height: 3.1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .gamepad-tool__status-copy {
+    min-width: 0;
+  }
+
+  .gamepad-tool__status-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    line-height: 1.25;
+  }
+
+  .gamepad-tool__status-row strong {
+    font-size: 0.95rem;
+  }
+
+  .gamepad-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .gamepad-tool[data-state='connected'] .gamepad-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .gamepad-tool[data-state='unavailable'] .gamepad-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .gamepad-tool__status-copy p {
+    margin: 0.2rem 0 0 1.1rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .gamepad-tool__selector {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 9.5rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .gamepad-tool__selector select {
+    width: 100%;
+    min-height: 2.2rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding: 0.35rem 2rem 0.35rem 0.65rem;
+  }
+
+  .gamepad-tool__visual {
+    min-height: 17rem;
+    display: grid;
+    place-items: center;
+    border-top: 1px solid #e3e6e7;
+    border-bottom: 1px solid #e3e6e7;
+    background-image:
+      linear-gradient(#edf0f1 1px, transparent 1px),
+      linear-gradient(90deg, #edf0f1 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: center;
+    overflow: hidden;
+  }
+
+  .gamepad-tool__visual[data-live='false'] {
+    opacity: 0.58;
+  }
+
+  .gamepad-tool__visual[data-live='false'] :global(.controller-stick-dot) {
+    fill: #aeb4b7 !important;
+  }
+
+  .gamepad-fallback {
+    min-height: 17rem;
+    border-top: 1px solid #e3e6e7;
+    border-bottom: 1px solid #e3e6e7;
+    padding-block: var(--space-4);
+  }
+
+  .gamepad-tool__unavailable {
+    min-height: 17rem;
+    display: grid;
+    place-items: center;
+    border-block: 1px solid #e3e6e7;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  .gamepad-tool__unavailable p,
+  .gamepad-tool__mapping-note {
+    margin: 0;
+  }
+
+  .gamepad-tool__mapping-note {
+    padding: 0.65rem 0.8rem;
+    border-left: 2px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: 0.82rem;
+  }
+
+  .gamepad-tool__footer {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .gamepad-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  :global(.gamepad-fallback__group + .gamepad-fallback__group) {
+    margin-top: 1rem;
+  }
+
+  :global(.gamepad-fallback__label) {
+    margin: 0 0 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  :global(.gamepad-fallback__buttons) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  :global(.gamepad-fallback__button) {
+    --button-value: 0;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid #b8bec1;
+    border-radius: 50%;
+    background: color-mix(
+      in srgb,
+      var(--color-signal) calc(var(--button-value) * 20%),
+      var(--color-surface)
+    );
+    color: var(--color-muted);
+    font: 0.72rem/1 var(--font-mono);
+  }
+
+  :global(.gamepad-fallback__button.is-active) {
+    border: 2px solid var(--color-signal);
+    color: var(--color-text);
+  }
+
+  :global(.gamepad-fallback__axes) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem 1.25rem;
+  }
+
+  :global(.gamepad-fallback__axis) {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  :global(.gamepad-fallback__axis-label) {
+    color: var(--color-muted);
+    font: 0.72rem/1 var(--font-mono);
+  }
+
+  :global(.gamepad-fallback__axis-track) {
+    position: relative;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: #e4e7e8;
+  }
+
+  :global(.gamepad-fallback__axis-center) {
+    position: absolute;
+    left: 50%;
+    top: -0.15rem;
+    width: 1px;
+    height: 0.85rem;
+    background: #a8afb2;
+  }
+
+  :global(.gamepad-fallback__axis-marker) {
+    position: absolute;
+    top: 50%;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--color-surface);
+    border-radius: 50%;
+    background: var(--color-signal);
+    transform: translate(-50%, -50%);
+  }
+
+  @media (max-width: 44rem) {
+    .gamepad-tool__topline {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .gamepad-tool__selector {
+      width: min(100%, 16rem);
+    }
+
+    .gamepad-tool__visual,
+    .gamepad-fallback,
+    .gamepad-tool__unavailable {
+      min-height: 13rem;
+    }
+
+    :global(.gamepad-fallback__axes) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GamepadTester from '../tools/gamepad/tester/GamepadTester.astro';
+---
+
+<BaseLayout
+  title="Gamepad Tester — Test Controller Buttons & Sticks"
+  description="Test gamepad and controller buttons, sticks, D-pad, and triggers directly in your browser."
+  canonicalPath="/gamepad-tester"
+>
+  <section class="gamepad-page">
+    <h1 class="page-heading">Gamepad Tester</h1>
+    <p class="page-intro">Test controller buttons, sticks, D-pad, and triggers directly in your browser.</p>
+
+    <GamepadTester />
+  </section>
+
+  <section class="gamepad-info reading-width" aria-labelledby="gamepad-how-to">
+    <h2 id="gamepad-how-to">How to use the gamepad tester</h2>
+    <p>Connect a controller, interact with it once if your browser requires it, then press buttons and move both sticks. The live controller view updates as browser-detected input changes.</p>
+
+    <h2>Browser and controller limitations</h2>
+    <p>Controllers with the standard browser mapping use the generic physical layout. Other mappings use numbered buttons and axes instead of guessing which physical control each value represents.</p>
+    <p>Gamepad exposure can vary by browser, operating system, and controller. A controller may need an initial button press or axis movement before the browser exposes it to the page.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .gamepad-page {
+    max-width: var(--shell-width);
+  }
+
+  .gamepad-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .gamepad-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .gamepad-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .gamepad-info p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-muted);
+  }
+</style>
