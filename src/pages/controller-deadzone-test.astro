@@ -1,0 +1,89 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ControllerDeadzoneTest from '../tools/gamepad/deadzone/ControllerDeadzoneTest.astro';
+
+const relatedTools = [
+  {
+    href: '/controller-stick-drift-test',
+    name: 'Controller Stick Drift Test',
+    description: 'Measure observed analog-stick center offset while untouched.',
+  },
+  {
+    href: '/gamepad-tester',
+    name: 'Gamepad Tester',
+    description: 'Check buttons, triggers, D-pad, and live stick movement.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Controller Deadzone Test — Check Stick Center Noise"
+  description="Measure analog-stick center noise and get a simple heuristic starting deadzone for a standard-mapped controller."
+  canonicalPath="/controller-deadzone-test"
+>
+  <section class="deadzone-page">
+    <h1 class="page-heading">Controller Deadzone Test</h1>
+    <p class="page-intro">Measure center noise on one analog stick and get a simple starting deadzone estimate.</p>
+
+    <ControllerDeadzoneTest />
+  </section>
+
+  <section class="deadzone-info reading-width" aria-labelledby="deadzone-how-to">
+    <h2 id="deadzone-how-to">How to test controller deadzone</h2>
+    <ol>
+      <li>Connect a standard-mapped controller.</li>
+      <li>Select the left or right stick.</li>
+      <li>Release that stick and keep it untouched.</li>
+      <li>Start the 3-second sample.</li>
+      <li>Read the observed center noise and suggested starting deadzone.</li>
+    </ol>
+
+    <h2>What the result means</h2>
+    <p>
+      The test measures the radial distance of each browser-reported stick sample from the exact center and uses the 95th percentile as observed center noise. The suggested starting deadzone adds one percentage point to that observed noise, capped at 100%, then rounds the displayed suggestion up to a whole percentage point.
+    </p>
+    <p>
+      The suggestion is a heuristic starting value, not a universal correct deadzone. Games and controller software can apply their own response curves, deadzones, and filtering.
+    </p>
+
+    <h2>Browser and mapping limitations</h2>
+    <p>
+      This MVP only measures controllers that expose the browser standard gamepad mapping. Non-standard controllers are not assigned guessed physical axes. If the tab becomes hidden or the selected controller disconnects during the sample, the measurement is cancelled and must be restarted.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .deadzone-page {
+    max-width: var(--shell-width);
+  }
+
+  .deadzone-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .deadzone-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .deadzone-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .deadzone-info p,
+  .deadzone-info ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .deadzone-info ol {
+    padding-left: 1.25rem;
+  }
+</style>
