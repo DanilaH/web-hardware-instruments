@@ -10,7 +10,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     <div class="keyboard-tool__status-row">
       <span class="keyboard-tool__signal" aria-hidden="true"></span>
       <strong data-keyboard-status>Listening for keys</strong>
-      <span class="keyboard-tool__status-note">No Start button needed.</span>
+      <span class="keyboard-tool__status-note">Listening automatically.</span>
     </div>
 
     <p class="keyboard-tool__instruction">Press any key to test it.</p>
@@ -35,6 +35,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     </div>
 
     <p class="keyboard-tool__note" data-keyboard-note>
+      <span class="keyboard-tool__mobile-hint">Scroll the keyboard horizontally for more keys. </span>
       Key labels are a compact reference. Physical highlighting follows the browser-reported key code.
     </p>
 
@@ -159,6 +160,10 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     font-size: 0.78rem;
   }
 
+  .keyboard-tool__mobile-hint {
+    display: none;
+  }
+
   .keyboard-tool__sr {
     position: absolute;
     width: 1px;
@@ -188,6 +193,10 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 
     .keyboard-result--primary {
       grid-column: 1 / -1;
+    }
+
+    .keyboard-tool__mobile-hint {
+      display: inline;
     }
   }
 </style>
