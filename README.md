@@ -4,7 +4,7 @@ A static Astro site with lightweight browser-based hardware diagnostics.
 
 ## Current product status
 
-Full-v1 implementation is complete in code and is going through its final audit/review pass.
+Full-v1 implementation and the code-side full-v1 audit are complete. Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
 Implemented tool routes:
 
@@ -36,6 +36,18 @@ indexingEnabled = false
 ```
 
 Do not replace the placeholder with an invented temporary domain and do not enable indexing before the real production origin is known.
+
+## Source of truth
+
+Coding agents start with `AGENTS.md`.
+
+For exact behavior and release decisions:
+
+```text
+18_DECISIONS_AND_BOUNDARIES.md          exact algorithms / lifecycle / technical boundaries
+19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md product strategy / scope / release boundary
+00_README.md                            full handoff/document map
+```
 
 ## Before public deployment
 
@@ -107,6 +119,7 @@ See the numbered source-of-truth documents, especially:
 ```text
 06_ARCHITECTURE.md
 11_IMPLEMENTATION_PLAN.md
+12_LAUNCH_PLAN.md
 14_DEFINITION_OF_DONE.md
 16_UX_ACCEPTANCE.md
 17_FUNCTIONAL_VISUAL_SYSTEM.md
@@ -152,7 +165,7 @@ If product analytics are enabled later, they must remain coarse and must not inc
 
 ## Validation boundary
 
-Automated coverage currently includes pure calculations and browser-capability lifecycle behavior. Visual/headless review is allowed to use mocked browser input only to verify UI state and geometry.
+Automated coverage includes pure calculations and browser-capability lifecycle behavior. The final code-side audit also used temporary headless visual checks with mocked browser input only to verify UI state and geometry; that temporary review infrastructure is not part of the product branch.
 
 Manual pre-deployment validation still includes:
 
