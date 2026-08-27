@@ -5,10 +5,17 @@
     "TypeScript",
     "Native Browser APIs"
   ],
+  "toolchain": {
+    "node": "24 LTS",
+    "package_manager": "pnpm",
+    "typecheck": "Astro check",
+    "unit_tests": "Vitest",
+    "browser_tests": "Playwright only when a critical browser-flow/lifecycle scenario requires it"
+  },
   "backend": false,
   "database": false,
   "auth": false,
-  "mvp_routes": [
+  "full_v1_routes": [
     "/",
     "/gamepad-tester",
     "/controller-stick-drift-test",
@@ -21,6 +28,8 @@
     "/privacy"
   ],
   "documents": [
+    "README.md",
+    "AGENTS.md",
     "00_README.md",
     "01_PRODUCT.md",
     "02_INFORMATION_ARCHITECTURE.md",
@@ -42,7 +51,12 @@
     "18_DECISIONS_AND_BOUNDARIES.md",
     "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md"
   ],
-  "version": "6",
+  "non_normative_context": [
+    "AUDIT_V4.md",
+    "GLOBAL_GOAL_AUDIT_V5.md",
+    "RESEARCH_EVIDENCE_2026-08.md"
+  ],
+  "version": "6.1",
   "ux_priority": "one-screen obvious task completion",
   "ux_min_desktop_viewport": "1366x768",
   "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
@@ -80,7 +94,8 @@
   },
   "source_of_truth": {
     "strategy_scope_release": "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md",
-    "exact_implementation": "18_DECISIONS_AND_BOUNDARIES.md"
+    "exact_implementation": "18_DECISIONS_AND_BOUNDARIES.md",
+    "agent_bootstrap": "AGENTS.md"
   },
   "styling": "plain CSS + CSS custom properties + Astro scoped styles",
   "rendering": {

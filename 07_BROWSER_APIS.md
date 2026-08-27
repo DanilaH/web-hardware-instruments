@@ -29,6 +29,8 @@ Known product considerations:
 
 Do not hardcode assumptions beyond standard mappings without guards.
 
+For non-standard mappings, the Gamepad Tester fallback uses numbered button indicators and numbered normalized axis indicators/bars. It must not imply physical placement or expose raw `gamepad.id`.
+
 # Keyboard
 
 Primary events:
@@ -80,17 +82,22 @@ The UI must not pretend fallback movement is hardware counts. `movementX` units 
 
 Mouse DPI must always be described as estimated.
 
+Distance input and finish-click arming semantics are defined in `18_DECISIONS_AND_BOUNDARIES.md` and must not be independently reinterpreted.
+
 # Display
 
-Primary:
+Primary acquisition:
 
 ```text
 requestAnimationFrame
-performance.now()
 document.visibilityState
 ```
 
-Use visibility checks to avoid invalid measurements when the tab is backgrounded.
+The measurement clock is the timestamp passed to the `requestAnimationFrame` callback.
+
+Do not mix `performance.now()` timestamps into FPS/refresh-rate measurement windows when rAF callback timestamps are already available.
+
+Use visibility handling to invalidate measurements when the tab is backgrounded. `FrameSampler` owns this lifecycle and emits the reset semantic defined in `18_DECISIONS_AND_BOUNDARIES.md`; FPS and Refresh Rate must not implement separate competing visibility-reset listeners.
 
 Potential distortions:
 
@@ -164,7 +171,7 @@ All native acquisition should go through the corresponding thin typed capability
 | Native capability | Service |
 |---|---|
 | Gamepad API | `GamepadService` |
-| `requestAnimationFrame` + Performance | `FrameSampler` |
+| `requestAnimationFrame` timing | `FrameSampler` |
 | Keyboard events | `KeyboardInputService` |
 | Pointer/mouse movement | `MouseMovementService` |
 
@@ -182,10 +189,11 @@ For `mapping === "standard"`:
 
 For non-standard mapping:
 
-- Gamepad Tester provides only a compact generic button/axis fallback;
+- Gamepad Tester provides only numbered button indicators and numbered normalized axis indicators/bars;
+- it does not guess physical control placement;
 - Stick Drift and Deadzone do not guess which axes are physical sticks in MVP.
 
-If multiple gamepads are visible, auto-select the first visible gamepad and show a compact selector.
+If multiple gamepads are visible, auto-select the first visible gamepad and show a compact selector with neutral labels such as `Controller 1`, `Controller 2`.
 
 # Secure-context / embedding boundary
 
@@ -200,7 +208,7 @@ Gamepad access can be affected by browser Permissions Policy and some Gamepad fu
 Therefore:
 
 - measurement is valid only while the document is visible;
-- hide/background transitions reset display measurements;
+- hide/background transitions reset display measurements through `FrameSampler`;
 - FPS means this page's delivered animation frames, not the FPS of another game/application;
 - refresh rate is an estimate from browser-visible cadence, not a hardware EDID readout.
 

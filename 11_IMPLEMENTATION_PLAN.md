@@ -12,17 +12,34 @@ Every phase must preserve the one-screen UX requirement and the low-maintenance 
 
 Deliver only what all pages genuinely need:
 
-- Astro
-- strict TypeScript
-- static build
-- base layout
-- compact header/footer
-- CSS custom-property design tokens
-- plain CSS / Astro-scoped styles
-- one reusable ToolShell
-- SEO primitives
-- privacy/about
-- sitemap/robots/404
+- Node.js 24 LTS;
+- pnpm;
+- Astro;
+- strict TypeScript;
+- static build;
+- base layout;
+- compact header/footer;
+- CSS custom-property design tokens;
+- plain CSS / Astro-scoped styles;
+- one reusable ToolShell;
+- SEO primitives;
+- privacy/about;
+- sitemap/robots/404;
+- `astro check` exposed as `pnpm typecheck`;
+- Vitest exposed as `pnpm test`.
+
+Expected baseline scripts:
+
+```text
+pnpm dev
+pnpm build
+pnpm typecheck
+pnpm test
+```
+
+Playwright is approved for later critical browser-flow/lifecycle scenarios, but do not add it during scaffolding unless the first implemented test genuinely requires browser automation.
+
+Configure the canonical/site origin through one project configuration point rather than duplicating it across pages.
 
 No Tailwind, component/UI library, chart library, frontend framework, backend, or database.
 
@@ -104,7 +121,7 @@ Before launch:
 - concise below-fold content where useful;
 - SEO metadata/canonicals;
 - full UX review;
-- real-device smoke;
+- real-device smoke for tools in the current release;
 - production build;
 - Search Console setup;
 - sitemap submission.

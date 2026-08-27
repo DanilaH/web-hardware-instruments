@@ -35,6 +35,26 @@ WebHID
 
 Small build/dev dependencies for Astro, sitemap, type checking, and tests are allowed.
 
+Approved project toolchain for scaffolding:
+
+```text
+Node.js 24 LTS
+pnpm
+Astro check
+Vitest
+```
+
+Playwright is allowed only when a critical browser-flow/lifecycle scenario materially benefits from browser automation. Do not add it by default before such a test exists.
+
+Expected scripts:
+
+```text
+pnpm dev
+pnpm build
+pnpm typecheck
+pnpm test
+```
+
 Hosting provider is intentionally not fixed because the build is static and host-agnostic.
 
 # 2. Rendering boundary
@@ -90,6 +110,29 @@ destroy
 
 One active acquisition loop/listener set per capability per page.
 
+## FrameSampler visibility/reset contract
+
+`FrameSampler` is the only owner of the display capability's `visibilitychange` acquisition lifecycle. FPS and Refresh Rate controllers must not install independent visibility listeners for measurement reset semantics.
+
+The sampler emits typed events with at least these semantics:
+
+```ts
+type FrameSamplerEvent =
+  | { type: 'sample'; timestamp: number }
+  | { type: 'reset' };
+```
+
+Exact interface syntax may differ, but the semantic contract is fixed:
+
+- `sample.timestamp` is the `requestAnimationFrame` callback timestamp;
+- when document visibility is lost, active sampling is invalidated;
+- the sampler clears its acquisition state and emits one `reset` notification;
+- no hidden-tab samples are forwarded as valid measurement samples;
+- when the document becomes visible again, acquisition may resume, but consumers must begin a fresh warmup/window after the reset;
+- FPS and Refresh Rate controllers own their own warmup, rolling windows, calculations, trace history, and result presentation.
+
+The sampler must not calculate FPS or refresh rate itself.
+
 # 4. Gamepad behavior
 
 Discovery:
@@ -101,7 +144,9 @@ Discovery:
 Multiple controllers:
 
 - auto-select the first visible controller;
-- show a compact selector only when more than one is visible.
+- show a compact selector only when more than one is visible;
+- selector labels are neutral ordinal labels: `Controller 1`, `Controller 2`, and so on;
+- do not use raw `gamepad.id` as the visible label.
 
 Standard mapping:
 
@@ -111,7 +156,8 @@ Standard mapping:
 
 Non-standard mapping:
 
-- Gamepad Tester: compact basic button/axis fallback;
+- Gamepad Tester: compact basic fallback with numbered button indicators and numbered normalized axis indicators/bars;
+- do not imply physical button/axis placement for a non-standard mapping;
 - Stick Drift / Deadzone: unsupported in MVP rather than guessing physical axes.
 
 Do not display, persist, or send raw gamepad `id` in MVP. Mapping support may be shown only when it explains a limitation.
@@ -199,6 +245,13 @@ Default:
 10 cm
 ```
 
+Distance input contract:
+
+- value must be finite and greater than zero;
+- decimal values are allowed;
+- changing `cm ↔ in` converts the current value so the represented physical distance remains the same;
+- no arbitrary maximum distance is required for MVP unless a later UX constraint justifies one.
+
 Instruction:
 
 ```text
@@ -211,10 +264,18 @@ Preferred mode:
 2. Request Pointer Lock with `unadjustedMovement: true`.
 3. If unsupported, retry regular Pointer Lock.
 4. If Pointer Lock is unavailable, use unlocked movement events as fallback.
-5. Start accumulation only after capture mode is active.
-6. Accumulate signed horizontal deltas.
-7. User clicks once to finish.
-8. Exit Pointer Lock if active.
+5. Start accumulation only after the selected capture mode is active.
+6. Only after capture is active, arm the next eligible click as the finish action; the Start activation event must never finish the measurement it starts.
+7. Accumulate signed horizontal deltas.
+8. User clicks once to finish.
+9. Exit Pointer Lock if active.
+
+Unlocked fallback contract:
+
+- collect page-level pointer/mouse movement only while the measurement session is active;
+- do not require a separate physical-distance rail or pretend movement is constrained to a known centimeter region;
+- the next eligible click after capture activation finishes the measurement;
+- Escape, focus/capture loss, cancellation, or teardown ends the active session and clears accumulation.
 
 Calculation:
 
@@ -242,7 +303,7 @@ observed frame delivery of this browser page
 
 It is not a game's FPS and not a GPU benchmark.
 
-Use the `requestAnimationFrame` callback timestamp.
+Use the `requestAnimationFrame` callback timestamp as the measurement clock. Do not mix it with `performance.now()` timestamps in the FPS calculation window.
 
 Warmup:
 
@@ -278,7 +339,7 @@ Canvas
 
 No categorical `Stable/Unstable` result in MVP.
 
-When document visibility is lost, pause/reset; re-warm on return.
+When `FrameSampler` emits `reset`, clear the FPS window and trace state; on resumed samples, perform a fresh 500 ms warmup before producing a new measurement.
 
 # 9. Refresh Rate algorithm
 
@@ -290,7 +351,7 @@ estimate of display cadence visible to the browser
 
 It is not an EDID/hardware readout.
 
-Use the same `FrameSampler`.
+Use the same `FrameSampler` and its rAF callback timestamps.
 
 Warmup:
 
@@ -304,11 +365,19 @@ Estimation window:
 most recent 1500 ms while visible
 ```
 
+Valid frame delta:
+
+```text
+finite and > 0
+```
+
 Representative interval:
 
 ```text
-median positive rAF delta
+median valid rAF delta
 ```
+
+Do not add another outlier-removal algorithm or long-frame threshold in MVP.
 
 Estimate:
 
@@ -332,7 +401,7 @@ abs(estimate - mode) / mode <= 0.03
 
 Otherwise omit the helper value.
 
-When document visibility is lost, reset and re-warm.
+When `FrameSampler` emits `reset`, clear the estimation window and trace state; on resumed samples, perform a fresh 500 ms warmup.
 
 # 10. Keyboard behavior
 
@@ -469,7 +538,6 @@ These are not implementation gaps:
 - future ad provider.
 
 Everything else in the MVP should follow the numbered docs rather than being re-decided by the agent.
-
 
 # 18. Operational simplicity
 

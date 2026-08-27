@@ -28,15 +28,19 @@ clamping
 
 ### Display
 
-Test:
+Test only the semantics defined by `18_DECISIONS_AND_BOUNDARIES.md`:
 
 ```text
-frame interval statistics
-outlier handling
-rolling averages
+positive finite frame-delta validation
+rolling-window boundaries
+FPS window calculation
+median frame delta
 Hz estimation
 nearest common refresh mode
+reset/re-warm behavior
 ```
+
+Do not invent an additional outlier filter, rolling-average algorithm, long-frame threshold, MAD filter, or trimming rule unless `18_DECISIONS_AND_BOUNDARIES.md` is explicitly amended first.
 
 ### Mouse DPI
 
@@ -45,8 +49,10 @@ Test:
 ```text
 cm → inches conversion
 distance validation
+unit conversion preserving physical distance
 DPI estimate formula
 movement accumulation and reset
+capture activation vs finish-click arming
 ```
 
 ### Keyboard
@@ -61,7 +67,7 @@ Mock browser inputs for:
 
 ```text
 GamepadService snapshots
-FrameSampler timing streams
+FrameSampler timing/reset events
 Keyboard events
 MouseMovementService deltas
 ```
@@ -99,6 +105,8 @@ Check:
 - moving left and right
 - cancel with Escape
 - finish by click
+- Start activation cannot finish the same measurement
+- unit switching preserves the configured physical distance
 - different OS pointer scaling/acceleration settings for fallback behavior
 - browser zoom changes for fallback behavior
 
