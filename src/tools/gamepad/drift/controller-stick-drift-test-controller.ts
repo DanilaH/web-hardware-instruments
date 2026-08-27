@@ -4,11 +4,11 @@ import {
   type GamepadSnapshot,
 } from '../../../browser/gamepad-service';
 import { StickDriftPlotRenderer } from '../../../visuals/controller/stick-drift-plot-renderer';
+import { getStandardStickPositions } from '../gamepad-stick-adapter';
+import type { StickPosition } from '../stick-position';
 import {
   calculateControllerDrift,
   formatCenterOffsetPercent,
-  getStandardStickPositions,
-  type StickPosition,
 } from './stick-drift-measurement';
 
 export interface ControllerStickDriftToolController {
