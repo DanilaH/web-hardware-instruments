@@ -61,8 +61,15 @@ import StickDriftPlot from '../../../visuals/controller/StickDriftPlot.astro';
   if (root) {
     const controller = mountControllerStickDriftTest(root);
     window.addEventListener('pagehide', (event) => {
-      if (!event.persisted) {
-        controller.destroy();
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
       }
     });
   }
