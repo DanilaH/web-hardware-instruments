@@ -201,6 +201,23 @@ describe('MouseMovementService', () => {
     expect(fixture.hasRuntimeListeners()).toBe(false);
   });
 
+  it('does not start regular Pointer Lock after a cancelled pending raw request fails', async () => {
+    const deferred = createDeferredLockResult();
+    const fixture = createEnvironment([deferred.promise, true]);
+    const service = createMouseMovementService(fixture.environment);
+
+    const startPromise = service.start(target);
+    expect(fixture.lockRequests).toEqual([true]);
+
+    service.stop();
+    deferred.resolve({ locked: false, rawConfirmed: false });
+
+    expect(await startPromise).toBeNull();
+    expect(fixture.lockRequests).toEqual([true]);
+    expect(fixture.exitCount).toBe(0);
+    expect(fixture.hasRuntimeListeners()).toBe(false);
+  });
+
   it('keeps stop reusable and makes destroy permanent', async () => {
     const fixture = createEnvironment([true, false, false]);
     const service = createMouseMovementService(fixture.environment);
