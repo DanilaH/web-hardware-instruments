@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Six of the seven approved full-v1 diagnostic tools are implemented. Public deployment is intentionally deferred until a real domain is purchased. Development continues through Keyboard Tester and the full-v1 audit while the placeholder origin and site-wide `noindex` protection remain in place.
+All seven approved full-v1 diagnostic tools are implemented in code. The current development stage is the full-v1 audit. Public deployment remains intentionally deferred until a real domain is purchased, with the placeholder origin and site-wide `noindex` protection kept in place until then.
 
 ## Start here
 
@@ -30,10 +30,10 @@ MouseMovementService + /mouse-dpi-test — complete
 code-side first-launch preparation — complete
 /controller-stick-drift-test — complete
 /controller-deadzone-test — complete
+/keyboard-tester — complete
 
 current development:
-/keyboard-tester
-→ full-v1 audit
+full-v1 audit
 
 before actual public deployment:
 → buy/set real production domain
@@ -45,7 +45,7 @@ before actual public deployment:
 → submit generated sitemap
 ```
 
-The deferred deployment gate is not waived. It is moved to the actual deployment boundary so full-v1 implementation can continue without inventing a production domain early.
+The deferred deployment gate is not waived. It is moved to the actual deployment boundary so full-v1 implementation and audit can finish without inventing a production domain early.
 
 ## Implemented routes
 
@@ -54,17 +54,12 @@ The deferred deployment gate is not waived. It is moved to the actual deployment
 /gamepad-tester
 /controller-stick-drift-test
 /controller-deadzone-test
+/keyboard-tester
 /fps-test
 /refresh-rate-test
 /mouse-dpi-test
 /about
 /privacy
-```
-
-Remaining approved full-v1 addition:
-
-```text
-/keyboard-tester
 ```
 
 ## Toolchain
@@ -109,6 +104,23 @@ Before public deployment, manually verify where hardware is available:
 - Deadzone left/right selection, 3-second sampling, radial ring/result behavior, hidden-tab cancellation, and disconnect cancellation.
 
 Do not claim real-device validation for hardware paths that have only been tested with mocks or static review.
+
+## Validation boundary for Keyboard Tester
+
+Automated tests validate `KeyboardInputService` listener lifecycle, keydown/keyup normalization, repeat signaling, blur/visibility clearing, restart behavior, and permanent destroy semantics. They do **not** prove every physical keyboard layout or reserved shortcut path.
+
+Before public deployment, manually verify where practical:
+
+- letter, number, modifier, Space, Enter, Backspace, and arrow highlighting;
+- multiple simultaneously held keys;
+- repeated keydown does not inflate the held-key count;
+- keyup removes held state;
+- blur and hidden-tab transitions clear held state;
+- Tab navigation remains normal;
+- latest Chrome, Edge, and Firefox desktop;
+- at least one non-US keyboard layout if available, confirming that physical `code` highlighting remains useful even when printed labels differ.
+
+Do not diagnose an OS/browser-reserved shortcut as broken hardware merely because the page cannot observe it.
 
 ## Validation boundary for display tests
 
