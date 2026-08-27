@@ -11,8 +11,13 @@ export type MouseMovementServiceEvent =
   | { type: 'movement'; movementX: number; movementY: number }
   | { type: 'cancel'; reason: MouseCaptureCancelReason };
 
+export interface PointerLockRequestResult {
+  locked: boolean;
+  rawConfirmed: boolean;
+}
+
 export interface MouseMovementServiceEnvironment {
-  requestPointerLock(target: HTMLElement, raw: boolean): Promise<boolean>;
+  requestPointerLock(target: HTMLElement, raw: boolean): Promise<PointerLockRequestResult>;
   exitPointerLock(): void;
   isPointerLockedTo(target: HTMLElement): boolean;
   getVisibilityState(): DocumentVisibilityState;
@@ -51,11 +56,12 @@ const createBrowserEnvironment = (): MouseMovementServiceEnvironment | null => {
     requestPointerLock: async (target, raw) => {
       const request = (target as PointerLockCapableElement).requestPointerLock;
       if (typeof request !== 'function') {
-        return false;
+        return { locked: false, rawConfirmed: false };
       }
 
-      return new Promise<boolean>((resolve) => {
+      return new Promise<PointerLockRequestResult>((resolve) => {
         let settled = false;
+        let promiseBased = false;
         const finish = (locked: boolean): void => {
           if (settled) {
             return;
@@ -64,7 +70,12 @@ const createBrowserEnvironment = (): MouseMovementServiceEnvironment | null => {
           window.clearTimeout(timeoutHandle);
           document.removeEventListener('pointerlockchange', handleChange);
           document.removeEventListener('pointerlockerror', handleError);
-          resolve(locked);
+          resolve({
+            locked,
+            // Legacy/non-Promise implementations may ignore the options object.
+            // Only claim raw input when the Promise-capable request path accepted it.
+            rawConfirmed: locked && raw && promiseBased,
+          });
         };
         const handleChange = (): void => finish(document.pointerLockElement === target);
         const handleError = (): void => finish(false);
@@ -81,7 +92,8 @@ const createBrowserEnvironment = (): MouseMovementServiceEnvironment | null => {
             ? request.call(target, { unadjustedMovement: true })
             : request.call(target);
 
-          if (result && typeof (result as Promise<void>).then === 'function') {
+          promiseBased = Boolean(result && typeof (result as Promise<void>).then === 'function');
+          if (promiseBased) {
             void Promise.resolve(result)
               .then(() => {
                 if (document.pointerLockElement === target) {
@@ -268,12 +280,12 @@ export const createMouseMovementService = (
 
       try {
         let nextMode: MouseCaptureMode = 'unlocked';
-        const rawLocked = await environment.requestPointerLock(target, true);
-        if (rawLocked) {
-          nextMode = 'raw-pointer-lock';
+        const rawRequest = await environment.requestPointerLock(target, true);
+        if (rawRequest.locked) {
+          nextMode = rawRequest.rawConfirmed ? 'raw-pointer-lock' : 'pointer-lock';
         } else {
-          const regularLocked = await environment.requestPointerLock(target, false);
-          if (regularLocked) {
+          const regularRequest = await environment.requestPointerLock(target, false);
+          if (regularRequest.locked) {
             nextMode = 'pointer-lock';
           }
         }
