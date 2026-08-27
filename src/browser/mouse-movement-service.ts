@@ -277,24 +277,32 @@ export const createMouseMovementService = (
 
       starting = true;
       const version = lifecycleVersion;
+      const isStale = (): boolean => destroyed || version !== lifecycleVersion;
+      const releaseLateLock = (): void => {
+        if (environment.isPointerLockedTo(target)) {
+          environment.exitPointerLock();
+        }
+      };
 
       try {
         let nextMode: MouseCaptureMode = 'unlocked';
         const rawRequest = await environment.requestPointerLock(target, true);
+        if (isStale()) {
+          releaseLateLock();
+          return null;
+        }
+
         if (rawRequest.locked) {
           nextMode = rawRequest.rawConfirmed ? 'raw-pointer-lock' : 'pointer-lock';
         } else {
           const regularRequest = await environment.requestPointerLock(target, false);
+          if (isStale()) {
+            releaseLateLock();
+            return null;
+          }
           if (regularRequest.locked) {
             nextMode = 'pointer-lock';
           }
-        }
-
-        if (destroyed || version !== lifecycleVersion) {
-          if (environment.isPointerLockedTo(target)) {
-            environment.exitPointerLock();
-          }
-          return null;
         }
 
         activeTarget = target;
