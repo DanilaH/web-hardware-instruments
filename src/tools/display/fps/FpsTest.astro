@@ -8,7 +8,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
   <div class="display-tool display-tool--fps" data-fps-test data-state="warming">
     <div class="display-tool__status-row">
       <span class="display-tool__signal" aria-hidden="true"></span>
-      <strong data-display-status>Warming up</strong>
+      <strong data-display-status role="status" aria-live="polite" aria-atomic="true">Warming up</strong>
       <span class="display-tool__status-note">Measures automatically while this page is visible.</span>
     </div>
 
