@@ -36,7 +36,7 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           sleep 1
           BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          COMMON_FLAGS="--headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=3500 --run-all-compositor-stages-before-draw"
+          COMMON_FLAGS="--headless=new --no-sandbox --disable-gpu --hide-scrollbars --timeout=3500 --run-all-compositor-stages-before-draw"
 
           "$BROWSER" $COMMON_FLAGS --window-size=1366,768 --screenshot=visual-check/fps-1366x768.png http://127.0.0.1:4321/fps-test/
           "$BROWSER" $COMMON_FLAGS --window-size=1440,900 --screenshot=visual-check/fps-1440x900.png http://127.0.0.1:4321/fps-test/
@@ -49,5 +49,5 @@ jobs:
       - name: Upload screenshots
         uses: actions/upload-artifact@v7
         with:
-          name: display-visual-check
+          name: display-visual-check-realtime
           path: visual-check/*.png
