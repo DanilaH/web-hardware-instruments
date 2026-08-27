@@ -58,9 +58,19 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
   const root = document.querySelector<HTMLElement>('[data-gamepad-tester]');
   if (root) {
     const controller = mountGamepadTester(root);
+
     window.addEventListener('pagehide', (event) => {
-      if (!event.persisted) {
-        controller.destroy();
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+
+      controller.destroy();
+    });
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
       }
     });
   }
