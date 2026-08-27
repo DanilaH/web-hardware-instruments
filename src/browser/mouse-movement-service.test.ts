@@ -7,7 +7,7 @@ import {
   type PointerLockRequestResult,
 } from './mouse-movement-service';
 
-type LockOutcome = boolean | PointerLockRequestResult;
+type LockOutcome = boolean | PointerLockRequestResult | Promise<PointerLockRequestResult>;
 
 const createEnvironment = (lockOutcomes: LockOutcome[]) => {
   let lockedTarget: HTMLElement | null = null;
@@ -23,7 +23,7 @@ const createEnvironment = (lockOutcomes: LockOutcome[]) => {
   const environment: MouseMovementServiceEnvironment = {
     requestPointerLock: async (target, raw) => {
       lockRequests.push(raw);
-      const outcome = lockOutcomes.shift() ?? false;
+      const outcome = await (lockOutcomes.shift() ?? false);
       const result: PointerLockRequestResult =
         typeof outcome === 'boolean'
           ? { locked: outcome, rawConfirmed: outcome && raw }
@@ -89,6 +89,14 @@ const createEnvironment = (lockOutcomes: LockOutcome[]) => {
       ].some((listener) => listener !== null);
     },
   };
+};
+
+const createDeferredLockResult = () => {
+  let resolve!: (value: PointerLockRequestResult) => void;
+  const promise = new Promise<PointerLockRequestResult>((resolver) => {
+    resolve = resolver;
+  });
+  return { promise, resolve };
 };
 
 const target = {} as HTMLElement;
@@ -175,6 +183,22 @@ describe('MouseMovementService', () => {
     await hiddenService.start(target);
     hiddenFixture.hide();
     expect(hiddenEvents).toEqual([{ type: 'cancel', reason: 'visibility-hidden' }]);
+  });
+
+  it('invalidates a pending Pointer Lock start when stopped and releases a late lock', async () => {
+    const deferred = createDeferredLockResult();
+    const fixture = createEnvironment([deferred.promise]);
+    const service = createMouseMovementService(fixture.environment);
+
+    const startPromise = service.start(target);
+    expect(fixture.lockRequests).toEqual([true]);
+
+    service.stop();
+    deferred.resolve({ locked: true, rawConfirmed: true });
+
+    expect(await startPromise).toBeNull();
+    expect(fixture.exitCount).toBe(1);
+    expect(fixture.hasRuntimeListeners()).toBe(false);
   });
 
   it('keeps stop reusable and makes destroy permanent', async () => {
