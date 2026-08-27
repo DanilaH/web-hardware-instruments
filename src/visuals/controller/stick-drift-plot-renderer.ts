@@ -1,7 +1,8 @@
-import type { StickPosition } from '../../tools/gamepad/drift/stick-drift-measurement';
+import type { StickPlotPosition } from './stick-plot-contract';
 
 const CENTER = 50;
 const TRAVEL = 42;
+const DETAIL_RADIUS = 0.2;
 const TRAIL_LIMIT = 24;
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
@@ -12,19 +13,22 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
   return element;
 };
 
-const toPlotCoordinate = (value: number): number => CENTER + value * TRAVEL;
+const toPlotCoordinate = (value: number): number => {
+  const normalized = Math.min(1, Math.max(-1, value / DETAIL_RADIUS));
+  return CENTER + normalized * TRAVEL;
+};
 
 export class StickDriftPlotRenderer {
   private readonly point: SVGCircleElement;
   private readonly trail: SVGGElement;
-  private readonly trailPoints: StickPosition[] = [];
+  private readonly trailPoints: StickPlotPosition[] = [];
 
   constructor(private readonly root: HTMLElement) {
     this.point = requireElement<SVGCircleElement>(root, '[data-stick-drift-point]');
     this.trail = requireElement<SVGGElement>(root, '[data-stick-drift-trail]');
   }
 
-  render(position: StickPosition, recordTrail: boolean): void {
+  render(position: StickPlotPosition, recordTrail: boolean): void {
     if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) {
       return;
     }
