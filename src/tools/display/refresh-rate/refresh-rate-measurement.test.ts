@@ -14,7 +14,8 @@ describe('Refresh Rate measurement', () => {
     measurement.push(500);
     measurement.push(506.9444444444);
     measurement.push(513.8888888889);
-    const result = measurement.push(520.8333333333);
+    measurement.push(520.8333333333);
+    const result = measurement.getSnapshot();
 
     expect(result.phase).toBe('measuring');
     expect(result.medianFrameTimeMs).toBeCloseTo(6.9444444444, 6);
@@ -80,7 +81,8 @@ describe('Refresh Rate measurement', () => {
     });
 
     measurement.push(2000);
-    const stillWarming = measurement.push(2400);
+    measurement.push(2400);
+    const stillWarming = measurement.getSnapshot();
     expect(stillWarming.phase).toBe('warming');
     expect(stillWarming.estimatedHz).toBeNull();
   });
