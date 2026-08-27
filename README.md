@@ -73,7 +73,9 @@ pnpm typecheck
 pnpm test
 ```
 
-The production origin is intentionally still the reserved `https://hardware-testing.invalid` value in `src/config/site.ts`. Replace it once the real domain is approved and before the first production release.
+The production origin is intentionally still the reserved `https://hardware-testing.invalid` value in `src/config/site.ts`.
+
+Site-wide indexing is also disabled there with `indexingEnabled: false`. Before the first production release, set the real production origin and enable indexing in the same reviewed change. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling.
 
 ## Non-normative history
 
