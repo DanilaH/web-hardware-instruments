@@ -1,6 +1,20 @@
 ---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FpsTest from '../tools/display/fps/FpsTest.astro';
+
+const relatedTools = [
+  {
+    href: '/refresh-rate-test',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+  {
+    href: '/mouse-dpi-test',
+    name: 'Mouse DPI Test',
+    description: 'Estimate mouse DPI from a measured physical movement distance.',
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -26,6 +40,8 @@ import FpsTest from '../tools/display/fps/FpsTest.astro';
       Browser work, background activity, power-saving behavior, display changes, and a hidden tab can all affect observed frame delivery. When the page becomes hidden, the measurement is discarded and starts with a fresh warmup when sampling resumes.
     </p>
   </section>
+
+  <RelatedTools tools={relatedTools} />
 </BaseLayout>
 
 <style>

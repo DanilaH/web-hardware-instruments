@@ -1,6 +1,20 @@
 ---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import MouseDpiTest from '../tools/mouse/dpi/MouseDpiTest.astro';
+
+const relatedTools = [
+  {
+    href: '/gamepad-tester',
+    name: 'Gamepad Tester',
+    description: 'Test controller buttons, sticks, D-pad, and triggers.',
+  },
+  {
+    href: '/fps-test',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s frame delivery and recent drops.',
+  },
+] as const;
 ---
 
 <BaseLayout
@@ -36,6 +50,8 @@ import MouseDpiTest from '../tools/mouse/dpi/MouseDpiTest.astro';
       Raw Pointer Lock is preferred when available. Regular Pointer Lock or unlocked browser movement can be affected by OS acceleration, browser or OS movement units, zoom or scaling, screen edges, and event processing. The result is therefore always an estimate rather than a direct hardware DPI reading.
     </p>
   </section>
+
+  <RelatedTools tools={relatedTools} />
 </BaseLayout>
 
 <style>
