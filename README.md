@@ -17,7 +17,7 @@ For product strategy, implementation boundaries, and agent rules, read:
 7. `06_ARCHITECTURE.md` — project structure and dependency direction
 8. `11_IMPLEMENTATION_PLAN.md` — development sequence
 
-`00_README.md` remains the full v6 handoff index.
+`00_README.md` remains the full v6.1 handoff index.
 
 ## Current implementation sequence
 
