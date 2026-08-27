@@ -98,6 +98,21 @@ Before production launch, manually verify where hardware is available:
 - reconnect/disconnect behavior;
 - buttons, triggers, D-pad, and both sticks.
 
+## Validation boundary for display tests
+
+Automated tests validate `FrameSampler` lifecycle/reset behavior and the exact FPS/Refresh Rate formulas, rolling windows, median rules, and common-mode threshold. A headless Chrome smoke also confirmed live measurement transitions and target-layout integrity at approximately 60 Hz on 1366×768, 1440×900, and 390×844.
+
+That does **not** replace manual display/browser QA. Before production launch, verify where possible:
+
+- at least one 120/144 Hz display path in addition to 60 Hz;
+- moving the page between monitors with different refresh rates;
+- background/foreground reset and fresh warmup behavior;
+- latest Chrome, Edge, and Firefox desktop;
+- Safari graceful behavior where available;
+- power-saving / variable-refresh conditions when practical.
+
+Do not claim high-refresh, multi-monitor, or cross-browser validation until those checks are actually performed.
+
 ## Non-normative history
 
 These files are review history only and must not be treated as implementation requirements:
