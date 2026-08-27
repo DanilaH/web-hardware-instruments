@@ -3,13 +3,15 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 import StandardControllerVisual from '../../../visuals/controller/StandardControllerVisual.astro';
 ---
 
-<ToolShell labelledBy="gamepad-tool-status">
+<ToolShell labelledBy="gamepad-tool-heading">
+  <h2 id="gamepad-tool-heading" class="gamepad-tool__sr">Gamepad Tester controls</h2>
+
   <div class="gamepad-tool" data-gamepad-tester data-state="waiting">
     <div class="gamepad-tool__topline">
-      <div class="gamepad-tool__status-copy" role="status" aria-live="polite">
+      <div class="gamepad-tool__status-copy">
         <div class="gamepad-tool__status-row">
           <span class="gamepad-tool__signal" aria-hidden="true"></span>
-          <strong id="gamepad-tool-status" data-gamepad-status>No controller detected</strong>
+          <strong data-gamepad-status>No controller detected</strong>
         </div>
         <p data-gamepad-instruction>Connect a controller and press any button.</p>
       </div>
@@ -36,9 +38,14 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
 
     <div class="gamepad-tool__footer">
       <span>Runs locally in your browser. Raw controller data is not uploaded.</span>
-      <span class="gamepad-tool__mapping">Standard mapping uses the generic controller view.</span>
     </div>
 
+    <p
+      class="gamepad-tool__sr"
+      aria-live="polite"
+      aria-atomic="true"
+      data-gamepad-status-live
+    ></p>
     <p class="gamepad-tool__sr" data-gamepad-accessible-state>
       No controller detected. Connect a controller and press any button.
     </p>
@@ -149,6 +156,10 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
     opacity: 0.58;
   }
 
+  .gamepad-tool__visual[data-live='false'] :global(.controller-stick-dot) {
+    fill: #aeb4b7 !important;
+  }
+
   .gamepad-fallback {
     min-height: 17rem;
     border-top: 1px solid #e3e6e7;
@@ -178,15 +189,8 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
   }
 
   .gamepad-tool__footer {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-4);
     color: var(--color-muted);
     font-size: 0.75rem;
-  }
-
-  .gamepad-tool__mapping {
-    text-align: right;
   }
 
   .gamepad-tool__sr {
@@ -288,8 +292,7 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
   }
 
   @media (max-width: 44rem) {
-    .gamepad-tool__topline,
-    .gamepad-tool__footer {
+    .gamepad-tool__topline {
       align-items: stretch;
       flex-direction: column;
     }
@@ -302,10 +305,6 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
     .gamepad-fallback,
     .gamepad-tool__unavailable {
       min-height: 13rem;
-    }
-
-    .gamepad-tool__mapping {
-      text-align: left;
     }
 
     :global(.gamepad-fallback__axes) {
