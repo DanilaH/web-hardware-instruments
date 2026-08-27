@@ -1,0 +1,83 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ControllerStickDriftTest from '../tools/gamepad/drift/ControllerStickDriftTest.astro';
+
+const relatedTools = [
+  {
+    href: '/gamepad-tester',
+    name: 'Gamepad Tester',
+    description: 'Check buttons, triggers, D-pad, and live stick movement.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Controller Stick Drift Test — Check Analog Stick Drift"
+  description="Test controller stick drift in your browser by measuring the observed center offset of both analog sticks while untouched."
+  canonicalPath="/controller-stick-drift-test"
+>
+  <section class="drift-page">
+    <h1 class="page-heading">Controller Stick Drift Test</h1>
+    <p class="page-intro">Measure how far both analog sticks sit from center while you are not touching them.</p>
+
+    <ControllerStickDriftTest />
+  </section>
+
+  <section class="drift-info reading-width" aria-labelledby="drift-how-to">
+    <h2 id="drift-how-to">How to test controller stick drift</h2>
+    <ol>
+      <li>Connect a standard-mapped controller.</li>
+      <li>Release both analog sticks and keep them untouched.</li>
+      <li>Start the test and leave the sticks alone for the 3-second sample.</li>
+      <li>Read the observed center offset for each stick.</li>
+    </ol>
+
+    <h2>What the result means</h2>
+    <p>
+      The test averages the browser-reported horizontal and vertical center position for each stick, then reports the distance of that average from the exact center as a percentage.
+    </p>
+    <p>
+      The trail shows recent stick movement as visual context. It is not a second score and the test does not label a controller good or bad because games and controller software use different deadzones and tolerances.
+    </p>
+
+    <h2>Browser and mapping limitations</h2>
+    <p>
+      This MVP only measures controllers that expose the browser standard gamepad mapping. Non-standard controllers are not assigned guessed physical axes. If the tab becomes hidden or the selected controller disconnects during the sample, the measurement is cancelled and must be restarted.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .drift-page {
+    max-width: var(--shell-width);
+  }
+
+  .drift-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .drift-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .drift-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .drift-info p,
+  .drift-info ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .drift-info ol {
+    padding-left: 1.25rem;
+  }
+</style>
