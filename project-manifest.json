@@ -1,0 +1,133 @@
+{
+  "project": "Hardware Testing browser utilities",
+  "recommended_stack": [
+    "Astro",
+    "TypeScript",
+    "Native Browser APIs"
+  ],
+  "backend": false,
+  "database": false,
+  "auth": false,
+  "mvp_routes": [
+    "/",
+    "/gamepad-tester",
+    "/controller-stick-drift-test",
+    "/controller-deadzone-test",
+    "/mouse-dpi-test",
+    "/fps-test",
+    "/refresh-rate-test",
+    "/keyboard-tester",
+    "/about",
+    "/privacy"
+  ],
+  "documents": [
+    "00_README.md",
+    "01_PRODUCT.md",
+    "02_INFORMATION_ARCHITECTURE.md",
+    "03_TOOL_SPECS.md",
+    "04_UX_UI.md",
+    "05_SEO_CONTENT.md",
+    "06_ARCHITECTURE.md",
+    "07_BROWSER_APIS.md",
+    "08_ANALYTICS.md",
+    "09_TESTING_QA.md",
+    "10_PERFORMANCE_ACCESSIBILITY.md",
+    "11_IMPLEMENTATION_PLAN.md",
+    "12_LAUNCH_PLAN.md",
+    "13_AGENT_RULES.md",
+    "14_DEFINITION_OF_DONE.md",
+    "15_BACKLOG.md",
+    "16_UX_ACCEPTANCE.md",
+    "17_FUNCTIONAL_VISUAL_SYSTEM.md",
+    "18_DECISIONS_AND_BOUNDARIES.md",
+    "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md"
+  ],
+  "version": "6",
+  "ux_priority": "one-screen obvious task completion",
+  "ux_min_desktop_viewport": "1366x768",
+  "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
+  "functional_visuals": [
+    "gamepad SVG",
+    "stick position trail",
+    "deadzone ring",
+    "mouse relative-movement guide",
+    "FPS time trace",
+    "refresh cadence trace",
+    "keyboard live highlighting"
+  ],
+  "browser_capability_layer": {
+    "principle": "thin typed adapters/services around native browser APIs",
+    "services": {
+      "gamepad": "GamepadService",
+      "frame_timing": "FrameSampler",
+      "keyboard": "KeyboardInputService",
+      "mouse": "MouseMovementService"
+    },
+    "responsibilities": [
+      "feature detection",
+      "native acquisition",
+      "normalization",
+      "subscription",
+      "lifecycle",
+      "cleanup"
+    ],
+    "explicitly_avoid": [
+      "repository pattern",
+      "event bus",
+      "dependency injection framework",
+      "generic HardwareManager"
+    ]
+  },
+  "source_of_truth": {
+    "strategy_scope_release": "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md",
+    "exact_implementation": "18_DECISIONS_AND_BOUNDARIES.md"
+  },
+  "styling": "plain CSS + CSS custom properties + Astro scoped styles",
+  "rendering": {
+    "dom_css": [
+      "controls",
+      "text",
+      "keyboard"
+    ],
+    "svg": [
+      "controller",
+      "stick plots",
+      "deadzone geometry",
+      "mouse movement guide"
+    ],
+    "canvas": [
+      "FPS trace",
+      "refresh-rate trace"
+    ]
+  },
+  "custom_analytics_required": false,
+  "open_decisions": [
+    "brand/domain",
+    "static hosting provider",
+    "exact signal accent",
+    "optional analytics provider",
+    "future ad provider"
+  ],
+  "business_model": "low-maintenance organic-search utility asset; display ads later",
+  "initial_market": {
+    "content_language": "English",
+    "keyword_market": "US",
+    "tool_usability": "global"
+  },
+  "release_strategy": {
+    "first_production": [
+      "/",
+      "/gamepad-tester",
+      "/fps-test",
+      "/refresh-rate-test",
+      "/mouse-dpi-test",
+      "/about",
+      "/privacy"
+    ],
+    "full_v1_additions": [
+      "/controller-stick-drift-test",
+      "/controller-deadzone-test",
+      "/keyboard-tester"
+    ]
+  }
+}
