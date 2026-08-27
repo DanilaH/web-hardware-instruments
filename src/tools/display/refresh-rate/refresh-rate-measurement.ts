@@ -21,8 +21,8 @@ export interface RefreshRateMeasurementSnapshot {
 }
 
 export interface RefreshRateMeasurement {
-  push(timestamp: number): RefreshRateMeasurementSnapshot;
-  reset(): RefreshRateMeasurementSnapshot;
+  push(timestamp: number): void;
+  reset(): void;
   getSnapshot(): RefreshRateMeasurementSnapshot;
 }
 
@@ -45,54 +45,38 @@ const closestCommonMode = (estimate: number): number | null => {
   return Math.abs(estimate - nearest) / nearest <= 0.03 ? nearest : null;
 };
 
-const createSnapshot = (
-  phase: RefreshRateMeasurementSnapshot['phase'],
-  estimatedHz: number | null,
-  medianFrameTimeMs: number | null,
-  mode: number | null,
-  intervals: readonly FrameIntervalSample[],
-): RefreshRateMeasurementSnapshot => ({
-  phase,
-  estimatedHz,
-  medianFrameTimeMs,
-  closestCommonMode: mode,
-  intervals: [...intervals],
-});
-
 export const createRefreshRateMeasurement = (): RefreshRateMeasurement => {
   let warmupStartedAt: number | null = null;
+  let phase: RefreshRateMeasurementSnapshot['phase'] = 'warming';
   let lastTimestamp: number | null = null;
   let intervals: FrameIntervalSample[] = [];
-  let snapshot = createSnapshot('warming', null, null, null, []);
 
-  const reset = (): RefreshRateMeasurementSnapshot => {
+  const reset = (): void => {
     warmupStartedAt = null;
+    phase = 'warming';
     lastTimestamp = null;
     intervals = [];
-    snapshot = createSnapshot('warming', null, null, null, []);
-    return snapshot;
   };
 
-  const push = (timestamp: number): RefreshRateMeasurementSnapshot => {
+  const push = (timestamp: number): void => {
     if (!Number.isFinite(timestamp)) {
-      return snapshot;
+      return;
     }
 
     if (warmupStartedAt === null) {
       warmupStartedAt = timestamp;
-      snapshot = createSnapshot('warming', null, null, null, intervals);
-      return snapshot;
+      return;
     }
 
     if (timestamp - warmupStartedAt < WARMUP_MS) {
-      snapshot = createSnapshot('warming', null, null, null, intervals);
-      return snapshot;
+      return;
     }
+
+    phase = 'measuring';
 
     if (lastTimestamp === null) {
       lastTimestamp = timestamp;
-      snapshot = createSnapshot('measuring', null, null, null, intervals);
-      return snapshot;
+      return;
     }
 
     const delta = timestamp - lastTimestamp;
@@ -104,19 +88,36 @@ export const createRefreshRateMeasurement = (): RefreshRateMeasurement => {
 
     const cutoff = timestamp - WINDOW_MS;
     intervals = intervals.filter((sample) => sample.timestamp >= cutoff);
+  };
+
+  const getSnapshot = (): RefreshRateMeasurementSnapshot => {
+    if (phase === 'warming') {
+      return {
+        phase: 'warming',
+        estimatedHz: null,
+        medianFrameTimeMs: null,
+        closestCommonMode: null,
+        intervals: [],
+      };
+    }
 
     const medianFrameTimeMs = median(intervals.map((sample) => sample.deltaMs));
     const estimatedHz =
       medianFrameTimeMs !== null && medianFrameTimeMs > 0 ? 1000 / medianFrameTimeMs : null;
     const mode = estimatedHz === null ? null : closestCommonMode(estimatedHz);
 
-    snapshot = createSnapshot('measuring', estimatedHz, medianFrameTimeMs, mode, intervals);
-    return snapshot;
+    return {
+      phase,
+      estimatedHz,
+      medianFrameTimeMs,
+      closestCommonMode: mode,
+      intervals: [...intervals],
+    };
   };
 
   return {
     push,
     reset,
-    getSnapshot: () => snapshot,
+    getSnapshot,
   };
 };
