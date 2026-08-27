@@ -1,0 +1,83 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import KeyboardTester from '../tools/keyboard/tester/KeyboardTester.astro';
+
+const relatedTools = [
+  {
+    href: '/gamepad-tester',
+    name: 'Gamepad Tester',
+    description: 'Check controller buttons, sticks, D-pad, and triggers.',
+  },
+  {
+    href: '/mouse-dpi-test',
+    name: 'Mouse DPI Test',
+    description: 'Estimate mouse DPI from a measured physical movement distance.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Keyboard Tester — Test Keyboard Keys Online"
+  description="Test keyboard keys in your browser and see which physical key codes the page detects. No install or account required."
+  canonicalPath="/keyboard-tester"
+>
+  <section class="keyboard-page">
+    <h1 class="page-heading">Keyboard Tester</h1>
+    <p class="page-intro">Press keys and see which keyboard input this browser page detects.</p>
+
+    <KeyboardTester />
+  </section>
+
+  <section class="keyboard-info reading-width" aria-labelledby="keyboard-how-to">
+    <h2 id="keyboard-how-to">How to use the keyboard tester</h2>
+    <p>
+      Press any key. When that physical position is included in the compact keyboard view, its keycap highlights while held. The latest browser-reported key and code are shown for detected keys even when a dedicated keycap is not drawn.
+    </p>
+
+    <h2>Physical code and visible labels</h2>
+    <p>
+      Highlighting follows <code>KeyboardEvent.code</code>, which represents a physical key position. The compact visible labels use a familiar reference layout, so they may not exactly match every keyboard locale or printed keycap.
+    </p>
+
+    <h2>Browser and operating-system limitations</h2>
+    <p>
+      Some operating-system or browser-reserved shortcuts may never reach the page. A shortcut that is not observable here should not by itself be treated as proof of broken keyboard hardware. This tester does not block normal Tab navigation or globally prevent default keyboard behavior.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .keyboard-page {
+    max-width: var(--shell-width);
+  }
+
+  .keyboard-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .keyboard-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .keyboard-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .keyboard-info p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .keyboard-info code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+</style>
