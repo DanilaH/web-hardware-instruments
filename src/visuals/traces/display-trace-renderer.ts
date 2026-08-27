@@ -114,6 +114,7 @@ export class FpsTraceRenderer {
     }
 
     const grid = readColor(this.canvas, '--trace-grid', '#e4e7e8');
+    const neutral = readColor(this.canvas, '--trace-neutral', '#8d969a');
     const signal = readColor(this.canvas, '--trace-signal', '#176f9c');
     drawReferenceLines(surface, grid);
 
@@ -135,8 +136,9 @@ export class FpsTraceRenderer {
     const padding = 10;
     const { context, width, height } = surface;
     context.save();
-    context.strokeStyle = signal;
-    context.lineWidth = 2;
+    context.strokeStyle = neutral;
+    context.globalAlpha = 0.8;
+    context.lineWidth = 1.5;
     context.lineJoin = 'round';
     context.lineCap = 'round';
     context.beginPath();
@@ -153,8 +155,26 @@ export class FpsTraceRenderer {
 
     context.stroke();
 
+    const previous = points.at(-2);
+    if (previous) {
+      context.globalAlpha = 1;
+      context.strokeStyle = signal;
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(
+        mapX(previous.timestamp, first.timestamp, last.timestamp, width, padding),
+        mapY(previous.value, range.min, range.max, height, padding),
+      );
+      context.lineTo(
+        mapX(last.timestamp, first.timestamp, last.timestamp, width, padding),
+        mapY(last.value, range.min, range.max, height, padding),
+      );
+      context.stroke();
+    }
+
     const latestX = mapX(last.timestamp, first.timestamp, last.timestamp, width, padding);
     const latestY = mapY(last.value, range.min, range.max, height, padding);
+    context.globalAlpha = 1;
     context.fillStyle = signal;
     context.beginPath();
     context.arc(latestX, latestY, 3.5, 0, Math.PI * 2);
@@ -219,16 +239,15 @@ export class CadenceTraceRenderer {
     context.stroke();
     context.setLineDash([]);
 
+    context.globalAlpha = 0.55;
+    context.beginPath();
     intervals.forEach((sample) => {
       const x = mapX(sample.timestamp, first.timestamp, last.timestamp, width, padding);
       const y = mapY(sample.deltaMs, range.min, range.max, height, padding);
-      context.strokeStyle = neutral;
-      context.globalAlpha = 0.55;
-      context.beginPath();
       context.moveTo(x, medianY);
       context.lineTo(x, y);
-      context.stroke();
     });
+    context.stroke();
 
     const latestY = mapY(last.deltaMs, range.min, range.max, height, padding);
     const latestX = mapX(last.timestamp, first.timestamp, last.timestamp, width, padding);
