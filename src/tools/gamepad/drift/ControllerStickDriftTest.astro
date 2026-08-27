@@ -199,9 +199,12 @@ import StickDriftPlot from '../../../visuals/controller/StickDriftPlot.astro';
   }
 
   .drift-tool__action-row {
+    width: 100%;
+    max-width: 34rem;
     display: flex;
     align-items: center;
     gap: var(--space-3);
+    margin-inline: auto;
   }
 
   .primary-action {
@@ -261,6 +264,7 @@ import StickDriftPlot from '../../../visuals/controller/StickDriftPlot.astro';
 
     .drift-tool__action-row {
       order: 3;
+      max-width: none;
       align-items: stretch;
       flex-direction: column;
     }
