@@ -4,13 +4,12 @@ import {
   type GamepadSnapshot,
 } from '../../../browser/gamepad-service';
 import { StickDeadzonePlotRenderer } from '../../../visuals/controller/stick-deadzone-plot-renderer';
+import { getStandardStickPosition } from '../gamepad-stick-adapter';
+import type { StickPosition, StickSide } from '../stick-position';
 import {
   calculateDeadzoneMeasurement,
   formatCenterNoisePercent,
-  getStandardStickPosition,
-  type StickSide,
 } from './controller-deadzone-measurement';
-import type { StickPosition } from '../drift/stick-drift-measurement';
 
 export interface ControllerDeadzoneToolController {
   start(): void;
