@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0, Gamepad Tester, and the display-core slice are implemented. The current implementation slice is `MouseMovementService` + `/mouse-dpi-test`. Real-device/browser smoke remains a pre-launch validation boundary where explicitly documented below.
+Phase 0 and the first four production tools are implemented. The current slice is the first production-launch gate. Real-device/browser smoke, a real production origin, Search Console setup, and sitemap submission remain explicit launch requirements rather than completed claims.
 
 ## Start here
 
@@ -26,14 +26,21 @@ Phase 0 foundation — complete
 GamepadService + /gamepad-tester — complete
 human visual checkpoint — approved
 FrameSampler + /fps-test + /refresh-rate-test — complete
+MouseMovementService + /mouse-dpi-test — complete
 
-current slice:
-MouseMovementService
-→ /mouse-dpi-test
-→ review
-
-next only after this slice is accepted:
+current gate:
 first production launch
+→ four-tool launch review
+→ real-device/browser smoke
+→ set real production origin
+→ enable indexing
+→ Search Console setup
+→ sitemap submission
+
+only after the launch gate is complete:
+/controller-stick-drift-test
+/controller-deadzone-test
+→ /keyboard-tester
 ```
 
 Do not start Drift, Deadzone, or Keyboard work before the first production release gate is handled.
@@ -128,6 +135,18 @@ Before production launch, manually verify where possible:
 - at least one known-DPI mouse/ruler smoke test.
 
 Do not claim direct hardware DPI access. The result remains `Estimated DPI` in every mode.
+
+## Production-launch blockers
+
+The code-side launch review can proceed without publishing the site. The launch itself must remain blocked until all of these are true:
+
+- a real production origin replaces `https://hardware-testing.invalid`;
+- required real-device/browser smoke above is completed honestly;
+- indexing is enabled only for the real production origin;
+- the production property is set up in Google Search Console;
+- the generated sitemap is submitted after deployment.
+
+Do not use the reserved `.invalid` origin for a public indexed deployment, and do not skip the launch gate merely to continue the later roadmap phases.
 
 ## Non-normative history
 
