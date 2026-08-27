@@ -1,0 +1,73 @@
+name: Full v1 visual audit temporary
+
+on:
+  push:
+    branches:
+      - full-v1-audit
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visual-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.23.0
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Find Chrome
+        id: chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+            if command -v "$candidate" >/dev/null 2>&1; then
+              echo "bin=$(command -v "$candidate")" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "Chrome/Chromium executable not found" >&2
+          exit 1
+
+      - name: Start static server and Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4321 --directory dist >/tmp/full-v1-http.log 2>&1 &
+          "${{ steps.chrome.outputs.bin }}" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --hide-scrollbars \
+            --remote-debugging-port=9222 \
+            --user-data-dir=/tmp/full-v1-chrome \
+            about:blank >/tmp/full-v1-chrome.log 2>&1 &
+
+      - name: Capture and validate all tools
+        run: node scripts/full-v1-visual-audit.tmp.mjs
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v6
+        with:
+          name: full-v1-visual-audit
+          path: artifacts/full-v1-visual-audit
+          if-no-files-found: error
