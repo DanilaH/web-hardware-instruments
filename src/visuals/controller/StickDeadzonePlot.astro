@@ -1,0 +1,121 @@
+<div class="deadzone-plot" data-stick-deadzone-plot data-live="false" data-result="false">
+  <div class="deadzone-plot__heading">
+    <span>Selected stick position</span>
+    <span data-deadzone-plot-label>Left stick</span>
+  </div>
+
+  <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <circle class="deadzone-plot__boundary" cx="50" cy="50" r="42" />
+    <line class="deadzone-plot__axis" x1="8" y1="50" x2="92" y2="50" />
+    <line class="deadzone-plot__axis" x1="50" y1="8" x2="50" y2="92" />
+    <circle class="deadzone-plot__noise-ring" data-deadzone-noise-ring cx="50" cy="50" r="0" />
+    <circle class="deadzone-plot__suggested-ring" data-deadzone-suggested-ring cx="50" cy="50" r="0" />
+    <circle class="deadzone-plot__center" cx="50" cy="50" r="1.6" />
+    <circle class="deadzone-plot__point" data-deadzone-point cx="50" cy="50" r="3.2" />
+  </svg>
+
+  <div class="deadzone-plot__legend" data-deadzone-legend hidden>
+    <span><i class="deadzone-plot__legend-noise" aria-hidden="true"></i>Observed center noise</span>
+    <span><i class="deadzone-plot__legend-suggested" aria-hidden="true"></i>Suggested deadzone</span>
+  </div>
+</div>
+
+<style>
+  .deadzone-plot {
+    min-width: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .deadzone-plot__heading {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .deadzone-plot__heading span:last-child {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  svg {
+    width: 100%;
+    max-height: 15rem;
+    aspect-ratio: 1;
+  }
+
+  .deadzone-plot__boundary,
+  .deadzone-plot__axis,
+  .deadzone-plot__noise-ring,
+  .deadzone-plot__suggested-ring {
+    fill: none;
+  }
+
+  .deadzone-plot__boundary,
+  .deadzone-plot__axis {
+    stroke: #d8dcde;
+    stroke-width: 0.8;
+  }
+
+  .deadzone-plot__axis {
+    stroke-dasharray: 2.5 2.5;
+  }
+
+  .deadzone-plot__noise-ring {
+    stroke: #8f989d;
+    stroke-width: 1.2;
+    stroke-dasharray: 2 2;
+  }
+
+  .deadzone-plot__suggested-ring {
+    stroke: var(--color-signal);
+    stroke-width: 1.5;
+  }
+
+  .deadzone-plot__center {
+    fill: #aeb4b7;
+  }
+
+  .deadzone-plot__point {
+    fill: #aeb4b7;
+    stroke: var(--color-surface);
+    stroke-width: 1.2;
+  }
+
+  .deadzone-plot[data-live='true'] .deadzone-plot__point {
+    fill: var(--color-signal);
+  }
+
+  .deadzone-plot__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    color: var(--color-muted);
+    font-size: 0.72rem;
+  }
+
+  .deadzone-plot__legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .deadzone-plot__legend i {
+    width: 1.25rem;
+    border-top: 2px solid;
+  }
+
+  .deadzone-plot__legend-noise {
+    border-color: #8f989d !important;
+    border-top-style: dashed !important;
+  }
+
+  .deadzone-plot__legend-suggested {
+    border-color: var(--color-signal) !important;
+  }
+</style>
