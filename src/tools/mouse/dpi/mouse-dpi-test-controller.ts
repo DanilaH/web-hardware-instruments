@@ -6,6 +6,7 @@ import {
 import { MouseMovementGuideRenderer } from '../../../visuals/mouse/mouse-movement-guide-renderer';
 import {
   calculateEstimatedDpi,
+  convertDistance,
   distanceToInches,
   type DistanceUnit,
 } from './mouse-dpi-measurement';
@@ -16,8 +17,6 @@ export interface MouseDpiToolController {
 }
 
 type ToolState = 'ready' | 'starting' | 'active' | 'result' | 'cancelled' | 'error';
-
-const CM_PER_INCH = 2.54;
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
@@ -214,8 +213,10 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     }
 
     if (physicalDistanceInches !== null) {
-      const converted = nextUnit === 'in' ? physicalDistanceInches : physicalDistanceInches * CM_PER_INCH;
-      distanceInput.value = formatDistance(converted);
+      const converted = convertDistance(physicalDistanceInches, 'in', nextUnit);
+      if (converted !== null) {
+        distanceInput.value = formatDistance(converted);
+      }
     }
 
     currentUnit = nextUnit;
