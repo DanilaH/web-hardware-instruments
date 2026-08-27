@@ -2,6 +2,7 @@
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import SeoHead from '../components/seo/SeoHead.astro';
+import { siteConfig } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
@@ -11,7 +12,14 @@ interface Props {
   noindex?: boolean;
 }
 
-const props = Astro.props;
+const {
+  title,
+  description,
+  canonicalPath,
+  noindex = false,
+} = Astro.props;
+
+const effectiveNoindex = noindex || !siteConfig.indexingEnabled;
 ---
 
 <!doctype html>
@@ -20,7 +28,12 @@ const props = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <SeoHead {...props} />
+    <SeoHead
+      title={title}
+      description={description}
+      canonicalPath={canonicalPath}
+      noindex={effectiveNoindex}
+    />
   </head>
   <body>
     <SiteHeader />
