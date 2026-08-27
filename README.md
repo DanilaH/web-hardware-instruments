@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0 foundation and the Gamepad Tester vertical slice are implemented. The Gamepad visual checkpoint has been approved; real-controller smoke testing remains a pre-launch validation item rather than a completed claim. The current implementation slice is `FrameSampler` + `/fps-test` + `/refresh-rate-test`.
+Phase 0, Gamepad Tester, and the display-core slice are implemented. The current implementation slice is `MouseMovementService` + `/mouse-dpi-test`. Real-device/browser smoke remains a pre-launch validation boundary where explicitly documented below.
 
 ## Start here
 
@@ -25,19 +25,18 @@ For product strategy, implementation boundaries, and agent rules, read:
 Phase 0 foundation — complete
 GamepadService + /gamepad-tester — complete
 human visual checkpoint — approved
-real-controller smoke — still required before production launch
+FrameSampler + /fps-test + /refresh-rate-test — complete
 
 current slice:
-FrameSampler
-→ /fps-test
-→ /refresh-rate-test
+MouseMovementService
+→ /mouse-dpi-test
 → review
 
 next only after this slice is accepted:
-MouseMovementService + /mouse-dpi-test
+first production launch
 ```
 
-Do not start Mouse DPI, Drift, Deadzone, or Keyboard work in parallel with the current display slice.
+Do not start Drift, Deadzone, or Keyboard work before the first production release gate is handled.
 
 ## First production release
 
@@ -112,6 +111,23 @@ That does **not** replace manual display/browser QA. Before production launch, v
 - power-saving / variable-refresh conditions when practical.
 
 Do not claim high-refresh, multi-monitor, or cross-browser validation until those checks are actually performed.
+
+## Validation boundary for Mouse DPI Test
+
+Automated tests validate capture-mode fallback, movement acquisition lifecycle, cancellation semantics, distance conversion, and the DPI formula. They do **not** prove physical mouse-distance accuracy or cross-browser Pointer Lock behavior.
+
+Before production launch, manually verify where possible:
+
+- raw Pointer Lock with `unadjustedMovement: true` on a supported desktop browser;
+- regular Pointer Lock fallback;
+- unlocked movement fallback;
+- Start activation never finishes the same measurement;
+- the next eligible click finishes an active measurement;
+- Escape, focus loss, visibility loss, and Pointer Lock loss cancel cleanly;
+- cm/in conversion preserves the represented physical distance;
+- at least one known-DPI mouse/ruler smoke test.
+
+Do not claim direct hardware DPI access. The result remains `Estimated DPI` in every mode.
 
 ## Non-normative history
 
