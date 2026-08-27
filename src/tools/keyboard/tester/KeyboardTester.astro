@@ -51,8 +51,15 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   if (root) {
     const controller = mountKeyboardTester(root);
     window.addEventListener('pagehide', (event) => {
-      if (!event.persisted) {
-        controller.destroy();
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
       }
     });
   }
