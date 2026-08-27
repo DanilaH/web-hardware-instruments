@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RefreshRateTest from '../tools/display/refresh-rate/RefreshRateTest.astro';
+---
+
+<BaseLayout
+  title="Refresh Rate Test — Estimate Monitor Hz"
+  description="Estimate the display refresh cadence visible to your browser and compare it with a nearby common refresh mode."
+  canonicalPath="/refresh-rate-test"
+>
+  <section class="display-page">
+    <h1 class="page-heading">Refresh Rate Test</h1>
+    <p class="page-intro">Estimate the refresh cadence this browser is currently observing.</p>
+
+    <RefreshRateTest />
+  </section>
+
+  <section class="display-info reading-width" aria-labelledby="refresh-meaning">
+    <h2 id="refresh-meaning">What the estimate means</h2>
+    <p>
+      This page estimates browser-visible display cadence from recent <code>requestAnimationFrame</code> timing. It is not a direct EDID or hardware readout from the monitor.
+    </p>
+
+    <h2>Why the estimate can differ</h2>
+    <p>
+      Multi-monitor setups, browser scheduling, power-saving modes, variable refresh behavior, and display changes can affect the cadence visible to the page. Hidden-tab timing is discarded and the estimate starts fresh when sampling resumes.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .display-page {
+    max-width: var(--shell-width);
+  }
+
+  .display-info {
+    margin-top: var(--space-7);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .display-info h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .display-info h2:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .display-info p {
+    margin: 0 0 var(--space-3);
+    color: var(--color-muted);
+  }
+
+  .display-info code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+</style>
