@@ -28,26 +28,17 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Capture live screenshots
+      - name: Validate and capture live display states
         run: |
-          mkdir -p visual-check
           python3 -m http.server 4321 --directory dist >/tmp/hardware-tests-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           sleep 1
-          BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          COMMON_FLAGS="--headless=new --no-sandbox --disable-gpu --hide-scrollbars --timeout=3500 --run-all-compositor-stages-before-draw"
-
-          "$BROWSER" $COMMON_FLAGS --window-size=1366,768 --screenshot=visual-check/fps-1366x768.png http://127.0.0.1:4321/fps-test/
-          "$BROWSER" $COMMON_FLAGS --window-size=1440,900 --screenshot=visual-check/fps-1440x900.png http://127.0.0.1:4321/fps-test/
-          "$BROWSER" $COMMON_FLAGS --window-size=390,844 --screenshot=visual-check/fps-390x844.png http://127.0.0.1:4321/fps-test/
-
-          "$BROWSER" $COMMON_FLAGS --window-size=1366,768 --screenshot=visual-check/refresh-1366x768.png http://127.0.0.1:4321/refresh-rate-test/
-          "$BROWSER" $COMMON_FLAGS --window-size=1440,900 --screenshot=visual-check/refresh-1440x900.png http://127.0.0.1:4321/refresh-rate-test/
-          "$BROWSER" $COMMON_FLAGS --window-size=390,844 --screenshot=visual-check/refresh-390x844.png http://127.0.0.1:4321/refresh-rate-test/
+          export BROWSER="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          node .github/scripts/display-visual-check.tmp.mjs
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v7
         with:
-          name: display-visual-check-realtime
+          name: display-visual-check-cdp
           path: visual-check/*.png
