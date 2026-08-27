@@ -12,6 +12,7 @@ export interface DisplayToolController {
 }
 
 const PRESENTATION_INTERVAL_MS = 250;
+const COMMON_MODE_LAYOUT_PLACEHOLDER = '480 Hz';
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
@@ -48,7 +49,7 @@ export const mountRefreshRateTest = (root: HTMLElement): DisplayToolController =
   };
 
   const hideCommonMode = (): void => {
-    commonMode.textContent = '';
+    commonMode.textContent = COMMON_MODE_LAYOUT_PLACEHOLDER;
     commonModeRow.dataset.visible = 'false';
     commonModeRow.setAttribute('aria-hidden', 'true');
   };
