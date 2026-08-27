@@ -166,6 +166,50 @@ describe('GamepadService', () => {
     expect(fixture.listeners.get('gamepaddisconnected')?.size).toBe(0);
   });
 
+  it('refreshes visible controllers when a connection signal arrives', () => {
+    const first = createGamepad({ index: 0 });
+    const second = createGamepad({ index: 3 });
+    const fixture = createEnvironment([first]);
+    const service = createGamepadService(fixture.environment);
+    const visibleIndexes: number[][] = [];
+
+    service.subscribe((state) => {
+      if (state.status === 'ready') {
+        visibleIndexes.push(state.gamepads.map((gamepad) => gamepad.sourceIndex));
+      }
+    });
+
+    service.start();
+    fixture.setPads([first, second]);
+
+    const connectionListener = fixture.listeners.get('gamepadconnected')?.values().next().value;
+    expect(connectionListener).toBeDefined();
+    connectionListener!({ gamepad: second } as GamepadEvent);
+
+    expect(visibleIndexes.at(-1)).toEqual([0, 3]);
+    expect(fixture.frameCallbacks.size).toBe(0);
+  });
+
+  it('switches the active controller without creating a second polling loop', () => {
+    const fixture = createEnvironment([
+      createGamepad({ index: 0 }),
+      createGamepad({ index: 4 }),
+    ]);
+    const service = createGamepadService(fixture.environment);
+
+    service.start();
+    service.setActiveGamepad(0);
+
+    const firstHandle = [...fixture.frameCallbacks.keys()][0];
+    expect(firstHandle).toBeDefined();
+    expect(fixture.frameCallbacks.size).toBe(1);
+
+    service.setActiveGamepad(4);
+
+    expect(fixture.frameCallbacks.size).toBe(1);
+    expect([...fixture.frameCallbacks.keys()][0]).toBe(firstHandle);
+  });
+
   it('drops a disconnected active controller and returns to an empty ready snapshot', () => {
     const fixture = createEnvironment([createGamepad({ index: 1 })]);
     const service = createGamepadService(fixture.environment);
@@ -187,6 +231,25 @@ describe('GamepadService', () => {
 
     expect(lengths.at(-1)).toBe(0);
     expect(fixture.frameCallbacks.size).toBe(0);
+  });
+
+  it('can stop and restart acquisition without duplicating listeners or polling loops', () => {
+    const fixture = createEnvironment([createGamepad({ index: 2 })]);
+    const service = createGamepadService(fixture.environment);
+
+    expect(service.start()).toBe(true);
+    service.setActiveGamepad(2);
+    expect(fixture.frameCallbacks.size).toBe(1);
+
+    service.stop();
+    expect(fixture.frameCallbacks.size).toBe(0);
+    expect(fixture.listeners.get('gamepadconnected')?.size).toBe(0);
+    expect(fixture.listeners.get('gamepaddisconnected')?.size).toBe(0);
+
+    expect(service.start()).toBe(true);
+    expect(fixture.frameCallbacks.size).toBe(1);
+    expect(fixture.listeners.get('gamepadconnected')?.size).toBe(1);
+    expect(fixture.listeners.get('gamepaddisconnected')?.size).toBe(1);
   });
 
   it('destroy is idempotent and prevents restarting acquisition', () => {
