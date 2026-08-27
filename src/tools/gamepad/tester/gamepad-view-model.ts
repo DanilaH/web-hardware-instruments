@@ -1,40 +1,9 @@
 import type { GamepadSnapshot } from '../../../browser/gamepad-service';
-
-export interface StandardControllerViewData {
-  buttons: Readonly<Record<StandardButtonName, boolean>>;
-  triggers: {
-    left: number;
-    right: number;
-  };
-  sticks: {
-    left: StickViewData;
-    right: StickViewData;
-  };
-  pressedLabels: readonly string[];
-}
-
-interface StickViewData {
-  x: number;
-  y: number;
-  pressed: boolean;
-}
-
-export type StandardButtonName =
-  | 'face-bottom'
-  | 'face-right'
-  | 'face-left'
-  | 'face-top'
-  | 'left-shoulder'
-  | 'right-shoulder'
-  | 'back'
-  | 'start'
-  | 'left-stick'
-  | 'right-stick'
-  | 'dpad-up'
-  | 'dpad-down'
-  | 'dpad-left'
-  | 'dpad-right'
-  | 'home';
+import type {
+  FallbackControllerRenderData,
+  StandardButtonName,
+  StandardControllerRenderData,
+} from '../../../visuals/controller/controller-render-contract';
 
 const BUTTONS: ReadonlyArray<{
   index: number;
@@ -66,9 +35,11 @@ const getValue = (snapshot: GamepadSnapshot, index: number): number =>
 
 const getAxis = (snapshot: GamepadSnapshot, index: number): number => snapshot.axes[index] ?? 0;
 
+const toPercent = (value: number): number => Math.round(value * 100);
+
 export const createStandardControllerView = (
   snapshot: GamepadSnapshot,
-): StandardControllerViewData => {
+): StandardControllerRenderData => {
   const buttons = Object.fromEntries(
     BUTTONS.map(({ index, name }) => [name, getPressed(snapshot, index)]),
   ) as Record<StandardButtonName, boolean>;
@@ -97,10 +68,23 @@ export const createStandardControllerView = (
   };
 };
 
-const toPercent = (value: number): number => Math.round(value * 100);
+export const createFallbackControllerView = (
+  snapshot: GamepadSnapshot,
+): FallbackControllerRenderData => ({
+  buttons: snapshot.buttons.map((button, index) => ({
+    label: `Button ${index + 1}`,
+    pressed: button.pressed,
+    value: button.value,
+  })),
+  axes: snapshot.axes.map((axis, index) => ({
+    label: `Axis ${index + 1}`,
+    percent: toPercent(axis),
+    positionPercent: ((axis + 1) / 2) * 100,
+  })),
+});
 
 export const createAccessibleControllerSummary = (
-  view: StandardControllerViewData,
+  view: StandardControllerRenderData,
 ): string => {
   const pressed =
     view.pressedLabels.length > 0 ? view.pressedLabels.join(', ') : 'No buttons pressed';
@@ -112,4 +96,12 @@ export const createAccessibleControllerSummary = (
   )}%. Left trigger ${toPercent(view.triggers.left)}%. Right trigger ${toPercent(
     view.triggers.right,
   )}%.`;
+};
+
+export const createAccessibleFallbackSummary = (
+  view: FallbackControllerRenderData,
+): string => {
+  const pressedCount = view.buttons.filter((button) => button.pressed).length;
+  const buttonWord = pressedCount === 1 ? 'button is' : 'buttons are';
+  return `Controller detected with a non-standard mapping. ${pressedCount} ${buttonWord} currently pressed.`;
 };
