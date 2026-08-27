@@ -47,11 +47,22 @@ export const mountRefreshRateTest = (root: HTMLElement): DisplayToolController =
     lastStatus = text;
   };
 
+  const hideCommonMode = (): void => {
+    commonMode.textContent = '';
+    commonModeRow.dataset.visible = 'false';
+    commonModeRow.setAttribute('aria-hidden', 'true');
+  };
+
+  const showCommonMode = (modeText: string): void => {
+    commonMode.textContent = modeText;
+    commonModeRow.dataset.visible = 'true';
+    commonModeRow.removeAttribute('aria-hidden');
+  };
+
   const renderWarming = (): void => {
     setStatus('Warming up');
     result.textContent = '—';
-    commonMode.textContent = '';
-    commonModeRow.hidden = true;
+    hideCommonMode();
     accessibleSummary.textContent = 'Refresh-rate measurement is warming up.';
     renderer.clear();
   };
@@ -67,13 +78,11 @@ export const mountRefreshRateTest = (root: HTMLElement): DisplayToolController =
     result.textContent = estimateText;
 
     if (snapshot.closestCommonMode === null) {
-      commonMode.textContent = '';
-      commonModeRow.hidden = true;
+      hideCommonMode();
       accessibleSummary.textContent = `Estimated refresh rate ${estimateText}.`;
     } else {
       const modeText = `${snapshot.closestCommonMode} Hz`;
-      commonMode.textContent = modeText;
-      commonModeRow.hidden = false;
+      showCommonMode(modeText);
       accessibleSummary.textContent = `Estimated refresh rate ${estimateText}. Closest common mode ${modeText}.`;
     }
 
