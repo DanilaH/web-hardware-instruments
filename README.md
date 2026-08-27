@@ -2,7 +2,7 @@
 
 A lightweight, browser-only hardware diagnostics website built as a low-maintenance SEO utility asset.
 
-Phase 0 and the first four production tools are implemented. Public deployment is intentionally deferred until a real domain is purchased. Development continues through the remaining approved full-v1 tools while the placeholder origin and site-wide `noindex` protection remain in place.
+Six of the seven approved full-v1 diagnostic tools are implemented. Public deployment is intentionally deferred until a real domain is purchased. Development continues through Keyboard Tester and the full-v1 audit while the placeholder origin and site-wide `noindex` protection remain in place.
 
 ## Start here
 
@@ -28,11 +28,11 @@ human visual checkpoint — approved
 FrameSampler + /fps-test + /refresh-rate-test — complete
 MouseMovementService + /mouse-dpi-test — complete
 code-side first-launch preparation — complete
+/controller-stick-drift-test — complete
+/controller-deadzone-test — complete
 
 current development:
-/controller-stick-drift-test
-→ /controller-deadzone-test
-→ /keyboard-tester
+/keyboard-tester
 → full-v1 audit
 
 before actual public deployment:
@@ -47,13 +47,13 @@ before actual public deployment:
 
 The deferred deployment gate is not waived. It is moved to the actual deployment boundary so full-v1 implementation can continue without inventing a production domain early.
 
-## Public release routes
-
-Already implemented:
+## Implemented routes
 
 ```text
 /
 /gamepad-tester
+/controller-stick-drift-test
+/controller-deadzone-test
 /fps-test
 /refresh-rate-test
 /mouse-dpi-test
@@ -61,11 +61,9 @@ Already implemented:
 /privacy
 ```
 
-Remaining approved full-v1 additions:
+Remaining approved full-v1 addition:
 
 ```text
-/controller-stick-drift-test
-/controller-deadzone-test
 /keyboard-tester
 ```
 
@@ -95,9 +93,9 @@ The production origin intentionally remains the reserved `https://hardware-testi
 
 Site-wide indexing remains disabled with `indexingEnabled: false`. While indexing is disabled, pages receive `noindex`, the sitemap integration is disabled, and `robots.txt` disallows crawling. The real origin and `indexingEnabled: true` must be introduced together in one reviewed pre-deployment change.
 
-## Validation boundary for Gamepad Tester
+## Validation boundary for controller tools
 
-Automated tests validate normalization, lifecycle, semantic mapping, build, and type safety. They do **not** replace real controller QA.
+Automated tests validate normalization, lifecycle foundations, standard-axis semantics, Stick Drift math, Deadzone p95/suggestion math, build, and type safety. They do **not** replace real controller QA.
 
 Before public deployment, manually verify where hardware is available:
 
@@ -106,7 +104,11 @@ Before public deployment, manually verify where hardware is available:
 - a generic/non-standard controller if available;
 - multiple controllers;
 - reconnect/disconnect behavior;
-- buttons, triggers, D-pad, and both sticks.
+- Gamepad Tester buttons, triggers, D-pad, and both sticks;
+- Stick Drift 3-second sampling, hidden-tab cancellation, disconnect cancellation, and both-stick results;
+- Deadzone left/right selection, 3-second sampling, radial ring/result behavior, hidden-tab cancellation, and disconnect cancellation.
+
+Do not claim real-device validation for hardware paths that have only been tested with mocks or static review.
 
 ## Validation boundary for display tests
 

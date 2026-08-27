@@ -1,0 +1,312 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.astro';
+---
+
+<ToolShell labelledBy="controller-deadzone-tool-heading">
+  <h2 id="controller-deadzone-tool-heading" class="deadzone-tool__sr">Controller Deadzone Test</h2>
+
+  <div class="deadzone-tool" data-controller-deadzone-test data-state="waiting">
+    <div class="deadzone-tool__topline">
+      <div class="deadzone-tool__status-copy">
+        <div class="deadzone-tool__status-row">
+          <span class="deadzone-tool__signal" aria-hidden="true"></span>
+          <strong data-deadzone-status>No controller detected</strong>
+        </div>
+        <p data-deadzone-instruction>Connect a controller and press any button.</p>
+      </div>
+
+      <label class="deadzone-tool__selector" data-deadzone-selector-wrap hidden>
+        <span>Controller</span>
+        <select data-deadzone-selector aria-label="Select controller"></select>
+      </label>
+    </div>
+
+    <div class="deadzone-tool__layout">
+      <div class="deadzone-tool__controls">
+        <fieldset class="stick-choice" data-deadzone-stick-choice disabled>
+          <legend>Stick</legend>
+          <label>
+            <input type="radio" name="deadzone-stick" value="left" checked data-deadzone-stick />
+            <span>Left</span>
+          </label>
+          <label>
+            <input type="radio" name="deadzone-stick" value="right" data-deadzone-stick />
+            <span>Right</span>
+          </label>
+        </fieldset>
+
+        <div class="deadzone-results">
+          <div class="deadzone-result">
+            <span>Observed center noise</span>
+            <strong class="measurement-value" data-deadzone-noise-result>—</strong>
+          </div>
+          <div class="deadzone-result">
+            <span>Suggested starting deadzone</span>
+            <strong class="measurement-value" data-deadzone-suggestion-result>—</strong>
+          </div>
+        </div>
+
+        <button type="button" class="primary-action" data-deadzone-start disabled>Start test</button>
+        <span class="deadzone-tool__progress" data-deadzone-progress>3-second sample</span>
+      </div>
+
+      <StickDeadzonePlot />
+    </div>
+
+    <p class="deadzone-tool__limitation" data-deadzone-limitation hidden></p>
+
+    <p class="deadzone-tool__sr" aria-live="polite" aria-atomic="true" data-deadzone-status-live></p>
+    <p class="deadzone-tool__sr" data-deadzone-accessible-summary>
+      No controller detected. Connect a controller and press any button.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountControllerDeadzoneTest } from './controller-deadzone-test-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-controller-deadzone-test]');
+  if (root) {
+    const controller = mountControllerDeadzoneTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (!event.persisted) {
+        controller.destroy();
+      }
+    });
+  }
+</script>
+
+<style>
+  .deadzone-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .deadzone-tool__topline {
+    min-height: 3rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .deadzone-tool__status-copy,
+  .deadzone-tool__status-copy p {
+    margin: 0;
+  }
+
+  .deadzone-tool__status-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .deadzone-tool__status-row strong {
+    font-size: 0.95rem;
+  }
+
+  .deadzone-tool__status-copy p {
+    margin-top: 0.2rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .deadzone-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .deadzone-tool[data-state='ready'] .deadzone-tool__signal,
+  .deadzone-tool[data-state='sampling'] .deadzone-tool__signal,
+  .deadzone-tool[data-state='result'] .deadzone-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .deadzone-tool[data-state='cancelled'] .deadzone-tool__signal,
+  .deadzone-tool[data-state='unavailable'] .deadzone-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .deadzone-tool__selector {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 9.5rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .deadzone-tool__selector select {
+    min-height: 2.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    padding-inline: var(--space-2);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .deadzone-tool__layout {
+    display: grid;
+    grid-template-columns: minmax(15rem, 0.9fr) minmax(16rem, 1.1fr);
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-3);
+    border-block: 1px solid #e3e6e7;
+  }
+
+  .deadzone-tool__controls {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .stick-choice {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .stick-choice legend {
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-2);
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .stick-choice label {
+    position: relative;
+  }
+
+  .stick-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .stick-choice span {
+    min-height: 2.5rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+    cursor: pointer;
+  }
+
+  .stick-choice input:checked + span {
+    border-color: var(--color-signal);
+    color: var(--color-text);
+    box-shadow: inset 0 0 0 1px var(--color-signal);
+  }
+
+  .stick-choice input:focus-visible + span {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .stick-choice:disabled span {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  .deadzone-results {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .deadzone-result {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: 2.6rem;
+  }
+
+  .deadzone-result span {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
+
+  .deadzone-result strong {
+    color: #aeb4b7;
+    font-size: clamp(1.7rem, 4vw, 2.65rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .deadzone-tool[data-state='result'] .deadzone-result strong {
+    color: var(--color-signal);
+  }
+
+  .primary-action {
+    min-height: 2.75rem;
+    border: 1px solid var(--color-signal);
+    border-radius: var(--radius-sm);
+    background: var(--color-signal);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .primary-action:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .deadzone-tool__progress,
+  .deadzone-tool__limitation {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
+
+  .deadzone-tool__limitation {
+    margin: 0;
+  }
+
+  .deadzone-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .deadzone-tool__topline {
+      flex-direction: column;
+    }
+
+    .deadzone-tool__selector {
+      width: 100%;
+    }
+
+    .deadzone-tool__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .deadzone-tool__layout :global(.deadzone-plot) {
+      max-width: 18rem;
+      margin-inline: auto;
+    }
+  }
+</style>
