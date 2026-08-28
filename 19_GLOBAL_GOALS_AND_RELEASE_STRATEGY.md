@@ -2,7 +2,9 @@
 
 This document defines why the product exists, what success means, what gets built first, and what must remain out of scope.
 
-`18_DECISIONS_AND_BOUNDARIES.md` remains the source of truth for exact implementation algorithms and browser behavior.
+`18_DECISIONS_AND_BOUNDARIES.md` remains the source of truth for global/full-v1 exact implementation algorithms and browser behavior.
+
+`20_POST_V1_HARDWARE_EXPANSION_SPEC.md` owns exact behavior, algorithms, UX, QA, and implementation order for the approved post-v1 Hardware Expansion 1 routes.
 
 # 1. Business thesis
 
@@ -127,13 +129,13 @@ Tool first. Search content supports the tool.
 
 The original staged-release intent was to publish the first four tools before finishing the full catalog so Search Console could begin collecting evidence early. Public deployment is now intentionally deferred until a real domain is purchased immediately before deployment.
 
-This changes sequencing, not the launch-quality requirements:
+This changes sequencing, not launch-quality requirements:
 
-- full-v1 development may continue while the reserved placeholder origin and `noindex` protection remain active;
-- do not invent or temporarily publish a fake production origin merely to preserve the earlier release sequence;
+- implementation may continue while the reserved placeholder origin and `noindex` protection remain active;
+- do not invent or temporarily publish a fake production origin merely to preserve an earlier release sequence;
 - before the first public indexed deployment, set the real production origin, complete required real-device/browser smoke, enable indexing, deploy, set up Google Search Console, and submit the generated sitemap.
 
-The first public deployment may therefore contain every approved tool that has passed its implementation/review gates by that time.
+The first public deployment may therefore contain every approved route that has passed its implementation and release-ready gates by that time.
 
 # 8. Full v1
 
@@ -149,13 +151,13 @@ Approved full-v1 catalog:
 /mouse-dpi-test
 ```
 
-Build and review each page independently and keep each polished enough to ship on its own. Do not use the deferred deployment decision as permission to bundle unfinished work or weaken review gates.
+All seven are implemented and the final code-side full-v1 audit is complete.
 
-Full v1 is complete when all seven approved tools are production-ready in code and the final audit is complete. Public indexing/deployment remains a separate explicit boundary immediately afterward.
+Existing full-v1 behavior remains stable during Expansion 1 except reviewed related-tool/internal-link updates or genuine correctness fixes.
 
 # 9. Expansion rule
 
-After full v1, a new tool is built only when at least one strong reason exists:
+A new tool is normally built only when at least one strong reason exists:
 
 ```text
 research validates independent demand/opportunity
@@ -165,9 +167,66 @@ the tool materially strengthens a successful existing cluster
 
 Being technically possible is not enough.
 
-Do not expand the catalog for completeness.
+The post-v1 Hardware Expansion 1 catalog has now satisfied this gate through completed search/SERP research plus cluster-fit review. Some routes are independent search opportunities; others are approved because they materially strengthen existing Mouse, Keyboard, Display, or Touch diagnostic coverage at low implementation/maintenance cost.
 
-# 10. Measurement of success
+Do not re-litigate the approved Expansion 1 catalog during implementation unless new evidence reveals a real conflict or the user explicitly changes scope.
+
+Future tools outside Expansion 1 still require the normal expansion rule.
+
+# 10. Approved Post-v1 Hardware Expansion 1
+
+Exact implementation contract: `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+Approved routes:
+
+```text
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
+/touch-screen-test
+/keyboard-rollover-test
+/keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
+/frame-skipping-test
+```
+
+Implementation is sequential, not a parallel scaffold:
+
+```text
+E1.0 source-of-truth
+→ E1.1 Mouse foundation + Mouse Tester
+→ E1.2 focused Mouse tools
+→ E1.3 Touch
+→ E1.4 Keyboard expansion
+→ E1.5 display visual-inspection tools
+→ E1.6 Frame Skipping
+→ E1.7 final Expansion 1 audit
+```
+
+Do not add placeholder cards/routes for later steps.
+
+Expansion 1 does not authorize Audio, CPS/reaction-time utilities, hardware latency claims, dashboards, accounts, exports, WebHID, or backend scope.
+
+# 11. Code-complete vs release-ready
+
+Expansion 1 preserves the same honesty boundary used during full-v1 work:
+
+```text
+code-complete
+= implementation + source-of-truth compliance + automated tests + visual/headless review
+
+release-ready
+= code-complete + required real-device/browser/camera checks for that route
+```
+
+Mock/headless input can validate state and geometry but is never evidence of real hardware behavior.
+
+A route may be code-complete while waiting for external hardware required for release-ready status.
+
+# 12. Measurement of success
 
 Evidence progresses roughly as:
 
@@ -185,9 +244,9 @@ Do not treat a technically working site as proof that the business hypothesis wo
 
 Do not treat early low traffic as failure before the site has had a reasonable indexing/ranking window.
 
-# 11. Monetization boundary
+# 13. Monetization boundary
 
-Display ads are a later layer, not an MVP dependency.
+Display ads are a later layer, not an implementation dependency.
 
 When enabled:
 
@@ -199,7 +258,7 @@ When enabled:
 
 Do not add empty ad boxes before monetization begins.
 
-# 12. Global priorities
+# 14. Global priorities
 
 When choices conflict, use this order:
 
