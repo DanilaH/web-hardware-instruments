@@ -1,0 +1,231 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
+import { keyboardGhostingPresets } from './ghosting-presets';
+---
+
+<ToolShell labelledBy="ghosting-tool-heading">
+  <h2 id="ghosting-tool-heading" class="ghosting-tool__sr">Keyboard Ghosting Test controls</h2>
+
+  <div class="ghosting-tool" data-keyboard-ghosting data-state="ready" data-phase="idle">
+    <div class="ghosting-tool__status-row">
+      <span class="ghosting-tool__signal" aria-hidden="true"></span>
+      <strong data-ghosting-status role="status" aria-live="polite">Ready for a guided combination</strong>
+    </div>
+
+    <p class="ghosting-tool__instruction">Choose a combination, then hold every highlighted key during the 3-second observation.</p>
+
+    <div class="ghosting-tool__controls">
+      <label>
+        <span>Combination</span>
+        <select data-ghosting-preset>
+          {keyboardGhostingPresets.map((preset) => <option value={preset.id}>{preset.label}</option>)}
+        </select>
+      </label>
+      <button type="button" class="ghosting-action ghosting-action--primary" data-ghosting-start>Start test</button>
+    </div>
+
+    <div class="ghosting-tool__visual-wrap">
+      <KeyboardGrid />
+    </div>
+
+    <section class="ghosting-result" aria-labelledby="ghosting-result-heading">
+      <span id="ghosting-result-heading">Observed for this combination</span>
+      <strong data-ghosting-result>Choose a combination, then start the guided observation.</strong>
+      <p data-ghosting-detail></p>
+    </section>
+
+    <p class="ghosting-tool__note">The result assumes you physically held the instructed keys. Reserved operating-system or browser shortcuts may never reach this page.</p>
+
+    <p class="ghosting-tool__sr" data-ghosting-accessible-summary aria-live="polite">
+      Keyboard Ghosting Test is ready.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountKeyboardGhostingTest } from './keyboard-ghosting-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-keyboard-ghosting]');
+  if (root) {
+    const controller = mountKeyboardGhostingTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) controller.start();
+    });
+  }
+</script>
+
+<style>
+  .ghosting-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .ghosting-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .ghosting-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .ghosting-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .ghosting-tool[data-state='unavailable'] .ghosting-tool__signal {
+    background: #aeb4b7;
+  }
+
+  .ghosting-tool__instruction,
+  .ghosting-tool__note,
+  .ghosting-result p {
+    margin: 0;
+  }
+
+  .ghosting-tool__instruction {
+    font-size: 0.95rem;
+  }
+
+  .ghosting-tool__controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--space-3);
+  }
+
+  .ghosting-tool__controls label {
+    min-width: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .ghosting-tool__controls label > span,
+  .ghosting-result > span {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .ghosting-tool__controls select,
+  .ghosting-action {
+    min-height: 2.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.35rem;
+    font: inherit;
+  }
+
+  .ghosting-tool__controls select {
+    width: 100%;
+    background: #fff;
+    padding: 0.45rem 0.65rem;
+    color: var(--color-text);
+  }
+
+  .ghosting-action {
+    background: #fff;
+    padding: 0.5rem 0.9rem;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .ghosting-action--primary {
+    border-color: var(--color-signal);
+    background: color-mix(in srgb, var(--color-signal) 10%, white);
+    font-weight: 650;
+  }
+
+  .ghosting-action:disabled,
+  .ghosting-tool__controls select:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+  }
+
+  .ghosting-tool__visual-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .ghosting-tool__visual-wrap :global([data-key-code][data-expected='true']) {
+    border-color: color-mix(in srgb, var(--color-signal) 55%, #d5dadc);
+    background: color-mix(in srgb, var(--color-signal) 7%, var(--color-surface));
+    color: var(--color-text);
+  }
+
+  .ghosting-tool__visual-wrap :global([data-key-code][data-observation='matched']) {
+    border-color: var(--color-signal);
+    background: color-mix(in srgb, var(--color-signal) 18%, var(--color-surface));
+  }
+
+  .ghosting-tool__visual-wrap :global([data-key-code][data-observation='missed']) {
+    border-color: #9da4a7;
+    background: #f1f3f3;
+    box-shadow: inset 0 0 0 1px #c8cdcf;
+  }
+
+  .ghosting-tool__visual-wrap :global([data-key-code][data-additional='true']) {
+    outline: 1px dashed #7f878a;
+    outline-offset: 2px;
+  }
+
+  .ghosting-result {
+    display: grid;
+    gap: 0.35rem;
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-3);
+  }
+
+  .ghosting-result strong {
+    font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+    line-height: 1.35;
+  }
+
+  .ghosting-result p,
+  .ghosting-tool__note {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .ghosting-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .ghosting-tool__controls {
+      grid-template-columns: 1fr;
+    }
+
+    .ghosting-action {
+      width: 100%;
+    }
+  }
+</style>
