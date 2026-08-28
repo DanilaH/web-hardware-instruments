@@ -3,134 +3,44 @@ import ToolIcon from '../components/icons/ToolIcon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const controllerTools = [
-  {
-    href: '/gamepad-tester',
-    icon: 'gamepad',
-    name: 'Gamepad Tester',
-    description: 'Test controller buttons, sticks, D-pad, and triggers.',
-  },
-  {
-    href: '/controller-stick-drift-test',
-    icon: 'drift',
-    name: 'Controller Stick Drift Test',
-    description: 'Measure observed analog-stick center offset while untouched.',
-  },
-  {
-    href: '/controller-deadzone-test',
-    icon: 'deadzone',
-    name: 'Controller Deadzone Test',
-    description: 'Measure stick center noise and a heuristic starting deadzone.',
-  },
+  { href: '/gamepad-tester', icon: 'gamepad', name: 'Gamepad Tester', description: 'Test controller buttons, sticks, D-pad, and triggers.' },
+  { href: '/controller-stick-drift-test', icon: 'drift', name: 'Controller Stick Drift Test', description: 'Measure observed analog-stick center offset while untouched.' },
+  { href: '/controller-deadzone-test', icon: 'deadzone', name: 'Controller Deadzone Test', description: 'Measure stick center noise and a heuristic starting deadzone.' },
 ] as const;
 
 const mouseTools = [
-  {
-    href: '/mouse-tester',
-    icon: 'mouse',
-    name: 'Mouse Tester',
-    description: 'Check browser-detected mouse buttons, wheel input, and movement.',
-  },
-  {
-    href: '/mouse-button-test',
-    icon: 'button',
-    name: 'Mouse Button Test',
-    description: 'Check primary, middle, secondary, back, and forward button input.',
-  },
-  {
-    href: '/mouse-scroll-test',
-    icon: 'scroll',
-    name: 'Mouse Scroll Test',
-    description: 'Inspect browser-detected wheel directions and recent events.',
-  },
-  {
-    href: '/double-click-test',
-    icon: 'double-click',
-    name: 'Double Click Test',
-    description: 'Look for unusually fast repeated same-button presses.',
-  },
-  {
-    href: '/mouse-polling-rate-test',
-    icon: 'polling',
-    name: 'Mouse Polling Rate Test',
-    description: 'Measure the pointer sample rate observed by this browser.',
-  },
-  {
-    href: '/mouse-dpi-test',
-    icon: 'dpi',
-    name: 'Mouse DPI Test',
-    description: 'Estimate mouse DPI from a measured physical movement distance.',
-  },
+  { href: '/mouse-tester', icon: 'mouse', name: 'Mouse Tester', description: 'Check browser-detected mouse buttons, wheel input, and movement.' },
+  { href: '/mouse-button-test', icon: 'button', name: 'Mouse Button Test', description: 'Check primary, middle, secondary, back, and forward button input.' },
+  { href: '/mouse-scroll-test', icon: 'scroll', name: 'Mouse Scroll Test', description: 'Inspect browser-detected wheel directions and recent events.' },
+  { href: '/double-click-test', icon: 'double-click', name: 'Double Click Test', description: 'Look for unusually fast repeated same-button presses.' },
+  { href: '/mouse-polling-rate-test', icon: 'polling', name: 'Mouse Polling Rate Test', description: 'Measure the pointer sample rate observed by this browser.' },
+  { href: '/mouse-dpi-test', icon: 'dpi', name: 'Mouse DPI Test', description: 'Estimate mouse DPI from a measured physical movement distance.' },
 ] as const;
 
 const keyboardTools = [
-  {
-    href: '/keyboard-tester',
-    icon: 'keyboard',
-    name: 'Keyboard Tester',
-    description: 'Press keys and see which physical key codes the browser detects.',
-  },
-  {
-    href: '/keyboard-rollover-test',
-    icon: 'rollover',
-    name: 'Keyboard Rollover Test',
-    description: 'See the largest simultaneous key set this browser detects.',
-  },
-  {
-    href: '/keyboard-ghosting-test',
-    icon: 'ghosting',
-    name: 'Keyboard Ghosting Test',
-    description: 'Compare guided key combinations with the keys detected together.',
-  },
+  { href: '/keyboard-tester', icon: 'keyboard', name: 'Keyboard Tester', description: 'Press keys and see which physical key codes the browser detects.' },
+  { href: '/keyboard-rollover-test', icon: 'rollover', name: 'Keyboard Rollover Test', description: 'See the largest simultaneous key set this browser detects.' },
+  { href: '/keyboard-ghosting-test', icon: 'ghosting', name: 'Keyboard Ghosting Test', description: 'Compare guided key combinations with the keys detected together.' },
 ] as const;
 
 const displayTools = [
-  {
-    href: '/fps-test',
-    icon: 'fps',
-    name: 'FPS Test',
-    description: 'Observe this browser page’s frame delivery and recent drops.',
-  },
-  {
-    href: '/refresh-rate-test',
-    icon: 'refresh',
-    name: 'Refresh Rate Test',
-    description: 'Estimate the display cadence currently visible to the browser.',
-  },
-  {
-    href: '/frame-skipping-test',
-    icon: 'frame-skip',
-    name: 'Frame Skipping Test',
-    description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.',
-  },
-  {
-    href: '/dead-pixel-test',
-    icon: 'dead-pixel',
-    name: 'Dead Pixel Test',
-    description: 'Inspect the screen against solid colors for dead or stuck pixels.',
-  },
-  {
-    href: '/backlight-bleed-test',
-    icon: 'backlight',
-    name: 'Backlight Bleed Test',
-    description: 'Inspect a backlit display for bright leakage on a black screen.',
-  },
+  { href: '/fps-test', icon: 'fps', name: 'FPS Test', description: 'Observe this browser page’s frame delivery and recent drops.' },
+  { href: '/refresh-rate-test', icon: 'refresh', name: 'Refresh Rate Test', description: 'Estimate the display cadence currently visible to the browser.' },
+  { href: '/frame-skipping-test', icon: 'frame-skip', name: 'Frame Skipping Test', description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.' },
+  { href: '/dead-pixel-test', icon: 'dead-pixel', name: 'Dead Pixel Test', description: 'Inspect the screen against solid colors for dead or stuck pixels.' },
+  { href: '/backlight-bleed-test', icon: 'backlight', name: 'Backlight Bleed Test', description: 'Inspect a backlit display for bright leakage on a black screen.' },
 ] as const;
 
 const touchTools = [
-  {
-    href: '/touch-screen-test',
-    icon: 'touch',
-    name: 'Touch Screen Test',
-    description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.',
-  },
+  { href: '/touch-screen-test', icon: 'touch', name: 'Touch Screen Test', description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.' },
 ] as const;
 
 const groups = [
-  { id: 'controller', name: 'Controller', icon: 'gamepad', tone: 'blue', tools: controllerTools },
-  { id: 'mouse', name: 'Mouse', icon: 'mouse', tone: 'cyan', tools: mouseTools },
-  { id: 'keyboard', name: 'Keyboard', icon: 'keyboard', tone: 'violet', tools: keyboardTools },
-  { id: 'display', name: 'Display', icon: 'refresh', tone: 'sky', tools: displayTools },
-  { id: 'touch', name: 'Touch', icon: 'touch', tone: 'teal', tools: touchTools },
+  { code: '01', id: 'controller', name: 'Controller', icon: 'gamepad', tools: controllerTools },
+  { code: '02', id: 'mouse', name: 'Mouse', icon: 'mouse', tools: mouseTools },
+  { code: '03', id: 'keyboard', name: 'Keyboard', icon: 'keyboard', tools: keyboardTools },
+  { code: '04', id: 'display', name: 'Display', icon: 'refresh', tools: displayTools },
+  { code: '05', id: 'touch', name: 'Touch', icon: 'touch', tools: touchTools },
 ] as const;
 
 const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
@@ -144,7 +54,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 >
   <section class="home-hero">
     <div class="home-hero__copy">
-      <p class="home-eyebrow"><span aria-hidden="true"></span> Browser diagnostics · local by default</p>
+      <p class="home-eyebrow"><span aria-hidden="true">CAL</span> Browser input / local by default</p>
       <h1 class="page-heading">Hardware Tests in Your Browser</h1>
       <p class="page-intro">
         Focused diagnostics for controllers, mice, keyboards, displays, and touchscreens — built to show what the browser actually detects.
@@ -165,24 +75,30 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       <span class="diagnostic-axis diagnostic-axis--y"></span>
       <span class="diagnostic-core"></span>
 
-      <span class="diagnostic-node diagnostic-node--gamepad"><ToolIcon kind="gamepad" size={18} /></span>
-      <span class="diagnostic-node diagnostic-node--mouse"><ToolIcon kind="mouse" size={18} /></span>
-      <span class="diagnostic-node diagnostic-node--fps"><ToolIcon kind="fps" size={18} /></span>
-      <span class="diagnostic-node diagnostic-node--touch"><ToolIcon kind="touch" size={18} /></span>
+      <span class="diagnostic-node diagnostic-node--gamepad"><ToolIcon kind="gamepad" size={17} /></span>
+      <span class="diagnostic-node diagnostic-node--mouse"><ToolIcon kind="mouse" size={17} /></span>
+      <span class="diagnostic-node diagnostic-node--fps"><ToolIcon kind="fps" size={17} /></span>
+      <span class="diagnostic-node diagnostic-node--touch"><ToolIcon kind="touch" size={17} /></span>
+
+      <span class="diagnostic-readout diagnostic-readout--x">X&nbsp;&nbsp;+0.00</span>
+      <span class="diagnostic-readout diagnostic-readout--y">Y&nbsp;&nbsp;+0.00</span>
+      <span class="diagnostic-readout diagnostic-readout--hz">144.0&nbsp;HZ</span>
+      <span class="diagnostic-index">OBS / 018</span>
 
       <svg class="diagnostic-wave" viewBox="0 0 180 40" preserveAspectRatio="none">
         <path d="M1 24h32l8 -12l12 20l11 -16l10 8h20l8 -10l9 18l10 -8h58" />
       </svg>
-      <span class="diagnostic-label">signal / browser observed</span>
+      <span class="diagnostic-label">browser-observed signal</span>
     </div>
   </section>
 
   <nav class="category-rail" aria-label="Hardware categories">
     {groups.map((group) => (
-      <a href={`#${group.id}`} data-tone={group.tone}>
-        <span class="category-rail__icon"><ToolIcon kind={group.icon} size={20} /></span>
+      <a href={`#${group.id}`}>
+        <small>{group.code}</small>
+        <span class="category-rail__icon"><ToolIcon kind={group.icon} size={18} /></span>
         <span>{group.name}</span>
-        <small>{group.tools.length}</small>
+        <b>{group.tools.length}</b>
       </a>
     ))}
   </nav>
@@ -190,7 +106,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   <section class="home-tools" aria-labelledby="available-tools">
     <div class="home-tools__header">
       <div>
-        <p class="home-kicker">Diagnostics catalog</p>
+        <p class="home-kicker">Diagnostics catalog / 018</p>
         <h2 id="available-tools">Choose a tool</h2>
       </div>
       <p>Each page does one job and explains what the browser can — and cannot — observe.</p>
@@ -200,8 +116,9 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       {columns.map((column) => (
         <div class="tool-column">
           {column.map((group) => (
-            <section class="tool-group" id={group.id} data-tone={group.tone} aria-labelledby={`tool-group-${group.id}`}>
+            <section class="tool-group" id={group.id} aria-labelledby={`tool-group-${group.id}`}>
               <header class="tool-group__header">
+                <span class="tool-group__code" aria-hidden="true">{group.code}</span>
                 <span class="tool-group__icon" aria-hidden="true"><ToolIcon kind={group.icon} size={20} /></span>
                 <div>
                   <h3 id={`tool-group-${group.id}`}>{group.name}</h3>
@@ -210,9 +127,10 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
               </header>
 
               <div class="tool-list">
-                {group.tools.map((tool) => (
+                {group.tools.map((tool, toolIndex) => (
                   <a class="tool-link" href={tool.href}>
-                    <span class="tool-link__icon" aria-hidden="true"><ToolIcon kind={tool.icon} size={21} /></span>
+                    <span class="tool-link__index" aria-hidden="true">{group.code}.{String(toolIndex + 1).padStart(2, '0')}</span>
+                    <span class="tool-link__icon" aria-hidden="true"><ToolIcon kind={tool.icon} size={20} /></span>
                     <span class="tool-link__copy">
                       <strong>{tool.name}</strong>
                       <small>{tool.description}</small>
@@ -232,29 +150,29 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 <style>
   .home-hero {
     position: relative;
-    min-height: 14rem;
+    min-height: 13.5rem;
     overflow: hidden;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.42fr);
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.4fr);
     align-items: center;
     gap: clamp(1.5rem, 4vw, 4rem);
-    padding: clamp(1.6rem, 3.5vw, 2.5rem) clamp(1.5rem, 4vw, 3rem) 3.2rem;
-    border: 1px solid #183740;
-    border-radius: 19px;
-    background: #112a32;
-    color: #edf7f9;
-    box-shadow: 0 24px 60px rgba(15, 39, 47, 0.16);
+    padding: clamp(1.55rem, 3.2vw, 2.35rem) clamp(1.5rem, 4vw, 3rem) 2.85rem;
+    border: 1px solid #373b3b;
+    border-left: 3px solid #ff6b35;
+    border-radius: 6px;
+    background: #191c1d;
+    color: #f1eee7;
   }
 
   .home-hero::before {
     content: '';
     position: absolute;
-    inset: 0 0 0 54%;
-    opacity: 0.18;
+    inset: 0 0 0 56%;
+    opacity: 0.14;
     background-image:
-      linear-gradient(rgba(135, 199, 212, 0.22) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(135, 199, 212, 0.22) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(rgba(239, 234, 222, 0.24) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239, 234, 222, 0.24) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
   .home-hero__copy {
@@ -266,106 +184,143 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   .home-eyebrow,
   .home-kicker {
     margin: 0;
-    font-size: 0.7rem;
-    font-weight: 750;
-    letter-spacing: 0.09em;
+    font: 650 0.64rem/1.2 var(--font-mono);
+    letter-spacing: 0.085em;
     text-transform: uppercase;
   }
 
   .home-eyebrow {
     display: flex;
     align-items: center;
-    gap: 0.58rem;
+    gap: 0.65rem;
     margin-bottom: var(--space-3);
-    color: #8fb8c2;
+    color: #9ca2a0;
   }
 
   .home-eyebrow span {
-    width: 0.48rem;
-    height: 0.48rem;
-    border-radius: 50%;
-    background: #69c8dd;
-    box-shadow: 0 0 0 4px rgba(105, 200, 221, 0.1);
+    padding: 0.2rem 0.34rem;
+    border: 1px solid #ff6b35;
+    border-radius: 2px;
+    color: #ff8055;
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
   }
 
   .home-hero .page-heading {
     max-width: 42rem;
     margin-bottom: var(--space-3);
-    color: #f4fbfc;
-    font-size: clamp(2.5rem, 5vw, 4.35rem);
+    color: #f5f1e8;
+    font-size: clamp(2.45rem, 5vw, 4.25rem);
     line-height: 0.96;
-    letter-spacing: -0.058em;
+    letter-spacing: -0.055em;
   }
 
   .home-hero .page-intro {
     max-width: 42rem;
-    color: #a9bec4;
-    font-size: clamp(1rem, 1.5vw, 1.1rem);
+    color: #a8aeac;
+    font-size: clamp(0.98rem, 1.5vw, 1.08rem);
     line-height: 1.52;
   }
 
   .home-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.65rem;
     margin-top: var(--space-5);
+    border-top: 1px solid #34393a;
   }
 
   .home-facts span {
-    min-width: 7.5rem;
+    min-width: 8.5rem;
     display: grid;
-    gap: 0.06rem;
-    padding: 0.52rem 0.72rem;
-    border: 1px solid rgba(139, 203, 216, 0.13);
-    border-radius: 10px;
-    background: rgba(232, 248, 251, 0.035);
+    gap: 0.05rem;
+    padding: 0.6rem 1.1rem 0 0;
+    margin-right: 1.1rem;
+    border-right: 1px solid #34393a;
+  }
+
+  .home-facts span:last-child {
+    border-right: 0;
   }
 
   .home-facts strong {
-    color: #dff8fc;
+    color: #f1eee7;
     font: 700 0.9rem var(--font-mono);
   }
 
   .home-facts small {
-    color: #77959d;
-    font-size: 0.67rem;
-    line-height: 1.2;
+    color: #737b7a;
+    font: 600 0.58rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .diagnostic-visual {
     position: relative;
     z-index: 1;
-    width: min(100%, 19rem);
+    width: min(100%, 18rem);
     aspect-ratio: 1;
     justify-self: end;
+    border: 1px solid rgba(239, 234, 222, 0.24);
+    background: rgba(255, 255, 255, 0.012);
+  }
+
+  .diagnostic-visual::before,
+  .diagnostic-visual::after {
+    content: '';
+    position: absolute;
+    background: #ff6b35;
+  }
+
+  .diagnostic-visual::before {
+    width: 2.4rem;
+    height: 1px;
+    left: -1px;
+    top: -1px;
+  }
+
+  .diagnostic-visual::after {
+    width: 1px;
+    height: 2.4rem;
+    left: -1px;
+    top: -1px;
   }
 
   .diagnostic-grid {
     position: absolute;
     inset: 12%;
-    border: 1px solid rgba(121, 196, 212, 0.12);
-    border-radius: 20px;
-    rotate: 7deg;
+    background-image:
+      linear-gradient(rgba(239, 234, 222, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239, 234, 222, 0.1) 1px, transparent 1px);
+    background-size: 18px 18px;
   }
 
   .diagnostic-grid::before,
   .diagnostic-grid::after {
     content: '';
     position: absolute;
-    inset: 14%;
-    border: 1px solid rgba(121, 196, 212, 0.09);
-    border-radius: 14px;
+    background: repeating-linear-gradient(90deg, rgba(239, 234, 222, 0.3) 0 1px, transparent 1px 9px);
+  }
+
+  .diagnostic-grid::before {
+    left: 0;
+    right: 0;
+    top: -0.5rem;
+    height: 0.28rem;
   }
 
   .diagnostic-grid::after {
-    inset: 29%;
-    border-radius: 50%;
+    left: 0;
+    right: 0;
+    bottom: -0.5rem;
+    height: 0.28rem;
   }
 
   .diagnostic-ring,
   .diagnostic-axis,
   .diagnostic-core,
-  .diagnostic-node {
+  .diagnostic-node,
+  .diagnostic-readout,
+  .diagnostic-index {
     position: absolute;
   }
 
@@ -373,99 +328,85 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     left: 50%;
     top: 50%;
     translate: -50% -50%;
-    border: 1px solid rgba(121, 196, 212, 0.24);
+    border: 1px solid rgba(239, 234, 222, 0.22);
     border-radius: 50%;
   }
 
-  .diagnostic-ring--outer {
-    width: 10.4rem;
-    height: 10.4rem;
-  }
-
-  .diagnostic-ring--inner {
-    width: 5.6rem;
-    height: 5.6rem;
-    border-color: rgba(105, 200, 221, 0.42);
-  }
+  .diagnostic-ring--outer { width: 9.7rem; height: 9.7rem; }
+  .diagnostic-ring--inner { width: 5rem; height: 5rem; border-color: rgba(255, 107, 53, 0.45); }
 
   .diagnostic-axis {
     left: 50%;
     top: 50%;
     translate: -50% -50%;
-    background: rgba(121, 196, 212, 0.25);
+    background: rgba(239, 234, 222, 0.26);
   }
 
-  .diagnostic-axis--x {
-    width: 13rem;
-    height: 1px;
-  }
-
-  .diagnostic-axis--y {
-    width: 1px;
-    height: 13rem;
-  }
+  .diagnostic-axis--x { width: 12rem; height: 1px; }
+  .diagnostic-axis--y { width: 1px; height: 12rem; }
 
   .diagnostic-core {
     left: 50%;
     top: 50%;
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.55rem;
+    height: 0.55rem;
     translate: -50% -50%;
-    border-radius: 50%;
-    background: #78d9eb;
-    box-shadow: 0 0 0 5px rgba(120, 217, 235, 0.1), 0 0 22px rgba(120, 217, 235, 0.24);
+    background: #ff6b35;
   }
 
   .diagnostic-core::after {
     content: '';
     position: absolute;
-    inset: -0.45rem;
-    border: 1px solid rgba(120, 217, 235, 0.35);
-    border-radius: 50%;
+    inset: -0.38rem;
+    border: 1px solid rgba(255, 107, 53, 0.55);
   }
 
   .diagnostic-node {
-    width: 2.35rem;
-    height: 2.35rem;
     display: grid;
     place-items: center;
-    border: 1px solid rgba(139, 203, 216, 0.2);
-    border-radius: 11px;
-    background: #173740;
-    color: #9bdae7;
-    box-shadow: 0 8px 18px rgba(5, 20, 25, 0.2);
+    color: #d5d0c6;
   }
 
-  .diagnostic-node--gamepad { left: 6%; top: 18%; }
-  .diagnostic-node--mouse { right: 4%; top: 25%; }
-  .diagnostic-node--fps { left: 13%; bottom: 11%; }
-  .diagnostic-node--touch { right: 8%; bottom: 8%; }
+  .diagnostic-node--gamepad { left: 7%; top: 19%; }
+  .diagnostic-node--mouse { right: 7%; top: 25%; }
+  .diagnostic-node--fps { left: 12%; bottom: 13%; }
+  .diagnostic-node--touch { right: 9%; bottom: 11%; }
+
+  .diagnostic-readout,
+  .diagnostic-index,
+  .diagnostic-label {
+    color: #8d9491;
+    font: 600 0.54rem var(--font-mono);
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+  }
+
+  .diagnostic-readout--x { left: 5%; top: 4%; }
+  .diagnostic-readout--y { left: 35%; top: 4%; }
+  .diagnostic-readout--hz { right: 4%; top: 4%; color: #ff8055; }
+  .diagnostic-index { left: 4%; bottom: 3%; }
 
   .diagnostic-wave {
     position: absolute;
-    left: 17%;
-    right: 17%;
-    bottom: 22%;
-    width: 66%;
-    height: 2.25rem;
+    left: 20%;
+    right: 20%;
+    bottom: 21%;
+    width: 60%;
+    height: 2rem;
     overflow: visible;
   }
 
   .diagnostic-wave path {
     fill: none;
-    stroke: rgba(120, 217, 235, 0.64);
-    stroke-width: 1.5;
+    stroke: rgba(255, 107, 53, 0.78);
+    stroke-width: 1.25;
     vector-effect: non-scaling-stroke;
   }
 
   .diagnostic-label {
     position: absolute;
-    right: 9%;
-    bottom: 1%;
-    color: #64858e;
-    font: 600 0.57rem var(--font-mono);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    right: 4%;
+    bottom: 3%;
   }
 
   .category-rail {
@@ -473,69 +414,51 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     z-index: 3;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0.6rem;
-    margin: -1.45rem clamp(0.85rem, 2vw, 1.5rem) 0;
+    margin: -1px 0 0;
+    border: 1px solid #cfd2cf;
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    background: #f2efe8;
   }
 
   .category-rail a {
-    --tone: #1688a8;
     min-width: 0;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.72rem 0.85rem;
-    border: 1px solid #d7e2e5;
-    border-radius: 12px;
-    background: #fff;
-    color: #26343a;
+    gap: 0.55rem;
+    padding: 0.68rem 0.78rem;
+    border-right: 1px solid #d7d9d5;
+    color: #2b3030;
     text-decoration: none;
-    box-shadow: 0 10px 24px rgba(27, 54, 64, 0.09);
-    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    transition: background 120ms ease, color 120ms ease;
   }
 
-  .category-rail a:hover {
-    color: #172126;
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--tone) 38%, #dbe4e7);
-    box-shadow: 0 13px 28px rgba(27, 54, 64, 0.12);
+  .category-rail a:last-child { border-right: 0; }
+  .category-rail a:hover { color: #171a1b; background: #ebe7de; }
+
+  .category-rail small,
+  .category-rail b {
+    color: #8a8f8c;
+    font: 600 0.56rem var(--font-mono);
+    letter-spacing: 0.05em;
   }
 
   .category-rail__icon {
     display: grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9px;
-    color: var(--tone);
-    background: color-mix(in srgb, var(--tone) 9%, white);
+    color: #e55a28;
   }
 
-  .category-rail a > span:nth-child(2) {
+  .category-rail a > span:nth-child(3) {
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 0.79rem;
+    font-weight: 720;
   }
 
-  .category-rail small {
-    color: #829198;
-    font: 0.72rem var(--font-mono);
-  }
-
-  [data-tone='blue'] { --tone: #4776cf; }
-  [data-tone='cyan'] { --tone: #1688a8; }
-  [data-tone='violet'] { --tone: #7668c5; }
-  [data-tone='sky'] { --tone: #2d83b7; }
-  [data-tone='teal'] { --tone: #258f83; }
-
-  .home-tools {
-    margin-top: var(--space-6);
-  }
-
-  .home-kicker {
-    color: #54717c;
-  }
+  .home-tools { margin-top: var(--space-6); }
+  .home-kicker { color: #777e7b; }
 
   .home-tools__header {
     display: flex;
@@ -543,19 +466,21 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     justify-content: space-between;
     gap: var(--space-5);
     margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid #cfd3d1;
   }
 
   .home-tools__header h2 {
     margin: 0.25rem 0 0;
-    font-size: clamp(1.45rem, 2.5vw, 2rem);
-    letter-spacing: -0.03em;
+    font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+    letter-spacing: -0.035em;
   }
 
   .home-tools__header > p {
     max-width: 31rem;
     margin: 0;
     color: var(--color-muted);
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     line-height: 1.5;
   }
 
@@ -573,195 +498,169 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   }
 
   .tool-group {
-    --tone: #1688a8;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid #dce5e8;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 10px 28px rgba(27, 54, 64, 0.055);
+    border: 1px solid #cfd3d1;
+    border-radius: 6px;
+    background: #faf9f5;
     scroll-margin-top: 1rem;
   }
 
   .tool-group__header {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.9rem 1rem 0.8rem;
-    border-bottom: 1px solid #e6ecee;
-    background: color-mix(in srgb, var(--tone) 4%, #fbfcfc);
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--tone) 65%, white);
+    gap: 0.65rem;
+    padding: 0.72rem 0.82rem;
+    border-bottom: 1px solid #d8dbd8;
+    border-top: 2px solid #ff6b35;
+    background: #f0ede6;
+  }
+
+  .tool-group__code {
+    color: #929793;
+    font: 600 0.57rem var(--font-mono);
+    letter-spacing: 0.06em;
   }
 
   .tool-group__icon {
     display: grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 10px;
-    color: var(--tone);
-    background: color-mix(in srgb, var(--tone) 9%, white);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 14%, #e1e8ea);
+    color: #d95729;
   }
 
   .tool-group h3 {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     letter-spacing: -0.01em;
   }
 
   .tool-group__header p {
-    margin: 0.05rem 0 0;
-    color: #819096;
-    font-size: 0.7rem;
+    margin: 0.04rem 0 0;
+    color: #8b918e;
+    font: 600 0.58rem var(--font-mono);
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
   }
 
-  .tool-list {
-    display: grid;
-    padding: 0.35rem;
-  }
+  .tool-list { display: grid; }
 
   .tool-link {
     min-width: 0;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: 2.45rem auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.78rem 0.75rem;
-    border-radius: 11px;
+    gap: 0.72rem;
+    padding: 0.76rem 0.82rem;
     text-decoration: none;
-    transition: background 140ms ease, transform 140ms ease;
+    transition: background 110ms ease;
   }
 
-  .tool-link + .tool-link {
-    border-top: 1px solid #edf1f2;
-    border-radius: 0;
-  }
+  .tool-link + .tool-link { border-top: 1px solid #e1e3e0; }
+  .tool-link:hover { color: #171a1b; background: #f2efe8; }
 
-  .tool-link:hover {
-    color: #172126;
-    background: color-mix(in srgb, var(--tone) 5.5%, white);
-    transform: translateX(2px);
+  .tool-link__index {
+    color: #a0a4a1;
+    font: 600 0.54rem var(--font-mono);
+    letter-spacing: 0.035em;
   }
 
   .tool-link__icon {
     display: grid;
     place-items: center;
-    width: 2.35rem;
-    height: 2.35rem;
-    border: 1px solid #e3e9eb;
-    border-radius: 10px;
-    color: var(--tone);
-    background: #fbfcfc;
-    transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    color: #555d5b;
+    transition: color 110ms ease, translate 110ms ease;
   }
 
   .tool-link:hover .tool-link__icon {
-    transform: scale(1.04);
-    border-color: color-mix(in srgb, var(--tone) 24%, #e3e9eb);
-    background: color-mix(in srgb, var(--tone) 7%, white);
+    color: #e05828;
+    translate: 1px 0;
   }
 
-  .tool-link__copy {
-    min-width: 0;
-  }
-
+  .tool-link__copy { min-width: 0; }
   .tool-link strong,
-  .tool-link small {
-    display: block;
-  }
+  .tool-link small { display: block; }
 
   .tool-link strong {
-    color: #1f2b30;
-    font-size: 0.9rem;
+    color: #242a29;
+    font-size: 0.88rem;
     line-height: 1.25;
   }
 
   .tool-link small {
-    margin-top: 0.12rem;
-    color: #6f7d83;
-    font-size: 0.76rem;
+    margin-top: 0.1rem;
+    color: #717875;
+    font-size: 0.74rem;
     line-height: 1.35;
   }
 
   .tool-link__arrow {
-    color: #9aa8ad;
-    transition: translate 140ms ease, color 140ms ease;
+    color: #9ca09d;
+    transition: translate 110ms ease, color 110ms ease;
   }
 
   .tool-link:hover .tool-link__arrow {
-    color: var(--tone);
+    color: #e05828;
     translate: 3px 0;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .diagnostic-core::after {
-      animation: signal-pulse 2.8s ease-out infinite;
-    }
+    .diagnostic-core::after { animation: signal-pulse 2.8s steps(3, end) infinite; }
   }
 
   @keyframes signal-pulse {
-    0%, 55% { opacity: 0.65; scale: 1; }
-    100% { opacity: 0; scale: 1.8; }
+    0%, 60% { opacity: 0.7; scale: 1; }
+    100% { opacity: 0; scale: 1.65; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .category-rail a,
     .tool-link,
     .tool-link__icon,
-    .tool-link__arrow {
-      transition: none;
-    }
+    .tool-link__arrow { transition: none; }
   }
 
   @media (max-width: 52rem) {
     .home-hero {
-      grid-template-columns: minmax(0, 1fr) 12rem;
+      grid-template-columns: minmax(0, 1fr) 11rem;
       gap: var(--space-4);
     }
 
-    .diagnostic-visual {
-      width: 12rem;
-    }
-
+    .diagnostic-visual { width: 11rem; }
     .diagnostic-node--fps,
     .diagnostic-node--touch,
-    .diagnostic-label {
-      display: none;
-    }
+    .diagnostic-label,
+    .diagnostic-readout--y { display: none; }
 
-    .category-rail {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .tool-columns {
-      grid-template-columns: 1fr;
-    }
+    .category-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .category-rail a:nth-child(3) { border-right: 0; }
+    .category-rail a:nth-child(n + 4) { border-top: 1px solid #d7d9d5; }
+    .tool-columns { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 40rem) {
     .home-hero {
       display: block;
-      min-height: 21rem;
-      padding: var(--space-5) var(--space-5) 3rem;
-      border-radius: 16px;
+      min-height: 20rem;
+      padding: var(--space-5) var(--space-5) 2.7rem;
+      border-radius: 4px;
     }
 
     .home-hero::before {
-      inset: 48% -20% -15% 26%;
-      opacity: 0.12;
+      inset: 48% -20% -15% 28%;
+      opacity: 0.1;
     }
 
     .home-hero .page-heading {
       max-width: 19rem;
-      font-size: clamp(2.25rem, 12vw, 3.15rem);
+      font-size: clamp(2.2rem, 11.8vw, 3.05rem);
     }
 
     .home-hero .page-intro {
       position: relative;
       z-index: 2;
       max-width: 20rem;
-      font-size: 0.94rem;
+      font-size: 0.92rem;
     }
 
     .home-facts {
@@ -769,94 +668,73 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       z-index: 3;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.38rem;
       margin-top: var(--space-4);
     }
 
     .home-facts span {
       min-width: 0;
-      padding: 0.5rem 0.52rem;
+      margin-right: 0.55rem;
+      padding: 0.52rem 0.55rem 0 0;
     }
 
-    .home-facts strong {
-      font-size: 0.76rem;
-    }
-
-    .home-facts small {
-      font-size: 0.58rem;
-    }
+    .home-facts strong { font-size: 0.76rem; }
+    .home-facts small { font-size: 0.52rem; }
 
     .diagnostic-visual {
       position: absolute;
-      right: -2.5rem;
-      bottom: -3.2rem;
-      width: 12rem;
-      opacity: 0.52;
-    }
-
-    .diagnostic-node {
-      width: 2rem;
-      height: 2rem;
+      right: -2.8rem;
+      bottom: -3.8rem;
+      width: 11rem;
+      opacity: 0.42;
     }
 
     .diagnostic-node--mouse,
     .diagnostic-node--fps,
     .diagnostic-node--touch,
     .diagnostic-wave,
-    .diagnostic-label {
-      display: none;
-    }
+    .diagnostic-label,
+    .diagnostic-readout,
+    .diagnostic-index { display: none; }
 
     .category-rail {
       display: flex;
-      gap: 0.5rem;
-      margin: -1.3rem 0.6rem 0;
-      padding: 0 0.15rem 0.45rem;
+      gap: 0;
+      margin: -1px 0 0;
+      padding: 0;
       overflow-x: auto;
+      border-radius: 0 0 4px 4px;
       overscroll-behavior-inline: contain;
       scrollbar-width: none;
       scroll-snap-type: x proximity;
     }
 
-    .category-rail::-webkit-scrollbar {
-      display: none;
-    }
+    .category-rail::-webkit-scrollbar { display: none; }
 
     .category-rail a {
-      flex: 0 0 8.5rem;
+      flex: 0 0 8.8rem;
+      grid-template-columns: auto auto minmax(0, 1fr);
       scroll-snap-align: start;
-      padding: 0.66rem 0.7rem;
+      padding: 0.64rem 0.68rem;
+      border-top: 0 !important;
+      border-right: 1px solid #d7d9d5 !important;
     }
 
-    .home-tools {
-      margin-top: var(--space-5);
-    }
+    .category-rail a:last-child { border-right: 0 !important; }
+    .category-rail b { display: none; }
 
-    .home-tools__header {
-      display: block;
-    }
-
-    .home-tools__header > p {
-      margin-top: 0.5rem;
-    }
-
+    .home-tools { margin-top: var(--space-5); }
+    .home-tools__header { display: block; }
+    .home-tools__header > p { margin-top: 0.5rem; }
     .tool-column,
-    .tool-columns {
-      gap: var(--space-4);
-    }
-
-    .tool-group {
-      border-radius: 14px;
-    }
+    .tool-columns { gap: var(--space-4); }
+    .tool-group { border-radius: 4px; }
 
     .tool-link {
-      padding: 0.72rem 0.65rem;
-      gap: 0.65rem;
+      grid-template-columns: 2.15rem auto minmax(0, 1fr) auto;
+      gap: 0.58rem;
+      padding: 0.72rem 0.66rem;
     }
 
-    .tool-link__icon {
-      width: 2.2rem;
-      height: 2.2rem;
-    }
+    .tool-link__index { font-size: 0.5rem; }
   }
 </style>
