@@ -56,22 +56,28 @@ KeyboardEvent.key
 
 for interpreted key value.
 
-Clear state when:
+Clear held state when:
 
-- window blurs
-- document becomes hidden
+- window blurs;
+- document becomes hidden.
 
 Do not capture text entered into unrelated fields as analytics.
 
+Full-v1 Keyboard Tester plus Expansion 1 Rollover/Ghosting reuse `KeyboardInputService`; do not create separate keyboard acquisition implementations.
+
 # Mouse
 
-Primary sources:
+## Mouse DPI
+
+`MouseMovementService` remains specialized for Mouse DPI movement capture.
+
+Primary sources include:
 
 ```text
-pointermove
-mousemove
+pointer/mouse movement
 movementX
 movementY
+Pointer Lock
 ```
 
 Preferred DPI acquisition uses Pointer Lock requested from the explicit Start user gesture.
@@ -83,6 +89,42 @@ The UI must not pretend fallback movement is hardware counts. `movementX` units 
 Mouse DPI must always be described as estimated.
 
 Distance input and finish-click arming semantics are defined in `18_DECISIONS_AND_BOUNDARIES.md` and must not be independently reinterpreted.
+
+## Expansion 1 ordinary mouse diagnostics
+
+`MouseInputService` owns ordinary browser mouse acquisition for the approved Expansion 1 mouse tools:
+
+```text
+button down/up
+wheel
+ordinary pointer movement
+explicit high-frequency polling profile
+blur / visibility clear signals
+```
+
+When Pointer Events are used, ignore a present `pointerType` that is not `"mouse"`. Touch/pen input on hybrid hardware must not be presented as mouse input.
+
+For the polling profile, select one acquisition source for a measurement session according to the exact precedence/fallback rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Do not merge timestamps from concurrent raw/coalesced/basic event streams into one result.
+
+Browser-observed pointer sample frequency is not guaranteed USB/device hardware polling rate.
+
+# Touch
+
+Expansion 1 uses `TouchInputService` with Pointer Events and accepts only:
+
+```text
+pointerType === "touch"
+```
+
+Mouse and pen/stylus input are not equivalent to finger-touch input for this tool.
+
+For high-motion coverage, `getCoalescedEvents()` may provide multiple browser-observed pointer samples that the user agent combined into one dispatched event. Those samples may count as observed touch coverage when they are finite and actually inside the active test surface. Never synthesize intermediate coverage samples merely to connect two points.
+
+`navigator.maxTouchPoints` is a capability hint/report, not proof that a specific touch contact will be delivered to the page.
+
+`touch-action: none` applies only to the active diagnostic surface. Normal page scrolling/zoom behavior remains available outside it.
+
+Blur or hidden visibility invalidates active contact state. A hands-off observation interval must be continuously observable; if focus/visibility is lost, cancel that run rather than claiming a complete quiet interval.
 
 # Display
 
@@ -97,44 +139,51 @@ The measurement clock is the timestamp passed to the `requestAnimationFrame` cal
 
 Do not mix `performance.now()` timestamps into FPS/refresh-rate measurement windows when rAF callback timestamps are already available.
 
-Use visibility handling to invalidate measurements when the tab is backgrounded. `FrameSampler` owns this lifecycle and emits the reset semantic defined in `18_DECISIONS_AND_BOUNDARIES.md`; FPS and Refresh Rate must not implement separate competing visibility-reset listeners.
+Use visibility handling to invalidate measurements when the tab is backgrounded. `FrameSampler` owns this lifecycle and emits the reset semantic defined in `18_DECISIONS_AND_BOUNDARIES.md`; display tools must not implement competing native rAF acquisition loops.
 
 Potential distortions:
 
-- browser scheduling
-- compositor timing
-- battery saver
-- multi-monitor timing
-- background throttling
-- unstable frame production
+- browser scheduling;
+- compositor timing;
+- battery saver;
+- multi-monitor timing;
+- background throttling;
+- unstable frame production.
+
+Expansion 1 Frame Skipping reuses `FrameSampler` for pattern timing/readiness. Browser timing can support a camera test but cannot prove physical monitor frame skipping by itself. Its exact readiness/capture-epoch semantics live in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
 # Fullscreen
 
-Fullscreen may be useful later for:
+Expansion 1 approves one small shared progressive-enhancement Fullscreen helper for:
 
-- dead pixel test
-- display test
+- Touch Screen Test;
+- Dead Pixel Test;
+- Backlight Bleed Test.
 
-It is not required for core MVP pages except if UX clearly benefits.
+The helper owns feature detection, request, exit, actual fullscreen-state observation, rejection handling, and cleanup.
+
+A fullscreen request must occur from eligible user activation. Success is based on actual fullscreen state, not merely the absence of a synchronous exception.
+
+Every tool must remain usable with its documented in-page fallback when Fullscreen is unsupported/rejected.
 
 # WebHID
 
-Do not use WebHID in MVP.
+Do not use WebHID in the current approved scope.
 
 Reasons:
 
-- permission UX
-- limited compatibility
-- higher product complexity
-- unnecessary for current validated tools
+- permission UX;
+- limited compatibility;
+- higher product complexity;
+- unnecessary for current approved tools.
 
-Add only after a specific feature cannot be achieved satisfactorily with broadly supported APIs.
+Add only after a specific future feature cannot be achieved satisfactorily with broadly supported APIs and the scope change is explicitly approved.
 
 # Web Audio / MediaDevices
 
-Not part of the initial hardware MVP.
+Not part of Hardware Expansion 1.
 
-If microphone/audio tools are added later, treat permission handling as a distinct product concern.
+If microphone/audio tools are approved later, treat permission handling as a distinct product concern.
 
 # Accuracy language matrix
 
@@ -145,11 +194,19 @@ If microphone/audio tools are added later, treat permission handling as a distin
 | Stick center offset | calculated from browser-observed axes |
 | Deadzone suggestion | heuristic |
 | Mouse DPI | estimate |
+| Mouse button/wheel input | browser-observed input |
+| Mouse polling test | observed browser pointer sample rate, not guaranteed hardware polling |
+| Touch input / coverage | browser-observed finger-touch input / test-area coverage |
+| Touch hands-off check | unexpected browser touch input observed during a complete visible interval |
+| Keyboard rollover | maximum simultaneous browser-observed key set, not NKRO certification |
+| Keyboard ghosting | expected vs browser-observed combination, assuming user followed instruction |
 | Browser FPS | observed browser rendering rate |
 | Display refresh rate | estimate |
-| Physical keyboard hardware latency | not supported accurately in MVP |
-| Mouse hardware polling rate | do not claim exact without stronger method |
-| Gamepad hardware polling rate | do not claim exact in MVP |
+| Dead Pixel / Backlight | visual inspection only |
+| Frame Skipping | camera-assisted visual evidence; browser readiness is not a monitor verdict |
+| Physical keyboard hardware latency | not supported accurately |
+| Mouse hardware polling rate | do not claim exact from browser pointer delivery |
+| Gamepad hardware polling rate | do not claim exact |
 
 # Browser support behavior
 
@@ -166,19 +223,21 @@ Do not hide the entire page because the tool is unsupported.
 
 # Browser API access pattern
 
-All native acquisition should go through the corresponding thin typed capability service:
+Native acquisition goes through the corresponding small typed boundary:
 
-| Native capability | Service |
+| Native capability | Boundary |
 |---|---|
 | Gamepad API | `GamepadService` |
 | `requestAnimationFrame` timing | `FrameSampler` |
 | Keyboard events | `KeyboardInputService` |
-| Pointer/mouse movement | `MouseMovementService` |
+| Mouse DPI movement / Pointer Lock | `MouseMovementService` |
+| Ordinary mouse buttons/wheel/movement/polling | `MouseInputService` |
+| Finger-touch Pointer Events | `TouchInputService` |
+| Fullscreen request/exit/state | shared Fullscreen helper |
 
-Tool-specific logic consumes normalized samples/snapshots from these services.
+Tool-specific logic consumes normalized events/samples/snapshots and owns interpretation/presentation state.
 
-Do not scatter direct native API calls across UI components.
-
+Do not scatter direct native acquisition across UI components, and do not generalize the specialized Mouse DPI service merely for naming uniformity.
 
 # Gamepad mapping boundary
 
@@ -191,7 +250,7 @@ For non-standard mapping:
 
 - Gamepad Tester provides only numbered button indicators and numbered normalized axis indicators/bars;
 - it does not guess physical control placement;
-- Stick Drift and Deadzone do not guess which axes are physical sticks in MVP.
+- Stick Drift and Deadzone do not guess which axes are physical sticks in full v1.
 
 If multiple gamepads are visible, auto-select the first visible gamepad and show a compact selector with neutral labels such as `Controller 1`, `Controller 2`.
 
@@ -199,7 +258,7 @@ If multiple gamepads are visible, auto-select the first visible gamepad and show
 
 Production is HTTPS.
 
-Gamepad access can be affected by browser Permissions Policy and some Gamepad functionality is secure-context dependent. The MVP is designed as a top-level page, not an embedded third-party widget.
+Gamepad access can be affected by browser Permissions Policy and some Gamepad functionality is secure-context dependent. The product is designed as a top-level page, not an embedded third-party widget.
 
 # Display timing boundary
 
@@ -210,10 +269,11 @@ Therefore:
 - measurement is valid only while the document is visible;
 - hide/background transitions reset display measurements through `FrameSampler`;
 - FPS means this page's delivered animation frames, not the FPS of another game/application;
-- refresh rate is an estimate from browser-visible cadence, not a hardware EDID readout.
+- refresh rate is an estimate from browser-visible cadence, not a hardware EDID readout;
+- Frame Skipping browser readiness/capture timing is invalidated when `FrameSampler` resets.
 
 # Keyboard shortcut boundary
 
 Some browser/OS-reserved shortcuts may never be exposed to page JavaScript.
 
-Keyboard Tester must not claim that an unobserved reserved shortcut proves a broken key.
+Keyboard diagnostics must not claim that an unobserved reserved shortcut proves a broken key, and must not globally `preventDefault()` to force reserved combinations through.

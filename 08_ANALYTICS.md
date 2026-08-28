@@ -16,6 +16,9 @@ Never send raw:
 KeyboardEvent key sequences
 gamepad axes/buttons streams
 mouse movement streams
+mouse button / wheel event streams
+mouse polling sample timestamps
+touch contact / pointer streams
 frame timestamp arrays
 controller/device identifiers
 ```
@@ -47,6 +50,8 @@ Do not emit events every frame or every input event.
 
 For auto-measuring FPS/Refresh pages, `measurement_ready` fires at most once per page load after the first usable result.
 
+For Expansion 1, the same rule applies: record coarse lifecycle/success events only. Do not emit button presses, wheel directions, pointer timestamps, touch starts/coordinates, key combinations, covered-cell maps, or frame-skipping timing sequences as analytics.
+
 ## Allowed coarse properties
 
 Examples:
@@ -58,6 +63,8 @@ measurement_mode: raw_pointer | pointer_lock | fallback
 result_bucket
 browser_family if supplied by the analytics platform
 ```
+
+Any `result_bucket` must be deliberately coarse and must not reconstruct a raw input stream or expose a device identifier.
 
 Do not send exact raw input series.
 
@@ -78,13 +85,26 @@ Per URL:
 If product analytics is later enabled, use tool-appropriate success signals rather than forcing one metric across every page:
 
 ```text
-Gamepad        → controller detected
-Stick Drift    → explicit test completed
-Deadzone       → explicit test completed
-Mouse DPI      → explicit test completed
-FPS            → measurement ready
-Refresh Rate   → measurement ready
-Keyboard       → at least one key detected
+Gamepad             → controller detected
+Stick Drift         → explicit test completed
+Deadzone            → explicit test completed
+Mouse DPI           → explicit test completed
+FPS                 → measurement ready
+Refresh Rate        → measurement ready
+Keyboard            → at least one key detected
+Mouse Tester        → at least one supported mouse input observed
+Mouse Button        → at least one button input observed
+Mouse Scroll        → at least one wheel event observed
+Double Click        → explicit test/session interaction completed
+Mouse Polling       → explicit test completed
+Touch Screen        → explicit mode interaction completed
+Keyboard Rollover   → at least one multi-key observation
+Keyboard Ghosting   → explicit guided test completed
+Dead Pixel          → visual test started
+Backlight Bleed     → visual test started
+Frame Skipping      → browser pattern reached readiness
 ```
+
+These are coarse product events only. They are not substitutes for hardware validation and should not contain raw measurements unless a separately reviewed privacy-safe aggregate is explicitly approved.
 
 Do not optimize for artificial dwell time or extra pageviews.

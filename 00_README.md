@@ -1,4 +1,4 @@
-# Hardware Testing — Agent Handoff v6.2
+# Hardware Testing — Agent Handoff v6.3
 
 ## Purpose
 
@@ -72,6 +72,8 @@ without scrolling where the device class makes that requirement appropriate.
 Long explanations, limitations, FAQs, SEO copy, related tools, and technical details belong below the primary tool.
 
 The primary tool may be visually rich when the visual directly represents the measurement. Prefer one meaningful live visualization over several metric cards.
+
+Touch Screen Test is explicitly mobile/tablet oriented and follows the route-specific mobile-first acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` rather than forcing a desktop-sized diagnostic surface into one viewport.
 
 ## Default page shape
 
@@ -149,7 +151,7 @@ Approved full-v1 toolchain is fixed in `18_DECISIONS_AND_BOUNDARIES.md` and `11_
 /privacy
 ```
 
-## Post-v1 Hardware Expansion 1 — approved
+## Post-v1 Hardware Expansion 1 — approved after independent review
 
 Exact implementation contract:
 
@@ -175,6 +177,14 @@ Approved sequential additions:
 
 These routes were promoted based on completed search/SERP research and/or material cluster fit. Do not reclassify them as unvalidated backlog during implementation.
 
+The initial E1.0 docs approval was followed by **E1.0.1 independent review corrections** before product code. Those corrections made polling source selection, Touch coverage/pass semantics, hands-off lifecycle, Frame Skipping capture epochs, and normative cross-document ownership deterministic.
+
+Current next step:
+
+```text
+E1.1 Mouse foundation + Mouse Tester
+```
+
 Expansion 1 is additive: do not redesign completed full-v1 tools merely for aesthetic uniformity.
 
 ## Document map
@@ -187,16 +197,16 @@ Expansion 1 is additive: do not redesign completed full-v1 tools merely for aest
 - `04_UX_UI.md` — strict interaction/layout rules
 - `05_SEO_CONTENT.md` — SEO/content rules
 - `06_ARCHITECTURE.md` — base technical architecture
-- `07_BROWSER_APIS.md` — API limitations
-- `08_ANALYTICS.md` — measurement plan
-- `09_TESTING_QA.md` — base QA rules
+- `07_BROWSER_APIS.md` — API limitations and approved capability ownership
+- `08_ANALYTICS.md` — analytics/privacy measurement plan
+- `09_TESTING_QA.md` — base QA rules plus Expansion 1 cross-reference
 - `10_PERFORMANCE_ACCESSIBILITY.md` — performance/accessibility
 - `11_IMPLEMENTATION_PLAN.md` — historical full-v1 development sequence
-- `12_LAUNCH_PLAN.md` — launch checklist
+- `12_LAUNCH_PLAN.md` — launch checklist for whichever approved routes are released
 - `13_AGENT_RULES.md` — mandatory agent constraints
 - `14_DEFINITION_OF_DONE.md` — base/project acceptance criteria
 - `15_BACKLOG.md` — still-deferred scope plus promoted-history note
-- `16_UX_ACCEPTANCE.md` — explicit UX acceptance tests
+- `16_UX_ACCEPTANCE.md` — explicit global UX acceptance tests and mobile-first exception rules
 - `17_FUNCTIONAL_VISUAL_SYSTEM.md` — functional beauty and visual language
 - `18_DECISIONS_AND_BOUNDARIES.md` — exact global/full-v1 technical/product boundaries and measurement algorithms
 - `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business/SEO goals, approved scope, launch sequence, and expansion priorities

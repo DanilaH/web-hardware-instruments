@@ -32,7 +32,7 @@ A visual element earns its place only if it does at least one of these:
 1. helps the user perform the test;
 2. makes the result easier to understand;
 3. shows change over time;
-4. exposes instability, drift, noise, or position;
+4. exposes instability, drift, noise, position, coverage, or input state;
 5. makes current state obvious.
 
 If it does none of these, remove it.
@@ -66,7 +66,8 @@ Use it for:
 - active control;
 - selected state;
 - primary action;
-- live trace.
+- live trace;
+- active coverage/contact state.
 
 Do not wash the entire interface in the accent.
 
@@ -78,13 +79,15 @@ They are exceptions to the mostly monochrome system.
 
 Never rely on them without text or numeric labels.
 
+Do not introduce semantic success/error colors merely to imply hardware health when the tool only reports browser observation or visual inspection.
+
 ### Dark mode
 
-Not required for MVP.
+Not required in current approved scope.
 
 Do not design the whole product around a dark gaming aesthetic.
 
-A system-following dark mode may be added later after the light system is stable.
+A system-following dark mode may be added later after the light system is stable and separately approved.
 
 ## Typography
 
@@ -97,6 +100,7 @@ Use tabular or monospaced numerals for measurements:
 143.9 Hz
 3.8%
 1600 DPI
+972 Hz
 ```
 
 Do not set the whole page in monospace.
@@ -132,7 +136,10 @@ Good:
 - a fading stick-position trail;
 - a deadzone marker following the stick;
 - a live mouse-relative-movement trace confirming capture;
-- a key lighting up on press.
+- mouse button/wheel feedback reacting to input;
+- touch markers/trails following actually observed contacts;
+- a key lighting up on press;
+- a frame-skipping test pattern advancing with browser timing.
 
 Bad:
 
@@ -154,9 +161,11 @@ fainter = older
 
 The fade is information, not decoration.
 
+Visual interpolation is allowed only for rendering continuity. It must never manufacture measurement state, such as Touch coverage cells that the browser did not actually report.
+
 ## Tool layout model
 
-On desktop, the main tool should usually have one dominant visualization plus one compact result/control region.
+On desktop-relevant pages, the main tool should usually have one dominant visualization plus one compact result/control region.
 
 Typical model:
 
@@ -176,26 +185,28 @@ The visualization may occupy most of the card.
 
 Do not break the card into many metric tiles.
 
+Touch Screen Test is a mobile/tablet-oriented exception: preserve enough active surface for finger sweeps even when that requires more vertical area than the desktop card model.
+
 ## Viewport budget
 
-At 1366×768:
+At `1366×768`, desktop-relevant tools should fit:
 
 ```text
 compact header
 H1
 one-line intro
-tool card
+tool card with primary result/status
 ```
-
-must fit.
 
 The primary tool should normally stay roughly within a 440–520px vertical budget.
 
-If a visualization needs more space, remove secondary content before increasing page height.
+If a desktop-relevant visualization needs more space, remove secondary content before increasing page height.
+
+At mobile widths, especially Touch Screen Test, optimize the diagnostic surface and time-to-result rather than forcing this desktop budget.
 
 ## Visualization primitives
 
-Prefer native SVG / Canvas.
+Prefer native SVG / Canvas / DOM/CSS.
 
 Do not add a charting library for these small purpose-built visuals.
 
@@ -212,11 +223,13 @@ MetricReadout
 StatusBadge
 ```
 
+Expansion 1 may additionally share narrowly scoped primitives such as a generic mouse visual, wheel-event strip, touch surface, fullscreen color stage, or frame-skipping renderer as defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
 These are not a generic dashboard component library. Keep them small and purpose-specific.
 
 ---
 
-# Per-tool visual design
+# Full-v1 per-tool visual design
 
 ## 1. Gamepad Tester
 
@@ -288,7 +301,7 @@ Observed center offset
 
 The trail should be short and decay.
 
-Do not build a permanent heat map or complex analytics view in MVP.
+Do not build a permanent heat map or complex analytics view.
 
 ---
 
@@ -319,7 +332,7 @@ Suggested starting deadzone: ~4%
 
 ### Interaction boundary
 
-No deadzone slider or simulator in MVP.
+No deadzone slider or simulator in full v1.
 
 The ring visualizes the documented heuristic result; it is not an advanced configuration control.
 
@@ -411,7 +424,7 @@ Small:
 Median frame time 6.9 ms
 ```
 
-Do not add a categorical stability label in MVP; the trace itself shows recent variance/drops.
+Do not add a categorical stability label in full v1; the trace itself shows recent variance/drops.
 
 ### Do not add
 
@@ -490,6 +503,42 @@ Pressed now: 2
 
 ---
 
+# Expansion 1 visual additions
+
+Exact per-route behavior remains in `20`; this section only defines the shared visual direction.
+
+## Mouse diagnostics
+
+Use one generic functional mouse visual where physical mapping helps the job. Button zones react to held/detected states; wheel feedback is small and directional. Focused pages may reuse the visual but should not all become identical dashboards.
+
+Polling Rate prioritizes one large observed-rate result plus source/caveat; no live high-frequency chart is required.
+
+## Touch Screen Test
+
+The active surface itself is the visualization:
+
+```text
+subtle fixed grid
+observed covered cells
+live touch markers
+short bounded trails
+compact Active / Maximum / Coverage metrics
+```
+
+Pass-1 covered cells can become visually quiet during confirmation, while missed cells remain neutral/emphasized. Do not use alarming red `dead zone` styling for unobserved cells.
+
+Out-of-surface pointer-capture samples and visual interpolation must not paint measurement coverage.
+
+## Dead Pixel / Backlight Bleed
+
+Use a shared fullscreen/large-stage primitive. The diagnostic stage is intentionally visually plain: exact solid color for Dead Pixel, pure black for Backlight. Any overlay is compact and may auto-hide; no decorative chrome belongs on the inspection surface.
+
+## Frame Skipping
+
+Use Canvas with the documented moving block/slot pattern. The primary textual state distinguishes waiting/unstable from `READY — take the photo now.` The pattern is camera evidence support, not an automatic monitor-health graph.
+
+---
+
 # Homepage visual direction
 
 The homepage should remain much calmer than tool pages.
@@ -506,17 +555,7 @@ The rich visuals belong inside the tools themselves.
 
 ## Retention through useful continuation
 
-After a result, show one small related-tool section.
-
-Example:
-
-```text
-Controller looks responsive.
-
-Next:
-Check stick drift
-Check deadzone
-```
+After a result, show one small related-tool section containing only implemented routes.
 
 This is a better retention mechanism than adding decorative content before the result.
 
@@ -545,20 +584,23 @@ Functional beauty must remain accessible.
 - active states cannot rely only on color;
 - SVG controls need semantic labels where relevant;
 - motion must remain legible with reduced-motion preference;
-- reduced motion should remove decorative interpolation, not real diagnostic state.
+- reduced motion should remove decorative interpolation, not real diagnostic state;
+- Touch coverage/live contacts need textual metrics/status;
+- fullscreen visual-inspection tools need clear pre-entry instructions and an obvious exit/fallback path.
 
 # Performance
 
 Target visuals should be lightweight.
 
-- use SVG for controller and radial/stick geometry;
-- use DOM/CSS for the keyboard and ordinary controls;
-- use Canvas for FPS and refresh-rate time traces;
-- use DOM + simple SVG geometry for the mouse movement guide;
-- cap history samples;
+- use SVG for controller/radial geometry and generic mouse visuals where appropriate;
+- use DOM/CSS for keyboard, controls, and simple state surfaces;
+- use Canvas for FPS/refresh traces and Frame Skipping pattern;
+- use DOM/SVG for touch overlays only with bounded nodes/state;
+- cap histories/trails/sample-driven visuals;
 - do not retain unbounded arrays;
 - avoid third-party chart libraries;
-- clean up animation loops.
+- clean up animation loops/listeners;
+- do not create DOM nodes per high-frequency polling sample.
 
 # Final design test
 

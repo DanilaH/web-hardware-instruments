@@ -196,7 +196,8 @@ Approved routes:
 Implementation is sequential, not a parallel scaffold:
 
 ```text
-E1.0 source-of-truth
+E1.0 source-of-truth approval
+→ E1.0.1 independent review corrections
 → E1.1 Mouse foundation + Mouse Tester
 → E1.2 focused Mouse tools
 → E1.3 Touch
@@ -206,9 +207,11 @@ E1.0 source-of-truth
 → E1.7 final Expansion 1 audit
 ```
 
+E1.0.1 closes independent-review ambiguities before product code begins. It does not change the approved route catalog.
+
 Do not add placeholder cards/routes for later steps.
 
-Expansion 1 does not authorize Audio, CPS/reaction-time utilities, hardware latency claims, dashboards, accounts, exports, WebHID, or backend scope.
+Expansion 1 does not authorize unrelated product categories or application-platform scope.
 
 # 11. Code-complete vs release-ready
 
