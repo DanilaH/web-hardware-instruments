@@ -1,50 +1,44 @@
 # Hardware Tests
 
-A static Astro site with lightweight browser-based hardware diagnostics.
+A static Astro site with 18 lightweight browser-based hardware diagnostics.
 
-## Current product status
+The product is designed as a low-maintenance, search-landed utility asset: one focused diagnostic per route, no account or install, raw hardware/input data kept local, and no backend/database runtime.
 
-Full-v1 implementation/audit and **Hardware Expansion 1** code-side implementation/audit are complete.
+## Current status
 
-Expansion 1 was implemented under:
-
-```text
-20_POST_V1_HARDWARE_EXPANSION_SPEC.md
-```
-
-E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, **E1.5 display visual-inspection tools**, **E1.6 Frame Skipping**, and **E1.7 final Expansion 1 audit** are complete.
-
-Code-complete does not mean release-ready. Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser/camera release checks are performed.
-
-Implemented full-v1 tool routes:
+The full 18-tool catalog is implemented and code-side audited.
 
 ```text
-/gamepad-tester
-/controller-stick-drift-test
-/controller-deadzone-test
-/mouse-dpi-test
-/fps-test
-/refresh-rate-test
-/keyboard-tester
+Controller
+├── /gamepad-tester
+├── /controller-stick-drift-test
+└── /controller-deadzone-test
+
+Mouse
+├── /mouse-tester
+├── /mouse-button-test
+├── /mouse-scroll-test
+├── /double-click-test
+├── /mouse-polling-rate-test
+└── /mouse-dpi-test
+
+Keyboard
+├── /keyboard-tester
+├── /keyboard-rollover-test
+└── /keyboard-ghosting-test
+
+Display
+├── /fps-test
+├── /refresh-rate-test
+├── /frame-skipping-test
+├── /dead-pixel-test
+└── /backlight-bleed-test
+
+Touch
+└── /touch-screen-test
 ```
 
-Implemented Expansion 1 routes:
-
-```text
-/mouse-tester
-/mouse-button-test
-/mouse-scroll-test
-/double-click-test
-/mouse-polling-rate-test
-/touch-screen-test
-/keyboard-rollover-test
-/keyboard-ghosting-test
-/dead-pixel-test
-/backlight-bleed-test
-/frame-skipping-test
-```
-
-Supporting routes:
+Supporting public routes:
 
 ```text
 /
@@ -52,80 +46,53 @@ Supporting routes:
 /privacy
 ```
 
-The site remains intentionally non-indexable until a real production domain is purchased immediately before deployment.
+A post-expansion independent repository audit has also reconciled the current source-of-truth documents, homepage information architecture, selected mobile result/density issues, stale user-facing MVP wording, and remaining focused-Mouse source readability.
 
-Current production placeholder:
+### Code-complete is not release-ready
+
+Public deployment is intentionally deferred until a real production domain is purchased and the required real-device/browser/camera checks are performed.
+
+Current placeholder configuration:
 
 ```text
-https://hardware-testing.invalid
+origin = https://hardware-testing.invalid
 indexingEnabled = false
 ```
 
-Do not replace the placeholder with an invented temporary domain and do not enable indexing before the real production origin is known.
+Do not invent a temporary production origin or enable indexing before the real domain is known.
 
 ## Source of truth
 
 Coding agents start with `AGENTS.md`.
 
-For exact behavior and release decisions:
+Decision ownership:
 
 ```text
-19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md product strategy / approved scope / release boundary
-18_DECISIONS_AND_BOUNDARIES.md          global + full-v1 algorithms / lifecycle / technical boundaries
-20_POST_V1_HARDWARE_EXPANSION_SPEC.md  exact Expansion 1 behavior / algorithms / UX / QA / order
-00_README.md                            full handoff/document map
+19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md
+  durable product strategy, current scope, expansion rule, release/deployment boundary
+
+18_DECISIONS_AND_BOUNDARIES.md
+  global + original full-v1 exact algorithms, lifecycle, browser behavior, technical boundaries
+
+20_POST_V1_HARDWARE_EXPANSION_SPEC.md
+  exact behavior, algorithms, UX, and route-specific QA for implemented Expansion 1 routes
+
+13_AGENT_RULES.md
+  mandatory engineering/review rules
+
+16_UX_ACCEPTANCE.md
+  interaction and viewport acceptance
+
+17_FUNCTIONAL_VISUAL_SYSTEM.md
+  durable visual-system rules
+
+14_DEFINITION_OF_DONE.md
+  code-complete and release-ready gates
 ```
 
-If `18`, `19`, and `20` appear to conflict on a shared boundary, resolve the documentation conflict before product code changes.
+`00_README.md` is the document map/handoff. `11_IMPLEMENTATION_PLAN.md` preserves the completed E1.0 → E1.7 development history plus the current maintenance workflow.
 
-## Expansion 1 implementation order
-
-```text
-E1.0 source-of-truth approval ✅
-→ E1.0.1 independent review corrections ✅
-→ E1.1 Mouse foundation + Mouse Tester ✅
-→ E1.2 focused Mouse tools ✅
-→ E1.3 Touch ✅
-→ E1.4 Keyboard expansion ✅
-→ E1.5 display visual-inspection tools ✅
-→ E1.6 Frame Skipping ✅
-→ E1.7 final Expansion 1 audit ✅
-```
-
-E1.0.1 specifically removed ambiguous measurement/source-of-truth behavior before implementation: polling attempts use one source selected before measurement and never mix streams; Touch coverage counts only real in-surface browser-observed samples (including real coalesced samples where available); confirmation passes are separate; interrupted hands-off checks are invalid; Frame Skipping uses a **readiness-gated sequential READY capture epoch** so browser timestamp arithmetic cannot manufacture pattern gaps.
-
-E1.1 established the reviewed Mouse input boundary and visual pattern. `MouseInputService` handles ordinary browser-observed mouse input and an isolated polling profile, while the existing Mouse DPI path remains on `MouseMovementService`.
-
-E1.2 adds the focused Mouse Button, Scroll, Double Click, and browser-observed Polling Rate jobs. Polling uses a sampling-only service profile, one source per attempt, bounded two-second data, and browser-observed wording rather than a USB/hardware certification claim.
-
-E1.3 adds the mobile-first Touch Screen Test with real browser-observed/coalesced in-surface coverage, separate confirmation coverage, surface-only multi-touch metrics, a progressive Fullscreen helper, and an independently armed 15-second hands-off unexpected-touch observation. `navigator.maxTouchPoints` remains a capability hint rather than a measurement result or absolute gate.
-
-E1.4 adds Keyboard Rollover as browser-observed simultaneous-key measurement and Keyboard Ghosting as a guided expected-combination observation. Both reuse `KeyboardInputService`; neither claims NKRO certification, hardware failure, or confirmed ghosting from browser events alone.
-
-E1.5 adds Dead Pixel and Backlight Bleed as visual-inspection utilities on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel uses only the fixed Black/White/Red/Green/Blue sequence; Backlight Bleed uses a pure black stage. Neither route produces an automatic score, pass/fail result, or hardware diagnosis.
-
-E1.6 adds the camera-assisted Frame Skipping Test on the existing `FrameSampler`. Browser timing is only a READY validity gate: every accepted READY frame advances exactly one sequential pattern slot, timing instability invalidates the capture epoch before another step, and only an external camera photo can provide skipped-refresh evidence. The page never manufactures visible gaps from timestamp arithmetic and never outputs an automatic pass/fail verdict.
-
-E1.7 performed the final cross-cutting Expansion 1 audit. It synchronized exact SEO intent titles and related-tool clusters with `20`, restored the canonical Touch-inclusive privacy wording, closed Touch fullscreen teardown, removed remaining Expansion-only gradient styling, and restored readable source formatting where earlier focused Mouse files had been left minified. Those audit corrections do not change approved measurement thresholds or algorithms.
-
-Expansion 1 is now code-side complete and audited. New product scope outside the approved Expansion 1 catalog requires fresh evidence/review rather than continuing implementation by default.
-
-## Before public deployment
-
-The remaining release work is deliberately separated from code-complete status:
-
-- purchase/set the real production domain;
-- run the required real-device/browser smoke for every route included in the release;
-- verify high-refresh and multi-monitor display behavior where hardware is available;
-- verify latest Chrome, Edge, and Firefox desktop; record graceful-degradation gaps for Safari/mobile;
-- run real touch hardware checks for Touch Screen Test if that route is included;
-- run real camera checks for Frame Skipping if that route is included;
-- enable indexing only after the real origin is configured;
-- deploy over HTTPS;
-- connect Google Search Console and submit the generated sitemap;
-- run final production smoke.
-
-Automated/headless checks and mock browser input are useful for correctness and layout, but must not be described as real hardware validation.
+The old Expansion 1 sequence is historical context, not an instruction to keep inventing E1 stages. There is no approved E1.8.
 
 ## Development
 
@@ -151,83 +118,110 @@ pnpm typecheck
 pnpm test
 ```
 
+The repository Quality workflow runs the same build/typecheck/test gate on pull requests and `main`.
+
 ## Architecture
 
-Full v1 uses four browser capability services:
+Browser capability acquisition is intentionally thin and explicit:
 
 ```text
-GamepadService
-FrameSampler
-KeyboardInputService
-MouseMovementService
+GamepadService       controller acquisition
+FrameSampler         requestAnimationFrame timing + visibility lifecycle
+KeyboardInputService keyboard acquisition
+MouseMovementService Mouse DPI / Pointer Lock movement capture
+MouseInputService    ordinary mouse input + explicit polling acquisition
+TouchInputService    finger-touch Pointer Event acquisition
 ```
 
-Expansion 1 additionally approves:
+The shared Fullscreen utility is progressive enhancement, not a hardware acquisition service.
 
-```text
-MouseInputService
-TouchInputService
-```
-
-plus a shared progressive-enhancement Fullscreen helper.
-
-Typical dependency direction:
+Dependency direction:
 
 ```text
 page
  ↓
 tool controller / UI binder
  ├── browser capability service
- ├── pure measurement helpers
+ ├── pure measurement/state helpers
  └── prepared render data → renderer
 ```
 
-Native snapshots/events are adapted at the tool boundary before pure calculations or renderers consume tool semantics.
+Pure helpers/renderers do not own native browser acquisition. Tool controllers own interpretation and presentation state.
 
-Production UI intentionally does not use React, Vue, Svelte, Tailwind, a charting library, global state library, backend, database, auth, paid APIs, AI, or WebHID.
+Production UI intentionally does not use React, Vue, Svelte, Tailwind, a UI/chart library, global state library, backend, database, auth, paid runtime APIs, AI, or WebHID.
 
-## Full-v1 measurement boundaries
+## Product / measurement principles
 
-### Gamepad Tester
+### Browser observation is not hardware certification
 
-Uses the browser Gamepad API. Standard-mapped controllers receive the rich generic controller view. Non-standard controllers receive only a numbered fallback; physical button/axis placement is never guessed.
+Every route describes only what it can actually establish.
 
-### Stick Drift
+Examples:
 
-Requires standard mapping. Samples both sticks for three seconds and reports observed center offset from mean X/Y. The center-detail plots are visual zooms; the numeric percentage is the measurement result. There is no pass/fail or severity label.
+- Gamepad Tester does not guess physical controls for non-standard mappings.
+- Stick Drift reports observed center offset without a good/bad verdict.
+- Controller Deadzone exposes the documented heuristic starting value rather than a universal correct setting.
+- Mouse DPI is always an estimate based on browser movement plus user-provided physical travel distance.
+- Mouse Polling reports browser-observed pointer sample rate, not guaranteed USB/device polling rate.
+- Keyboard Rollover is browser-observed simultaneous input, not NKRO certification.
+- Keyboard Ghosting compares guided expected combinations with browser-observed input; reserved shortcuts may not reach the page.
+- Touch coverage uses only actually observed in-surface touch samples and never manufactures coverage through interpolation/clamping.
+- FPS and Refresh Rate use browser-visible rAF timing, not another application's FPS or EDID.
+- Dead Pixel and Backlight Bleed are visual-inspection tools, not automatic display diagnosis.
+- Frame Skipping uses browser timing only to gate/run a sequential camera pattern; physical evidence comes from an external camera photo.
 
-### Deadzone
+Use `18_DECISIONS_AND_BOUNDARIES.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` for exact formulas/state machines. Do not duplicate or improvise them here.
 
-Requires standard mapping. Samples one selected stick for three seconds, calculates nearest-rank p95 radial center noise, then shows the documented heuristic starting deadzone (`noise + 1 percentage point`, capped at 100%, displayed rounded up).
+## UX / visual direction
 
-### Mouse DPI
+The visual system is **instrument minimalism**:
 
-Always reports **Estimated DPI**. The user supplies physical travel distance; the browser contributes relative horizontal movement only. Raw Pointer Lock is preferred, regular Pointer Lock and unlocked movement are fallbacks. The visual guide never pretends to know physical centimeter/inch progress.
+```text
+mostly monochrome
++ one restrained live signal accent
++ strong measurement numerals
++ simple technical geometry
++ data/state-driven motion only
+```
 
-### FPS
+Desktop-relevant primary tools target a compact `1366×768` first-screen experience. Touch follows its route-specific mobile/tablet acceptance rules.
 
-Measures observed frame delivery of this browser page using `requestAnimationFrame` callback timestamps. It is not another game's FPS and not a GPU benchmark.
+The homepage groups the 18 tools by device cluster rather than presenting one undifferentiated feed.
 
-### Refresh Rate
-
-Estimates browser-visible display cadence from rAF timing. It is not a direct EDID/hardware refresh-rate readout.
-
-### Keyboard
-
-Observes `keydown`/`keyup` on the dedicated page. `KeyboardEvent.code` drives physical highlighting, `key` is textual context, Tab remains normal, and reserved OS/browser shortcuts may be unobservable.
-
-Expansion 1 measurement wording and algorithms are defined only in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not duplicate or improvise them here.
+Decorative gradient washes/glass/neon/dashboard chrome are out. A CSS `linear-gradient()` is still acceptable when it is merely the lightweight implementation primitive for a functional technical grid/reference ruling.
 
 ## Privacy
 
-Raw controller, keyboard, mouse, touch, and frame-timing data is not uploaded or stored by the site.
+Raw controller, keyboard, mouse, touch, pointer, and frame-timing streams are not uploaded or stored by the site.
 
-If product analytics are enabled later, they must remain coarse and must not include raw hardware/input streams or raw device identifiers.
+If coarse product analytics are enabled later, they must not contain raw hardware/input streams or raw device identifiers.
 
-## Validation boundary
+## Before public deployment
 
-Automated coverage includes pure calculations and browser-capability lifecycle behavior. Visual/headless review may use mocked browser input only to verify UI state and geometry.
+Follow `12_LAUNCH_PLAN.md`.
 
-Manual pre-deployment validation still includes the real hardware/browser/camera cases required by the routes being released.
+At minimum:
 
-Untested cases must remain explicitly documented rather than inferred from mocks.
+- purchase/configure the real production domain;
+- complete the route-specific real-device/browser/camera checks for every released tool;
+- verify HTTPS, canonical URLs, robots, and sitemap against the real origin;
+- enable indexing only with the real origin;
+- deploy;
+- connect Google Search Console and submit the generated sitemap;
+- run final production smoke.
+
+Headless/mock input is useful for state, layout, and automated correctness. It must never be described as real hardware validation.
+
+## Future scope
+
+The current catalog is not a prompt to keep adding tools.
+
+New scope requires at least one strong reason under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`:
+
+```text
+validated independent demand/opportunity
+Search Console evidence
+material value to a successful existing cluster
+```
+
+Technical ease alone is not enough.
