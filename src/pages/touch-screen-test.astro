@@ -1,0 +1,80 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TouchScreenTest from '../tools/touch/tester/TouchScreenTest.astro';
+
+const relatedTools = [
+  {
+    href: '/mouse-tester',
+    name: 'Mouse Tester',
+    description: 'Check which mouse buttons, wheel input, and movement the browser receives.',
+  },
+  {
+    href: '/keyboard-tester',
+    name: 'Keyboard Tester',
+    description: 'Press keys and see which physical key codes the browser detects.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Touch Screen Test — Test Touch & Multi-Touch Online"
+  description="Test browser-detected finger input, touchscreen coverage, multi-touch, and unexpected touch events directly on your device."
+  canonicalPath="/touch-screen-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Touch Screen Test</h1>
+    <p class="page-intro">Check where this browser receives finger input, how many touches it sees together, and whether unexpected touch input appears hands-off.</p>
+  </section>
+
+  <TouchScreenTest />
+
+  <section class="tool-content reading-width" aria-labelledby="touch-how-to">
+    <h2 id="touch-how-to">How to test your touch screen</h2>
+    <ol>
+      <li>Drag one or more fingers across the whole test area, including the edges and corners.</li>
+      <li>Watch Coverage and Maximum detected together while you test.</li>
+      <li>If cells remain uncovered, use Check missed areas and sweep those areas again.</li>
+      <li>Optionally run the separate hands-off check to observe unexpected touch-contact starts for 15 seconds.</li>
+    </ol>
+
+    <h2>What coverage means</h2>
+    <p>
+      Coverage is the portion of this browser test area where actual finger-touch samples were observed. The tool does not interpolate between samples and does not turn out-of-area captured movement into edge coverage.
+    </p>
+
+    <h2>Missed areas and confirmation</h2>
+    <p>
+      The first and confirmation passes are stored separately. A cell can be described as not detected in both passes only when neither pass received an in-area touch sample there. Repeatable missed areas may indicate a touch problem, but this browser test cannot identify the failed hardware component.
+    </p>
+
+    <h2>Browser and hardware limitations</h2>
+    <p>
+      Browser Pointer Events are not a hardware certification. Mouse and stylus input are intentionally excluded, fullscreen is optional, and a quiet 15-second hands-off sample cannot rule out intermittent touch faults or prove that a touchscreen is healthy.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>
