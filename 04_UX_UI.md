@@ -42,13 +42,13 @@ Use vertical space carefully.
 
 Avoid:
 
-- tall hero sections;
+- tall hero sections on tool pages;
 - large empty gaps;
 - oversized headings;
 - large marketing banners;
 - separate cards for every small metric.
 
-Recommended:
+Recommended for tool pages:
 
 ```text
 header: compact
@@ -57,6 +57,8 @@ intro: 1 sentence
 tool: dominant element
 result: inside the same tool region
 ```
+
+The homepage may use a compact identity/wayfinding hero when it does not delay catalog access or turn the site into a marketing landing page.
 
 ## One-job rule
 
@@ -133,27 +135,45 @@ For long/mobile-first active surfaces, status/metrics may remain adjacent/sticky
 
 ## Visual direction
 
-Use a clean measurement-instrument aesthetic: mostly monochrome, crisp geometry, strong measurement numerals, and one restrained live signal accent.
+The exact current visual grammar is owned by `17_FUNCTIONAL_VISUAL_SYSTEM.md`.
+
+Use **instrument minimalism + authored identity**:
+
+```text
+light instrument chassis
++ dark diagnostic surfaces only where they have functional meaning
++ five restrained hardware-family channel colors
++ domain-specific browser/input geometry
++ strong measurement typography
++ motion tied to state, signal, or recency
+```
+
+Controller, Mouse, Keyboard, Display, and Touch have stable muted channel colors. Use them as small family/signal cues in icons, traces, active states, and related navigation; do not use them as full-surface decoration or as substitutes for semantic success/warning/error colors.
 
 Avoid:
 
 - gradient SaaS;
+- generic AI/SaaS chrome;
+- fake instrument readings or decorative technical data;
 - glassmorphism;
 - dark hacker/gaming styling by default;
 - neon;
 - giant rounded cards;
 - heavy shadows;
 - decorative 3D hardware;
-- dashboard chrome.
+- dashboard chrome;
+- arbitrary numbered/monospace decoration used only to look technical.
 
 Recommended:
 
-- neutral background;
-- one restrained accent color;
-- subtle borders;
+- warm neutral light chassis/background;
+- dark graphite only for meaningful diagnostic/display surfaces;
+- crisp structural borders;
 - modest radius;
-- system font or lightweight single font family;
-- clear typography hierarchy.
+- one coherent lightweight icon language;
+- system font or lightweight single font family unless an approved webfont materially improves identity/readability;
+- clear typography hierarchy;
+- hardware/browser-specific geometry rather than generic decoration.
 
 ## Global shell
 
@@ -303,6 +323,8 @@ After the user sees a result/status, show a small related-tools block.
 
 Only link implemented routes.
 
+Related navigation should retain the current hardware-family identity where useful without making color the only cue.
+
 The goal is useful continuation, not artificial pageview inflation.
 
 ## UX anti-patterns
@@ -343,11 +365,11 @@ At mobile widths around `390px`:
 - the tool must remain understandable and usable where the browser/device capability makes sense;
 - Touch Screen Test must prioritize usable finger interaction area and route-specific real-device acceptance from `20`.
 
-## Human visual checkpoint
+## Visual rollout status
 
-The completed Gamepad Tester established the base visual system for full v1.
+The historical Gamepad Tester and Expansion 1 checkpoints established the original functional visual baseline. The later cross-catalog visual refresh superseded that styling baseline and was reviewed across the homepage, shared shell, Controller, Mouse, Keyboard, Touch, and Display families.
 
-Expansion 1 reuses that system. E1.1 Mouse Tester is a human visual checkpoint before its mouse pattern is propagated to the focused E1.2 routes; later device-specific routes still receive their own visual review.
+Current maintenance should preserve the approved system in `17_FUNCTIONAL_VISUAL_SYSTEM.md`; do not treat the old Gamepad/E1 appearance as the visual source of truth.
 
 ## Search-landing independence
 
