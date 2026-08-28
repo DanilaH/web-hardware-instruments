@@ -4,9 +4,17 @@ A static Astro site with lightweight browser-based hardware diagnostics.
 
 ## Current product status
 
-Full-v1 implementation and the code-side full-v1 audit are complete. Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
+Full-v1 implementation and the code-side full-v1 audit are complete.
 
-Implemented tool routes:
+Post-v1 **Hardware Expansion 1** is approved for sequential implementation under:
+
+```text
+20_POST_V1_HARDWARE_EXPANSION_SPEC.md
+```
+
+Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
+
+Implemented full-v1 tool routes:
 
 ```text
 /gamepad-tester
@@ -16,6 +24,22 @@ Implemented tool routes:
 /fps-test
 /refresh-rate-test
 /keyboard-tester
+```
+
+Approved Expansion 1 routes, not yet implied to be implemented merely by appearing here:
+
+```text
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
+/touch-screen-test
+/keyboard-rollover-test
+/keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
+/frame-skipping-test
 ```
 
 Supporting routes:
@@ -44,19 +68,39 @@ Coding agents start with `AGENTS.md`.
 For exact behavior and release decisions:
 
 ```text
-18_DECISIONS_AND_BOUNDARIES.md          exact algorithms / lifecycle / technical boundaries
-19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md product strategy / scope / release boundary
+19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md product strategy / approved scope / release boundary
+18_DECISIONS_AND_BOUNDARIES.md          global + full-v1 algorithms / lifecycle / technical boundaries
+20_POST_V1_HARDWARE_EXPANSION_SPEC.md  exact Expansion 1 behavior / algorithms / UX / QA / order
 00_README.md                            full handoff/document map
 ```
 
+If `18`, `19`, and `20` appear to conflict on a shared boundary, resolve the documentation conflict before product code changes.
+
+## Expansion 1 implementation order
+
+```text
+E1.0 source-of-truth update
+→ E1.1 Mouse foundation + Mouse Tester
+→ E1.2 focused Mouse tools
+→ E1.3 Touch
+→ E1.4 Keyboard expansion
+→ E1.5 display visual-inspection tools
+→ E1.6 Frame Skipping
+→ E1.7 final Expansion 1 audit
+```
+
+Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
+
 ## Before public deployment
 
-The remaining release work is deliberately external to feature development:
+The remaining release work is deliberately separated from code-complete status:
 
 - purchase/set the real production domain;
-- run real-device/browser smoke tests, including controller and mouse hardware;
+- run the required real-device/browser smoke for every route included in the release;
 - verify high-refresh and multi-monitor display behavior where hardware is available;
 - verify latest Chrome, Edge, and Firefox desktop; record graceful-degradation gaps for Safari/mobile;
+- run real touch hardware checks for Touch Screen Test if that route is included;
+- run real camera checks for Frame Skipping if that route is included;
 - enable indexing only after the real origin is configured;
 - deploy over HTTPS;
 - connect Google Search Console and submit the generated sitemap;
@@ -90,7 +134,7 @@ pnpm test
 
 ## Architecture
 
-The MVP uses exactly four browser capability services:
+Full v1 uses four browser capability services:
 
 ```text
 GamepadService
@@ -98,6 +142,15 @@ FrameSampler
 KeyboardInputService
 MouseMovementService
 ```
+
+Expansion 1 additionally approves:
+
+```text
+MouseInputService
+TouchInputService
+```
+
+plus a shared progressive-enhancement Fullscreen helper.
 
 Typical dependency direction:
 
@@ -110,24 +163,11 @@ tool controller / UI binder
  └── prepared render data → renderer
 ```
 
-Native snapshots are adapted at the tool boundary before pure calculations or renderers consume tool semantics.
+Native snapshots/events are adapted at the tool boundary before pure calculations or renderers consume tool semantics.
 
 Production UI intentionally does not use React, Vue, Svelte, Tailwind, a charting library, global state library, backend, database, auth, paid APIs, AI, or WebHID.
 
-See the numbered source-of-truth documents, especially:
-
-```text
-06_ARCHITECTURE.md
-11_IMPLEMENTATION_PLAN.md
-12_LAUNCH_PLAN.md
-14_DEFINITION_OF_DONE.md
-16_UX_ACCEPTANCE.md
-17_FUNCTIONAL_VISUAL_SYSTEM.md
-18_DECISIONS_AND_BOUNDARIES.md
-19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md
-```
-
-## Measurement boundaries
+## Full-v1 measurement boundaries
 
 ### Gamepad Tester
 
@@ -157,26 +197,18 @@ Estimates browser-visible display cadence from rAF timing. It is not a direct ED
 
 Observes `keydown`/`keyup` on the dedicated page. `KeyboardEvent.code` drives physical highlighting, `key` is textual context, Tab remains normal, and reserved OS/browser shortcuts may be unobservable.
 
+Expansion 1 measurement wording and algorithms are defined only in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not duplicate or improvise them here.
+
 ## Privacy
 
-Raw controller, keyboard, mouse, and frame-timing data is not uploaded or stored by the site.
+Raw controller, keyboard, mouse, touch, and frame-timing data is not uploaded or stored by the site.
 
-If product analytics are enabled later, they must remain coarse and must not include raw hardware/input streams or raw gamepad IDs.
+If product analytics are enabled later, they must remain coarse and must not include raw hardware/input streams or raw device identifiers.
 
 ## Validation boundary
 
-Automated coverage includes pure calculations and browser-capability lifecycle behavior. The final code-side audit also used temporary headless visual checks with mocked browser input only to verify UI state and geometry; that temporary review infrastructure is not part of the product branch.
+Automated coverage includes pure calculations and browser-capability lifecycle behavior. Visual/headless review may use mocked browser input only to verify UI state and geometry.
 
-Manual pre-deployment validation still includes:
-
-```text
-real controllers
-real mouse capture
-120/144/240+ Hz where available
-multi-monitor behavior
-latest Chrome / Edge / Firefox desktop
-Safari/mobile graceful degradation
-background/foreground navigation behavior
-```
+Manual pre-deployment validation still includes the real hardware/browser cases required by the routes being released.
 
 Untested cases must remain explicitly documented rather than inferred from mocks.
