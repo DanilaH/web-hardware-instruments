@@ -22,7 +22,6 @@ const { variant = 'default' } = Astro.props;
     </a>
 
     <nav class="site-header__nav" aria-label="Primary navigation">
-      {variant === 'homepage' && <span class="site-header__catalog-count"><b>18</b><span>/ tools</span></span>}
       <a href="/" aria-current={variant === 'homepage' ? 'page' : undefined}>Tools</a>
       <a href="/about">About</a>
     </nav>
@@ -44,8 +43,7 @@ const { variant = 'default' } = Astro.props;
     font: inherit;
   }
 
-  .site-header__brand-copy small,
-  .site-header__catalog-count {
+  .site-header__brand-copy small {
     display: none;
   }
 
@@ -70,7 +68,7 @@ const { variant = 'default' } = Astro.props;
     place-items: center;
     padding-right: 0.65rem;
     border-right: 1px solid #3a3f40;
-    color: #ff6b35;
+    color: #d96b45;
   }
 
   .site-header[data-variant='homepage'] .site-header__brand-copy strong {
@@ -83,9 +81,10 @@ const { variant = 'default' } = Astro.props;
     display: block;
     margin-top: 0.18rem;
     color: #8e9797;
-    font: 600 0.58rem/1.1 var(--font-mono);
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.035em;
   }
 
   .site-header[data-variant='homepage'] .site-header__nav {
@@ -110,7 +109,7 @@ const { variant = 'default' } = Astro.props;
     bottom: 0;
     left: 0;
     height: 1px;
-    background: #ff6b35;
+    background: #d96b45;
     scale: 0 1;
     transform-origin: left;
     transition: scale 120ms ease;
@@ -124,24 +123,6 @@ const { variant = 'default' } = Astro.props;
   .site-header[data-variant='homepage'] .site-header__nav a:hover::after,
   .site-header[data-variant='homepage'] .site-header__nav a[aria-current='page']::after {
     scale: 1 1;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__catalog-count {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.28rem;
-    margin-right: 0.2rem;
-    padding-right: 1rem;
-    border-right: 1px solid #3a3f40;
-    color: #777f7f;
-    font: 600 0.59rem var(--font-mono);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__catalog-count b {
-    color: #ff6b35;
-    font-size: 0.74rem;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -162,8 +143,7 @@ const { variant = 'default' } = Astro.props;
       padding-right: 0.5rem;
     }
 
-    .site-header[data-variant='homepage'] .site-header__brand-copy small,
-    .site-header[data-variant='homepage'] .site-header__catalog-count {
+    .site-header[data-variant='homepage'] .site-header__brand-copy small {
       display: none;
     }
 
