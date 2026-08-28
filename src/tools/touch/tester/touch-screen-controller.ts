@@ -11,6 +11,7 @@ import {
   completeHandsOffCheck,
   createHandsOffState,
   interruptHandsOffCheck,
+  observeHandsOffActiveContact,
   observeHandsOffContactStart,
   observeHandsOffContactsEmpty,
   type HandsOffState,
@@ -201,12 +202,17 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     }, 500);
   };
 
-  const updateGlobalContactLifecycle = (event: TouchPointInputEvent): void => {
-    if (event.type === 'start') {
+  const updateGlobalContactLifecycle = (event: TouchPointInputEvent): boolean => {
+    if (event.type === 'start' || event.type === 'move') {
+      const newlyObservedActive = !globalActiveContacts.has(event.pointerId);
       globalActiveContacts.add(event.pointerId);
-    } else if (event.type === 'end' || event.type === 'cancel') {
+      return newlyObservedActive;
+    }
+
+    if (event.type === 'end' || event.type === 'cancel') {
       globalActiveContacts.delete(event.pointerId);
     }
+    return false;
   };
 
   const handleTouchEvent = (event: TouchInputEvent): void => {
@@ -223,7 +229,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
 
     const firstObservedTouch = !touchObserved;
     touchObserved = true;
-    updateGlobalContactLifecycle(event);
+    const newlyObservedActive = updateGlobalContactLifecycle(event);
     const handsOffWasRunning = isRunningHandsOff(handsOff);
     const previousState = state;
 
@@ -258,6 +264,14 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
         handsOffResult.textContent = 'Lift all fingers to restart the quiet guard.';
       } else if (previousHandsOff.phase === 'armed' && handsOff.phase === 'armed') {
         handsOffResult.textContent = `Place the device down and do not touch the screen. Unexpected contacts so far: ${handsOff.unexpectedStarts}.`;
+      }
+    } else if (event.type === 'move' && newlyObservedActive) {
+      const previousHandsOff = handsOff;
+      handsOff = observeHandsOffActiveContact(handsOff);
+      if (previousHandsOff.phase === 'guarding' && handsOff.phase === 'waiting-for-empty') {
+        if (guardTimer !== null) window.clearTimeout(guardTimer);
+        guardTimer = null;
+        handsOffResult.textContent = 'Lift all fingers to restart the quiet guard.';
       }
     }
 
