@@ -104,10 +104,12 @@
       "whole-catalog code and measurement-boundary review",
       "desktop and mobile visual/UX review",
       "homepage information architecture review",
-      "focused maintenance/source-readability cleanup"
+      "focused maintenance/source-readability cleanup",
+      "approved authored visual-system rollout across homepage, shared shell, and all hardware families",
+      "post-refresh source-of-truth and release-prep hygiene"
     ],
-    "result": "No new measurement or acquisition-architecture blockers found. Durable requirements were separated from completed roadmap history; homepage catalog scanability and selected mobile result/density issues were polished; stale MVP wording and remaining focused-Mouse source minification were removed.",
-    "current_work_mode": "reviewed maintenance only until fresh evidence approves new product scope",
+    "result": "No new measurement or acquisition-architecture blockers found. Durable requirements were separated from completed roadmap history; homepage/catalog UX was polished; the authored instrument identity was rolled out across all five hardware families; stale visual-source wording was reconciled; branded favicon plumbing was added.",
+    "current_work_mode": "external release-ready gate only unless a concrete maintenance defect is found or fresh evidence approves new product scope",
     "real_hardware_validation": "still pending release-ready gate and must not be inferred from headless/mock review"
   },
   "documents": [
@@ -140,10 +142,10 @@
     "GLOBAL_GOAL_AUDIT_V5.md",
     "RESEARCH_EVIDENCE_2026-08.md"
   ],
-  "version": "7.1",
+  "version": "7.2",
   "ux_priority": "one-screen obvious task completion for desktop-relevant tools; route-specific mobile-first acceptance where appropriate",
   "ux_min_desktop_viewport": "1366x768",
-  "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
+  "visual_direction": "instrument minimalism + authored identity; light chassis, meaningful dark diagnostic surfaces, five restrained hardware-family channel colors, domain-specific browser/input geometry, and state/signal-driven motion",
   "functional_visuals": [
     "gamepad SVG",
     "stick position trail",
@@ -192,6 +194,7 @@
     "strategy_scope_release": "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md",
     "global_full_v1_exact_implementation": "18_DECISIONS_AND_BOUNDARIES.md",
     "expansion_1_exact_implementation": "20_POST_V1_HARDWARE_EXPANSION_SPEC.md",
+    "visual_system": "17_FUNCTIONAL_VISUAL_SYSTEM.md",
     "agent_bootstrap": "AGENTS.md"
   },
   "styling": "plain CSS + CSS custom properties + Astro scoped styles",
@@ -218,7 +221,7 @@
   },
   "custom_analytics_required": false,
   "open_decisions": [
-    "brand/domain",
+    "production domain",
     "static hosting provider",
     "optional analytics provider",
     "future ad provider"
@@ -230,7 +233,7 @@
     "tool_usability": "global"
   },
   "release_strategy": {
-    "development_state": "full 18-tool catalog code-side audited; independent post-expansion requirements/UX/source-hygiene audit complete",
+    "development_state": "full 18-tool catalog code-side audited; authored visual refresh and post-refresh source/release-prep hygiene complete",
     "public_deployment": "deferred until a real production domain is purchased immediately before deployment",
     "placeholder_origin": "https://hardware-testing.invalid",
     "indexing_enabled_before_real_origin": false,
