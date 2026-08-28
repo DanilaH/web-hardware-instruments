@@ -5,6 +5,7 @@ import {
   completeHandsOffCheck,
   createHandsOffState,
   interruptHandsOffCheck,
+  observeHandsOffActiveContact,
   observeHandsOffContactStart,
   observeHandsOffContactsEmpty,
 } from './hands-off-check';
@@ -23,6 +24,20 @@ describe('hands-off check state', () => {
     expect(state.phase).toBe('waiting-for-empty');
     state = observeHandsOffContactsEmpty(state);
     expect(state.phase).toBe('guarding');
+  });
+
+  it('keeps the quiet guard conservative when an already-active contact is first seen moving', () => {
+    let state = beginHandsOffCheck(0);
+    state = observeHandsOffActiveContact(state);
+    expect(state.phase).toBe('waiting-for-empty');
+    state = observeHandsOffContactsEmpty(state);
+    expect(state.phase).toBe('guarding');
+  });
+
+  it('does not count a move-only active contact as a new unexpected start while armed', () => {
+    const state = observeHandsOffActiveContact(armHandsOffCheck(beginHandsOffCheck(0)));
+    expect(state.phase).toBe('armed');
+    expect(state.unexpectedStarts).toBe(0);
   });
 
   it('counts only new starts while armed and bounds visible markers', () => {
