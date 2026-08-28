@@ -38,6 +38,28 @@ If `18`, `19`, and `20` appear to conflict on shared architecture, privacy, life
 - One page = one user job.
 - Primary interaction must satisfy the one-screen UX acceptance rules where the device class makes that appropriate.
 
+## Review and validation order
+
+For each implementation block, use this exact sequence:
+
+```text
+implementation
+→ self-review #1
+→ review fixes
+→ visual / UX review
+→ visual / UX fixes
+→ self-review #2 on the final diff
+→ review fixes
+→ only then run build / typecheck / tests / CI
+→ fix any validation failures
+→ rerun validation until green
+→ merge
+```
+
+Do **not** wait for, poll, or use CI/test results while either self-review or the visual/UX review is still in progress. Reviews must be completed from the code/diff/product contract first. Automated validation is the final gate after review findings are closed, not an input to the review process.
+
+If the final validation run finds an error, fix it, rerun the affected review only when the fix changes behavior/architecture/UX materially, then rerun validation. Pure compile/test-only corrections do not require restarting the whole review cycle.
+
 ## Toolchain
 
 Use:
@@ -99,6 +121,7 @@ E1.0   source-of-truth approval
 E1.0.1 independent review corrections
 E1.1   Mouse foundation + Mouse Tester
 E1.2   focused Mouse tools
+E1.3   Touch Screen Test
 ```
 
 Implemented Expansion 1 routes so far:
@@ -109,6 +132,7 @@ Implemented Expansion 1 routes so far:
 /mouse-scroll-test
 /double-click-test
 /mouse-polling-rate-test
+/touch-screen-test
 ```
 
 E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
@@ -117,17 +141,18 @@ E1.1 added the reviewed `MouseInputService`, shared generic semantic mouse visua
 
 E1.2 added focused Mouse Button, Scroll, Double Click, and Polling Rate routes. The polling profile is sampling-only, selects exactly one browser source per attempt, keeps bounded two-second data, and does not attach unrelated button/wheel suppression.
 
+E1.3 added `TouchInputService`, the progressive Fullscreen helper, `/touch-screen-test`, separate first/confirmation coverage, surface-only multi-touch metrics, and the independently armed hands-off observation. Coverage uses only real in-surface browser-observed/coalesced touch samples; global touch lifecycle is used only where the hands-off guard requires it.
+
 **Next implementation step:**
 
 ```text
-E1.3 Touch
+E1.4 Keyboard expansion
 ```
 
 Then follow the remaining exact order in `20`:
 
 ```text
-E1.3 Touch
-→ E1.4 Keyboard expansion
+E1.4 Keyboard expansion
 → E1.5 display visual-inspection tools
 → E1.6 Frame Skipping
 → E1.7 final Expansion 1 audit

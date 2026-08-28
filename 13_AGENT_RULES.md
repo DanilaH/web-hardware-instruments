@@ -153,9 +153,31 @@ It does not mean:
 - decorative charts;
 - gaming neon.
 
-## 15. Before finishing a task
+## 15. Review before automated validation
 
-Verify:
+Use this order for every implementation block:
+
+```text
+implementation
+→ self-review #1
+→ fixes
+→ visual / UX review
+→ fixes
+→ self-review #2 on final diff
+→ fixes
+→ build / typecheck / tests / CI
+→ validation fixes if needed
+→ rerun validation until green
+→ merge
+```
+
+Do not wait for, poll, or use test/CI results while review work is still in progress. Review the implementation against product behavior, architecture, lifecycle, measurement honesty, accessibility, responsive UX, cleanup, and diff hygiene first.
+
+Only after both reviews are closed should automated validation run as the final code-complete gate.
+
+If validation finds a compile/test failure, fix it and rerun validation. Restart a review pass only when that validation fix materially changes product behavior, architecture, lifecycle, measurement semantics, or UX.
+
+Before merge, verify:
 
 ```text
 build
