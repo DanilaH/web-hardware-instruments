@@ -28,6 +28,7 @@ import { keyboardGhostingPresets } from './ghosting-presets';
     <div class="ghosting-tool__visual-wrap">
       <KeyboardGrid />
     </div>
+    <p class="ghosting-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
 
     <section class="ghosting-result" aria-labelledby="ghosting-result-heading">
       <span id="ghosting-result-heading">Observed for this combination</span>
@@ -96,6 +97,7 @@ import { keyboardGhostingPresets } from './ghosting-presets';
 
   .ghosting-tool__instruction,
   .ghosting-tool__note,
+  .ghosting-tool__mobile-hint,
   .ghosting-result p {
     margin: 0;
   }
@@ -166,6 +168,12 @@ import { keyboardGhostingPresets } from './ghosting-presets';
     padding-bottom: 0.2rem;
   }
 
+  .ghosting-tool__mobile-hint {
+    display: none;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
   .ghosting-tool__visual-wrap :global([data-key-code][data-expected='true']) {
     border-color: color-mix(in srgb, var(--color-signal) 55%, #d5dadc);
     background: color-mix(in srgb, var(--color-signal) 7%, var(--color-surface));
@@ -226,6 +234,11 @@ import { keyboardGhostingPresets } from './ghosting-presets';
 
     .ghosting-action {
       width: 100%;
+    }
+
+    .ghosting-tool__mobile-hint {
+      display: block;
+      margin-top: calc(var(--space-2) * -1);
     }
   }
 </style>
