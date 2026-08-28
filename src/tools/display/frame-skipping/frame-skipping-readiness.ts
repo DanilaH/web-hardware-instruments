@@ -6,10 +6,11 @@ export const frameSkippingSlotCount = 48;
 
 export interface FrameSkippingReadinessState {
   readonly firstTimestamp: number | null;
-  readonly previousTimestamp: number | null;
+  readonly lastSampleTimestamp: number | null;
   readonly deltas: readonly number[];
   readonly ready: boolean;
   readonly frameOrdinal: number | null;
+  readonly epochPreviousTimestamp: number | null;
 }
 
 export interface FrameSkippingReadinessSnapshot {
@@ -23,10 +24,11 @@ export interface FrameSkippingReadinessSnapshot {
 
 export const createFrameSkippingReadinessState = (): FrameSkippingReadinessState => ({
   firstTimestamp: null,
-  previousTimestamp: null,
+  lastSampleTimestamp: null,
   deltas: [],
   ready: false,
   frameOrdinal: null,
+  epochPreviousTimestamp: null,
 });
 
 const median = (values: readonly number[]): number | null => {
@@ -64,23 +66,25 @@ export const pushFrameSkippingSample = (
 ): FrameSkippingReadinessState => {
   if (!Number.isFinite(timestamp)) return state;
 
-  if (state.firstTimestamp === null || state.previousTimestamp === null) {
+  if (state.firstTimestamp === null || state.lastSampleTimestamp === null) {
     return {
       firstTimestamp: timestamp,
-      previousTimestamp: timestamp,
+      lastSampleTimestamp: timestamp,
       deltas: [],
       ready: false,
       frameOrdinal: null,
+      epochPreviousTimestamp: null,
     };
   }
 
-  const delta = timestamp - state.previousTimestamp;
+  const delta = timestamp - state.lastSampleTimestamp;
   if (!Number.isFinite(delta) || delta <= 0) {
     return {
       ...state,
-      previousTimestamp: timestamp,
+      lastSampleTimestamp: timestamp,
       ready: false,
       frameOrdinal: null,
+      epochPreviousTimestamp: null,
     };
   }
 
@@ -92,23 +96,32 @@ export const pushFrameSkippingSample = (
   if (!cadenceStable) {
     return {
       ...state,
-      previousTimestamp: timestamp,
+      lastSampleTimestamp: timestamp,
       deltas,
       ready: false,
       frameOrdinal: null,
+      epochPreviousTimestamp: null,
     };
   }
 
-  const frameOrdinal = state.ready && state.frameOrdinal !== null
-    ? state.frameOrdinal + 1
-    : 0;
+  if (!state.ready || state.frameOrdinal === null || state.epochPreviousTimestamp === null) {
+    return {
+      ...state,
+      lastSampleTimestamp: timestamp,
+      deltas,
+      ready: true,
+      frameOrdinal: 0,
+      epochPreviousTimestamp: timestamp,
+    };
+  }
 
   return {
     ...state,
-    previousTimestamp: timestamp,
+    lastSampleTimestamp: timestamp,
     deltas,
     ready: true,
-    frameOrdinal,
+    frameOrdinal: state.frameOrdinal + 1,
+    epochPreviousTimestamp: timestamp,
   };
 };
 
@@ -117,8 +130,8 @@ export const getFrameSkippingReadinessSnapshot = (
 ): FrameSkippingReadinessSnapshot => {
   const liveMedian = median(state.deltas);
   const warmupElapsed =
-    state.firstTimestamp !== null && state.previousTimestamp !== null
-      ? state.previousTimestamp - state.firstTimestamp
+    state.firstTimestamp !== null && state.lastSampleTimestamp !== null
+      ? state.lastSampleTimestamp - state.firstTimestamp
       : 0;
   const phase = state.ready
     ? 'ready'
