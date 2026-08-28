@@ -28,7 +28,8 @@ The first public indexed release is expected to contain the current implemented 
 - no placeholder/temporary routes are indexable;
 - sitemap correct for the real origin;
 - robots correct;
-- favicon/app icons present;
+- branded favicon/site icon present;
+- platform-specific app icons are required only if an installable web-app manifest is introduced later;
 - metadata complete;
 - privacy page accurate;
 - analytics tested if custom analytics is enabled;
