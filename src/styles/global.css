@@ -23,6 +23,7 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
+  background: var(--color-page);
   line-height: 1.5;
 }
 
@@ -59,7 +60,7 @@ a:hover {
 .page-main {
   width: min(calc(100% - 2rem), var(--shell-width));
   margin-inline: auto;
-  padding-block: var(--space-6) var(--space-7);
+  padding-block: var(--space-5) var(--space-7);
 }
 
 .reading-width {
@@ -68,25 +69,26 @@ a:hover {
 
 .page-heading {
   margin: 0 0 var(--space-3);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  line-height: 1.1;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.9rem, 3.2vw, 2.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.042em;
 }
 
 .page-intro {
   margin: 0;
   max-width: 46rem;
   color: var(--color-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .site-header {
-  border-bottom: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  border-bottom: 1px solid var(--color-border-strong);
+  background: var(--color-surface-strong);
 }
 
 .site-header__inner {
-  min-height: 3.25rem;
+  min-height: 3.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -114,12 +116,13 @@ a:hover {
 
 .site-footer {
   border-top: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-strong) 58%, var(--color-page));
   color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: 0.84rem;
 }
 
 .site-footer__inner {
-  min-height: 3.5rem;
+  min-height: 3.7rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -137,7 +140,7 @@ a:hover {
 .foundation-note {
   margin-top: var(--space-6);
   max-width: var(--reading-width);
-  border-left: 2px solid var(--color-border);
+  border-left: 2px solid var(--color-border-strong);
   padding-left: var(--space-4);
   color: var(--color-muted);
 }
@@ -151,13 +154,13 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
-/* Homepage identity only. Extract these channel values into shared tokens when the approved visual system is propagated beyond the homepage. */
-.page-main--homepage [data-channel='controller'] { --channel: #4d6fac; }
-.page-main--homepage [data-channel='mouse'] { --channel: #ad5d4c; }
-.page-main--homepage [data-channel='keyboard'] { --channel: #768148; }
-.page-main--homepage [data-channel='display'] { --channel: #745f8d; }
-.page-main--homepage [data-channel='touch'] { --channel: #3f8178; }
+[data-channel='controller'] { --channel: var(--color-channel-controller); }
+[data-channel='mouse'] { --channel: var(--color-channel-mouse); }
+[data-channel='keyboard'] { --channel: var(--color-channel-keyboard); }
+[data-channel='display'] { --channel: var(--color-channel-display); }
+[data-channel='touch'] { --channel: var(--color-channel-touch); }
 
+/* Homepage-specific visibility treatment; shared channel values now live in tokens.css. */
 .page-main--homepage .category-rail a::after {
   right: 0;
   left: 0;
@@ -198,7 +201,7 @@ a:hover {
 
 @media (max-width: 40rem) {
   .page-main {
-    padding-block: var(--space-5) var(--space-6);
+    padding-block: var(--space-4) var(--space-6);
   }
 
   .tool-shell {
