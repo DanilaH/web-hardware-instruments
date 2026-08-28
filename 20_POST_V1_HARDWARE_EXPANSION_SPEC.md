@@ -1,6 +1,6 @@
 # Hardware Tests — Post-v1 Hardware Expansion 1 Product & Technical Specification
 
-**Status:** approved for implementation  
+**Status:** approved for implementation after E1.0.1 review corrections  
 **Date:** 2026-08-28  
 **Repository:** `DanilaH/web-hardware-instruments`  
 **Scope:** Expansion 1 additions only. Existing full-v1 tools remain stable and are not redesigned.
@@ -9,7 +9,7 @@
 
 # 0. Purpose
 
-Expansion 1 started as a deferred list of plausible hardware utilities. The expansion catalog below is now approved for implementation based on completed search/SERP research and cluster-fit review.
+Expansion 1 started as a deferred list of plausible hardware utilities. The expansion catalog below is approved for implementation based on completed search/SERP research and cluster-fit review.
 
 This document is the implementation contract for that approved catalog, not the research report itself. Do not invent or duplicate keyword-volume, traffic, or competitor-authority figures here. If future scope changes are proposed, validate them through the project's expansion rule before changing this contract.
 
@@ -42,6 +42,20 @@ Existing source-of-truth rules remain binding:
 Expansion 1 is additive. Do not refactor full v1 merely to make new code aesthetically uniform.
 
 The catalog is approved, but implementation remains sequential. A route is not production-ready merely because it appears here; each route passes its own implementation, review, visual, and quality gates.
+
+## E1.0.1 review corrections
+
+Independent review after E1.0 found several ambiguities that could create false measurement semantics. This revision makes the following rules exact:
+
+- one polling measurement session uses one timestamp source; fallback restarts the session instead of mixing streams;
+- Touch coverage may consume real coalesced Pointer Event samples, but never synthetic interpolation;
+- touch samples outside the active surface do not get clamped into edge coverage cells;
+- confirmation is offered for any uncovered cell, without an invented `meaningful area` threshold;
+- first-pass and confirmation-pass coverage are stored separately;
+- hands-off Touch observation is cancelled on blur/hidden visibility;
+- Frame Skipping freezes its timing reference for a READY capture epoch and discards that epoch when readiness is lost.
+
+These corrections do not change the approved route catalog.
 
 ---
 
@@ -347,20 +361,31 @@ Only inside a dedicated test surface:
 
 Never disable those behaviors globally.
 
-## 5.5 Polling acquisition precedence and extraction
+## 5.5 Polling acquisition source and timestamp extraction
 
-When a polling test is active:
+Polling source precedence:
 
 ```text
-1. pointerrawupdate if available
-2. pointermove + getCoalescedEvents() if available
+1. pointerrawupdate when supported and successfully registered
+2. pointermove + getCoalescedEvents() when available
 3. ordinary pointermove fallback
 ```
 
-Timestamp extraction is deterministic:
+**One measurement attempt uses exactly one timestamp source.** Do not append timestamps from concurrent raw, coalesced, and ordinary streams into one result.
+
+Source selection/fallback rules:
+
+1. choose the highest supported source before the 2-second measurement clock begins;
+2. if feature detection or listener registration for that source fails, fall back to the next source before collecting measurement timestamps;
+3. if a selected source produces no usable timestamp samples while ordinary pointer movement is observed during an initial liveness check, cancel that collection, clear all collected timestamps, select the next source, and restart the full 2-second measurement clock;
+4. a liveness listener may detect that movement exists, but its timestamps must never be mixed into the measured source;
+5. once usable measurement samples are accepted from a source, keep that source for the attempt; insufficient data then returns `Not enough movement — try again.` rather than silently mixing a fallback stream.
+
+Timestamp extraction for the selected source is deterministic:
 
 - for `pointerrawupdate`, if `getCoalescedEvents()` exists and returns a non-empty batch, use finite timestamps from that batch; otherwise use the event timestamp;
-- for `pointermove`, if `getCoalescedEvents()` exists and returns a non-empty batch, use finite timestamps from that batch; otherwise use the event timestamp;
+- for `pointermove` in coalesced mode, if `getCoalescedEvents()` returns a non-empty batch, use finite timestamps from that batch; otherwise use the parent event timestamp;
+- for ordinary `pointermove`, use the finite parent event timestamp;
 - do not append a parent-event timestamp in addition to a non-empty coalesced batch unless it is a distinct finite timestamp;
 - preserve chronological order;
 - deduplicate identical timestamps;
@@ -382,8 +407,9 @@ destroy
 - `subscribe()` does not start acquisition;
 - `stop()` is reusable;
 - `destroy()` is idempotent/permanent;
-- one listener set per service;
+- one listener set per service/profile;
 - blur/hidden page emits a clear/reset signal;
+- any active explicit polling measurement is cancelled on blur/hidden visibility;
 - no input data leaves the page.
 
 ---
@@ -405,8 +431,9 @@ type TouchInputEvent =
   | {
       type: 'start' | 'move' | 'end' | 'cancel';
       pointerId: number;
-      x: number; // 0..1 inside active surface
-      y: number; // 0..1 inside active surface
+      x: number; // normalized relative to active surface; may be outside 0..1 under pointer capture
+      y: number;
+      insideSurface: boolean;
       timestamp: number;
     }
   | {
@@ -416,6 +443,27 @@ type TouchInputEvent =
 ```
 
 `pointerId` is only an active-contact key. Never persist or present it as device identity.
+
+### Coalesced observed touch samples
+
+For `pointermove`, when `getCoalescedEvents()` exists and returns a non-empty batch, normalize each finite `pointerType === "touch"` sample from that batch as an actually observed browser sample. Otherwise normalize the parent move event.
+
+These coalesced samples are not interpolation: they are browser-observed pointer changes delivered together. They may contribute to Touch coverage if their coordinates are actually inside the active surface.
+
+Do not synthesize samples between observed events.
+
+### Surface coordinates
+
+Derive normalized coordinates from the active surface bounding rect.
+
+Do **not** clamp out-of-surface samples into `0..1` for measurement. Under pointer capture a finger may continue generating events after leaving the surface; clamping those events into an edge cell would manufacture edge coverage.
+
+Rules:
+
+- `insideSurface === true` only when the finite client coordinate is actually within the current active surface bounds;
+- only inside-surface samples may mark Touch coverage cells;
+- renderer code may clamp a visual marker to the surface edge if useful, but that visual clamp must not alter measurement state;
+- active-contact lifecycle still follows the pointer ID even while a captured pointer is temporarily outside the surface.
 
 Apply `touch-action: none` only to the active diagnostic surface. Do not apply it globally because browser zoom/accessibility/scrolling outside the surface must remain available.
 
@@ -430,7 +478,7 @@ blur
 visibilitychange
 ```
 
-Clear active contacts on blur/hidden visibility.
+Clear active contacts on blur/hidden visibility. Tool controllers must treat a clear signal as invalidating any observation interval that requires continuous visibility/focus.
 
 ---
 
@@ -691,7 +739,7 @@ Source
 Coalesced pointer samples
 ```
 
-One Start action, duration `2 seconds`.
+One Start action. The accepted measurement source receives a full `2 seconds` after source selection/fallback is complete.
 
 Visible source note:
 
@@ -703,7 +751,7 @@ Basic browser pointer events
 
 Do not call any path USB raw reports.
 
-Calculation: collect finite monotonically increasing browser sample timestamps, deduplicate equal timestamps, then:
+Calculation: collect finite monotonically increasing timestamps from the single selected source, deduplicate equal timestamps, then:
 
 ```text
 intervals = positive differences between consecutive timestamps
@@ -730,7 +778,8 @@ Performance:
 - no DOM write per sample;
 - bounded 2-second data only;
 - render at low cadence;
-- detach high-frequency listeners immediately after completion/cancel.
+- detach high-frequency/liveness listeners immediately after completion/cancel;
+- never combine sample sources to make a result look more complete.
 
 A known 1000Hz mouse reading lower on a fallback source is not automatically a bug if the source/caveat is correct.
 
@@ -776,29 +825,65 @@ Coverage means coverage of the browser test area, not touchscreen health.
 
 Use a normalized `16 × 10` grid.
 
-**Measurement-honesty rule:** mark coverage only for cells containing an actually observed finite browser touch sample. Do not synthesize covered cells between two samples; interpolation could hide a repeatable area where the browser did not report touch input.
+### Coverage sample rule
 
-A short visual trail may interpolate between observed samples for rendering continuity only. Interpolated pixels/cells must not affect coverage percentage or pass/confirmation state.
+Mark coverage only for finite, actually browser-observed finger-touch samples whose coordinates are actually inside the active surface.
 
-Store covered cells in bounded fixed-size state.
+Accepted measurement samples include:
+
+- normal touch `pointerdown` / `pointermove` samples;
+- finite touch samples returned by `getCoalescedEvents()` for a delivered `pointermove`.
+
+Do not synthesize covered cells between samples. Do not clamp an out-of-surface captured pointer into an edge cell. Either behavior could hide a repeatable area where the browser did not actually report in-surface touch input.
+
+A short visual trail may interpolate between observed samples or clamp a marker for rendering continuity only. Interpolated/clamped visual pixels must not affect coverage percentage, confirmation state, or any diagnostic label.
+
+Store covered cells in bounded fixed-size bitsets/sets.
 
 ## First pass + confirmation pass
 
+Maintain separate fixed-size coverage state:
+
+```text
+pass1Covered
+pass2Covered
+```
+
 Pass 1: user sweeps the surface. Untouched cells are `Not covered yet`, never `Dead zones` or `Failed cells`.
 
-If meaningful untouched areas remain, expose secondary action:
+The secondary action:
 
 ```text
 Check missed areas
 ```
 
-During confirmation, already-covered cells become visually quiet and untouched cells remain neutrally emphasized.
+becomes available whenever `pass1Covered` contains fewer than all 160 cells. There is **no hidden `meaningful area` threshold**.
 
-After confirmation, cells still not reached may be labeled:
+If pass 1 reaches all 160 cells, confirmation is not required and may remain unavailable.
+
+When confirmation starts:
+
+- preserve `pass1Covered`;
+- clear/start an independent `pass2Covered` set;
+- already-covered pass-1 cells become visually quiet;
+- cells not covered in pass 1 remain neutrally emphasized;
+- only samples actually observed during confirmation mark `pass2Covered`.
+
+Overall displayed Coverage may use the union:
+
+```text
+union(pass1Covered, pass2Covered)
+```
+
+but repeatability semantics use the separate sets.
+
+After confirmation, a cell may be labeled:
 
 ```text
 Not detected in both passes
 ```
+
+only if it exists in neither `pass1Covered` nor `pass2Covered`.
 
 Copy:
 
@@ -807,6 +892,8 @@ Repeatable missed areas may indicate a touch problem, but this browser test cann
 ```
 
 Never automatically output `dead zone confirmed`.
+
+Reset clears both pass sets, active contacts, maximum count, trails, and confirmation state.
 
 ## Multi-touch
 
@@ -842,14 +929,28 @@ Exact arming flow:
 3. begin a `500ms` quiet guard only while the set remains empty;
 4. if any touch starts during the guard, restart the guard only after active contacts become empty again;
 5. arm only after continuous `500ms` touch-free guard;
-6. run `15 seconds`;
+6. run a continuously observable `15 seconds`;
 7. instruct: `Place the device down and do not touch the screen.`
 
 While armed, count new touch-contact starts. Moves do not become extra unexpected contacts.
 
 A contact beginning before arm must never be silently carried into the armed state. If active contacts exist, remain waiting until touch-free again.
 
-Result:
+### Visibility/focus invalidation
+
+The 500ms guard and 15-second result are valid only while the page remains observable.
+
+If the service emits `blur` or `visibility-hidden` during the quiet guard or armed 15-second observation:
+
+- cancel the current hands-off run;
+- clear its pending guard/timer and partial unexpected-contact count;
+- do not produce a quiet/no-input result from the partial interval;
+- show a concise state such as `Check interrupted — keep this page visible and start again.`;
+- require a new explicit Start action before another run.
+
+Normal page/tool teardown or pagehide likewise cancels an unfinished run.
+
+Result after a complete uninterrupted 15 seconds:
 
 ```text
 No unexpected touch input observed in 15 seconds
@@ -1121,45 +1222,67 @@ Primary instructions visible without reading the article:
 
 Visual: Canvas, black background, `48` horizontal slots, one bright square per expected frame ordinal. Reuse `FrameSampler`; no independent rAF loop.
 
-Do not simply `slot++` per callback because a missed browser timing step would only slow the pattern and hide a gap.
+Do not simply `slot++` per callback because a browser timing step that is materially late must invalidate/restart the capture epoch rather than silently redefining the expected sequence.
 
-After warmup:
+## Readiness monitor
 
-```text
-referenceInterval = median recent positive rAF deltas
-frameOrdinal = round((timestamp - referenceStart) / referenceInterval)
-slot = frameOrdinal % 48
-```
-
-A sufficiently large timing gap can therefore skip a slot.
-
-`READY` is browser-pattern readiness, not a monitor verdict.
-
-Approved provisional readiness rule:
+Provisional readiness rule:
 
 1. warm up at least `1000ms`;
 2. maintain latest `60` positive finite frame deltas;
 3. require at least `30` deltas;
-4. calculate median delta;
-5. every delta in most recent `30` must be `< 1.5 × median`.
+4. calculate the live median delta;
+5. every delta in the most recent `30` must be `< 1.5 × liveMedian`.
 
-Then:
-
-```text
-READY — take the photo now.
-```
-
-Else:
+Before readiness:
 
 ```text
 Browser timing unstable — close heavy tabs/apps and wait.
 ```
 
-This rule is deterministic enough to implement and test but remains provisional until required real-browser/camera QA. If the threshold or ordinal rule is materially misleading/unusable in that QA, change it only through reviewed source-of-truth update + tests. Never silently tune semantics.
+When the rule first becomes satisfied, enter a new READY capture epoch.
 
-On `FrameSampler reset`: clear readiness, clear reference timing, fresh warmup.
+## Frozen READY capture epoch
 
-Interpretation includes tiny continuous/gap examples and states that repeatable gaps in multiple photos may indicate skipping, while browser timing/camera exposure can also produce bad captures.
+At the transition into READY, freeze together:
+
+```text
+referenceInterval = median(most recent 30 positive deltas)
+referenceStart = current rAF timestamp
+```
+
+The `referenceInterval` for that capture epoch **must not be recomputed in the denominator of elapsed-time ordinals** while the epoch remains READY. A changing median applied to a fixed `referenceStart` can manufacture ordinal jumps/repeats even when delivery is stable.
+
+Within that READY epoch:
+
+```text
+frameOrdinal = round((timestamp - referenceStart) / referenceInterval)
+slot = frameOrdinal % 48
+```
+
+The live rolling delta window continues separately only to monitor whether READY remains valid.
+
+READY copy:
+
+```text
+READY — take the photo now.
+```
+
+## Losing readiness
+
+If the live readiness rule becomes false at any point:
+
+- remove READY immediately;
+- clear the current `referenceInterval` and `referenceStart` capture epoch;
+- show the unstable/waiting state;
+- do not continue rendering ordinals using the stale epoch;
+- when timing becomes stable again, create a **fresh** frozen epoch from that new READY transition.
+
+On `FrameSampler reset` (including visibility invalidation): clear readiness, rolling readiness state as required, and the frozen capture epoch; perform a fresh warmup.
+
+This readiness/ordinal rule remains provisional until required real-browser/camera QA. If it is materially misleading or unusable in that QA, change it only through reviewed source-of-truth update + regression tests. Never silently tune semantics.
+
+Interpretation includes tiny continuous/gap examples and states that repeatable gaps in multiple valid photos may indicate skipping, while browser timing/camera exposure can also produce bad captures.
 
 No automatic pass/fail.
 
@@ -1320,7 +1443,7 @@ Backlight → Dead Pixel
 Frame Skipping → Refresh Rate / FPS
 ```
 
-Never place cross-promotion before primary interaction.
+Never place cross-promotion before primary interaction. Never link an approved-but-unimplemented route as if it were live.
 
 ---
 
@@ -1388,7 +1511,7 @@ General:
 
 Mouse: right-click suppression only on explicit surface; Reset remains keyboard reachable.
 
-Touch: textual metrics available; fullscreen optional; `touch-action:none` only on active surface; page zoom/scroll available outside.
+Touch: textual metrics available; fullscreen optional; `touch-action:none` only on active surface; page zoom/scroll available outside. A hands-off cancellation caused by focus/visibility loss must be communicated textually.
 
 Fullscreen display tests: clear instructions before fullscreen; obvious exit; no flashing Dead Pixel/Backlight content.
 
@@ -1402,20 +1525,24 @@ Mouse polling:
 
 - no per-sample DOM writes;
 - bounded short-session data;
-- high-frequency listeners removed immediately after test.
+- high-frequency/liveness listeners removed immediately after test;
+- source fallback clears the previous attempt rather than retaining mixed data.
 
 Touch:
 
 - fixed grid;
 - bounded trails;
+- fixed-size pass coverage sets;
 - active pointer state removed on end/cancel;
+- coalesced samples processed into bounded state without per-sample DOM creation;
 - no unlimited event log.
 
 Frame Skipping:
 
 - one existing FrameSampler loop;
 - Canvas renderer only;
-- no DOM nodes created per frame.
+- no DOM nodes created per frame;
+- frozen capture epoch state is small and reset on readiness loss.
 
 Keyboard:
 
@@ -1438,6 +1565,9 @@ wheel delta + deltaMode
 blur/visibility clear signal
 basic profile does not attach polling listeners
 polling source precedence
+one-source-per-attempt invariant
+registration fallback clears/no samples
+liveness-triggered fallback clears timestamps and restarts duration
 coalesced timestamp extraction
 duplicate removal
 start/stop reuse
@@ -1476,7 +1606,11 @@ These prove math only, not physical hardware accuracy.
 mouse ignored
 pen ignored
 touch start/move/end/cancel
+coalesced touch moves expanded as observed samples
+parent move used when coalesced batch empty
 normalized coordinates
+inside-surface flag
+out-of-surface captured samples not clamped for measurement
 multiple active pointer IDs
 blur clear
 visibility clear
@@ -1488,12 +1622,15 @@ lifecycle
 ```text
 grid cell mapping
 edge coordinates
-clamping
-observed-sample-only coverage
+inside-surface requirement
+out-of-surface sample does not mark edge cell
+observed/coalesced-sample-only coverage
 visual interpolation does not mark coverage
-coverage calculation
-first pass
-confirmation pass
+pass1 bitset
+confirmation offered for any uncovered pass1 cell
+pass2 stored separately
+union coverage calculation
+not-detected-in-both-passes intersection/complement semantics
 reset
 ```
 
@@ -1506,7 +1643,12 @@ wait until active contacts empty
 guard restarts when touch appears
 new touch-contact count
 moves do not become extra contacts
-15s completion
+blur during guard cancels
+hidden during guard cancels
+blur during 15s observation cancels
+hidden during 15s observation cancels
+partial interval never yields quiet result
+15s uninterrupted completion
 reset/cancel
 ```
 
@@ -1544,10 +1686,13 @@ cleanup
 ```text
 warmup
 minimum readiness data
-median interval
+live median interval
 1.5× instability boundary
+READY transition freezes reference interval/start
+frozen denominator remains unchanged during epoch
 elapsed-time frame ordinal
-ordinal jump after timing gap
+readiness loss clears epoch
+fresh READY creates fresh epoch
 FrameSampler reset clears readiness/reference
 ```
 
@@ -1557,13 +1702,13 @@ FrameSampler reset clears readiness/reference
 
 Automation does not replace hardware checks.
 
-Mouse: basic 3-button mouse, side-button mouse, wheel, known ~1000Hz gaming mouse if available; Chrome/Edge/Firefox and Safari graceful degradation where available. Verify right/middle/side buttons, wheel, rapid-repeat flow, polling source/caveat, no accidental navigation.
+Mouse: basic 3-button mouse, side-button mouse, wheel, known ~1000Hz gaming mouse if available; Chrome/Edge/Firefox and Safari graceful degradation where available. Verify right/middle/side buttons, wheel, rapid-repeat flow, polling source/caveat, no accidental navigation. For polling, verify the visible Source matches the selected single acquisition path and no fallback attempt mixes timestamps.
 
-Touch: Android Chrome, iPhone/iPad Safari if available, touch laptop/tablet if available. Verify single/multi-touch, edges/corners, observed-sample-only coverage, confirmation pass, pointercancel, scroll/zoom boundaries, fullscreen fallback, hands-off guard/timer, mouse ignored.
+Touch: Android Chrome, iPhone/iPad Safari if available, touch laptop/tablet if available. Verify single/multi-touch, edges/corners, coalesced observed-sample coverage where supported, out-of-surface captured movement does not paint edge cells, confirmation pass semantics, pointercancel, scroll/zoom boundaries, fullscreen fallback, hands-off guard/timer, blur/hidden cancellation, mouse ignored.
 
 Keyboard: ordinary keyboard + gaming/NKRO keyboard where available. Verify real gaming combinations and reserved-key limitations.
 
-Display: desktop monitor + mobile display for Dead Pixel/Backlight; fullscreen/fallback. Frame Skipping requires real camera, ~1/10s or longer exposure, multiple visible blocks, screenshots rejected, repeatability review.
+Display: desktop monitor + mobile display for Dead Pixel/Backlight; fullscreen/fallback. Frame Skipping requires real camera, ~1/10s or longer exposure, multiple visible blocks, screenshots rejected, repeatability review. Verify READY epoch resets cleanly when browser timing becomes unstable or visibility changes.
 
 ---
 
@@ -1596,10 +1741,20 @@ No page-level horizontal overflow. Touch mobile does not need to fit an article;
 
 # 30. Documentation integration
 
-Before Expansion 1 product code starts, synchronize:
+Before Expansion 1 product code starts, synchronize all normative documents that would otherwise contradict the approved scope/boundaries.
+
+At minimum E1.0/E1.0.1 synchronize:
 
 ```text
 AGENTS.md
+01_PRODUCT.md
+02_INFORMATION_ARCHITECTURE.md
+06_ARCHITECTURE.md
+07_BROWSER_APIS.md
+08_ANALYTICS.md
+12_LAUNCH_PLAN.md
+13_AGENT_RULES.md
+14_DEFINITION_OF_DONE.md
 15_BACKLOG.md
 19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md
 README.md
@@ -1609,7 +1764,7 @@ project-manifest.json
 
 Do not copy this specification wholesale into older full-v1 documents.
 
-`03_TOOL_SPECS.md`, `04_UX_UI.md`, `06_ARCHITECTURE.md`, `09_TESTING_QA.md`, `14_DEFINITION_OF_DONE.md`, `16_UX_ACCEPTANCE.md`, `17_FUNCTIONAL_VISUAL_SYSTEM.md`, and `18_DECISIONS_AND_BOUNDARIES.md` remain valid for full-v1 history and/or global rules. Amend one only when Expansion 1 creates a genuine cross-cutting rule that cannot be represented cleanly here.
+`03_TOOL_SPECS.md`, `04_UX_UI.md`, `09_TESTING_QA.md`, `16_UX_ACCEPTANCE.md`, `17_FUNCTIONAL_VISUAL_SYSTEM.md`, and `18_DECISIONS_AND_BOUNDARIES.md` remain valid for full-v1 history and/or global rules unless a genuine cross-cutting conflict is found.
 
 Important:
 
@@ -1626,7 +1781,7 @@ Important:
 
 ## E1.0 — source-of-truth update
 
-First PR/commit set:
+Initial docs-only approval:
 
 - approved Expansion 1 scope;
 - exact boundaries;
@@ -1635,6 +1790,15 @@ First PR/commit set:
 - manifest/status.
 
 No product code.
+
+## E1.0.1 — independent review corrections
+
+Before E1.1 product code:
+
+- close measurement ambiguities found by independent review;
+- synchronize stale normative API/IA/launch/privacy docs;
+- run clean diff review and Quality;
+- merge before starting Mouse foundation.
 
 ## E1.1 — Mouse foundation + broad Mouse Tester
 
@@ -1722,25 +1886,26 @@ no full-v1 regression
 Expansion 1 is code-complete only when:
 
 1. every approved route has a distinct user job;
-2. completed full-v1 behavior remains unchanged except related navigation;
+2. completed full-v1 behavior remains unchanged except related navigation/genuine correctness fixes;
 3. new input acquisition is behind approved small typed capability boundaries;
 4. no raw input is uploaded/stored;
 5. exact calculation/heuristic helpers have tests;
 6. unsupported browser states are readable;
-7. polling never claims exact hardware/USB truth;
+7. polling uses one source per attempt and never claims exact hardware/USB truth;
 8. free-form rollover never certifies NKRO;
 9. ghosting uses a guided expected combination;
-10. touch coverage counts browser-observed samples only and does not synthesize covered cells;
-11. untouched touch cells are not automatically called dead;
-12. hands-off touch reports unexpected browser input, not failed hardware;
-13. Dead Pixel and Backlight remain visual-inspection tools;
-14. Frame Skipping explicitly requires camera evidence;
-15. screenshots are explicitly invalid for Frame Skipping;
-16. `1366×768` desktop visual/headless gate passes where appropriate;
-17. ~390px layout integrity passes;
-18. build/typecheck/tests pass;
-19. documentation matches implementation;
-20. no Audio/CPS/dashboard scope leaked into Hardware.
+10. touch coverage counts only in-surface browser-observed samples, including real coalesced samples where available, and never synthetic interpolation/clamped outside samples;
+11. pass-1 and confirmation touch coverage are separate and no hidden uncovered-area threshold is invented;
+12. untouched touch cells are not automatically called dead;
+13. hands-off touch reports only a complete continuously visible/focused 15-second observation and cancels interrupted runs;
+14. Dead Pixel and Backlight remain visual-inspection tools;
+15. Frame Skipping explicitly requires camera evidence and uses a frozen READY capture epoch;
+16. screenshots are explicitly invalid for Frame Skipping;
+17. `1366×768` desktop visual/headless gate passes where appropriate;
+18. ~390px layout integrity passes;
+19. build/typecheck/tests pass;
+20. documentation matches implementation;
+21. no Audio/CPS/dashboard scope leaked into Hardware.
 
 Automated/headless validation may use mocked browser input for state/geometry, but it must not be reported as real-device validation.
 
@@ -1749,7 +1914,7 @@ Automated/headless validation may use mocked browser input for state/geometry, b
 Before an indexed production release that includes the relevant Expansion 1 routes:
 
 1. real touch-device smoke passes for Touch Screen Test;
-2. real mouse smoke passes for mouse input, side buttons, wheel behavior, rapid-repeat flow, and polling caveats;
+2. real mouse smoke passes for mouse input, side buttons, wheel behavior, rapid-repeat flow, and polling caveats/source behavior;
 3. real keyboard smoke passes for rollover/ghosting flows;
 4. real camera smoke passes for Frame Skipping;
 5. required browser graceful-degradation checks are recorded honestly;
