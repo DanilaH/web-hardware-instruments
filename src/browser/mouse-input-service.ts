@@ -330,37 +330,55 @@ export const createMouseInputService = (
     return true;
   };
 
+  const attachLifecycle = (): void => {
+    if (!environment) return;
+    environment.setBlurListener(() => {
+      if (started && !destroyed) emit({ type: 'clear', reason: 'blur' });
+    });
+    environment.setVisibilityListener(() => {
+      if (started && !destroyed && environment.getVisibilityState() !== 'visible') {
+        emit({ type: 'clear', reason: 'visibility-hidden' });
+      }
+    });
+  };
+
+  const attachBasicInput = (): void => {
+    if (!environment) return;
+    environment.setButtonDownListener((button, timestamp) => {
+      if (started && !destroyed) emitButton('buttondown', button, timestamp);
+    });
+    environment.setButtonUpListener((button, timestamp) => {
+      if (started && !destroyed) emitButton('buttonup', button, timestamp);
+    });
+    environment.setWheelListener((deltaX, deltaY, deltaMode, timestamp) => {
+      if (
+        started &&
+        !destroyed &&
+        [deltaX, deltaY, deltaMode, timestamp].every((value) => Number.isFinite(value))
+      ) {
+        emit({ type: 'wheel', deltaX, deltaY, deltaMode, timestamp });
+      }
+    });
+    environment.setBasicMoveListener((movementX, movementY, timestamp) => {
+      if (
+        started &&
+        !destroyed &&
+        [movementX, movementY, timestamp].every((value) => Number.isFinite(value))
+      ) {
+        emit({ type: 'move', movementX, movementY, timestamp });
+      }
+    });
+    environment.setContextMenuSuppression(true);
+    environment.setAuxClickSuppression(true);
+  };
+
   const service: MouseInputService = {
     start: () => {
       if (destroyed || environment === null) return false;
       if (started) return true;
 
       started = true;
-      environment.setButtonDownListener((button, timestamp) => {
-        if (started && !destroyed) emitButton('buttondown', button, timestamp);
-      });
-      environment.setButtonUpListener((button, timestamp) => {
-        if (started && !destroyed) emitButton('buttonup', button, timestamp);
-      });
-      environment.setWheelListener((deltaX, deltaY, deltaMode, timestamp) => {
-        if (
-          started &&
-          !destroyed &&
-          [deltaX, deltaY, deltaMode, timestamp].every((value) => Number.isFinite(value))
-        ) {
-          emit({ type: 'wheel', deltaX, deltaY, deltaMode, timestamp });
-        }
-      });
-      environment.setContextMenuSuppression(true);
-      environment.setAuxClickSuppression(true);
-      environment.setBlurListener(() => {
-        if (started && !destroyed) emit({ type: 'clear', reason: 'blur' });
-      });
-      environment.setVisibilityListener(() => {
-        if (started && !destroyed && environment.getVisibilityState() !== 'visible') {
-          emit({ type: 'clear', reason: 'visibility-hidden' });
-        }
-      });
+      attachLifecycle();
 
       if (profile === 'polling') {
         if (!setPollingListener()) {
@@ -368,15 +386,7 @@ export const createMouseInputService = (
           return false;
         }
       } else {
-        environment.setBasicMoveListener((movementX, movementY, timestamp) => {
-          if (
-            started &&
-            !destroyed &&
-            [movementX, movementY, timestamp].every((value) => Number.isFinite(value))
-          ) {
-            emit({ type: 'move', movementX, movementY, timestamp });
-          }
-        });
+        attachBasicInput();
       }
 
       return true;
