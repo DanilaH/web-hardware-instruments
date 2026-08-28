@@ -54,6 +54,12 @@ export const mountFrameSkippingTest = (root: HTMLElement): FrameSkippingControll
     accessibleSummary.textContent = 'Frame Skipping pattern is warming up browser timing.';
   };
 
+  const renderUnavailable = (message: string, accessibleMessage: string): void => {
+    root.dataset.state = 'unavailable';
+    status.textContent = message;
+    accessibleSummary.textContent = accessibleMessage;
+  };
+
   const resetReadiness = (): void => {
     readiness = createFrameSkippingReadinessState();
     lastPhase = null;
@@ -88,12 +94,21 @@ export const mountFrameSkippingTest = (root: HTMLElement): FrameSkippingControll
   const controller: FrameSkippingController = {
     start: () => {
       if (destroyed || running) return;
+      if (!renderer.isSupported()) {
+        renderUnavailable(
+          'Canvas pattern unavailable in this browser.',
+          'The Frame Skipping canvas pattern is unavailable in this browser context.',
+        );
+        return;
+      }
+
       resetReadiness();
       running = sampler.start();
       if (!running) {
-        root.dataset.state = 'unavailable';
-        status.textContent = 'Frame sampling unavailable in this browser.';
-        accessibleSummary.textContent = 'Frame sampling is unavailable in this browser context.';
+        renderUnavailable(
+          'Frame sampling unavailable in this browser.',
+          'Frame sampling is unavailable in this browser context.',
+        );
       }
     },
     stop: () => {
