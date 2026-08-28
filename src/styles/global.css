@@ -151,6 +151,50 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* Homepage identity spike: channel color must be visible without depending on hover. */
+.page-main--homepage [data-channel='controller'] { --channel: #4d6fac; }
+.page-main--homepage [data-channel='mouse'] { --channel: #ad5d4c; }
+.page-main--homepage [data-channel='keyboard'] { --channel: #768148; }
+.page-main--homepage [data-channel='display'] { --channel: #745f8d; }
+.page-main--homepage [data-channel='touch'] { --channel: #3f8178; }
+
+.page-main--homepage .category-rail a::after {
+  right: 0.72rem;
+  left: 0.72rem;
+  height: 3px;
+  scale: 1 1;
+  opacity: 0.58;
+}
+
+.page-main--homepage .category-rail a:hover::after,
+.page-main--homepage .category-rail a:focus-visible::after {
+  opacity: 1;
+}
+
+.page-main--homepage .category-rail__icon,
+.page-main--homepage .category-rail a:hover .category-rail__icon,
+.page-main--homepage .category-rail a:focus-visible .category-rail__icon {
+  color: var(--channel);
+}
+
+.page-main--homepage .tool-group__signal {
+  width: 0.25rem;
+  height: 2rem;
+}
+
+.page-main--homepage .tool-group__icon {
+  color: color-mix(in srgb, var(--channel) 78%, #3e4946);
+}
+
+.page-main--homepage .instrument-screen__inputs svg {
+  color: color-mix(in srgb, var(--channel) 88%, white);
+}
+
+.page-main--homepage .instrument-screen__inputs span::after {
+  height: 2px;
+  opacity: 0.9;
+}
+
 @media (max-width: 40rem) {
   .page-main {
     padding-block: var(--space-5) var(--space-6);
