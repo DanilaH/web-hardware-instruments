@@ -46,6 +46,9 @@ export const observeHandsOffContactStart = (
   };
 };
 
+export const observeHandsOffActiveContact = (state: HandsOffState): HandsOffState =>
+  state.phase === 'guarding' ? { ...state, phase: 'waiting-for-empty' } : state;
+
 export const observeHandsOffContactsEmpty = (state: HandsOffState): HandsOffState =>
   state.phase === 'waiting-for-empty' ? { ...state, phase: 'guarding' } : state;
 
