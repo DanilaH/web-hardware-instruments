@@ -4,17 +4,17 @@ A static Astro site with lightweight browser-based hardware diagnostics.
 
 ## Current product status
 
-Full-v1 implementation and the code-side full-v1 audit are complete.
+Full-v1 implementation/audit and **Hardware Expansion 1** code-side implementation/audit are complete.
 
-Post-v1 **Hardware Expansion 1** is approved for sequential implementation under:
+Expansion 1 was implemented under:
 
 ```text
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
 ```
 
-E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, **E1.5 display visual-inspection tools**, and **E1.6 Frame Skipping** are complete. The next step is **E1.7 final Expansion 1 audit**.
+E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, **E1.5 display visual-inspection tools**, **E1.6 Frame Skipping**, and **E1.7 final Expansion 1 audit** are complete.
 
-Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
+Code-complete does not mean release-ready. Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser/camera release checks are performed.
 
 Implemented full-v1 tool routes:
 
@@ -89,7 +89,7 @@ E1.0 source-of-truth approval ✅
 → E1.4 Keyboard expansion ✅
 → E1.5 display visual-inspection tools ✅
 → E1.6 Frame Skipping ✅
-→ E1.7 final Expansion 1 audit ← next
+→ E1.7 final Expansion 1 audit ✅
 ```
 
 E1.0.1 specifically removed ambiguous measurement/source-of-truth behavior before implementation: polling attempts use one source selected before measurement and never mix streams; Touch coverage counts only real in-surface browser-observed samples (including real coalesced samples where available); confirmation passes are separate; interrupted hands-off checks are invalid; Frame Skipping uses a **readiness-gated sequential READY capture epoch** so browser timestamp arithmetic cannot manufacture pattern gaps.
@@ -106,7 +106,9 @@ E1.5 adds Dead Pixel and Backlight Bleed as visual-inspection utilities on one s
 
 E1.6 adds the camera-assisted Frame Skipping Test on the existing `FrameSampler`. Browser timing is only a READY validity gate: every accepted READY frame advances exactly one sequential pattern slot, timing instability invalidates the capture epoch before another step, and only an external camera photo can provide skipped-refresh evidence. The page never manufactures visible gaps from timestamp arithmetic and never outputs an automatic pass/fail verdict.
 
-Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
+E1.7 performed the final cross-cutting Expansion 1 audit. It synchronized exact SEO intent titles and related-tool clusters with `20`, restored the canonical Touch-inclusive privacy wording, closed Touch fullscreen teardown, removed remaining Expansion-only gradient styling, and restored readable source formatting where earlier focused Mouse files had been left minified. Those audit corrections do not change approved measurement thresholds or algorithms.
+
+Expansion 1 is now code-side complete and audited. New product scope outside the approved Expansion 1 catalog requires fresh evidence/review rather than continuing implementation by default.
 
 ## Before public deployment
 
