@@ -1,232 +1,179 @@
-# SEO and Content Specification
+# SEO and Content Rules
 
-## Principle
+This document defines durable SEO/content rules for the current catalog.
 
-SEO content must support the tool, not push the tool below the fold.
+Exact full-v1 title examples remain historically useful here. Exact Expansion 1 title/H1/intent boundaries are owned by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` and must not be independently re-invented in multiple files.
 
-The interactive utility is the page's primary content.
+## Core rule
 
-## Above the fold
+One indexable tool route should map to one real diagnostic job/search intent.
 
-Only:
+Do not create:
 
-```text
-H1
-one concise descriptive sentence
-primary tool
-primary result/status
-```
+- synonym pages with substantially identical tools;
+- thin generated variants;
+- keyword-stuffed copies;
+- placeholder/coming-soon indexable routes;
+- articles whose primary purpose is to occupy search space while pushing the tool below the fold.
 
-No FAQ, SEO paragraphs, feature grids, testimonials, long trust sections, or related-tool grids before the tool.
+## Search-landing independence
 
-## Initial market / language
+Assume a user may enter directly on any diagnostic route.
 
-Initial SEO content is English and is researched against the US keyword market.
+Every tool page should independently provide:
 
-Use natural US-English wording where regional wording differs, but keep the utility itself globally usable.
+1. exact H1/job framing;
+2. compact instruction/status;
+3. primary diagnostic interaction;
+4. honest result/measurement wording;
+5. concise limitation/context;
+6. useful explanatory content below the tool;
+7. a small related-tool section after the task/result.
 
-Use:
+Do not require homepage context to understand a tool.
 
-```html
-<html lang="en">
-```
+## Tool-first content order
 
-Do not create country pages, city pages, or locale folders in MVP.
-
-## Search-first constraint
-
-Each tool page is designed to receive direct organic landings.
-
-The title/H1/intro must immediately match the task promised by the query, but keyword targeting must never force extra controls or duplicate pages.
-
-Normal crawlability is enough for AI/search retrieval too. Do not add special AI-only content, hidden text, or `llms.txt` as a substitute for useful HTML content.
-
-## Intent mapping
-
-### `/gamepad-tester`
+Preferred page order:
 
 ```text
-gamepad tester
-controller tester
-controller test online
-gamepad test online
+H1 + compact intro
+primary diagnostic
+result / limitation in the same tool region
+supporting explanation / how-to
+related tools
 ```
 
-### `/controller-stick-drift-test`
+SEO content supports task completion. It must not displace it.
 
-```text
-controller stick drift test
-gamepad stick drift test
-stick drift test
-```
+## Metadata
 
-Problem language:
+Each route should have:
 
-```text
-why is my controller moving by itself
-how to know if my controller has stick drift
-```
+- unique `<title>`;
+- unique H1;
+- useful meta description;
+- canonical URL using the configured production origin;
+- one stable intent boundary.
 
-### `/controller-deadzone-test`
+Do not create multiple pages simply to target small wording variations such as `test`, `tester`, `checker`, `online`, or plural/singular forms when the underlying user job is the same.
 
-```text
-controller deadzone test
-gamepad deadzone test
-```
-
-### `/mouse-dpi-test`
-
-```text
-mouse dpi test
-dpi tester
-mouse dpi analyzer
-```
-
-Be careful with generic `dpi checker`, which can mix image and mouse intent.
-
-### `/fps-test`
-
-```text
-fps test
-fps tester
-fps checker
-frame rate test
-```
-
-### `/refresh-rate-test`
-
-```text
-refresh rate test
-monitor refresh rate test
-```
-
-### `/keyboard-tester`
-
-```text
-keyboard tester
-keyboard test
-keyboard key tester
-```
-
-## Page structure
-
-After the primary tool:
-
-1. brief `How to use` if needed;
-2. brief result explanation;
-3. limitations;
-4. concise FAQ based on real user questions;
-5. 2–4 related tools.
-
-Do not force every page to contain every section if it adds no value.
-
-## Content length
-
-There is no minimum word count.
-
-Do not create 1000+ words merely for SEO.
-
-Prefer concise, useful copy that directly answers questions.
-
-## Titles
-
-Examples:
+## Current full-v1 title boundaries
 
 ```text
 Gamepad Tester — Test Controller Buttons & Sticks
 Controller Stick Drift Test — Check Analog Stick Drift
 Controller Deadzone Test — Check Stick Center Noise
 Mouse DPI Test — Estimate Your Mouse DPI
-FPS Test — Measure Browser Frame Rate
+FPS Test — Check Browser Frame Rate
 Refresh Rate Test — Check Display Refresh Rate
 Keyboard Tester — Test Keyboard Keys Online
 ```
 
-## Duplicate intent
+Exact H1 values are the plain tool names.
 
-Do not make separate pages for:
+## Expansion 1 intent ownership
 
-```text
-gamepad tester
-controller tester
-gamepad test online
-```
-
-when they are one intent.
-
-## Static HTML
-
-H1 and intro must exist in static HTML. Any below-the-fold explanatory copy and internal links included on the page must also be static HTML.
-
-The interactive module may be client-side.
-
-## Search / AI retrieval friendliness
-
-Use literal, human-readable descriptions of:
-
-- what the tool does;
-- what action the user takes;
-- what result it returns;
-- key limitations.
-
-Do not add artificial LLM-targeted text files or hidden content as a substitute for normal crawlable pages.
-
-## Internal links
-
-Related-tool links should be contextually relevant and mostly appear after the task/result.
-
-Do not surround the primary interaction with distracting navigation.
-
-## Indexation
-
-Index real production pages only.
-
-Do not index:
-
-- debug pages;
-- test fixtures;
-- query variants;
-- temporary experiments;
-- duplicate synonym pages.
-
-## Search Console
-
-Track:
-
-- impressions;
-- clicks;
-- query distribution;
-- average position;
-- country;
-- device.
-
-Do not rewrite pages constantly based on the first few days of data.
-
-
-## FPS vs Refresh Rate boundary
-
-Keep `/fps-test` and `/refresh-rate-test` as separate pages, but they must not be copy variants.
-
-`/fps-test` owns:
+For these routes, use section `SEO page intent boundaries` in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` as the exact title/H1/intent contract:
 
 ```text
-fps test
-fps tester
-fps checker
-frame rate test
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
+/touch-screen-test
+/keyboard-rollover-test
+/keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
+/frame-skipping-test
 ```
 
-and explains short-term browser frame delivery/drops.
+Do not copy those exact titles into additional normative files unless there is a strong maintenance reason; duplicated exact strings are what previously allowed drift.
 
-`/refresh-rate-test` owns:
+## Measurement-honesty copy
+
+SEO phrasing never overrides measurement truth.
+
+Prefer:
 
 ```text
-refresh rate test
-monitor refresh rate test
+browser-detected
+observed
+estimated
+heuristic
+visual inspection
+camera-assisted
 ```
 
-and explains the inferred display refresh cadence/mode.
+Do not use search-friendly wording to imply:
 
-Do not use the same H1, intro, result wording, FAQ set, or identical visualization on both pages.
+- direct USB/device packets when browser events are measured;
+- hardware refresh-rate certification from rAF;
+- confirmed keyboard ghosting from free-form browser input;
+- touchscreen health from a short browser observation;
+- automated pixel/backlight diagnosis from a visual stage;
+- physical frame skipping from browser timestamps alone.
 
-If future Search Console data shows sustained query cannibalization, review the split before creating any additional display pages.
+## Internal linking
+
+Related links exist for useful continuation and cluster strength, not link-count maximization.
+
+Rules:
+
+- place related tools after the primary task/result;
+- normally show 2 relevant tools, at most 3 when justified;
+- only link implemented routes;
+- prefer same-device/same-problem adjacency;
+- avoid unrelated cross-promotion before the diagnostic.
+
+Current cluster structure is defined in `02_INFORMATION_ARCHITECTURE.md`.
+
+## Homepage
+
+The homepage is a catalog/wayfinding surface, not an SEO article.
+
+With the current catalog size, group implemented tools by:
+
+```text
+Controller
+Mouse
+Keyboard
+Display
+Touch
+```
+
+Use short job descriptions. Do not create category landing pages solely because the homepage uses category headings.
+
+## Indexing boundary
+
+Before the real production origin exists:
+
+```text
+https://hardware-testing.invalid
+indexingEnabled = false
+```
+
+Robots/noindex protection must remain active and sitemap integration may remain disabled.
+
+After the real domain is configured and release-ready checks pass:
+
+1. enable indexing;
+2. verify canonical URLs;
+3. deploy over HTTPS;
+4. connect Google Search Console;
+5. submit the generated sitemap;
+6. monitor indexing/query evidence before approving new adjacent scope.
+
+## Future content expansion
+
+New pages require the expansion rule from `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`:
+
+```text
+validated independent demand/opportunity
+or repeated Search Console intent
+or material cluster-strengthening value
+```
+
+Technical feasibility or a keyword synonym alone is not enough.
