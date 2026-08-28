@@ -1,140 +1,49 @@
 ---
+import ToolIcon from '../components/icons/ToolIcon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const controllerTools = [
-  {
-    href: '/gamepad-tester',
-    glyph: 'G',
-    name: 'Gamepad Tester',
-    description: 'Test controller buttons, sticks, D-pad, and triggers.',
-  },
-  {
-    href: '/controller-stick-drift-test',
-    glyph: '↔',
-    name: 'Controller Stick Drift Test',
-    description: 'Measure observed analog-stick center offset while untouched.',
-  },
-  {
-    href: '/controller-deadzone-test',
-    glyph: '○',
-    name: 'Controller Deadzone Test',
-    description: 'Measure stick center noise and a heuristic starting deadzone.',
-  },
+  { href: '/gamepad-tester', icon: 'gamepad', name: 'Gamepad Tester', description: 'Test controller buttons, sticks, D-pad, and triggers.' },
+  { href: '/controller-stick-drift-test', icon: 'drift', name: 'Controller Stick Drift Test', description: 'Measure observed analog-stick center offset while untouched.' },
+  { href: '/controller-deadzone-test', icon: 'deadzone', name: 'Controller Deadzone Test', description: 'Measure stick center noise and a heuristic starting deadzone.' },
 ] as const;
 
 const mouseTools = [
-  {
-    href: '/mouse-tester',
-    glyph: 'M',
-    name: 'Mouse Tester',
-    description: 'Check browser-detected mouse buttons, wheel input, and movement.',
-  },
-  {
-    href: '/mouse-button-test',
-    glyph: 'BTN',
-    name: 'Mouse Button Test',
-    description: 'Check primary, middle, secondary, back, and forward button input.',
-  },
-  {
-    href: '/mouse-scroll-test',
-    glyph: '↕',
-    name: 'Mouse Scroll Test',
-    description: 'Inspect browser-detected wheel directions and recent events.',
-  },
-  {
-    href: '/double-click-test',
-    glyph: '2×',
-    name: 'Double Click Test',
-    description: 'Look for unusually fast repeated same-button presses.',
-  },
-  {
-    href: '/mouse-polling-rate-test',
-    glyph: 'Hz',
-    name: 'Mouse Polling Rate Test',
-    description: 'Measure the pointer sample rate observed by this browser.',
-  },
-  {
-    href: '/mouse-dpi-test',
-    glyph: 'DPI',
-    name: 'Mouse DPI Test',
-    description: 'Estimate mouse DPI from a measured physical movement distance.',
-  },
+  { href: '/mouse-tester', icon: 'mouse', name: 'Mouse Tester', description: 'Check browser-detected mouse buttons, wheel input, and movement.' },
+  { href: '/mouse-button-test', icon: 'button', name: 'Mouse Button Test', description: 'Check primary, middle, secondary, back, and forward button input.' },
+  { href: '/mouse-scroll-test', icon: 'scroll', name: 'Mouse Scroll Test', description: 'Inspect browser-detected wheel directions and recent events.' },
+  { href: '/double-click-test', icon: 'double-click', name: 'Double Click Test', description: 'Look for unusually fast repeated same-button presses.' },
+  { href: '/mouse-polling-rate-test', icon: 'polling', name: 'Mouse Polling Rate Test', description: 'Measure the pointer sample rate observed by this browser.' },
+  { href: '/mouse-dpi-test', icon: 'dpi', name: 'Mouse DPI Test', description: 'Estimate mouse DPI from a measured physical movement distance.' },
 ] as const;
 
 const keyboardTools = [
-  {
-    href: '/keyboard-tester',
-    glyph: 'K',
-    name: 'Keyboard Tester',
-    description: 'Press keys and see which physical key codes the browser detects.',
-  },
-  {
-    href: '/keyboard-rollover-test',
-    glyph: 'K+',
-    name: 'Keyboard Rollover Test',
-    description: 'See the largest simultaneous key set this browser detects.',
-  },
-  {
-    href: '/keyboard-ghosting-test',
-    glyph: 'KG',
-    name: 'Keyboard Ghosting Test',
-    description: 'Compare guided key combinations with the keys detected together.',
-  },
+  { href: '/keyboard-tester', icon: 'keyboard', name: 'Keyboard Tester', description: 'Press keys and see which physical key codes the browser detects.' },
+  { href: '/keyboard-rollover-test', icon: 'rollover', name: 'Keyboard Rollover Test', description: 'See the largest simultaneous key set this browser detects.' },
+  { href: '/keyboard-ghosting-test', icon: 'ghosting', name: 'Keyboard Ghosting Test', description: 'Compare guided key combinations with the keys detected together.' },
 ] as const;
 
 const displayTools = [
-  {
-    href: '/fps-test',
-    glyph: 'F',
-    name: 'FPS Test',
-    description: 'Observe this browser page’s frame delivery and recent drops.',
-  },
-  {
-    href: '/refresh-rate-test',
-    glyph: 'Hz',
-    name: 'Refresh Rate Test',
-    description: 'Estimate the display cadence currently visible to the browser.',
-  },
-  {
-    href: '/frame-skipping-test',
-    glyph: 'FS',
-    name: 'Frame Skipping Test',
-    description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.',
-  },
-  {
-    href: '/dead-pixel-test',
-    glyph: 'PX',
-    name: 'Dead Pixel Test',
-    description: 'Inspect the screen against solid colors for dead or stuck pixels.',
-  },
-  {
-    href: '/backlight-bleed-test',
-    glyph: 'BL',
-    name: 'Backlight Bleed Test',
-    description: 'Inspect a backlit display for bright leakage on a black screen.',
-  },
+  { href: '/fps-test', icon: 'fps', name: 'FPS Test', description: 'Observe this browser page’s frame delivery and recent drops.' },
+  { href: '/refresh-rate-test', icon: 'refresh', name: 'Refresh Rate Test', description: 'Estimate the display cadence currently visible to the browser.' },
+  { href: '/frame-skipping-test', icon: 'frame-skip', name: 'Frame Skipping Test', description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.' },
+  { href: '/dead-pixel-test', icon: 'dead-pixel', name: 'Dead Pixel Test', description: 'Inspect the screen against solid colors for dead or stuck pixels.' },
+  { href: '/backlight-bleed-test', icon: 'backlight', name: 'Backlight Bleed Test', description: 'Inspect a backlit display for bright leakage on a black screen.' },
 ] as const;
 
 const touchTools = [
-  {
-    href: '/touch-screen-test',
-    glyph: 'T',
-    name: 'Touch Screen Test',
-    description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.',
-  },
+  { href: '/touch-screen-test', icon: 'touch', name: 'Touch Screen Test', description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.' },
 ] as const;
 
-const columns = [
-  [
-    { name: 'Controller', tools: controllerTools },
-    { name: 'Mouse', tools: mouseTools },
-  ],
-  [
-    { name: 'Keyboard', tools: keyboardTools },
-    { name: 'Display', tools: displayTools },
-    { name: 'Touch', tools: touchTools },
-  ],
+const groups = [
+  { id: 'controller', name: 'Controller', icon: 'gamepad', tone: 'blue', tools: controllerTools },
+  { id: 'mouse', name: 'Mouse', icon: 'mouse', tone: 'cyan', tools: mouseTools },
+  { id: 'keyboard', name: 'Keyboard', icon: 'keyboard', tone: 'violet', tools: keyboardTools },
+  { id: 'display', name: 'Display', icon: 'refresh', tone: 'sky', tools: displayTools },
+  { id: 'touch', name: 'Touch', icon: 'touch', tone: 'teal', tools: touchTools },
 ] as const;
+
+const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
 ---
 
 <BaseLayout
@@ -142,23 +51,58 @@ const columns = [
   description="Lightweight browser-based hardware diagnostics. No install or account required."
   canonicalPath="/"
 >
-  <section class="home-intro reading-width">
-    <h1 class="page-heading">Hardware Tests in Your Browser</h1>
-    <p class="page-intro">Small, focused diagnostics that run directly in your browser.</p>
+  <section class="home-hero">
+    <div class="home-hero__copy">
+      <p class="home-eyebrow"><span aria-hidden="true"></span> Browser diagnostics · local by default</p>
+      <h1 class="page-heading">Hardware Tests in Your Browser</h1>
+      <p class="page-intro">Focused diagnostics for controllers, mice, keyboards, displays, and touchscreens — no install or account required.</p>
+      <div class="home-facts" aria-label="Site facts">
+        <span><strong>18</strong> focused tools</span>
+        <span>Raw input stays local</span>
+        <span>Works from the browser</span>
+      </div>
+    </div>
+    <div class="home-hero__mark" aria-hidden="true">
+      <span></span><i></i>
+    </div>
   </section>
 
+  <nav class="category-rail" aria-label="Hardware categories">
+    {groups.map((group) => (
+      <a href={`#${group.id}`} data-tone={group.tone}>
+        <span class="category-rail__icon"><ToolIcon kind={group.icon} size={20} /></span>
+        <span>{group.name}</span>
+        <small>{group.tools.length}</small>
+      </a>
+    ))}
+  </nav>
+
   <section class="home-tools" aria-labelledby="available-tools">
-    <h2 id="available-tools" class="home-tools__heading">Available tools</h2>
+    <div class="home-tools__header">
+      <div>
+        <p class="home-kicker">Diagnostics catalog</p>
+        <h2 id="available-tools">Choose a tool</h2>
+      </div>
+      <p>Each page does one job and explains what the browser can — and cannot — observe.</p>
+    </div>
+
     <div class="tool-columns">
       {columns.map((column) => (
         <div class="tool-column">
           {column.map((group) => (
-            <section class="tool-group" aria-labelledby={`tool-group-${group.name.toLowerCase()}`}>
-              <h3 id={`tool-group-${group.name.toLowerCase()}`}>{group.name}</h3>
+            <section class="tool-group" id={group.id} data-tone={group.tone} aria-labelledby={`tool-group-${group.id}`}>
+              <header class="tool-group__header">
+                <span class="tool-group__icon" aria-hidden="true"><ToolIcon kind={group.icon} size={20} /></span>
+                <div>
+                  <h3 id={`tool-group-${group.id}`}>{group.name}</h3>
+                  <p>{group.tools.length} {group.tools.length === 1 ? 'tool' : 'tools'}</p>
+                </div>
+              </header>
+
               <div class="tool-list">
                 {group.tools.map((tool) => (
                   <a class="tool-link" href={tool.href}>
-                    <span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span>
+                    <span class="tool-link__icon" aria-hidden="true"><ToolIcon kind={tool.icon} size={21} /></span>
                     <span class="tool-link__copy">
                       <strong>{tool.name}</strong>
                       <small>{tool.description}</small>
@@ -176,120 +120,106 @@ const columns = [
 </BaseLayout>
 
 <style>
-  .home-tools {
-    margin-top: var(--space-6);
-  }
-
-  .home-tools__heading,
-  .tool-group h3 {
-    color: var(--color-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .home-tools__heading {
-    margin: 0 0 var(--space-3);
-  }
-
-  .tool-columns {
+  .home-hero {
+    position: relative;
+    min-height: 15.5rem;
+    overflow: hidden;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
-    gap: var(--space-6);
-  }
-
-  .tool-column {
-    min-width: 0;
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  .tool-group {
-    min-width: 0;
-  }
-
-  .tool-group h3 {
-    margin: 0 0 var(--space-2);
-  }
-
-  .tool-list {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .tool-link {
-    min-width: 0;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) 12rem;
     align-items: center;
-    gap: var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    padding: 0.72rem var(--space-3);
-    text-decoration: none;
+    gap: var(--space-6);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border: 1px solid #d9e5e8;
+    border-radius: 18px;
+    background: #f8fbfc;
+    box-shadow: 0 18px 50px rgba(27, 54, 64, 0.08);
   }
 
-  .tool-link:hover {
-    border-color: color-mix(in srgb, var(--color-signal) 50%, var(--color-border));
-  }
+  .home-hero__copy { position: relative; z-index: 1; max-width: 48rem; }
+  .home-eyebrow, .home-kicker { margin: 0; color: #54717c; font-size: .72rem; font-weight: 700; letter-spacing: .085em; text-transform: uppercase; }
+  .home-eyebrow { display: flex; align-items: center; gap: .55rem; margin-bottom: var(--space-3); }
+  .home-eyebrow span { width: .5rem; height: .5rem; border-radius: 50%; background: #1688a8; box-shadow: 0 0 0 4px rgba(22, 136, 168, .1); }
+  .home-hero .page-heading { max-width: 42rem; font-size: clamp(2.35rem, 5vw, 4.4rem); line-height: .98; letter-spacing: -.055em; }
+  .home-hero .page-intro { max-width: 44rem; font-size: clamp(1rem, 1.6vw, 1.12rem); }
 
-  .tool-link__glyph {
-    width: 2rem;
-    height: 2rem;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--color-border);
-    border-radius: 50%;
-    color: var(--color-signal);
-    font: 0.74rem/1 var(--font-mono);
-  }
+  .home-facts { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin-top: var(--space-5); color: #60717a; font-size: .82rem; }
+  .home-facts span { display: inline-flex; align-items: center; gap: .35rem; }
+  .home-facts span::before { content: ''; width: .28rem; height: .28rem; border-radius: 50%; background: #a8bac1; }
+  .home-facts strong { color: #172126; font: 700 .9rem var(--font-mono); }
 
-  .tool-link__copy {
-    min-width: 0;
-  }
+  .home-hero__mark { position: relative; width: 10rem; height: 10rem; justify-self: center; opacity: .7; }
+  .home-hero__mark::before, .home-hero__mark::after, .home-hero__mark span { content: ''; position: absolute; inset: 50%; translate: -50% -50%; border: 1px solid #b9d1d8; border-radius: 50%; }
+  .home-hero__mark::before { width: 9.5rem; height: 9.5rem; }
+  .home-hero__mark::after { width: 5.5rem; height: 5.5rem; }
+  .home-hero__mark span { width: 1rem; height: 1rem; border-color: #1688a8; background: rgba(22,136,168,.08); }
+  .home-hero__mark i::before, .home-hero__mark i::after { content: ''; position: absolute; left: 50%; top: 50%; background: #b9d1d8; translate: -50% -50%; }
+  .home-hero__mark i::before { width: 12rem; height: 1px; }
+  .home-hero__mark i::after { width: 1px; height: 12rem; }
 
-  .tool-link strong,
-  .tool-link small {
-    display: block;
-  }
+  .category-rail { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; margin-top: var(--space-4); }
+  .category-rail a { --tone: #1688a8; min-width: 0; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: .65rem; padding: .72rem .85rem; border: 1px solid #dbe4e7; border-radius: 12px; background: #fff; color: #26343a; text-decoration: none; box-shadow: 0 5px 16px rgba(27,54,64,.045); transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease; }
+  .category-rail a:hover { color: #172126; transform: translateY(-2px); border-color: color-mix(in srgb, var(--tone) 38%, #dbe4e7); box-shadow: 0 10px 22px rgba(27,54,64,.08); }
+  .category-rail__icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 9px; color: var(--tone); background: color-mix(in srgb, var(--tone) 9%, white); }
+  .category-rail a > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; font-size: .82rem; font-weight: 700; }
+  .category-rail small { color: #829198; font: .72rem var(--font-mono); }
 
-  .tool-link strong {
-    font-size: 0.92rem;
-    line-height: 1.25;
-  }
+  [data-tone='blue'] { --tone: #4776cf; }
+  [data-tone='cyan'] { --tone: #1688a8; }
+  [data-tone='violet'] { --tone: #7668c5; }
+  [data-tone='sky'] { --tone: #2d83b7; }
+  [data-tone='teal'] { --tone: #258f83; }
 
-  .tool-link small {
-    margin-top: 0.08rem;
-    color: var(--color-muted);
-    font-size: 0.78rem;
-    line-height: 1.3;
-  }
+  .home-tools { margin-top: var(--space-7); }
+  .home-tools__header { display: flex; align-items: end; justify-content: space-between; gap: var(--space-5); margin-bottom: var(--space-4); }
+  .home-tools__header h2 { margin: .25rem 0 0; font-size: clamp(1.45rem, 2.5vw, 2rem); letter-spacing: -.03em; }
+  .home-tools__header > p { max-width: 31rem; margin: 0; color: var(--color-muted); font-size: .86rem; line-height: 1.5; }
 
-  .tool-link__arrow {
-    color: var(--color-muted);
+  .tool-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: var(--space-5); }
+  .tool-column { min-width: 0; display: grid; gap: var(--space-5); }
+  .tool-group { --tone: #1688a8; min-width: 0; overflow: hidden; border: 1px solid #dce5e8; border-radius: 16px; background: #fff; box-shadow: 0 10px 28px rgba(27,54,64,.055); scroll-margin-top: 1rem; }
+  .tool-group__header { display: flex; align-items: center; gap: .8rem; padding: .9rem 1rem .8rem; border-bottom: 1px solid #e6ecee; background: color-mix(in srgb, var(--tone) 4%, #fbfcfc); }
+  .tool-group__icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 10px; color: var(--tone); background: color-mix(in srgb, var(--tone) 9%, white); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 14%, #e1e8ea); }
+  .tool-group h3 { margin: 0; font-size: .95rem; letter-spacing: -.01em; }
+  .tool-group__header p { margin: .05rem 0 0; color: #819096; font-size: .7rem; }
+  .tool-list { display: grid; padding: .35rem; }
+
+  .tool-link { min-width: 0; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: .8rem; padding: .78rem .75rem; border-radius: 11px; text-decoration: none; transition: background 140ms ease, transform 140ms ease; }
+  .tool-link + .tool-link { border-top: 1px solid #edf1f2; border-radius: 0; }
+  .tool-link:hover { color: #172126; background: color-mix(in srgb, var(--tone) 5.5%, white); transform: translateX(2px); }
+  .tool-link__icon { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border: 1px solid #e3e9eb; border-radius: 10px; color: var(--tone); background: #fbfcfc; transition: border-color 140ms ease, background 140ms ease; }
+  .tool-link:hover .tool-link__icon { border-color: color-mix(in srgb, var(--tone) 24%, #e3e9eb); background: color-mix(in srgb, var(--tone) 7%, white); }
+  .tool-link__copy { min-width: 0; }
+  .tool-link strong, .tool-link small { display: block; }
+  .tool-link strong { color: #1f2b30; font-size: .9rem; line-height: 1.25; }
+  .tool-link small { margin-top: .12rem; color: #6f7d83; font-size: .76rem; line-height: 1.35; }
+  .tool-link__arrow { color: #9aa8ad; transition: translate 140ms ease, color 140ms ease; }
+  .tool-link:hover .tool-link__arrow { color: var(--tone); translate: 2px 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .category-rail a, .tool-link, .tool-link__icon, .tool-link__arrow { transition: none; }
   }
 
   @media (max-width: 52rem) {
-    .tool-columns {
-      grid-template-columns: 1fr;
-      gap: var(--space-5);
-    }
+    .home-hero { grid-template-columns: 1fr 7rem; min-height: auto; }
+    .home-hero__mark { width: 7rem; height: 7rem; transform: scale(.72); }
+    .category-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tool-columns { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 40rem) {
-    .home-tools {
-      margin-top: var(--space-5);
-    }
-
-    .tool-column {
-      gap: var(--space-4);
-    }
-
-    .tool-link {
-      padding: var(--space-3);
-    }
+    .home-hero { display: block; padding: var(--space-5); border-radius: 15px; }
+    .home-hero__mark { position: absolute; right: -2.5rem; top: -2.5rem; opacity: .32; }
+    .home-hero .page-heading { max-width: 19rem; font-size: clamp(2.25rem, 12vw, 3.2rem); }
+    .home-hero .page-intro { position: relative; z-index: 1; }
+    .home-facts { position: relative; z-index: 1; display: grid; gap: .35rem; }
+    .category-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .category-rail a:last-child { grid-column: 1 / -1; }
+    .home-tools { margin-top: var(--space-6); }
+    .home-tools__header { display: block; }
+    .home-tools__header > p { margin-top: .5rem; }
+    .tool-column, .tool-columns { gap: var(--space-4); }
+    .tool-group { border-radius: 14px; }
+    .tool-link { padding: .72rem .65rem; gap: .65rem; }
+    .tool-link__icon { width: 2.2rem; height: 2.2rem; }
   }
 </style>
