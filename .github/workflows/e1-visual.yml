@@ -30,10 +30,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Install visual-test runtime
-        run: |
-          npm install --no-save --package-lock=false playwright@1.55.0
-          npx playwright install chromium --with-deps
+      - name: Install temporary visual runtime
+        run: pnpm add --save-dev --lockfile=false playwright@1.55.0
 
       - name: Serve build
         run: |
@@ -47,7 +45,7 @@ jobs:
           exit 1
 
       - name: Capture visual states
-        run: node scripts/e1-visual.mjs
+        run: CHROME_PATH="$(which google-chrome)" node scripts/e1-visual.mjs
 
       - name: Upload screenshots
         if: always()
