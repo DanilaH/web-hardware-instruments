@@ -151,19 +151,19 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
-/* Homepage identity spike: channel color must be visible without depending on hover. */
-.page-main--homepage [data-channel='controller'] { --channel: #4d6fac; }
-.page-main--homepage [data-channel='mouse'] { --channel: #ad5d4c; }
-.page-main--homepage [data-channel='keyboard'] { --channel: #768148; }
-.page-main--homepage [data-channel='display'] { --channel: #745f8d; }
-.page-main--homepage [data-channel='touch'] { --channel: #3f8178; }
+/* Homepage identity spike: channel color must read in the static state. */
+.page-main--homepage [data-channel='controller'] { --channel: #4c70b7; }
+.page-main--homepage [data-channel='mouse'] { --channel: #b45d4d; }
+.page-main--homepage [data-channel='keyboard'] { --channel: #7f8a3f; }
+.page-main--homepage [data-channel='display'] { --channel: #7a6499; }
+.page-main--homepage [data-channel='touch'] { --channel: #3f8a7f; }
 
 .page-main--homepage .category-rail a::after {
-  right: 0.72rem;
-  left: 0.72rem;
-  height: 3px;
+  right: 0;
+  left: 0;
+  height: 4px;
   scale: 1 1;
-  opacity: 0.58;
+  opacity: 0.82;
 }
 
 .page-main--homepage .category-rail a:hover::after,
@@ -178,21 +178,21 @@ a:hover {
 }
 
 .page-main--homepage .tool-group__signal {
-  width: 0.25rem;
+  width: 0.28rem;
   height: 2rem;
 }
 
 .page-main--homepage .tool-group__icon {
-  color: color-mix(in srgb, var(--channel) 78%, #3e4946);
+  color: var(--channel);
 }
 
 .page-main--homepage .instrument-screen__inputs svg {
-  color: color-mix(in srgb, var(--channel) 88%, white);
+  color: color-mix(in srgb, var(--channel) 92%, white);
 }
 
 .page-main--homepage .instrument-screen__inputs span::after {
   height: 2px;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 @media (max-width: 40rem) {
