@@ -68,15 +68,22 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
 
   const service = createTouchInputService(surface);
   const fullscreen = createFullscreenHelper();
+  const reportedMaxTouchPoints = service.getReportedMaxTouchPoints();
+  const touchCapabilityReported = reportedMaxTouchPoints > 0;
   let state: TouchTestState = createTouchTestState();
   let handsOff = createHandsOffState();
   const globalActiveContacts = new Set<number>();
   const visualContacts = new Map<number, VisualContact>();
-  let available = false;
+  let acquisitionAvailable = false;
+  let touchObserved = false;
   let destroyed = false;
   let guardTimer: number | null = null;
   let observationTimer: number | null = null;
   let visualFrame: number | null = null;
+  let uiFrame: number | null = null;
+
+  const isTouchUsable = (): boolean =>
+    acquisitionAvailable && (touchCapabilityReported || touchObserved);
 
   const clearTimers = (): void => {
     if (guardTimer !== null) window.clearTimeout(guardTimer);
@@ -142,11 +149,15 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
 
   const render = (): void => {
     const handsOffRunning = isRunningHandsOff(handsOff);
+    const touchUsable = isTouchUsable();
     activeValue.textContent = String(state.activeContacts.size);
     maximumValue.textContent = String(state.maximumDetectedTogether);
     coverageValue.textContent = `${Math.round(coveragePercentage(state))}%`;
 
-    if (!available) {
+    if (!acquisitionAvailable) {
+      root.dataset.state = 'unavailable';
+      status.textContent = 'Touch input is unavailable in this browser.';
+    } else if (!touchUsable) {
       root.dataset.state = 'unavailable';
       status.textContent = 'No touchscreen capability is reported on this device. Open this page on the device you want to test.';
     } else {
@@ -157,16 +168,24 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     }
 
     confirmationButton.hidden = state.mode === 'confirmation' || state.pass1Covered.size === touchGridCellCount;
-    confirmationButton.disabled = !available || handsOffRunning;
+    confirmationButton.disabled = !touchUsable || handsOffRunning;
     confirmationSummary.hidden = state.mode !== 'confirmation';
     if (state.mode === 'confirmation') {
       confirmationSummary.textContent = 'Sweep the emphasized cells again. Coverage combines observed samples from both passes while the first pass remains stored separately.';
     }
 
-    resetButton.disabled = !available;
-    handsOffButton.disabled = !available || handsOffRunning;
+    resetButton.disabled = !touchUsable;
+    handsOffButton.disabled = !touchUsable || handsOffRunning;
     renderCoverage();
     scheduleOverlayRender();
+  };
+
+  const scheduleRender = (): void => {
+    if (uiFrame !== null) return;
+    uiFrame = window.requestAnimationFrame(() => {
+      uiFrame = null;
+      render();
+    });
   };
 
   const updateVisualContact = (event: TouchPointInputEvent): void => {
@@ -228,6 +247,8 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       return;
     }
 
+    const firstObservedTouch = !touchObserved;
+    touchObserved = true;
     updateGlobalContactLifecycle(event);
     const handsOffWasRunning = isRunningHandsOff(handsOff);
     const previousState = state;
@@ -266,10 +287,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       }
     }
 
-    if (
-      (event.type === 'end' || event.type === 'cancel') &&
-      globalActiveContacts.size === 0
-    ) {
+    if ((event.type === 'end' || event.type === 'cancel') && globalActiveContacts.size === 0) {
       const previousHandsOff = handsOff;
       handsOff = observeHandsOffContactsEmpty(handsOff);
       if (previousHandsOff.phase === 'waiting-for-empty' && handsOff.phase === 'guarding') {
@@ -277,7 +295,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       }
     }
 
-    if (state !== previousState) render();
+    if (firstObservedTouch || state !== previousState) scheduleRender();
   };
 
   const unsubscribeTouch = service.subscribe(handleTouchEvent);
@@ -289,13 +307,14 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   });
 
   const handleConfirmation = (): void => {
-    if (!available || state.mode === 'confirmation' || isRunningHandsOff(handsOff)) return;
+    if (!isTouchUsable() || state.mode === 'confirmation' || isRunningHandsOff(handsOff)) return;
     state = startTouchConfirmation(state);
     visualContacts.clear();
     render();
   };
 
   const handleReset = (): void => {
+    if (!isTouchUsable()) return;
     interruptHandsOff();
     handsOff = createHandsOffState();
     handsOffResult.textContent = 'Optional: run a separate 15-second hands-off observation.';
@@ -305,7 +324,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   };
 
   const handleHandsOffStart = (): void => {
-    if (!available || isRunningHandsOff(handsOff)) return;
+    if (!isTouchUsable() || isRunningHandsOff(handsOff)) return;
     clearTimers();
     state = clearActiveContacts(state);
     visualContacts.clear();
@@ -331,16 +350,15 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   handsOffButton.addEventListener('click', handleHandsOffStart);
   fullscreenButton.addEventListener('click', handleFullscreen);
 
-  const reportedMaxTouchPoints = service.getReportedMaxTouchPoints();
   reportedMaximum.textContent = String(reportedMaxTouchPoints);
   fullscreenButton.hidden = !fullscreen.isSupported();
-  available = reportedMaxTouchPoints > 0 && service.start();
+  acquisitionAvailable = service.start();
   render();
 
   return {
     start: () => {
-      if (destroyed || service.getReportedMaxTouchPoints() <= 0) return;
-      available = service.start();
+      if (destroyed) return;
+      acquisitionAvailable = service.start();
       render();
     },
     stop: () => {
@@ -357,7 +375,9 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       destroyed = true;
       clearTimers();
       if (visualFrame !== null) window.cancelAnimationFrame(visualFrame);
+      if (uiFrame !== null) window.cancelAnimationFrame(uiFrame);
       visualFrame = null;
+      uiFrame = null;
       confirmationButton.removeEventListener('click', handleConfirmation);
       resetButton.removeEventListener('click', handleReset);
       handsOffButton.removeEventListener('click', handleHandsOffStart);
