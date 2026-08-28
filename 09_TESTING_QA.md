@@ -44,7 +44,7 @@ reset/re-warm behavior
 
 Do not invent an additional outlier filter, rolling-average algorithm, long-frame threshold, MAD filter, or trimming rule unless the relevant source of truth is explicitly amended first.
 
-Expansion 1 Frame Skipping has its own provisional readiness/frozen-capture-epoch semantics and tests in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Do not reinterpret those rules from the full-v1 FPS/Refresh algorithms.
+Expansion 1 Frame Skipping has its own provisional **readiness-gated sequential capture-epoch** semantics and tests in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Browser timing validates whether the camera pattern is trustworthy; it must not manufacture visual pattern gaps through elapsed-time ordinal arithmetic.
 
 ### Mouse DPI
 
@@ -66,11 +66,14 @@ Use `20` for the exact list. It includes deterministic tests for:
 ```text
 MouseInputService normalization/lifecycle
 one polling source per attempt
-polling source fallback/reset
+pre-measurement source selection/fallback
+selected source remains fixed during the attempt
 coalesced timestamp extraction
 rapid-repeat interval helper
 observed polling-rate math
 ```
+
+Do not invent a hidden polling liveness timeout or switch/mix timestamp sources after the 2-second measurement has begun. Insufficient samples from the selected source return the documented retry state.
 
 ### Keyboard
 
@@ -86,6 +89,7 @@ Use `20` for exact Touch tests, including:
 finger-only filtering
 coalesced observed samples
 inside-surface measurement boundary
+exact final-cell edge mapping
 separate pass1/pass2 coverage
 no synthetic/clamped coverage
 hands-off continuous-visibility cancellation
@@ -147,12 +151,14 @@ Full-v1 Mouse DPI:
 
 Expansion 1 mouse routes additionally require the applicable real-device checks in `20`, including side buttons, wheel behavior, rapid-repeat flow, polling source/caveat, and no accidental navigation.
 
+For Mouse Polling, verify that the visible Source matches the source selected before measurement starts and that the attempt never switches or mixes streams mid-run.
+
 ### Touch
 
 For Touch Screen Test, real touch hardware is required for release-ready status. Follow `20` for:
 
 - single/multi-touch;
-- edges/corners;
+- edges/corners and exact final-cell mapping;
 - coalesced observed-sample coverage where supported;
 - out-of-surface pointer-capture behavior;
 - separate confirmation pass;
@@ -171,7 +177,7 @@ Full-v1 checks if possible:
 - moving tab between monitors
 - background/foreground tab
 
-Expansion 1 Dead Pixel/Backlight require real visual/fullscreen/fallback smoke. Frame Skipping requires a real camera and the evidence procedure in `20`; screenshots do not count.
+Expansion 1 Dead Pixel/Backlight require real visual/fullscreen/fallback smoke. Frame Skipping requires a real camera and the evidence procedure in `20`; screenshots do not count. Verify that READY disappears before an unstable timing sample advances the trusted pattern and that a fresh READY state starts a fresh sequential epoch.
 
 ### Keyboard
 
@@ -221,7 +227,8 @@ Explicitly test where applicable:
 - zero samples
 - noisy/unstable sample stream
 - requestAnimationFrame interrupted
-- polling source unsupported/unusable
+- polling source unsupported before measurement starts
+- insufficient samples from the selected polling source
 - touch pointercancel/out-of-surface capture
 - fullscreen rejected/unsupported
 - continuous-observation test interrupted by blur/hidden visibility
