@@ -1,0 +1,290 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+---
+
+<ToolShell labelledBy="frame-skipping-tool-heading">
+  <h2 id="frame-skipping-tool-heading" class="frame-skipping-tool__sr">Frame Skipping Test camera pattern</h2>
+
+  <div class="frame-skipping-tool" data-frame-skipping-test data-state="warming">
+    <div class="frame-skipping-tool__status-row">
+      <span class="frame-skipping-tool__signal" aria-hidden="true"></span>
+      <strong data-frame-skipping-status role="status" aria-live="polite" aria-atomic="true">
+        Warming up browser timing…
+      </strong>
+      <span class="frame-skipping-tool__status-note">Runs automatically while this page is visible.</span>
+    </div>
+
+    <p class="frame-skipping-tool__instruction">
+      Wait for READY, then photograph the moving block pattern with a camera.
+    </p>
+
+    <div class="frame-skipping-pattern">
+      <div class="frame-skipping-pattern__label" aria-hidden="true">
+        <span>Camera pattern</span>
+        <span>48 slots</span>
+      </div>
+      <canvas
+        class="frame-skipping-pattern__canvas"
+        data-frame-skipping-canvas
+        width="960"
+        height="160"
+        role="img"
+        aria-label="Frame-skipping camera pattern. While READY, one bright square advances exactly one slot for each stable browser frame."
+      ></canvas>
+      <p>While READY, each accepted browser frame advances exactly one consecutive slot. Browser timing never inserts a visual gap.</p>
+    </div>
+
+    <ol class="frame-skipping-steps" aria-label="How to capture the frame skipping pattern">
+      <li><strong>Wait for READY.</strong></li>
+      <li><strong>Use a camera.</strong> Photograph the moving blocks.</li>
+      <li><strong>Use about 1/10 s or longer.</strong> Several blocks should appear.</li>
+      <li><strong>Screenshots do not work.</strong></li>
+      <li><strong>Look for repeatable gaps</strong> in valid READY photos.</li>
+    </ol>
+
+    <div class="frame-skipping-examples" aria-label="Photo interpretation examples">
+      <div>
+        <span>Continuous example</span>
+        <div class="frame-example" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+      <div>
+        <span>Gap example</span>
+        <div class="frame-example frame-example--gap" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+      <p>Repeatable gaps across multiple valid READY photos may indicate display skipping. Camera exposure or photographing outside READY can also produce a bad capture.</p>
+    </div>
+
+    <p class="frame-skipping-tool__sr" data-frame-skipping-accessible-summary aria-live="polite">
+      Frame Skipping pattern is warming up browser timing.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountFrameSkippingTest } from './frame-skipping-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-frame-skipping-test]');
+  if (root) {
+    const controller = mountFrameSkippingTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) controller.start();
+    });
+  }
+</script>
+
+<style>
+  .frame-skipping-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .frame-skipping-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .frame-skipping-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .frame-skipping-tool__status-note {
+    margin-left: auto;
+  }
+
+  .frame-skipping-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .frame-skipping-tool[data-state='ready'] .frame-skipping-tool__signal {
+    border-color: var(--color-signal);
+    background: var(--color-signal);
+  }
+
+  .frame-skipping-tool[data-state='unavailable'] .frame-skipping-tool__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .frame-skipping-tool__instruction,
+  .frame-skipping-pattern p,
+  .frame-skipping-examples p {
+    margin: 0;
+  }
+
+  .frame-skipping-tool__instruction {
+    font-size: 0.95rem;
+  }
+
+  .frame-skipping-pattern {
+    display: grid;
+    gap: var(--space-2);
+    border-block: 1px solid #e3e6e7;
+    padding-block: var(--space-3);
+  }
+
+  .frame-skipping-pattern__label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .frame-skipping-pattern__canvas {
+    width: 100%;
+    height: 10rem;
+    display: block;
+    border: 1px solid #252829;
+    background: #000;
+  }
+
+  .frame-skipping-pattern p {
+    color: var(--color-muted);
+    font-size: 0.76rem;
+  }
+
+  .frame-skipping-steps {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: capture-step;
+  }
+
+  .frame-skipping-steps li {
+    min-width: 0;
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-2);
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    counter-increment: capture-step;
+  }
+
+  .frame-skipping-steps li::before {
+    content: counter(capture-step, decimal-leading-zero);
+    display: block;
+    margin-bottom: 0.22rem;
+    color: var(--color-signal);
+    font: 600 0.68rem/1 var(--font-mono);
+  }
+
+  .frame-skipping-steps strong {
+    color: var(--color-text);
+  }
+
+  .frame-skipping-examples {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-3);
+  }
+
+  .frame-skipping-examples > div {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .frame-skipping-examples > div > span {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+  }
+
+  .frame-example {
+    display: flex;
+    gap: 0.18rem;
+  }
+
+  .frame-example i {
+    width: 0.48rem;
+    height: 0.48rem;
+    display: block;
+    background: var(--color-signal);
+  }
+
+  .frame-example--gap i:nth-child(5) {
+    visibility: hidden;
+  }
+
+  .frame-skipping-examples p {
+    color: var(--color-muted);
+    font-size: 0.74rem;
+    line-height: 1.45;
+  }
+
+  .frame-skipping-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .frame-skipping-tool__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .frame-skipping-tool__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .frame-skipping-pattern__canvas {
+      height: 7.5rem;
+    }
+
+    .frame-skipping-steps {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .frame-skipping-steps li:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .frame-skipping-examples {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .frame-skipping-examples p {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
