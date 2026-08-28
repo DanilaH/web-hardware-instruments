@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const tools = [
+const controllerTools = [
   {
     href: '/gamepad-tester',
     glyph: 'G',
@@ -20,60 +20,9 @@ const tools = [
     name: 'Controller Deadzone Test',
     description: 'Measure stick center noise and a heuristic starting deadzone.',
   },
-  {
-    href: '/keyboard-tester',
-    glyph: 'K',
-    name: 'Keyboard Tester',
-    description: 'Press keys and see which physical key codes the browser detects.',
-  },
-  {
-    href: '/keyboard-rollover-test',
-    glyph: 'K+',
-    name: 'Keyboard Rollover Test',
-    description: 'See the largest simultaneous key set this browser detects.',
-  },
-  {
-    href: '/keyboard-ghosting-test',
-    glyph: 'KG',
-    name: 'Keyboard Ghosting Test',
-    description: 'Compare guided key combinations with the keys detected together.',
-  },
-  {
-    href: '/touch-screen-test',
-    glyph: 'T',
-    name: 'Touch Screen Test',
-    description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.',
-  },
-  {
-    href: '/fps-test',
-    glyph: 'F',
-    name: 'FPS Test',
-    description: 'Observe this browser page’s frame delivery and recent drops.',
-  },
-  {
-    href: '/refresh-rate-test',
-    glyph: 'Hz',
-    name: 'Refresh Rate Test',
-    description: 'Estimate the display cadence currently visible to the browser.',
-  },
-  {
-    href: '/frame-skipping-test',
-    glyph: 'FS',
-    name: 'Frame Skipping Test',
-    description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.',
-  },
-  {
-    href: '/dead-pixel-test',
-    glyph: 'PX',
-    name: 'Dead Pixel Test',
-    description: 'Inspect the screen against solid colors for dead or stuck pixels.',
-  },
-  {
-    href: '/backlight-bleed-test',
-    glyph: 'BL',
-    name: 'Backlight Bleed Test',
-    description: 'Inspect a backlit display for bright leakage on a black screen.',
-  },
+] as const;
+
+const mouseTools = [
   {
     href: '/mouse-tester',
     glyph: 'M',
@@ -111,6 +60,81 @@ const tools = [
     description: 'Estimate mouse DPI from a measured physical movement distance.',
   },
 ] as const;
+
+const keyboardTools = [
+  {
+    href: '/keyboard-tester',
+    glyph: 'K',
+    name: 'Keyboard Tester',
+    description: 'Press keys and see which physical key codes the browser detects.',
+  },
+  {
+    href: '/keyboard-rollover-test',
+    glyph: 'K+',
+    name: 'Keyboard Rollover Test',
+    description: 'See the largest simultaneous key set this browser detects.',
+  },
+  {
+    href: '/keyboard-ghosting-test',
+    glyph: 'KG',
+    name: 'Keyboard Ghosting Test',
+    description: 'Compare guided key combinations with the keys detected together.',
+  },
+] as const;
+
+const displayTools = [
+  {
+    href: '/fps-test',
+    glyph: 'F',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s frame delivery and recent drops.',
+  },
+  {
+    href: '/refresh-rate-test',
+    glyph: 'Hz',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+  {
+    href: '/frame-skipping-test',
+    glyph: 'FS',
+    name: 'Frame Skipping Test',
+    description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.',
+  },
+  {
+    href: '/dead-pixel-test',
+    glyph: 'PX',
+    name: 'Dead Pixel Test',
+    description: 'Inspect the screen against solid colors for dead or stuck pixels.',
+  },
+  {
+    href: '/backlight-bleed-test',
+    glyph: 'BL',
+    name: 'Backlight Bleed Test',
+    description: 'Inspect a backlit display for bright leakage on a black screen.',
+  },
+] as const;
+
+const touchTools = [
+  {
+    href: '/touch-screen-test',
+    glyph: 'T',
+    name: 'Touch Screen Test',
+    description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.',
+  },
+] as const;
+
+const columns = [
+  [
+    { name: 'Controller', tools: controllerTools },
+    { name: 'Mouse', tools: mouseTools },
+  ],
+  [
+    { name: 'Keyboard', tools: keyboardTools },
+    { name: 'Display', tools: displayTools },
+    { name: 'Touch', tools: touchTools },
+  ],
+] as const;
 ---
 
 <BaseLayout
@@ -124,17 +148,28 @@ const tools = [
   </section>
 
   <section class="home-tools" aria-labelledby="available-tools">
-    <h2 id="available-tools">Available tools</h2>
-    <div class="tool-list">
-      {tools.map((tool) => (
-        <a class="tool-link" href={tool.href}>
-          <span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span>
-          <span>
-            <strong>{tool.name}</strong>
-            <small>{tool.description}</small>
-          </span>
-          <span class="tool-link__arrow" aria-hidden="true">→</span>
-        </a>
+    <h2 id="available-tools" class="home-tools__heading">Available tools</h2>
+    <div class="tool-columns">
+      {columns.map((column) => (
+        <div class="tool-column">
+          {column.map((group) => (
+            <section class="tool-group" aria-labelledby={`tool-group-${group.name.toLowerCase()}`}>
+              <h3 id={`tool-group-${group.name.toLowerCase()}`}>{group.name}</h3>
+              <div class="tool-list">
+                {group.tools.map((tool) => (
+                  <a class="tool-link" href={tool.href}>
+                    <span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span>
+                    <span class="tool-link__copy">
+                      <strong>{tool.name}</strong>
+                      <small>{tool.description}</small>
+                    </span>
+                    <span class="tool-link__arrow" aria-hidden="true">→</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       ))}
     </div>
   </section>
@@ -142,33 +177,58 @@ const tools = [
 
 <style>
   .home-tools {
-    max-width: 38rem;
     margin-top: var(--space-6);
   }
 
-  .home-tools h2 {
-    margin: 0 0 var(--space-3);
+  .home-tools__heading,
+  .tool-group h3 {
     color: var(--color-muted);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
 
+  .home-tools__heading {
+    margin: 0 0 var(--space-3);
+  }
+
+  .tool-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--space-6);
+  }
+
+  .tool-column {
+    min-width: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .tool-group {
+    min-width: 0;
+  }
+
+  .tool-group h3 {
+    margin: 0 0 var(--space-2);
+  }
+
   .tool-list {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .tool-link {
+    min-width: 0;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
-    padding: var(--space-4);
+    padding: 0.72rem var(--space-3);
     text-decoration: none;
   }
 
@@ -177,14 +237,18 @@ const tools = [
   }
 
   .tool-link__glyph {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2rem;
+    height: 2rem;
     display: grid;
     place-items: center;
     border: 1px solid var(--color-border);
     border-radius: 50%;
     color: var(--color-signal);
-    font: 0.82rem/1 var(--font-mono);
+    font: 0.74rem/1 var(--font-mono);
+  }
+
+  .tool-link__copy {
+    min-width: 0;
   }
 
   .tool-link strong,
@@ -192,13 +256,40 @@ const tools = [
     display: block;
   }
 
+  .tool-link strong {
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
   .tool-link small {
-    margin-top: 0.15rem;
+    margin-top: 0.08rem;
     color: var(--color-muted);
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    line-height: 1.3;
   }
 
   .tool-link__arrow {
     color: var(--color-muted);
+  }
+
+  @media (max-width: 52rem) {
+    .tool-columns {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .home-tools {
+      margin-top: var(--space-5);
+    }
+
+    .tool-column {
+      gap: var(--space-4);
+    }
+
+    .tool-link {
+      padding: var(--space-3);
+    }
   }
 </style>

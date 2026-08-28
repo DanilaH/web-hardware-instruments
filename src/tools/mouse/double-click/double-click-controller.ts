@@ -39,12 +39,16 @@ export const mountDoubleClickTest = (root: HTMLElement): DoubleClickController =
   let destroyed = false;
   let available = true;
 
+  const getStatusText = (): string => {
+    if (!available) return 'Mouse input unavailable';
+    if (state.rapidRepeatEvents > 0) return 'Rapid repeat observed';
+    if (state.totalPresses === 0) return 'Listening for slow clicks';
+    if (state.shortestGapMs === null) return 'Waiting for another same-button press';
+    return 'No rapid repeat observed';
+  };
+
   const render = (): void => {
-    const nextStatus = !available
-      ? 'Mouse input unavailable'
-      : state.rapidRepeatEvents > 0
-        ? 'Rapid repeat observed'
-        : 'No rapid repeat observed';
+    const nextStatus = getStatusText();
 
     if (status.textContent !== nextStatus) status.textContent = nextStatus;
     total.textContent = String(state.totalPresses);

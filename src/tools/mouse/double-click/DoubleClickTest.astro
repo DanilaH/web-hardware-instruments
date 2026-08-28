@@ -9,7 +9,7 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
   <div class="double-test" data-double-click-test>
     <div class="status">
       <span aria-hidden="true"></span>
-      <strong data-double-status role="status" aria-live="polite">No rapid repeat observed</strong>
+      <strong data-double-status role="status" aria-live="polite">Listening for slow clicks</strong>
     </div>
 
     <p class="instruction">Click slowly, once at a time. Do not intentionally double-click.</p>
@@ -174,7 +174,18 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
     }
 
     .metrics {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+
+    .metrics > div {
+      min-width: 0;
+      padding: 0.65rem;
+    }
+
+    .metrics span {
+      font-size: 0.64rem;
+      line-height: 1.3;
     }
   }
 </style>
