@@ -1,4 +1,8 @@
-import { createMouseInputService, type MouseInputServiceEvent } from '../../../browser/mouse-input-service';
+import {
+  createMouseInputService,
+  isMouseSemanticButton,
+  type MouseInputServiceEvent,
+} from '../../../browser/mouse-input-service';
 import { renderStandardMouseVisual } from '../../../visuals/mouse/standard-mouse-renderer';
 import { createMouseTesterState, reduceMouseTesterState, type MouseTesterState } from './mouse-tester-state';
 
@@ -60,11 +64,11 @@ export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
     countElements.forEach((element) => {
       const raw = element.dataset.mouseButtonCount;
       const button = raw === undefined ? Number.NaN : Number(raw);
-      if (Number.isInteger(button) && button >= 0 && button <= 4) {
+      if (isMouseSemanticButton(button)) {
         element.textContent = state.pressCounts[button].toString();
         const row = element.closest<HTMLElement>('[data-mouse-button-row]');
         if (row) {
-          row.dataset.held = state.heldButtons.has(button as 0 | 1 | 2 | 3 | 4) ? 'true' : 'false';
+          row.dataset.held = state.heldButtons.has(button) ? 'true' : 'false';
         }
       }
     });
