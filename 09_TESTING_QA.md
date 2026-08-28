@@ -10,6 +10,8 @@ The highest-risk bugs are not generic rendering bugs. They are:
 - misleading precision;
 - device-specific failures.
 
+Full-v1 exact QA semantics come from `18_DECISIONS_AND_BOUNDARIES.md`. Approved Post-v1 Hardware Expansion 1 adds route-specific tests and real-device gates in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
 ## Unit tests
 
 Pure calculations must be unit tested.
@@ -28,7 +30,7 @@ clamping
 
 ### Display
 
-Test only the semantics defined by `18_DECISIONS_AND_BOUNDARIES.md`:
+For full-v1 FPS/Refresh, test only the semantics defined by `18_DECISIONS_AND_BOUNDARIES.md`:
 
 ```text
 positive finite frame-delta validation
@@ -40,7 +42,9 @@ nearest common refresh mode
 reset/re-warm behavior
 ```
 
-Do not invent an additional outlier filter, rolling-average algorithm, long-frame threshold, MAD filter, or trimming rule unless `18_DECISIONS_AND_BOUNDARIES.md` is explicitly amended first.
+Do not invent an additional outlier filter, rolling-average algorithm, long-frame threshold, MAD filter, or trimming rule unless the relevant source of truth is explicitly amended first.
+
+Expansion 1 Frame Skipping has its own provisional readiness/frozen-capture-epoch semantics and tests in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Do not reinterpret those rules from the full-v1 FPS/Refresh algorithms.
 
 ### Mouse DPI
 
@@ -55,21 +59,52 @@ movement accumulation and reset
 capture activation vs finish-click arming
 ```
 
+### Expansion 1 Mouse
+
+Use `20` for the exact list. It includes deterministic tests for:
+
+```text
+MouseInputService normalization/lifecycle
+one polling source per attempt
+polling source fallback/reset
+coalesced timestamp extraction
+rapid-repeat interval helper
+observed polling-rate math
+```
+
 ### Keyboard
 
 Most browser event behavior should be integration-tested, but state reducers/helpers can be unit tested.
 
+Expansion 1 Rollover/Ghosting reuse the existing keyboard acquisition service; test their additional state/expected-combination semantics rather than introducing another acquisition path.
+
+### Touch
+
+Use `20` for exact Touch tests, including:
+
+```text
+finger-only filtering
+coalesced observed samples
+inside-surface measurement boundary
+separate pass1/pass2 coverage
+no synthetic/clamped coverage
+hands-off continuous-visibility cancellation
+```
+
 ## Integration tests
 
-Use browser automation for non-device UI flow where possible.
+Use browser automation for non-device UI flow where it materially improves confidence.
 
-Mock browser inputs for:
+Mock browser inputs for capability boundaries such as:
 
 ```text
 GamepadService snapshots
 FrameSampler timing/reset events
 Keyboard events
 MouseMovementService deltas
+MouseInputService button/wheel/pointer events
+TouchInputService touch events/clear signals
+Fullscreen helper state transitions
 ```
 
 Do not pretend mocked tests replace real hardware QA.
@@ -97,7 +132,7 @@ Check:
 
 ### Mouse
 
-Check:
+Full-v1 Mouse DPI:
 
 - raw/unadjusted Pointer Lock path where supported
 - regular Pointer Lock fallback
@@ -110,9 +145,25 @@ Check:
 - different OS pointer scaling/acceleration settings for fallback behavior
 - browser zoom changes for fallback behavior
 
+Expansion 1 mouse routes additionally require the applicable real-device checks in `20`, including side buttons, wheel behavior, rapid-repeat flow, polling source/caveat, and no accidental navigation.
+
+### Touch
+
+For Touch Screen Test, real touch hardware is required for release-ready status. Follow `20` for:
+
+- single/multi-touch;
+- edges/corners;
+- coalesced observed-sample coverage where supported;
+- out-of-surface pointer-capture behavior;
+- separate confirmation pass;
+- pointercancel;
+- hands-off guard and blur/hidden cancellation;
+- fullscreen/fallback;
+- mouse/pen filtering.
+
 ### Display
 
-Check if possible:
+Full-v1 checks if possible:
 
 - 60 Hz
 - 120/144 Hz
@@ -120,9 +171,11 @@ Check if possible:
 - moving tab between monitors
 - background/foreground tab
 
+Expansion 1 Dead Pixel/Backlight require real visual/fullscreen/fallback smoke. Frame Skipping requires a real camera and the evidence procedure in `20`; screenshots do not count.
+
 ### Keyboard
 
-Check:
+Full-v1:
 
 - normal keyboard
 - modifiers
@@ -130,6 +183,8 @@ Check:
 - blur during held keys
 - typing into form inputs
 - Tab navigation
+
+Expansion 1 additionally requires real Rollover/Ghosting combination smoke according to `20`, while preserving reserved-shortcut limitations.
 
 ## Browser matrix
 
@@ -151,9 +206,11 @@ Chrome Android
 
 Tier 2 requires correct layout, honest unsupported/fallback states, and working tools where the needed API is available; it does not require raw Pointer Lock capability.
 
+Touch Screen Test is mobile/tablet oriented, so its route-specific real-device matrix in `20` is part of release-ready status even though the project-wide desktop matrix remains important for desktop-relevant tools.
+
 ## Failure cases
 
-Explicitly test:
+Explicitly test where applicable:
 
 - API unavailable
 - permission/interaction required
@@ -164,29 +221,37 @@ Explicitly test:
 - zero samples
 - noisy/unstable sample stream
 - requestAnimationFrame interrupted
+- polling source unsupported/unusable
+- touch pointercancel/out-of-surface capture
+- fullscreen rejected/unsupported
+- continuous-observation test interrupted by blur/hidden visibility
 
 ## SEO QA
 
-Verify:
+Verify only for real implemented routes intended for release:
 
 - unique title
 - unique H1
 - canonical
-- sitemap entry
-- no accidental noindex
+- sitemap entry when indexing is enabled for the real production origin
+- no accidental indexability of debug/placeholder routes
 - HTML contains primary explanatory text without JS execution
 - internal links resolve
 - 404 works
 
+The repository intentionally remains `noindex` while the `.invalid` placeholder origin is active.
+
 ## Accessibility QA
 
-Keyboard-navigate the whole page.
+Keyboard-navigate the whole page where keyboard interaction is meaningful.
 
 Verify accessible equivalents for:
 
 - controller visualization state;
 - icon buttons;
 - result summaries;
-- Canvas traces via numeric/text output.
+- Canvas traces/pattern readiness via numeric/text output;
+- mouse/touch visual state via concise textual status/metrics;
+- fullscreen test instructions and exit behavior.
 
 The controller SVG itself may be `aria-hidden` if the same state is available in concise text; do not make every decorative SVG sub-part individually focusable.
