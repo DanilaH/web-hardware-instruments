@@ -16,6 +16,8 @@ pure math   browser capability service
 
 ## Recommended project shape
 
+Full-v1 shape:
+
 ```text
 src/
 ├── browser/
@@ -41,24 +43,17 @@ src/
 │   └── keyboard/
 │       └── tester/
 ├── visuals/
-│   ├── controller/
-│   ├── radial-plot/
-│   └── traces/
 ├── lib/
-│   ├── math/
-│   └── analytics/
 ├── pages/
 ├── styles/
-│   ├── tokens.css
-│   └── global.css
 └── types/
 ```
 
-Keep the shape shallow. Do not create empty architectural layers just to match this tree.
+Expansion 1 may add only the concrete folders/boundaries required by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not pre-create empty layers merely to match a future tree.
+
+Keep the shape shallow.
 
 ## Dependency direction
-
-The previous `core → browser adapter` direction is explicitly forbidden.
 
 Correct dependency shape:
 
@@ -77,37 +72,74 @@ Browser capability services must not import tool-specific calculations or render
 
 Renderers consume already-prepared view data and must not acquire hardware data themselves.
 
-When native snapshots need tool semantics, adapt them at the tool boundary before pure calculations or renderers consume them. For example, controller diagnostics convert a `GamepadSnapshot` into small left/right stick-position data before drift/deadzone math or stick renderers use it.
+When native snapshots/events need tool semantics, adapt them at the tool boundary before pure calculations or renderers consume them.
 
 ## Shared infrastructure
 
 ### Gamepad
 
-One shared gamepad state/polling layer should power:
+One shared `GamepadService` powers:
 
 - Gamepad Tester
 - Stick Drift Test
 - Deadzone Test
 
-Do not create three independent `requestAnimationFrame` polling implementations.
+Do not create independent Gamepad polling implementations.
 
 ### Display
 
-One shared frame sampler should power:
+One shared `FrameSampler` powers:
 
 - FPS Test
 - Refresh Rate Test
-- future Frame Skipping Test
+- Expansion 1 Frame Skipping Test
 
-`FrameSampler` owns the native rAF acquisition loop and display visibility lifecycle. It emits normalized timing events plus an explicit reset semantic when the current timing session becomes invalid.
+`FrameSampler` owns native rAF acquisition and display visibility lifecycle. Tool controllers own their own warmup/window/calculation/trace/pattern semantics.
 
-Tool controllers consume those events and own their own warmup/window/calculation/trace state. FPS and Refresh Rate must not add independent `visibilitychange` listeners to implement duplicate measurement-reset behavior.
+Exact full-v1 reset behavior remains in `18_DECISIONS_AND_BOUNDARIES.md`; exact Frame Skipping semantics are in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
-The exact reset contract is defined in `18_DECISIONS_AND_BOUNDARIES.md`.
+### Keyboard
+
+`KeyboardInputService` owns key event acquisition and clear signals. Tool controllers own held-code sets, maxima, expected-combination comparison, and DOM highlighting.
+
+It is reused by:
+
+- Keyboard Tester
+- Keyboard Rollover Test
+- Keyboard Ghosting Test
+
+Do not create a second keyboard acquisition implementation.
+
+### Mouse
+
+Full-v1 Mouse DPI keeps its specialized `MouseMovementService` for Pointer Lock/raw-unadjusted/regular/unlocked movement capture.
+
+Expansion 1 ordinary mouse diagnostics use the separately approved `MouseInputService` for:
+
+- button down/up;
+- wheel events;
+- ordinary pointer movement;
+- explicit high-frequency polling profile.
+
+Do **not** generalize `MouseMovementService` into all mouse behavior and do not make `MouseInputService` own DPI Pointer Lock capture.
+
+`MouseInputService` emits acquisition events/clear signals; tool controllers own held-button state, counters, direction strips, rapid-repeat interpretation, and polling calculations.
+
+### Touch
+
+Expansion 1 adds `TouchInputService`, specialized for finger-touch Pointer Events and lifecycle/clear semantics used by Touch Screen Test.
+
+Mouse/pen input must not be normalized as touch.
+
+### Fullscreen
+
+Expansion 1 permits a small shared progressive-enhancement Fullscreen helper for Touch, Dead Pixel, and Backlight Bleed.
+
+It owns feature detection/request/exit/state observation/cleanup only. It is not a hardware acquisition service and every tool needs an in-page fallback.
 
 ### Analytics
 
-Use one event wrapper.
+Use one event wrapper if analytics are enabled.
 
 ### Tool lifecycle
 
@@ -121,12 +153,7 @@ interface ToolController {
 }
 ```
 
-Cleanup:
-
-- event listeners
-- requestAnimationFrame loops
-- timers
-- pointer lock state if applicable
+Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, and subscriptions.
 
 ## TypeScript
 
@@ -151,25 +178,25 @@ Do not introduce a global state library.
 
 Per-tool local state is enough.
 
+Acquisition services should not absorb presentation state merely to make it reusable.
+
 ## Rendering
 
-Use these MVP boundaries:
+Use native, purpose-specific rendering:
 
 ```text
-DOM/CSS      → controls, text, result readouts, keyboard grid
-SVG          → controller, stick plots, deadzone geometry, mouse relative-movement guide
-Canvas       → FPS and refresh-rate time traces
+DOM/CSS → controls, text, result readouts, keyboard, simple state surfaces
+SVG     → controller, stick plots, deadzone geometry, mouse/touch visuals where useful
+Canvas  → FPS/refresh traces and Frame Skipping pattern
 ```
 
 Do not add a charting library.
 
-For Canvas, scale the backing store for `devicePixelRatio` so traces stay crisp; this affects rendering only and must never be mixed into measurement calculations.
+For Canvas, scale the backing store for `devicePixelRatio` so visuals stay crisp; rendering scale must never be mixed into measurement calculations.
 
 ## Build output
 
-Prefer static output.
-
-No SSR requirement for MVP.
+Static output. No SSR requirement.
 
 ## Privacy architecture
 
@@ -178,13 +205,14 @@ Raw measurements such as:
 ```text
 gamepad axis samples
 pressed keys
-mouse movement
+mouse movement/button/wheel streams
+touch contact streams
 frame timing series
 ```
 
-must remain local by default.
+remain local by default.
 
-Analytics should record only coarse product events such as:
+Analytics may record only coarse product events such as:
 
 ```text
 tool_started
@@ -192,7 +220,7 @@ tool_completed
 unsupported_browser
 ```
 
-Do not send raw key presses or device sample streams.
+Do not send raw key presses, pointer/touch streams, frame samples, or device identifiers.
 
 ## Error handling
 
@@ -204,15 +232,13 @@ Do not throw uncaught exceptions for unsupported APIs.
 
 Always detect capability before use.
 
-Do not rely only on user-agent sniffing.
+Do not rely on UA sniffing as the primary capability decision.
 
 # Browser Capability Service Layer
 
 ## Rule
 
-Native browser APIs remain the source of truth, but tool UI should consume them through a small typed capability service/adapter.
-
-Architecture:
+Native browser APIs remain the source of truth, but tool UI consumes them through small typed capability boundaries.
 
 ```text
 Page / Tool UI
@@ -224,82 +250,29 @@ thin browser capability service
 native browser API
 ```
 
-## Required capability services
+## Approved capability services
 
-### `GamepadService`
-
-Owns:
+### Full-v1
 
 ```text
-navigator.getGamepads()
-gamepad polling
-connection/disconnection state
-normalization
-cleanup
+GamepadService
+FrameSampler
+KeyboardInputService
+MouseMovementService
 ```
 
-Used by:
+These remain stable.
+
+### Expansion 1 additions
 
 ```text
-Gamepad Tester
-Stick Drift Test
-Deadzone Test
+MouseInputService
+TouchInputService
 ```
 
-These tools must not each start an independent Gamepad polling loop.
+The Fullscreen helper is separate from this acquisition-service list.
 
-### `FrameSampler`
-
-Owns:
-
-```text
-requestAnimationFrame()
-rAF callback timestamps
-start/stop
-visibility handling
-sample/reset subscription
-cleanup
-```
-
-Used by:
-
-```text
-FPS Test
-Refresh Rate Test
-Frame Skipping Test later
-```
-
-FPS and Refresh Rate share acquisition/lifecycle semantics but apply different interpretation/presentation.
-
-### `KeyboardInputService`
-
-Owns:
-
-```text
-keydown / keyup acquisition
-normalized code / key / repeat events
-blur / visibility clear signals
-listener lifecycle
-subscription
-```
-
-The Keyboard Tester controller owns the current pressed-code `Set`, last detected key/code, and DOM highlighting. The capability service must not own presentation state.
-
-Used by Keyboard Tester and future keyboard diagnostics.
-
-### `MouseMovementService`
-
-Owns:
-
-```text
-pointer/mouse movement acquisition
-movement deltas
-raw Pointer Lock request plus documented Pointer Lock/unlocked fallbacks
-start/stop
-cleanup
-```
-
-Used by Mouse DPI and future mouse diagnostics.
+Exact Expansion 1 responsibilities/profiles/events are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
 ## Responsibilities
 
@@ -309,7 +282,7 @@ A capability service may contain:
 - native API/event registration;
 - polling;
 - normalization;
-- typed snapshots/samples;
+- typed snapshots/samples/events;
 - subscriptions;
 - lifecycle/cleanup;
 - directly relevant browser quirks.
@@ -321,28 +294,12 @@ It must not contain:
 - visual rendering;
 - analytics;
 - unrelated tool calculations;
-- global application state.
+- global application state;
+- tool presentation state such as held-button sets or counters.
 
 ## Interface style
 
 Keep interfaces deliberately small.
-
-Example:
-
-```ts
-type Unsubscribe = () => void;
-
-interface GamepadService {
-  isSupported(): boolean;
-  start(): void;
-  stop(): void;
-  getSnapshot(): GamepadSnapshot[];
-  subscribe(listener: (snapshot: GamepadSnapshot[]) => void): Unsubscribe;
-  destroy(): void;
-}
-```
-
-FrameSampler should expose one typed subscription stream with sample/reset semantics. Exact syntax may differ; `18_DECISIONS_AND_BOUNDARIES.md` owns the behavior.
 
 Do not add methods for hypothetical future needs.
 
@@ -360,24 +317,24 @@ This is a small correctness boundary, not an architecture project.
 
 ## Capability service lifecycle
 
-For all four capability services:
+For approved acquisition services:
 
 - `subscribe()` never implicitly starts acquisition;
-- the owning tool controller calls `start()` on mount;
+- the owning tool controller explicitly starts acquisition when appropriate;
 - `stop()` stops polling/listeners but keeps the instance reusable;
-- `destroy()` is idempotent, calls `stop()`, removes all remaining listeners/subscribers, and makes the instance unusable;
-- only one active acquisition loop/listener set exists per capability on a page.
+- `destroy()` is idempotent, stops acquisition, removes remaining listeners/subscribers, and makes the instance unusable;
+- only one active listener/loop set exists per service instance/capability on a page.
 
-Because Astro navigation is page-based in MVP, a fresh service instance per tool-page load is expected. No cross-page singleton is required.
+Because Astro navigation is page-based, a fresh service instance per tool-page load is expected. No cross-page singleton is required.
 
 ## Styling boundary
 
-Use plain CSS, CSS custom properties, and Astro-scoped styles where convenient.
+Use plain CSS, CSS custom properties, and Astro-scoped styles.
 
-Do not add Tailwind, a CSS-in-JS runtime, or a component/UI library in MVP.
+Do not add Tailwind, CSS-in-JS runtime, or component/UI library.
 
 ## Runtime dependency boundary
 
-The production UI must not require React, Vue, Svelte, a chart library, a state library, or a general-purpose event library.
+Production UI must not require React, Vue, Svelte, a chart library, state library, or general-purpose event library.
 
 Small build/dev dependencies are allowed when they directly support Astro, sitemap generation, type checking, or tests.
