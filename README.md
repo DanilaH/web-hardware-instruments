@@ -12,6 +12,8 @@ Post-v1 **Hardware Expansion 1** is approved for sequential implementation under
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
 ```
 
+The initial E1.0 source-of-truth approval plus the independent E1.0.1 review-correction pass are complete. The next product-code step is **E1.1 Mouse foundation + Mouse Tester**.
+
 Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
 Implemented full-v1 tool routes:
@@ -79,8 +81,9 @@ If `18`, `19`, and `20` appear to conflict on a shared boundary, resolve the doc
 ## Expansion 1 implementation order
 
 ```text
-E1.0 source-of-truth update
-→ E1.1 Mouse foundation + Mouse Tester
+E1.0 source-of-truth approval ✅
+→ E1.0.1 independent review corrections ✅
+→ E1.1 Mouse foundation + Mouse Tester ← next
 → E1.2 focused Mouse tools
 → E1.3 Touch
 → E1.4 Keyboard expansion
@@ -88,6 +91,8 @@ E1.0 source-of-truth update
 → E1.6 Frame Skipping
 → E1.7 final Expansion 1 audit
 ```
+
+E1.0.1 specifically removed ambiguous measurement/source-of-truth behavior before implementation: polling attempts cannot mix sample sources; Touch coverage counts only real in-surface browser-observed samples (including real coalesced samples where available); confirmation passes are separate; interrupted hands-off checks are invalid; Frame Skipping uses a frozen READY capture epoch.
 
 Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
 
@@ -209,6 +214,6 @@ If product analytics are enabled later, they must remain coarse and must not inc
 
 Automated coverage includes pure calculations and browser-capability lifecycle behavior. Visual/headless review may use mocked browser input only to verify UI state and geometry.
 
-Manual pre-deployment validation still includes the real hardware/browser cases required by the routes being released.
+Manual pre-deployment validation still includes the real hardware/browser/camera cases required by the routes being released.
 
 Untested cases must remain explicitly documented rather than inferred from mocks.
