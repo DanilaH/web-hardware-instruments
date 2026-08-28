@@ -61,7 +61,10 @@ export const observeTouchSample = (
   let pass2Covered: ReadonlySet<number> = state.pass2Covered;
   let changed = false;
 
-  if (sample.phase === 'start' && !state.activeContacts.has(sample.contactId)) {
+  const isObservedInsideSample =
+    (sample.phase === 'start' || sample.phase === 'move') && sample.insideSurface;
+
+  if (isObservedInsideSample && !state.activeContacts.has(sample.contactId)) {
     const nextActiveContacts = new Set(state.activeContacts);
     nextActiveContacts.add(sample.contactId);
     activeContacts = nextActiveContacts;
