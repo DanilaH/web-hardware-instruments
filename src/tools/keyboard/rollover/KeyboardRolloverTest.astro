@@ -1,0 +1,248 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
+---
+
+<ToolShell labelledBy="rollover-tool-heading">
+  <h2 id="rollover-tool-heading" class="rollover-tool__sr">Keyboard Rollover Test controls</h2>
+
+  <div class="rollover-tool" data-keyboard-rollover data-state="ready">
+    <div class="rollover-tool__status-row">
+      <span class="rollover-tool__signal" aria-hidden="true"></span>
+      <strong data-rollover-status role="status" aria-live="polite">Listening for simultaneous keys</strong>
+      <span class="rollover-tool__status-note">No Start button needed.</span>
+    </div>
+
+    <p class="rollover-tool__instruction">Hold several keys at the same time and compare them with the highlighted keyboard.</p>
+
+    <div class="rollover-tool__metrics" aria-label="Keyboard rollover measurements">
+      <div>
+        <span>Keys held now</span>
+        <strong class="measurement-value" data-rollover-held>0</strong>
+      </div>
+      <div class="rollover-tool__metric--primary">
+        <span>Maximum detected together</span>
+        <strong class="measurement-value" data-rollover-maximum>0</strong>
+      </div>
+      <div>
+        <span>Last detected key</span>
+        <strong class="measurement-value" data-rollover-last>—</strong>
+      </div>
+    </div>
+
+    <div class="rollover-tool__visual-wrap">
+      <KeyboardGrid />
+    </div>
+
+    <div class="rollover-tool__footer">
+      <p>This is the largest simultaneous key set the browser observed during this session, not a hardware certification.</p>
+      <button type="button" class="rollover-action" data-rollover-reset>Reset maximum</button>
+    </div>
+
+    <div class="rollover-tool__examples" aria-label="Suggested key combinations">
+      <span>Try:</span>
+      <code>W + A + S + D + Shift + Space</code>
+      <code>Q + W + E + A + S + D</code>
+    </div>
+
+    <p class="rollover-tool__sr" data-rollover-accessible-summary aria-live="polite">
+      Keyboard Rollover Test is listening.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountKeyboardRolloverTest } from './keyboard-rollover-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-keyboard-rollover]');
+  if (root) {
+    const controller = mountKeyboardRolloverTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) controller.start();
+    });
+  }
+</script>
+
+<style>
+  .rollover-tool {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .rollover-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .rollover-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .rollover-tool__status-note {
+    margin-left: auto;
+  }
+
+  .rollover-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .rollover-tool[data-state='unavailable'] .rollover-tool__signal {
+    background: #aeb4b7;
+  }
+
+  .rollover-tool__instruction,
+  .rollover-tool__footer p {
+    margin: 0;
+  }
+
+  .rollover-tool__instruction {
+    font-size: 0.95rem;
+  }
+
+  .rollover-tool__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .rollover-tool__metrics > div {
+    min-width: 0;
+    display: grid;
+    gap: 0.2rem;
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-3);
+  }
+
+  .rollover-tool__metrics span {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .rollover-tool__metrics strong {
+    min-width: 0;
+    overflow: hidden;
+    color: #aeb4b7;
+    font-size: clamp(1.4rem, 3vw, 2.15rem);
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rollover-tool__metric--primary strong,
+  .rollover-tool[data-state='detected'] .rollover-tool__metrics strong {
+    color: var(--color-signal);
+  }
+
+  .rollover-tool__visual-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .rollover-tool__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    border-top: 1px solid #e3e6e7;
+    padding-top: var(--space-3);
+  }
+
+  .rollover-tool__footer p {
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .rollover-action {
+    min-height: 2.35rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: 0.35rem;
+    background: #fff;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .rollover-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+  }
+
+  .rollover-tool__examples {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .rollover-tool__examples code {
+    border: 1px solid #e3e6e7;
+    border-radius: 0.3rem;
+    background: #fafbfb;
+    padding: 0.28rem 0.42rem;
+    color: var(--color-text);
+    font-size: 0.72rem;
+  }
+
+  .rollover-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 44rem) {
+    .rollover-tool__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .rollover-tool__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .rollover-tool__metrics {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .rollover-tool__metric--primary {
+      order: -1;
+      grid-column: 1 / -1;
+    }
+
+    .rollover-tool__footer {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+  }
+</style>
