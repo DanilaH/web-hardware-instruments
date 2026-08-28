@@ -61,11 +61,11 @@
     ],
     "next_step": "E1.1 mouse foundation and Mouse Tester",
     "review_corrections": [
-      "one polling sample source per measurement attempt",
+      "one polling sample source selected before each measurement attempt; no mid-attempt mixing or hidden runtime fallback",
       "Touch coverage accepts only real in-surface observed/coalesced samples",
       "Touch pass1 and pass2 coverage remain separate",
       "hands-off Touch observation cancels on focus/visibility loss",
-      "Frame Skipping uses a frozen READY capture epoch",
+      "Frame Skipping uses a readiness-gated sequential READY capture epoch",
       "normative API/IA/QA/launch/privacy docs synchronized"
     ],
     "scope_basis": "completed search/SERP research and cluster-fit review",
