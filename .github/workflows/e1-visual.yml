@@ -47,7 +47,7 @@ jobs:
           exit 1
 
       - name: Capture visual states
-        run: npx playwright test scripts/e1-visual.spec.ts --workers=1
+        run: npx playwright test scripts/e1-visual.spec.mjs --workers=1
 
       - name: Upload screenshots
         if: always()
