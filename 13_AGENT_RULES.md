@@ -14,7 +14,7 @@ Can a new visitor immediately understand what to do?
 
 ## 2. One-screen primary tool
 
-At 1366×768 desktop, the complete primary interaction and key result/status must fit in one viewport for desktop-relevant tools.
+At `1366×768` desktop, the complete primary interaction and key result/status must fit in one viewport for desktop-relevant tools.
 
 If it does not fit:
 
@@ -51,7 +51,7 @@ Approved examples include:
 
 Prefer one meaningful visualization over multiple metrics.
 
-Do not add decorative graphs, history, export, sharing, advanced modes, settings panels, calibration suites, or benchmark scores unless explicitly required.
+Do not add decorative graphs, history, export, sharing, advanced modes, settings panels, calibration suites, or benchmark scores unless explicitly approved.
 
 ## 5. No architecture churn
 
@@ -107,9 +107,10 @@ Do not create synonym pages.
 
 - visible focus;
 - semantic controls;
-- icon labels;
+- real labels;
 - non-color-only state;
-- textual result equivalents.
+- textual result equivalents;
+- responsive reordering must preserve sensible reading/focus behavior.
 
 ## 12. Privacy
 
@@ -147,11 +148,13 @@ Polish means:
 
 It does not mean:
 
-- gradients;
+- decorative gradient washes/gloss;
 - unnecessary animation;
-- nested cards;
+- nested card clutter;
 - decorative charts;
 - gaming neon.
+
+A CSS `linear-gradient()` is **not** forbidden merely because of the function name. It may implement a functional 1px technical grid/reference ruling when the rendered result is a measurement aid rather than a gradient effect. Follow `17_FUNCTIONAL_VISUAL_SYSTEM.md`.
 
 ## 15. Review before automated validation
 
@@ -168,7 +171,7 @@ implementation
 → build / typecheck / tests / CI
 → validation fixes if needed
 → rerun validation until green
-→ merge
+→ squash merge
 ```
 
 Do not wait for, poll, or use test/CI results while review work is still in progress. Review the implementation against product behavior, architecture, lifecycle, measurement honesty, accessibility, responsive UX, cleanup, and diff hygiene first.
@@ -190,24 +193,19 @@ cleanup
 
 Report honestly what was not validated on real hardware.
 
-`code-complete` and `release-ready` are separate labels when an approved tool requires real touch hardware, a specific mouse/keyboard, or camera evidence.
+`code-complete` and `release-ready` are separate labels when an approved tool requires real touch hardware, a specific mouse/keyboard/controller/display condition, or camera evidence.
 
 ## 16. Centralize browser capability acquisition
 
 Do not duplicate native browser acquisition across tools.
 
-Full-v1 capability services remain:
+Approved acquisition services are:
 
 ```text
 GamepadService
 FrameSampler
 KeyboardInputService
 MouseMovementService
-```
-
-Post-v1 Hardware Expansion 1 additionally approves:
-
-```text
 MouseInputService
 TouchInputService
 ```
@@ -216,8 +214,11 @@ The shared Fullscreen utility is a progressive-enhancement helper, not a hardwar
 
 Use each boundary only for the capability/job assigned in source-of-truth:
 
+- `GamepadService` owns controller acquisition;
+- `FrameSampler` owns native rAF sampling/visibility lifecycle for timing tools;
+- `KeyboardInputService` owns keyboard acquisition/clear signals;
 - `MouseMovementService` remains specialized for Mouse DPI / Pointer Lock capture;
-- `MouseInputService` owns ordinary mouse buttons/wheel/movement and the explicit polling profile for Expansion 1;
+- `MouseInputService` owns ordinary mouse buttons/wheel/movement and explicit polling acquisition;
 - `TouchInputService` owns finger-touch Pointer Event acquisition for Touch Screen Test.
 
 Required properties:
@@ -299,12 +300,16 @@ Do not introduce:
 
 A feature that adds ongoing operational work requires explicit approval.
 
-## 20. Expansion discipline
+## 20. Current scope discipline
 
-The Expansion 1 catalog in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` is approved based on completed research and cluster-fit review. Implement it sequentially; do not reclassify it as unvalidated backlog during coding.
+Full v1 and Hardware Expansion 1 are code-side complete and audited. The old E1.0 → E1.7 sequential order is completed implementation history, not a current instruction to keep building.
 
-This approval does not extend to unrelated Audio/CPS/dashboard features or future tools outside Expansion 1.
+Do not invent E1.8 or add adjacent tools by inertia.
 
-The production-domain/indexing gate remains deferred until deployment. Expansion 1 implementation may proceed under the placeholder origin with indexing disabled.
+Reviewed maintenance may touch any current route when it preserves the route's user job, exact measurement contract, and architecture boundaries. Cross-catalog correctness, accessibility, IA, SEO, and UX polish is allowed when justified.
 
-For future scope outside Expansion 1, require research, Search Console evidence, or material value to an already-successful cluster before implementation.
+This does not authorize unrelated Audio/CPS/dashboard/latency features or other new tools.
+
+The production-domain/indexing gate remains deferred until deployment. Keep the placeholder origin and indexing disabled until the real-domain release change.
+
+For future product scope, require research, Search Console evidence, or material value to an already-successful cluster before implementation, then create/review the exact source-of-truth contract first.
