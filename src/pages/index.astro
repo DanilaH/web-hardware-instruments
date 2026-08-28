@@ -1,144 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-
-const tools = [
-  {
-    href: '/gamepad-tester',
-    glyph: 'G',
-    name: 'Gamepad Tester',
-    description: 'Test controller buttons, sticks, D-pad, and triggers.',
-  },
-  {
-    href: '/controller-stick-drift-test',
-    glyph: '↔',
-    name: 'Controller Stick Drift Test',
-    description: 'Measure observed analog-stick center offset while untouched.',
-  },
-  {
-    href: '/controller-deadzone-test',
-    glyph: '○',
-    name: 'Controller Deadzone Test',
-    description: 'Measure stick center noise and a heuristic starting deadzone.',
-  },
-  {
-    href: '/keyboard-tester',
-    glyph: 'K',
-    name: 'Keyboard Tester',
-    description: 'Press keys and see which physical key codes the browser detects.',
-  },
-  {
-    href: '/fps-test',
-    glyph: 'F',
-    name: 'FPS Test',
-    description: 'Observe this browser page’s frame delivery and recent drops.',
-  },
-  {
-    href: '/refresh-rate-test',
-    glyph: 'Hz',
-    name: 'Refresh Rate Test',
-    description: 'Estimate the display cadence currently visible to the browser.',
-  },
-  {
-    href: '/mouse-tester',
-    glyph: 'M',
-    name: 'Mouse Tester',
-    description: 'Check browser-detected mouse buttons, wheel input, and movement.',
-  },
-  {
-    href: '/mouse-dpi-test',
-    glyph: 'DPI',
-    name: 'Mouse DPI Test',
-    description: 'Estimate mouse DPI from a measured physical movement distance.',
-  },
+const tools=[
+{href:'/gamepad-tester',glyph:'G',name:'Gamepad Tester',description:'Test controller buttons, sticks, D-pad, and triggers.'},
+{href:'/controller-stick-drift-test',glyph:'↔',name:'Controller Stick Drift Test',description:'Measure observed analog-stick center offset while untouched.'},
+{href:'/controller-deadzone-test',glyph:'○',name:'Controller Deadzone Test',description:'Measure stick center noise and a heuristic starting deadzone.'},
+{href:'/keyboard-tester',glyph:'K',name:'Keyboard Tester',description:'Press keys and see which physical key codes the browser detects.'},
+{href:'/fps-test',glyph:'F',name:'FPS Test',description:'Observe this browser page’s frame delivery and recent drops.'},
+{href:'/refresh-rate-test',glyph:'Hz',name:'Refresh Rate Test',description:'Estimate the display cadence currently visible to the browser.'},
+{href:'/mouse-tester',glyph:'M',name:'Mouse Tester',description:'Check browser-detected mouse buttons, wheel input, and movement.'},
+{href:'/mouse-button-test',glyph:'BTN',name:'Mouse Button Test',description:'Check primary, middle, secondary, back, and forward button input.'},
+{href:'/mouse-scroll-test',glyph:'↕',name:'Mouse Scroll Test',description:'Inspect browser-detected wheel directions and recent events.'},
+{href:'/double-click-test',glyph:'2×',name:'Double Click Test',description:'Look for unusually fast repeated same-button presses.'},
+{href:'/mouse-polling-rate-test',glyph:'Hz',name:'Mouse Polling Rate Test',description:'Measure the pointer sample rate observed by this browser.'},
+{href:'/mouse-dpi-test',glyph:'DPI',name:'Mouse DPI Test',description:'Estimate mouse DPI from a measured physical movement distance.'},
 ] as const;
 ---
-
-<BaseLayout
-  title="Hardware Tests in Your Browser"
-  description="Lightweight browser-based hardware diagnostics. No install or account required."
-  canonicalPath="/"
->
-  <section class="home-intro reading-width">
-    <h1 class="page-heading">Hardware Tests in Your Browser</h1>
-    <p class="page-intro">Small, focused diagnostics that run directly in your browser.</p>
-  </section>
-
-  <section class="home-tools" aria-labelledby="available-tools">
-    <h2 id="available-tools">Available tools</h2>
-    <div class="tool-list">
-      {tools.map((tool) => (
-        <a class="tool-link" href={tool.href}>
-          <span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span>
-          <span>
-            <strong>{tool.name}</strong>
-            <small>{tool.description}</small>
-          </span>
-          <span class="tool-link__arrow" aria-hidden="true">→</span>
-        </a>
-      ))}
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .home-tools {
-    max-width: 38rem;
-    margin-top: var(--space-6);
-  }
-
-  .home-tools h2 {
-    margin: 0 0 var(--space-3);
-    color: var(--color-muted);
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .tool-list {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  .tool-link {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
-    padding: var(--space-4);
-    text-decoration: none;
-  }
-
-  .tool-link:hover {
-    border-color: color-mix(in srgb, var(--color-signal) 50%, var(--color-border));
-  }
-
-  .tool-link__glyph {
-    width: 2.25rem;
-    height: 2.25rem;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--color-border);
-    border-radius: 50%;
-    color: var(--color-signal);
-    font: 0.82rem/1 var(--font-mono);
-  }
-
-  .tool-link strong,
-  .tool-link small {
-    display: block;
-  }
-
-  .tool-link small {
-    margin-top: 0.15rem;
-    color: var(--color-muted);
-    font-size: 0.85rem;
-  }
-
-  .tool-link__arrow {
-    color: var(--color-muted);
-  }
-</style>
+<BaseLayout title="Hardware Tests in Your Browser" description="Lightweight browser-based hardware diagnostics. No install or account required." canonicalPath="/"><section class="home-intro reading-width"><h1 class="page-heading">Hardware Tests in Your Browser</h1><p class="page-intro">Small, focused diagnostics that run directly in your browser.</p></section><section class="home-tools" aria-labelledby="available-tools"><h2 id="available-tools">Available tools</h2><div class="tool-list">{tools.map((tool)=><a class="tool-link" href={tool.href}><span class="tool-link__glyph" aria-hidden="true">{tool.glyph}</span><span><strong>{tool.name}</strong><small>{tool.description}</small></span><span class="tool-link__arrow" aria-hidden="true">→</span></a>)}</div></section></BaseLayout>
+<style>.home-tools{max-width:38rem;margin-top:var(--space-6)}.home-tools h2{margin:0 0 var(--space-3);color:var(--color-muted);font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}.tool-list{display:grid;gap:var(--space-3)}.tool-link{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:var(--space-4);border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);padding:var(--space-4);text-decoration:none}.tool-link:hover{border-color:color-mix(in srgb,var(--color-signal) 50%,var(--color-border))}.tool-link__glyph{width:2.25rem;height:2.25rem;display:grid;place-items:center;border:1px solid var(--color-border);border-radius:50%;color:var(--color-signal);font:.82rem/1 var(--font-mono)}.tool-link strong,.tool-link small{display:block}.tool-link small{margin-top:.15rem;color:var(--color-muted);font-size:.85rem}.tool-link__arrow{color:var(--color-muted)}</style>

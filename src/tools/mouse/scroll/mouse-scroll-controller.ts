@@ -1,19 +1,8 @@
 import { createMouseInputService } from '../../../browser/mouse-input-service';
 import { createMouseScrollState, reduceMouseScrollState, type ScrollDirection } from './mouse-scroll-state';
-
 export interface MouseScrollController { start(): void; stop(): void; destroy(): void }
-const requireElement = <T extends Element>(root: ParentNode, selector: string): T => { const el = root.querySelector<T>(selector); if (!el) throw new Error(`Mouse Scroll Test is missing ${selector}`); return el; };
-const symbol = (direction: ScrollDirection): string => direction === 'up' ? '↑' : direction === 'down' ? '↓' : '↔';
-
-export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController => {
-  const surface = requireElement<HTMLElement>(root, '[data-scroll-surface]');
-  const status = requireElement<HTMLElement>(root, '[data-scroll-status]');
-  const strip = requireElement<HTMLElement>(root, '[data-scroll-strip]');
-  const reset = requireElement<HTMLButtonElement>(root, '[data-scroll-reset]');
-  const up = requireElement<HTMLElement>(root, '[data-scroll-up]'); const down = requireElement<HTMLElement>(root, '[data-scroll-down]'); const horizontal = requireElement<HTMLElement>(root, '[data-scroll-horizontal]');
-  const service = createMouseInputService(surface, 'basic'); let state = createMouseScrollState(); let destroyed = false;
-  const render = (): void => { up.textContent=String(state.up); down.textContent=String(state.down); horizontal.textContent=String(state.horizontal); strip.textContent=state.recent.length ? state.recent.map(symbol).join(' ') : 'Scroll inside the area'; status.textContent=state.recent.length ? 'Wheel events detected' : 'Listening for wheel events'; };
-  const unsubscribe = service.subscribe((event) => { if (destroyed || event.type === 'poll-samples') return; const next=reduceMouseScrollState(state,event); if(next!==state){state=next;render();} });
-  const handleReset=():void=>{state=createMouseScrollState();render();}; reset.addEventListener('click',handleReset); if(!service.start()) status.textContent='Mouse input unavailable'; render();
-  return { start:()=>{if(!destroyed){service.start();render();}}, stop:()=>{if(!destroyed)service.stop();}, destroy:()=>{if(!destroyed){destroyed=true;reset.removeEventListener('click',handleReset);unsubscribe();service.destroy();}} };
-};
+const requireElement=<T extends Element>(root:ParentNode,selector:string):T=>{const el=root.querySelector<T>(selector);if(!el)throw new Error(`Mouse Scroll Test is missing ${selector}`);return el;};
+const symbol=(direction:ScrollDirection):string=>direction==='up'?'↑':direction==='down'?'↓':'↔';
+export const mountMouseScrollTest=(root:HTMLElement):MouseScrollController=>{const surface=requireElement<HTMLElement>(root,'[data-scroll-surface]');const status=requireElement<HTMLElement>(root,'[data-scroll-status]');const strip=requireElement<HTMLElement>(root,'[data-scroll-strip]');const reset=requireElement<HTMLButtonElement>(root,'[data-scroll-reset]');const up=requireElement<HTMLElement>(root,'[data-scroll-up]');const down=requireElement<HTMLElement>(root,'[data-scroll-down]');const horizontal=requireElement<HTMLElement>(root,'[data-scroll-horizontal]');const service=createMouseInputService(surface,'basic');let state=createMouseScrollState();let destroyed=false;let available=true;
+ const render=():void=>{up.textContent=String(state.up);down.textContent=String(state.down);horizontal.textContent=String(state.horizontal);strip.textContent=state.recent.length?state.recent.map(symbol).join(' '):'Scroll inside the area';status.textContent=!available?'Mouse input unavailable':state.recent.length?'Wheel events detected':'Listening for wheel events';};
+ const unsubscribe=service.subscribe((event)=>{if(destroyed||event.type==='poll-samples')return;const next=reduceMouseScrollState(state,event);if(next!==state){state=next;render();}});const handleReset=():void=>{state=createMouseScrollState();render();};reset.addEventListener('click',handleReset);available=service.start();render();return{start:()=>{if(!destroyed){available=service.start();render();}},stop:()=>{if(!destroyed)service.stop();},destroy:()=>{if(!destroyed){destroyed=true;reset.removeEventListener('click',handleReset);unsubscribe();service.destroy();}}};};
