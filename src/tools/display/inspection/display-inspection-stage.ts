@@ -21,6 +21,12 @@ interface DisplayInspectionStageOptions {
   overlayIdleMs?: number;
 }
 
+const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
+  const element = root.querySelector<T>(selector);
+  if (!element) throw new Error(`Display inspection stage is missing ${selector}`);
+  return element;
+};
+
 export const mountDisplayInspectionStage = ({
   root,
   stage,
@@ -30,6 +36,7 @@ export const mountDisplayInspectionStage = ({
   fullscreen = createFullscreenHelper(),
   overlayIdleMs = 1_500,
 }: DisplayInspectionStageOptions): DisplayInspectionStageController => {
+  const overlay = requireElement<HTMLElement>(stage, '[data-inspection-overlay]');
   let active = false;
   let destroyed = false;
   let overlayTimer: number | null = null;
@@ -45,7 +52,12 @@ export const mountDisplayInspectionStage = ({
     if (!active || destroyed) return;
     overlayTimer = window.setTimeout(() => {
       overlayTimer = null;
-      if (active && !destroyed) stage.dataset.overlayVisible = 'false';
+      if (!active || destroyed) return;
+      if (overlay.contains(document.activeElement)) {
+        stage.dataset.overlayVisible = 'true';
+        return;
+      }
+      stage.dataset.overlayVisible = 'false';
     }, overlayIdleMs);
   };
 
@@ -87,14 +99,19 @@ export const mountDisplayInspectionStage = ({
 
   const deactivate = async (): Promise<void> => {
     if (destroyed || !active) return;
-    active = false;
     clearOverlayTimer();
 
     if (fullscreen.getActiveElement() === stage) {
-      await fullscreen.exit();
+      const exitedFullscreen = await fullscreen.exit();
+      if (destroyed) return;
+      if (!exitedFullscreen && fullscreen.getActiveElement() === stage) {
+        showOverlay();
+        return;
+      }
     }
-    if (destroyed) return;
 
+    active = false;
+    clearOverlayTimer();
     root.dataset.active = 'false';
     root.dataset.fullscreen = 'false';
     stage.hidden = true;
@@ -116,11 +133,17 @@ export const mountDisplayInspectionStage = ({
     showOverlay();
   };
 
+  const handleOverlayFocusOut = (): void => {
+    hideOverlayLater();
+  };
+
   startButton.addEventListener('click', handleStart);
   exitButton.addEventListener('click', handleExit);
   stage.addEventListener('pointermove', handleActivity);
   stage.addEventListener('pointerdown', handleActivity);
   stage.addEventListener('keydown', handleActivity);
+  overlay.addEventListener('focusin', handleActivity);
+  overlay.addEventListener('focusout', handleOverlayFocusOut);
   const unsubscribeFullscreen = fullscreen.subscribe(syncFullscreenState);
 
   root.dataset.active = 'false';
@@ -152,6 +175,8 @@ export const mountDisplayInspectionStage = ({
       stage.removeEventListener('pointermove', handleActivity);
       stage.removeEventListener('pointerdown', handleActivity);
       stage.removeEventListener('keydown', handleActivity);
+      overlay.removeEventListener('focusin', handleActivity);
+      overlay.removeEventListener('focusout', handleOverlayFocusOut);
       unsubscribeFullscreen();
       fullscreen.destroy();
     },
