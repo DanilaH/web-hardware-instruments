@@ -1,17 +1,26 @@
 :root {
-  --color-page: #f5f6f6;
-  --color-surface: #ffffff;
-  --color-text: #17191a;
-  --color-muted: #646a6d;
-  --color-border: #d8dcde;
-  --color-signal: #176f9c;
-  --color-focus: #0b76b7;
+  --color-page: #f3f1eb;
+  --color-surface: #faf9f5;
+  --color-surface-strong: #ece9e1;
+  --color-instrument: #171d1c;
+  --color-text: #202725;
+  --color-muted: #66706d;
+  --color-border: #cfd3ce;
+  --color-border-strong: #b9beb8;
+  --color-signal: #3f6f68;
+  --color-focus: #205f7a;
+
+  --color-channel-controller: #4d6fac;
+  --color-channel-mouse: #ad5d4c;
+  --color-channel-keyboard: #768148;
+  --color-channel-display: #745f8d;
+  --color-channel-touch: #3f8178;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
