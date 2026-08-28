@@ -91,6 +91,20 @@
   "ux_priority": "one-screen obvious task completion",
   "ux_min_desktop_viewport": "1366x768",
   "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
+  "functional_visuals": [
+    "gamepad SVG",
+    "stick position trail",
+    "deadzone ring",
+    "mouse relative-movement guide",
+    "FPS time trace",
+    "refresh cadence trace",
+    "keyboard live highlighting",
+    "generic mouse input visual",
+    "mouse wheel direction strip",
+    "touch coverage and contact surface",
+    "fullscreen solid-color / black inspection stage",
+    "frame-skipping camera pattern"
+  ],
   "browser_capability_layer": {
     "principle": "thin typed adapters/services around native browser APIs",
     "full_v1_services": {
@@ -128,6 +142,27 @@
     "agent_bootstrap": "AGENTS.md"
   },
   "styling": "plain CSS + CSS custom properties + Astro scoped styles",
+  "rendering": {
+    "dom_css": [
+      "controls",
+      "text",
+      "keyboard",
+      "simple mouse/touch state surfaces"
+    ],
+    "svg": [
+      "controller",
+      "stick plots",
+      "deadzone geometry",
+      "mouse movement guide",
+      "generic mouse visual",
+      "touch overlays where useful"
+    ],
+    "canvas": [
+      "FPS trace",
+      "refresh-rate trace",
+      "frame-skipping pattern"
+    ]
+  },
   "custom_analytics_required": false,
   "open_decisions": [
     "brand/domain",
