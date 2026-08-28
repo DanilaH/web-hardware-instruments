@@ -150,7 +150,9 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
 
   .touch-tool__surface {
     position: relative;
+    width: min(100%, 52rem);
     min-height: 17rem;
+    justify-self: center;
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border: 1px solid #d9dddf;
@@ -184,8 +186,8 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
   }
 
   .touch-tool__grid span[data-coverage='target'] {
-    background: repeating-linear-gradient(135deg, #f5f6f6 0 5px, #ecefef 5px 6px);
-    box-shadow: inset 0 0 0 1px #d8ddde;
+    background: color-mix(in srgb, var(--color-signal) 6%, #f7f8f8);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-signal) 28%, #d8ddde);
   }
 
   .touch-tool__overlay {
@@ -301,7 +303,8 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
   }
 
   .touch-tool:fullscreen .touch-tool__surface {
-    min-height: min(58vh, 42rem);
+    width: min(100%, 68rem);
+    min-height: min(68vh, 48rem);
   }
 
   .touch-tool__sr {
@@ -331,8 +334,9 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
     }
 
     .touch-tool__surface {
-      min-height: 12rem;
-      aspect-ratio: 16 / 10;
+      width: 100%;
+      min-height: min(42vh, 24rem);
+      aspect-ratio: auto;
     }
 
     .touch-tool__actions {
