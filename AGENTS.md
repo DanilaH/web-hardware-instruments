@@ -8,30 +8,35 @@ Read these documents before changing product code:
 
 1. `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`
 2. `18_DECISIONS_AND_BOUNDARIES.md`
-3. `13_AGENT_RULES.md`
-4. `16_UX_ACCEPTANCE.md`
-5. `03_TOOL_SPECS.md`
-6. `06_ARCHITECTURE.md`
-7. `11_IMPLEMENTATION_PLAN.md`
-8. `14_DEFINITION_OF_DONE.md`
+3. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` when working on Expansion 1
+4. `13_AGENT_RULES.md`
+5. `16_UX_ACCEPTANCE.md`
+6. `03_TOOL_SPECS.md`
+7. `06_ARCHITECTURE.md`
+8. `11_IMPLEMENTATION_PLAN.md`
+9. `14_DEFINITION_OF_DONE.md`
 
-Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business goals, scope, release order, and the current deferred-deployment boundary.
+Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business goals, approved scope, release order, and the deferred-deployment boundary.
 
-Use `18_DECISIONS_AND_BOUNDARIES.md` for exact implementation behavior, algorithms, lifecycle semantics, fallbacks, and technical boundaries.
+Use `18_DECISIONS_AND_BOUNDARIES.md` for global/full-v1 exact implementation behavior, algorithms, lifecycle semantics, fallbacks, and technical boundaries.
 
-If `18` and `19` appear to conflict, stop and report the conflict. Do not guess or invent a compromise.
+Use `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` for exact behavior, algorithms, UX, QA, and implementation order of the approved post-v1 Expansion 1 routes.
+
+If `18`, `19`, and `20` appear to conflict on shared architecture, privacy, lifecycle, measurement honesty, browser behavior, or scope, stop and report the conflict. Do not guess or invent a compromise.
 
 ## Mandatory boundaries
 
 - Astro static output.
 - Strict TypeScript.
 - Plain CSS / CSS custom properties / Astro-scoped styles.
-- Native browser APIs through the four approved thin capability services.
+- Native browser APIs through the approved thin capability services/helpers.
+- Full-v1 acquisition remains `GamepadService`, `FrameSampler`, `KeyboardInputService`, and `MouseMovementService`.
+- Expansion 1 additionally approves `MouseInputService` and `TouchInputService`; the shared Fullscreen utility is a helper, not a hardware acquisition service.
 - No React, Vue, Svelte, Tailwind, component library, chart library, global state library, backend, database, auth, AI, WebHID, Docker, or speculative architecture.
 - Do not invent measurement semantics, thresholds, filters, sample durations, or accuracy claims.
 - Do not create placeholder or coming-soon indexable pages.
 - One page = one user job.
-- Primary interaction must satisfy the one-screen UX acceptance rules.
+- Primary interaction must satisfy the one-screen UX acceptance rules where the device class makes that appropriate.
 
 ## Toolchain
 
@@ -57,7 +62,7 @@ pnpm test
 
 ## Current project state
 
-All seven approved full-v1 tools are implemented:
+All seven approved full-v1 tools and the full-v1 code-side audit are complete:
 
 ```text
 /gamepad-tester
@@ -69,27 +74,47 @@ All seven approved full-v1 tools are implemented:
 /keyboard-tester
 ```
 
-The code-side full-v1 audit/polish gate is the final development boundary before public deployment preparation.
+Post-v1 Hardware Expansion 1 is now approved for sequential implementation under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
-Do **not** restart the old staged implementation sequence or create additional tools merely because they are technically possible.
+Approved Expansion 1 routes:
+
+```text
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
+/touch-screen-test
+/keyboard-rollover-test
+/keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
+/frame-skipping-test
+```
+
+Follow the exact E1.0 → E1.7 implementation order in `20`. Do not scaffold the whole catalog at once. Each route must pass its own review/visual/quality gate before the next pattern is propagated.
+
+Expansion 1 is additive. Existing full-v1 behavior stays stable except for reviewed related-tool/internal-link updates. Do not refactor full v1 merely to make new code aesthetically uniform.
+
+## Deployment boundary
 
 Until the real production domain is purchased immediately before deployment:
 
 - keep `https://hardware-testing.invalid` as the reserved placeholder origin;
 - keep `indexingEnabled = false`;
 - do not claim production deployment, Search Console setup, sitemap submission, real-device QA, or cross-browser QA that has not actually happened;
-- limit further product-code changes to review fixes, correctness issues, or explicitly approved scope.
+- code-complete and release-ready remain separate labels when real hardware is unavailable.
 
 Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser smoke, indexing, deployment, GSC, and sitemap gate.
 
-After launch, do not expand the catalog until research/Search Console evidence justifies a specific next tool.
+Expansion work does not authorize unrelated Audio/CPS/dashboard scope.
 
 ## Non-normative documents
 
-Do not use these as product requirements:
+Do not use these as implementation requirements:
 
 - `AUDIT_V4.md`
 - `GLOBAL_GOAL_AUDIT_V5.md`
 - `RESEARCH_EVIDENCE_2026-08.md`
 
-They are review/research context only.
+They are review/research context only. Search/SERP research used to approve Expansion 1 informs scope, while `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` owns the implementation contract.
