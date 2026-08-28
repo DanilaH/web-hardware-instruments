@@ -53,10 +53,14 @@ The product should be cheap to falsify:
 build a polished narrow tool
 ship it
 collect indexing/impression/query evidence
-expand only when research or Search Console supports the next page
+expand only when research, Search Console, or material cluster value supports the next page
 ```
 
-Do not delay search feedback in order to make the first release feel “complete”.
+Post-v1 Hardware Expansion 1 has already passed that promotion gate through completed search/SERP research and cluster-fit review. Its approved scope and exact implementation contract live in `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+Do not reclassify approved Expansion 1 routes as unvalidated backlog during implementation. Future scope outside Expansion 1 still follows the normal validation rule.
+
+Public deployment is currently deferred until a real production domain is purchased. That sequencing decision does not weaken the evidence requirement for future expansion or the quality gates for approved routes.
 
 ## Product priority order
 
@@ -74,7 +78,7 @@ When requirements conflict, use this order:
 
 Feature richness is deliberately last.
 
-## Primary user jobs
+## Full-v1 primary user jobs
 
 ### Controller
 
@@ -96,6 +100,8 @@ Feature richness is deliberately last.
 
 - Verify that physical key presses register
 
+These describe the completed full-v1 catalog. Approved post-v1 Mouse, Touch, Keyboard, and Display jobs are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not duplicate their exact semantics here.
+
 ## Core UX promise
 
 A visitor should not have to learn the product before using it.
@@ -112,7 +118,7 @@ The answer to the second question must be obvious without reading below-the-fold
 
 ## One-screen rule
 
-On a normal desktop viewport, the primary tool must fit into one screen.
+On a normal desktop viewport, a desktop-relevant primary tool must fit into one screen.
 
 Target:
 
@@ -129,9 +135,11 @@ The viewport should contain:
 - complete primary controls/visualization;
 - primary result/status.
 
-Do not require scrolling between input and result.
+Do not require scrolling between input and result where the desktop one-screen gate applies.
 
 The result should appear in the same tool region whenever possible.
+
+Touch/mobile-first diagnostics follow their explicit device-class acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` rather than forcing a desktop-shaped interaction onto mobile hardware.
 
 ## Primary action rule
 
@@ -176,6 +184,7 @@ Observed
 Estimated
 Browser-reported
 Measured in this browser session
+Visual inspection
 ```
 
 Avoid:
@@ -185,13 +194,14 @@ Exact hardware polling rate
 Exact monitor Hz
 Exact physical latency
 Guaranteed hardware DPI
+Automatic hardware-health verdicts from browser observation
 ```
 
 ## Product principles
 
 1. Tool first
 2. One obvious job per page
-3. One-screen main interaction
+3. One-screen main interaction where the device class makes it appropriate
 4. Minimal controls
 5. Functional beauty: visuals must represent the measurement or help perform the task
 6. Immediate feedback
@@ -206,7 +216,7 @@ Guaranteed hardware DPI
 15. Mobile-safe layout
 16. Related tools only after the primary task
 
-## MVP success criteria
+## Full-v1 success criteria
 
 - user can identify the primary action within a few seconds;
 - core interaction fits in one desktop viewport;
@@ -219,9 +229,11 @@ Guaranteed hardware DPI
 - technical details do not dominate the primary tool;
 - static page content remains crawlable.
 
+Expansion 1 adds route-specific code-complete and release-ready criteria in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` and `14_DEFINITION_OF_DONE.md`.
+
 ## Non-goals
 
-Not MVP:
+Still not approved unless a future evidence-backed scope change says otherwise:
 
 - native apps
 - hardware drivers
