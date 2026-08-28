@@ -10,6 +10,10 @@ export class FrameSkippingRenderer {
     this.context = canvas.getContext('2d');
   }
 
+  isSupported(): boolean {
+    return this.context !== null;
+  }
+
   clear(): void {
     if (!this.context) return;
     this.context.fillStyle = '#000000';
