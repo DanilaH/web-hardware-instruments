@@ -55,38 +55,42 @@ export const observeTouchSample = (
   state: TouchTestState,
   sample: TouchObservedSample,
 ): TouchTestState => {
-  let activeContacts = state.activeContacts;
+  let activeContacts: ReadonlySet<number> = state.activeContacts;
   let maximumDetectedTogether = state.maximumDetectedTogether;
-  let pass1Covered = state.pass1Covered;
-  let pass2Covered = state.pass2Covered;
+  let pass1Covered: ReadonlySet<number> = state.pass1Covered;
+  let pass2Covered: ReadonlySet<number> = state.pass2Covered;
   let changed = false;
 
-  if (sample.phase === 'start') {
-    if (!state.activeContacts.has(sample.contactId)) {
-      activeContacts = new Set(state.activeContacts);
-      activeContacts.add(sample.contactId);
-      maximumDetectedTogether = Math.max(maximumDetectedTogether, activeContacts.size);
-      changed = true;
-    }
-  } else if (sample.phase === 'end' || sample.phase === 'cancel') {
-    if (state.activeContacts.has(sample.contactId)) {
-      activeContacts = new Set(state.activeContacts);
-      activeContacts.delete(sample.contactId);
-      changed = true;
-    }
+  if (sample.phase === 'start' && !state.activeContacts.has(sample.contactId)) {
+    const nextActiveContacts = new Set(state.activeContacts);
+    nextActiveContacts.add(sample.contactId);
+    activeContacts = nextActiveContacts;
+    maximumDetectedTogether = Math.max(maximumDetectedTogether, nextActiveContacts.size);
+    changed = true;
+  } else if (
+    (sample.phase === 'end' || sample.phase === 'cancel') &&
+    state.activeContacts.has(sample.contactId)
+  ) {
+    const nextActiveContacts = new Set(state.activeContacts);
+    nextActiveContacts.delete(sample.contactId);
+    activeContacts = nextActiveContacts;
+    changed = true;
   }
 
   if (sample.phase === 'start' || sample.phase === 'move') {
     const cell = coverageCellIndex(sample.x, sample.y, sample.insideSurface);
     if (cell !== null) {
       if (state.mode === 'coverage' && !state.pass1Covered.has(cell)) {
-        pass1Covered = new Set(state.pass1Covered);
-        pass1Covered.add(cell);
+        const nextPass1Covered = new Set(state.pass1Covered);
+        nextPass1Covered.add(cell);
+        pass1Covered = nextPass1Covered;
         changed = true;
       }
+
       if (state.mode === 'confirmation' && !state.pass2Covered.has(cell)) {
-        pass2Covered = new Set(state.pass2Covered);
-        pass2Covered.add(cell);
+        const nextPass2Covered = new Set(state.pass2Covered);
+        nextPass2Covered.add(cell);
+        pass2Covered = nextPass2Covered;
         changed = true;
       }
     }

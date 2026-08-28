@@ -42,21 +42,22 @@ describe('Fullscreen helper', () => {
   });
 
   it('observes state changes only while subscribed and cleans up', () => {
-    let changeListener: (() => void) | null = null;
+    const change = { current: null as (() => void) | null };
     const environment: FullscreenEnvironment = {
       isEnabled: () => true,
       getFullscreenElement: () => null,
       request: async () => undefined,
       exit: async () => undefined,
-      setChangeListener: (listener) => { changeListener = listener; },
+      setChangeListener: (listener) => { change.current = listener; },
     };
     const helper = createFullscreenHelper(environment);
     const listener = vi.fn();
     const unsubscribe = helper.subscribe(listener);
-    changeListener?.();
+    const trigger = change.current;
+    if (trigger) trigger();
     expect(listener).toHaveBeenCalledTimes(1);
     unsubscribe();
-    expect(changeListener).toBeNull();
+    expect(change.current).toBeNull();
     helper.destroy();
   });
 });

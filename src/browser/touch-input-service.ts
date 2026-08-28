@@ -1,14 +1,16 @@
 export type TouchClearReason = 'blur' | 'visibility-hidden';
 
+export interface TouchPointInputEvent {
+  readonly type: 'start' | 'move' | 'end' | 'cancel';
+  readonly pointerId: number;
+  readonly x: number;
+  readonly y: number;
+  readonly insideSurface: boolean;
+  readonly timestamp: number;
+}
+
 export type TouchInputEvent =
-  | {
-      type: 'start' | 'move' | 'end' | 'cancel';
-      pointerId: number;
-      x: number;
-      y: number;
-      insideSurface: boolean;
-      timestamp: number;
-    }
+  | TouchPointInputEvent
   | { type: 'clear'; reason: TouchClearReason };
 
 export type Unsubscribe = () => void;
@@ -168,9 +170,9 @@ export const createTouchInputService = (
   };
 
   const normalizeEvent = (
-    type: 'start' | 'move' | 'end' | 'cancel',
+    type: TouchPointInputEvent['type'],
     event: TouchPointerLike,
-  ): TouchInputEvent | null => {
+  ): TouchPointInputEvent | null => {
     if (!environment || !isTouchPointer(event) || !isValidPointerIdentity(event)) return null;
     const coordinates = normalizeCoordinates(event, environment.getSurfaceRect());
     return {

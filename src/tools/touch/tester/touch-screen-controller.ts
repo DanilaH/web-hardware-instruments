@@ -1,5 +1,9 @@
 import { createFullscreenHelper } from '../../../browser/fullscreen';
-import { createTouchInputService, type TouchInputEvent } from '../../../browser/touch-input-service';
+import {
+  createTouchInputService,
+  type TouchInputEvent,
+  type TouchPointInputEvent,
+} from '../../../browser/touch-input-service';
 import {
   armHandsOffCheck,
   beginHandsOffCheck,
@@ -63,7 +67,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   const reportedMaximum = requireElement<HTMLElement>(root, '[data-touch-reported-maximum]');
   const cells = [...root.querySelectorAll<HTMLElement>('[data-touch-cell]')];
 
-  let service = createTouchInputService(surface);
+  const service = createTouchInputService(surface);
   const fullscreen = createFullscreenHelper();
   let state: TouchTestState = createTouchTestState();
   let handsOff = createHandsOffState();
@@ -164,7 +168,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     scheduleOverlayRender();
   };
 
-  const updateVisualContact = (event: Extract<TouchInputEvent, { type: 'start' | 'move' }>): void => {
+  const updateVisualContact = (event: TouchPointInputEvent): void => {
     if (!Number.isFinite(event.x) || !Number.isFinite(event.y)) return;
     const x = clamp01(event.x);
     const y = clamp01(event.y);
@@ -258,7 +262,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     if (state !== previousState) render();
   };
 
-  let unsubscribeTouch = service.subscribe(handleTouchEvent);
+  const unsubscribeTouch = service.subscribe(handleTouchEvent);
   const unsubscribeFullscreen = fullscreen.subscribe(() => {
     const active = fullscreen.getActiveElement() === root;
     root.dataset.fullscreen = active ? 'true' : 'false';
@@ -337,7 +341,6 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       handsOffButton.removeEventListener('click', handleHandsOffStart);
       fullscreenButton.removeEventListener('click', handleFullscreen);
       unsubscribeTouch();
-      unsubscribeTouch = () => undefined;
       unsubscribeFullscreen();
       service.destroy();
       fullscreen.destroy();
