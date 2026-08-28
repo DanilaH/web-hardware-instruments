@@ -2,45 +2,65 @@
 
 These instructions are mandatory for coding agents working in this repository.
 
-## Before implementation
+## 1. Source-of-truth order
 
-Read these documents before changing product code:
+Before changing product code, read the documents that own the affected decision.
 
-1. `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`
-2. `18_DECISIONS_AND_BOUNDARIES.md`
-3. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` when working on Expansion 1
-4. `13_AGENT_RULES.md`
-5. `16_UX_ACCEPTANCE.md`
-6. `03_TOOL_SPECS.md`
-7. `06_ARCHITECTURE.md`
-8. `11_IMPLEMENTATION_PLAN.md`
-9. `14_DEFINITION_OF_DONE.md`
+Start with:
 
-Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business goals, approved scope, release order, and the deferred-deployment boundary.
+1. `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — durable product strategy, current scope, expansion rule, deployment/release boundary;
+2. `18_DECISIONS_AND_BOUNDARIES.md` — global and full-v1 exact algorithms, lifecycle semantics, browser behavior, and technical boundaries;
+3. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` — exact behavior, algorithms, UX, and route-specific QA for the implemented Expansion 1 routes;
+4. `13_AGENT_RULES.md` — mandatory engineering/review rules;
+5. `16_UX_ACCEPTANCE.md` — interaction and viewport acceptance;
+6. `17_FUNCTIONAL_VISUAL_SYSTEM.md` — durable visual-system rules;
+7. `14_DEFINITION_OF_DONE.md` — code-complete and release-ready gates.
 
-Use `18_DECISIONS_AND_BOUNDARIES.md` for global/full-v1 exact implementation behavior, algorithms, lifecycle semantics, fallbacks, and technical boundaries.
+Supporting references when relevant:
 
-Use `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` for exact behavior, algorithms, UX, QA, and implementation order of the approved post-v1 Expansion 1 routes.
+- `03_TOOL_SPECS.md` — original full-v1 route contracts;
+- `06_ARCHITECTURE.md` — current architecture shape and dependency direction;
+- `07_BROWSER_APIS.md` — browser capability/measurement notes;
+- `05_SEO_CONTENT.md` — durable SEO/content rules;
+- `02_INFORMATION_ARCHITECTURE.md` — current catalog/navigation model;
+- `12_LAUNCH_PLAN.md` — pre-release execution checklist;
+- `11_IMPLEMENTATION_PLAN.md` — completed implementation history plus maintenance workflow.
 
 If `18`, `19`, and `20` appear to conflict on shared architecture, privacy, lifecycle, measurement honesty, browser behavior, or scope, stop and report the conflict. Do not guess or invent a compromise.
 
-## Mandatory boundaries
+The old E1.0 → E1.7 order is completed development history. It is **not** a current instruction to keep implementing Expansion 1 stages.
+
+## 2. Mandatory product and architecture boundaries
 
 - Astro static output.
-- Strict TypeScript.
+- Strict TypeScript with `noUncheckedIndexedAccess`.
 - Plain CSS / CSS custom properties / Astro-scoped styles.
 - Native browser APIs through the approved thin capability services/helpers.
-- Full-v1 acquisition remains `GamepadService`, `FrameSampler`, `KeyboardInputService`, and `MouseMovementService`.
-- Expansion 1 additionally approves `MouseInputService` and `TouchInputService`; the shared Fullscreen utility is a helper, not a hardware acquisition service.
-- No React, Vue, Svelte, Tailwind, component library, chart library, global state library, backend, database, auth, AI, WebHID, Docker, or speculative architecture.
-- Do not invent measurement semantics, thresholds, filters, sample durations, or accuracy claims.
+- No React, Vue, Svelte, Tailwind, component library, chart library, global state library, backend, database, auth, AI, WebHID, Docker, or speculative architecture without an explicit approved need.
+- Do not invent measurement semantics, thresholds, filters, sample durations, accuracy claims, or hardware-health verdicts.
 - Do not create placeholder or coming-soon indexable pages.
-- One page = one user job.
-- Primary interaction must satisfy the one-screen UX acceptance rules where the device class makes that appropriate.
+- One page = one real user job/search intent.
+- Primary interaction must satisfy the applicable one-screen/device-class UX acceptance rules.
+- Raw hardware/input streams remain local and must not be sent to analytics.
 
-## Review and validation order
+Approved acquisition boundaries:
 
-For each implementation block, use this exact sequence:
+```text
+GamepadService
+FrameSampler
+KeyboardInputService
+MouseMovementService
+MouseInputService
+TouchInputService
+```
+
+The shared Fullscreen utility is a progressive-enhancement helper, not a hardware acquisition service.
+
+Do not duplicate native acquisition loops/listeners merely to make a tool self-contained.
+
+## 3. Review before automated validation
+
+For every coherent implementation or maintenance block, use this exact sequence:
 
 ```text
 implementation
@@ -50,17 +70,32 @@ implementation
 → visual / UX fixes
 → self-review #2 on the final diff
 → review fixes
-→ only then run build / typecheck / tests / CI
-→ fix any validation failures
+→ only then build / typecheck / tests / CI
+→ fix validation failures
 → rerun validation until green
-→ merge
+→ squash merge
 ```
 
-Do **not** wait for, poll, or use CI/test results while either self-review or the visual/UX review is still in progress. Reviews must be completed from the code/diff/product contract first. Automated validation is the final gate after review findings are closed, not an input to the review process.
+Do **not** wait for, poll, or use CI/test results while code/product/visual review is still open. Automated validation is the final gate, not an input to the review.
 
-If the final validation run finds an error, fix it, rerun the affected review only when the fix changes behavior/architecture/UX materially, then rerun validation. Pure compile/test-only corrections do not require restarting the whole review cycle.
+If a validation fix materially changes behavior, architecture, lifecycle, measurement semantics, or UX, re-review the impacted part. Pure compile/test corrections do not require restarting unrelated review work.
 
-## Toolchain
+Before merge, verify the applicable subset of:
+
+```text
+build
+typecheck
+tests
+target viewport UX
+keyboard/focus accessibility
+cleanup/lifecycle
+measurement wording
+privacy boundary
+```
+
+Report honestly what was not validated on real hardware.
+
+## 4. Toolchain
 
 Use:
 
@@ -71,8 +106,6 @@ Astro check for type checking
 Vitest for unit tests
 ```
 
-Playwright is approved only when a critical browser-flow/lifecycle test materially benefits from browser automation. Do not add it merely because it is common in frontend projects.
-
 Expected scripts:
 
 ```text
@@ -82,23 +115,21 @@ pnpm typecheck
 pnpm test
 ```
 
-## Current project state
+Playwright is appropriate only when a critical browser-flow/lifecycle test materially benefits from browser automation. Do not add it merely because it is common in frontend projects.
 
-All seven approved full-v1 tools and the full-v1 code-side audit are complete:
+## 5. Current project state
+
+The current implemented catalog contains 18 code-side-audited tools.
+
+### Controller
 
 ```text
 /gamepad-tester
 /controller-stick-drift-test
 /controller-deadzone-test
-/mouse-dpi-test
-/fps-test
-/refresh-rate-test
-/keyboard-tester
 ```
 
-Post-v1 Hardware Expansion 1 was implemented sequentially under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` and its code-side final audit is complete.
-
-Implemented Expansion 1 routes:
+### Mouse
 
 ```text
 /mouse-tester
@@ -106,67 +137,112 @@ Implemented Expansion 1 routes:
 /mouse-scroll-test
 /double-click-test
 /mouse-polling-rate-test
-/touch-screen-test
-/keyboard-rollover-test
-/keyboard-ghosting-test
-/dead-pixel-test
-/backlight-bleed-test
-/frame-skipping-test
+/mouse-dpi-test
 ```
 
-Completed Expansion 1 stages:
+### Keyboard
 
 ```text
-E1.0   source-of-truth approval
-E1.0.1 independent review corrections
-E1.1   Mouse foundation + Mouse Tester
-E1.2   focused Mouse tools
-E1.3   Touch Screen Test
-E1.4   Keyboard expansion
-E1.5   display visual-inspection tools
-E1.6   Frame Skipping
-E1.7   final Expansion 1 audit
+/keyboard-tester
+/keyboard-rollover-test
+/keyboard-ghosting-test
 ```
 
-E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
+### Display
 
-E1.1 added the reviewed `MouseInputService`, shared generic semantic mouse visual, and `/mouse-tester`. The service keeps normal Mouse diagnostics separate from the existing Mouse DPI `MouseMovementService`; tool state remains in controllers.
+```text
+/fps-test
+/refresh-rate-test
+/frame-skipping-test
+/dead-pixel-test
+/backlight-bleed-test
+```
 
-E1.2 added focused Mouse Button, Scroll, Double Click, and Polling Rate routes. The polling profile is sampling-only, selects exactly one browser source per attempt, keeps bounded two-second data, and does not attach unrelated button/wheel suppression.
+### Touch
 
-E1.3 added `TouchInputService`, the progressive Fullscreen helper, `/touch-screen-test`, separate first/confirmation coverage, surface-only multi-touch metrics, and the independently armed hands-off observation. Coverage uses only real in-surface browser-observed/coalesced touch samples; global touch lifecycle is used only where the hands-off guard requires it.
+```text
+/touch-screen-test
+```
 
-E1.4 added `/keyboard-rollover-test` and `/keyboard-ghosting-test` on the existing `KeyboardInputService` and keyboard visual. Rollover reports only browser-observed held/maximum state. Ghosting uses guided expected combinations and retains one best simultaneous expected-key snapshot; neither route turns browser observation into NKRO certification or an automatic hardware-failure verdict.
+Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. The E1.0 → E1.7 sequence is retained in historical/supporting documents only to explain how the catalog was built and reviewed.
 
-E1.5 added `/dead-pixel-test` and `/backlight-bleed-test` on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel cycles the fixed five solid colors; Backlight Bleed exposes only a black visual-inspection stage. Neither route performs automatic display diagnosis or emits pass/fail scores.
+There is no approved E1.8.
 
-E1.6 added `/frame-skipping-test` on the existing `FrameSampler`. The readiness monitor gates a sequential READY capture epoch: each accepted READY sample advances exactly one slot, an unstable current delta invalidates the epoch before another pattern step, and a fresh stable epoch starts again from ordinal zero. Browser timestamps never manufacture visual gaps; external camera photos remain the diagnostic evidence and the route has no automatic pass/fail result.
+Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, and UX polish are legitimate cross-catalog maintenance work.
 
-E1.7 completed the final cross-cutting code-side audit. It aligned Expansion route titles/internal links with `20`, restored Touch-inclusive privacy wording, closed Touch fullscreen teardown, removed remaining Expansion gradient styling, and restored readable focused-Mouse source formatting without changing approved measurement algorithms.
+New product scope outside the current catalog still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
 
-There is no further approved Expansion 1 implementation step. Do not invent E1.8 or continue product scope by inertia. New product scope outside Expansion 1 requires fresh research/evidence and reviewed source-of-truth approval.
+## 6. Durable measurement boundaries
 
-The next project phase is release preparation when the required external inputs are available: real production domain plus route-specific real-device/browser/camera validation.
+Never upgrade browser-visible data into claims the browser cannot prove.
 
-## Deployment boundary
+Examples:
 
-Until the real production domain is purchased immediately before deployment:
+- Gamepad state is browser-observed; do not expose raw device IDs or guess non-standard physical mappings.
+- Stick Drift reports observed center offset, not a good/bad controller verdict.
+- Deadzone suggestion is the documented heuristic, not a universal correct setting.
+- Mouse DPI is estimated from browser movement plus user-provided physical distance.
+- Mouse Polling reports browser-observed pointer sample rate, not guaranteed USB/device polling.
+- Keyboard Rollover is maximum simultaneous browser-observed input, not NKRO certification.
+- Keyboard Ghosting compares a guided expected set with browser-observed input; reserved shortcuts may never reach the page.
+- Touch coverage uses only actually observed in-surface touch samples; interpolation/clamping must not manufacture measured cells.
+- FPS and Refresh Rate use `FrameSampler` and browser-visible rAF timing, not another application's FPS or EDID.
+- Dead Pixel and Backlight Bleed are visual-inspection tools, not automatic display diagnosis.
+- Frame Skipping uses browser timing only for readiness/sequential pattern control; real camera photos provide the physical evidence.
 
-- keep `https://hardware-testing.invalid` as the reserved placeholder origin;
-- keep `indexingEnabled = false`;
-- do not claim production deployment, Search Console setup, sitemap submission, real-device QA, or cross-browser QA that has not actually happened;
-- code-complete and release-ready remain separate labels when real hardware is unavailable.
+Use `18` and `20` for the exact formulas/state machines.
 
-Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser/camera smoke, indexing, deployment, GSC, and sitemap gate.
+## 7. Styling and visual boundaries
 
-Expansion work does not authorize unrelated Audio/CPS/dashboard scope.
+The product uses instrument minimalism:
 
-## Non-normative documents
+```text
+mostly monochrome
++ one restrained live signal accent
++ strong measurement numerals
++ simple technical geometry
++ data/state-driven motion only
+```
+
+No decorative gradient washes, glass, neon, gaming chrome, nested dashboard cards, or ornamental charts.
+
+A CSS `linear-gradient()` is allowed when it is only the implementation primitive for a functional technical grid/reference ruling. Judge the rendered purpose, not the CSS function name. See `17_FUNCTIONAL_VISUAL_SYSTEM.md`.
+
+Responsive layouts should preserve task/result proximity rather than mechanically stacking every desktop tile into a long column.
+
+## 8. Lifecycle and cleanup
+
+Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, and bfcache transition needs an explicit cleanup/restart path.
+
+Browser capability services own acquisition lifecycle. Tool controllers own interpretation and presentation state.
+
+Do not move held sets, counters, heuristic interpretation, or visual state into acquisition services merely for reuse.
+
+## 9. Deployment boundary
+
+Public deployment is intentionally deferred until a real production domain is purchased immediately before release.
+
+Until that release change:
+
+```text
+origin = https://hardware-testing.invalid
+indexingEnabled = false
+```
+
+Do not invent a temporary production origin or enable indexing early.
+
+Do not claim production deployment, Search Console setup, sitemap submission, real-device QA, camera QA, or cross-browser QA that has not actually happened.
+
+`code-complete` and `release-ready` remain separate labels.
+
+Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser/camera smoke, indexing, deployment, Search Console, sitemap, and production-smoke gates.
+
+## 10. Non-normative historical/research documents
 
 Do not use these as implementation requirements:
 
-- `AUDIT_V4.md`
-- `GLOBAL_GOAL_AUDIT_V5.md`
-- `RESEARCH_EVIDENCE_2026-08.md`
+- `AUDIT_V4.md`;
+- `GLOBAL_GOAL_AUDIT_V5.md`;
+- `RESEARCH_EVIDENCE_2026-08.md`.
 
-They are review/research context only. Search/SERP research used to approve Expansion 1 informs scope, while `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` owns the implementation contract.
+They are review/research context only.
