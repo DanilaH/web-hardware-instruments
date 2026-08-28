@@ -79,6 +79,7 @@
       "E1.6 frame skipping",
       "E1.7 final expansion audit"
     ],
+    "implementation_order_is_historical": true,
     "next_step": "release-ready hardware/browser/camera validation and real-domain deployment gate",
     "review_corrections": [
       "one polling sample source selected before each measurement attempt; no mid-attempt mixing or hidden runtime fallback",
@@ -89,11 +90,25 @@
       "display inspection routes share one stage and use Fullscreen only as progressive enhancement",
       "Frame Skipping uses a readiness-gated sequential READY capture epoch and never derives visible gaps from timestamps",
       "Expansion route SEO titles and related-tool clusters match the approved source-of-truth boundaries",
-      "privacy wording includes raw touch input and remaining Expansion gradient styling was removed",
+      "privacy wording includes raw touch input",
       "normative API/IA/QA/launch/privacy docs synchronized"
     ],
     "scope_basis": "completed search/SERP research and cluster-fit review",
     "deployment_rule": "code-complete and release-ready are separate when real hardware/camera validation is unavailable"
+  },
+  "post_expansion_audit": {
+    "status": "complete",
+    "date": "2026-08-28",
+    "scope": [
+      "independent requirements/source-of-truth reconciliation",
+      "whole-catalog code and measurement-boundary review",
+      "desktop and mobile visual/UX review",
+      "homepage information architecture review",
+      "focused maintenance/source-readability cleanup"
+    ],
+    "result": "No new measurement or acquisition-architecture blockers found. Durable requirements were separated from completed roadmap history; homepage catalog scanability and selected mobile result/density issues were polished; stale MVP wording and remaining focused-Mouse source minification were removed.",
+    "current_work_mode": "reviewed maintenance only until fresh evidence approves new product scope",
+    "real_hardware_validation": "still pending release-ready gate and must not be inferred from headless/mock review"
   },
   "documents": [
     "README.md",
@@ -125,7 +140,7 @@
     "GLOBAL_GOAL_AUDIT_V5.md",
     "RESEARCH_EVIDENCE_2026-08.md"
   ],
-  "version": "7.0",
+  "version": "7.1",
   "ux_priority": "one-screen obvious task completion for desktop-relevant tools; route-specific mobile-first acceptance where appropriate",
   "ux_min_desktop_viewport": "1366x768",
   "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
@@ -215,7 +230,7 @@
     "tool_usability": "global"
   },
   "release_strategy": {
-    "development_state": "full v1 code/audit complete; Expansion 1 E1.0 through E1.7 code-side implementation and final audit complete",
+    "development_state": "full 18-tool catalog code-side audited; independent post-expansion requirements/UX/source-hygiene audit complete",
     "public_deployment": "deferred until a real production domain is purchased immediately before deployment",
     "placeholder_origin": "https://hardware-testing.invalid",
     "indexing_enabled_before_real_origin": false,
