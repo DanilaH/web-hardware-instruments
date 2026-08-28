@@ -23,14 +23,16 @@ The first public indexed release is expected to contain the current implemented 
 - real production domain configured;
 - HTTPS works;
 - canonical origin finalized;
+- homepage `WebSite` structured data resolves to the same canonical origin and configured site name;
 - `indexingEnabled` reviewed and enabled only with the real origin;
 - every released route returns 200;
 - no placeholder/temporary routes are indexable;
 - sitemap correct for the real origin;
 - robots correct;
 - branded favicon/site icon present;
+- Google Search favicon fallback is square, at least 48×48px, uses a supported raster format, and is crawlable at a stable URL;
 - platform-specific app icons are required only if an installable web-app manifest is introduced later;
-- metadata complete;
+- metadata complete and unique for each search landing;
 - privacy page accurate;
 - analytics tested if custom analytics is enabled;
 - no raw device/input data sent to analytics;
@@ -92,10 +94,10 @@ Immediately after deployment:
 
 1. verify the production domain property;
 2. submit the generated sitemap;
-3. inspect the homepage;
+3. inspect the homepage and confirm canonical/site-name/favicon signals are visible to Google;
 4. inspect every released tool URL;
-5. request indexing only if appropriate;
-6. monitor indexing and Search Console performance.
+5. review indexing/canonical selection before requesting indexing where appropriate;
+6. monitor indexing, queries, CTR, and Search Console performance.
 
 ## Initial monitoring
 
@@ -106,7 +108,9 @@ First week:
 - API unsupported errors;
 - device connection failures;
 - layout regressions;
-- accidental indexing issues.
+- accidental indexing issues;
+- unexpected canonical selection;
+- missing/incorrect site-name or favicon search appearance after Google has had time to recrawl.
 
 First month:
 
@@ -114,6 +118,7 @@ First month:
 - country split;
 - impressions by page;
 - unexpected problem-first queries;
+- query overlap/cannibalisation between adjacent tools;
 - CTR;
 - early position trends.
 

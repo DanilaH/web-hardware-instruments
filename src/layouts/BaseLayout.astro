@@ -22,6 +22,14 @@ const {
 } = Astro.props;
 
 const effectiveNoindex = noindex || !siteConfig.indexingEnabled;
+const websiteStructuredData = canonicalPath === '/'
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteConfig.name,
+      url: new URL('/', siteConfig.origin).href,
+    }
+  : null;
 ---
 
 <!doctype html>
@@ -30,13 +38,16 @@ const effectiveNoindex = noindex || !siteConfig.indexingEnabled;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <SeoHead
       title={title}
       description={description}
       canonicalPath={canonicalPath}
       noindex={effectiveNoindex}
     />
+    {websiteStructuredData && (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteStructuredData)} />
+    )}
   </head>
   <body>
     <SiteHeader variant={headerVariant} />
