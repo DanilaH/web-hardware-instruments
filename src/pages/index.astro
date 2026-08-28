@@ -36,11 +36,11 @@ const touchTools = [
 ] as const;
 
 const groups = [
-  { code: '01', id: 'controller', name: 'Controller', icon: 'gamepad', tools: controllerTools },
-  { code: '02', id: 'mouse', name: 'Mouse', icon: 'mouse', tools: mouseTools },
-  { code: '03', id: 'keyboard', name: 'Keyboard', icon: 'keyboard', tools: keyboardTools },
-  { code: '04', id: 'display', name: 'Display', icon: 'refresh', tools: displayTools },
-  { code: '05', id: 'touch', name: 'Touch', icon: 'touch', tools: touchTools },
+  { id: 'controller', name: 'Controller', icon: 'gamepad', channel: 'controller', tools: controllerTools },
+  { id: 'mouse', name: 'Mouse', icon: 'mouse', channel: 'mouse', tools: mouseTools },
+  { id: 'keyboard', name: 'Keyboard', icon: 'keyboard', channel: 'keyboard', tools: keyboardTools },
+  { id: 'display', name: 'Display', icon: 'refresh', channel: 'display', tools: displayTools },
+  { id: 'touch', name: 'Touch', icon: 'touch', channel: 'touch', tools: touchTools },
 ] as const;
 
 const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
@@ -54,31 +54,33 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 >
   <section class="home-hero">
     <div class="home-hero__copy">
-      <p class="home-eyebrow">Browser hardware diagnostics</p>
       <h1 class="page-heading">Hardware Tests in Your Browser</h1>
       <p class="page-intro">
         Focused diagnostics for controllers, mice, keyboards, displays, and touchscreens — built to show what the browser actually detects.
       </p>
-      <p class="home-facts">18 focused tools <span>/</span> no install <span>/</span> raw input stays local</p>
+      <p class="home-facts">18 browser tests <span>·</span> no install <span>·</span> no account <span>·</span> input stays on this device</p>
     </div>
 
-    <div class="signal-map" aria-label="Hardware input is observed through browser APIs and remains local">
-      <p class="signal-map__title">What this site can observe</p>
-      <div class="signal-map__flow">
-        <div class="signal-map__inputs" aria-hidden="true">
-          <span><ToolIcon kind="gamepad" size={17} />Controller</span>
-          <span><ToolIcon kind="mouse" size={17} />Pointer</span>
-          <span><ToolIcon kind="keyboard" size={17} />Keyboard</span>
-          <span><ToolIcon kind="fps" size={17} />Frames</span>
-          <span><ToolIcon kind="touch" size={17} />Touch</span>
+    <div class="instrument-screen" aria-label="Hardware input is observed through browser APIs on this device">
+      <div class="instrument-screen__top">
+        <strong>Browser boundary</strong>
+        <span>Local observation</span>
+      </div>
+      <div class="instrument-screen__flow">
+        <div class="instrument-screen__inputs" aria-hidden="true">
+          <span data-channel="controller"><ToolIcon kind="gamepad" size={16} /><b>Controller</b></span>
+          <span data-channel="mouse"><ToolIcon kind="mouse" size={16} /><b>Pointer</b></span>
+          <span data-channel="keyboard"><ToolIcon kind="keyboard" size={16} /><b>Keyboard</b></span>
+          <span data-channel="display"><ToolIcon kind="fps" size={16} /><b>Frames</b></span>
+          <span data-channel="touch"><ToolIcon kind="touch" size={16} /><b>Touch</b></span>
         </div>
-        <div class="signal-map__browser" aria-hidden="true">
-          <small>Browser boundary</small>
-          <strong>Native APIs</strong>
+        <div class="instrument-screen__api" aria-hidden="true">
+          <strong>Native browser APIs</strong>
+          <span>signals cross this boundary</span>
         </div>
-        <div class="signal-map__result" aria-hidden="true">
-          <strong>Observed here</strong>
-          <small>No raw-input upload</small>
+        <div class="instrument-screen__result" aria-hidden="true">
+          <strong>Observed on this device</strong>
+          <span>No input upload</span>
         </div>
       </div>
     </div>
@@ -86,20 +88,17 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
   <nav class="category-rail" aria-label="Hardware categories">
     {groups.map((group) => (
-      <a href={`#${group.id}`}>
-        <small>{group.code}</small>
+      <a href={`#${group.id}`} data-channel={group.channel}>
         <span class="category-rail__icon"><ToolIcon kind={group.icon} size={18} /></span>
         <span>{group.name}</span>
+        <small>{group.tools.length}</small>
       </a>
     ))}
   </nav>
 
   <section class="home-tools" aria-labelledby="available-tools">
     <div class="home-tools__header">
-      <div>
-        <p class="home-kicker">Diagnostics catalog</p>
-        <h2 id="available-tools">Choose a tool</h2>
-      </div>
+      <h2 id="available-tools">Choose a tool</h2>
       <p>Each page does one job and explains what the browser can — and cannot — observe.</p>
     </div>
 
@@ -107,9 +106,9 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       {columns.map((column) => (
         <div class="tool-column">
           {column.map((group) => (
-            <section class="tool-group" id={group.id} aria-labelledby={`tool-group-${group.id}`}>
+            <section class="tool-group" id={group.id} data-channel={group.channel} aria-labelledby={`tool-group-${group.id}`}>
               <header class="tool-group__header">
-                <span class="tool-group__code" aria-hidden="true">{group.code}</span>
+                <span class="tool-group__signal" aria-hidden="true"></span>
                 <span class="tool-group__icon" aria-hidden="true"><ToolIcon kind={group.icon} size={20} /></span>
                 <div>
                   <h3 id={`tool-group-${group.id}`}>{group.name}</h3>
@@ -125,7 +124,6 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
                       <strong>{tool.name}</strong>
                       <small>{tool.description}</small>
                     </span>
-                    <span class="tool-link__arrow" aria-hidden="true">→</span>
                   </a>
                 ))}
               </div>
@@ -138,206 +136,234 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 </BaseLayout>
 
 <style>
+  [data-channel='controller'] { --channel: #5874a8; }
+  [data-channel='mouse'] { --channel: #a45f50; }
+  [data-channel='keyboard'] { --channel: #7b805a; }
+  [data-channel='display'] { --channel: #756b87; }
+  [data-channel='touch'] { --channel: #4f7e78; }
+
   .home-hero {
     position: relative;
-    min-height: 13rem;
-    overflow: hidden;
+    min-height: 14.2rem;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.44fr);
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.62fr);
     align-items: center;
-    gap: clamp(1.5rem, 4vw, 4rem);
-    padding: clamp(1.5rem, 3vw, 2.2rem) clamp(1.5rem, 4vw, 3rem) 2.4rem;
-    border: 1px solid #373b3b;
-    border-radius: 6px;
-    background: #191c1d;
-    color: #f1eee7;
+    gap: clamp(1.75rem, 4vw, 4.2rem);
+    padding: clamp(1.7rem, 3.4vw, 2.65rem) clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid #c9cbc5;
+    border-radius: 5px 5px 0 0;
+    background: #ece9e1;
+    color: #202725;
+  }
+
+  .home-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: #384744;
   }
 
   .home-hero__copy {
-    position: relative;
-    z-index: 2;
-    max-width: 48rem;
-  }
-
-  .home-eyebrow,
-  .home-kicker {
-    margin: 0;
-    color: #8f9795;
-    font-size: 0.67rem;
-    font-weight: 700;
-    letter-spacing: 0.045em;
-  }
-
-  .home-eyebrow {
-    margin-bottom: var(--space-3);
+    max-width: 47rem;
   }
 
   .home-hero .page-heading {
-    max-width: 42rem;
+    max-width: 43rem;
     margin-bottom: var(--space-3);
-    color: #f5f1e8;
-    font-size: clamp(2.4rem, 5vw, 4.15rem);
-    line-height: 0.97;
+    color: #1e2624;
+    font-size: clamp(2.45rem, 5vw, 4.2rem);
+    line-height: 0.96;
     letter-spacing: -0.052em;
   }
 
   .home-hero .page-intro {
     max-width: 42rem;
-    color: #a8aeac;
-    font-size: clamp(0.98rem, 1.5vw, 1.08rem);
+    color: #5f6966;
+    font-size: clamp(0.99rem, 1.5vw, 1.08rem);
     line-height: 1.52;
   }
 
   .home-facts {
     margin: var(--space-4) 0 0;
-    color: #858d8b;
-    font-size: 0.73rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
+    color: #69716e;
+    font-size: 0.76rem;
+    font-weight: 620;
+    line-height: 1.45;
   }
 
   .home-facts span {
-    margin-inline: 0.45rem;
-    color: #555c5b;
+    margin-inline: 0.38rem;
+    color: #a0a49f;
   }
 
-  .signal-map {
-    position: relative;
-    z-index: 1;
+  .instrument-screen {
     min-width: 0;
-    justify-self: stretch;
-    border: 1px solid #3e4443;
-    background: #171a1b;
+    border: 1px solid #303735;
+    background: #171d1c;
+    color: #dde1dc;
   }
 
-  .signal-map::before {
-    content: '';
-    position: absolute;
-    left: -1px;
-    top: 1rem;
-    width: 2px;
-    height: 2.6rem;
-    background: #d96b45;
-  }
-
-  .signal-map__title {
-    margin: 0;
-    padding: 0.58rem 0.7rem;
-    border-bottom: 1px solid #353a39;
-    color: #858d8b;
-    font-size: 0.64rem;
-    font-weight: 650;
-  }
-
-  .signal-map__flow {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(5rem, 0.8fr) minmax(5.4rem, 0.9fr);
-    min-height: 10.4rem;
-  }
-
-  .signal-map__inputs,
-  .signal-map__browser,
-  .signal-map__result {
-    min-width: 0;
-  }
-
-  .signal-map__inputs {
-    display: grid;
-    align-content: center;
-    border-right: 1px solid #353a39;
-  }
-
-  .signal-map__inputs span {
-    display: grid;
-    grid-template-columns: 1.35rem minmax(0, 1fr);
+  .instrument-screen__top {
+    display: flex;
     align-items: center;
-    gap: 0.42rem;
-    min-width: 0;
-    padding: 0.3rem 0.55rem;
-    color: #b8bcb8;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid #313836;
+  }
+
+  .instrument-screen__top strong,
+  .instrument-screen__top span {
     font-size: 0.62rem;
-  }
-
-  .signal-map__inputs span + span {
-    border-top: 1px solid #292e2d;
-  }
-
-  .signal-map__inputs svg {
-    color: #777f7d;
-  }
-
-  .signal-map__browser,
-  .signal-map__result {
-    position: relative;
-    display: grid;
-    place-content: center;
-    gap: 0.18rem;
-    padding: 0.7rem;
-    text-align: center;
-  }
-
-  .signal-map__browser {
-    border-right: 1px solid #353a39;
-    background:
-      linear-gradient(rgba(239, 234, 222, 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(239, 234, 222, 0.045) 1px, transparent 1px);
-    background-size: 14px 14px;
-  }
-
-  .signal-map__browser::before,
-  .signal-map__result::before {
-    content: '→';
-    position: absolute;
-    left: -0.42rem;
-    top: 50%;
-    translate: 0 -50%;
-    padding: 0.05rem 0.12rem;
-    background: #171a1b;
-    color: #6e7674;
-    font-size: 0.72rem;
-  }
-
-  .signal-map__browser small,
-  .signal-map__result small {
-    color: #747c7a;
-    font-size: 0.56rem;
-    line-height: 1.25;
-  }
-
-  .signal-map__browser strong,
-  .signal-map__result strong {
-    color: #ddd9d0;
-    font-size: 0.7rem;
     line-height: 1.2;
   }
 
-  .signal-map__result strong {
-    color: #e1b39f;
+  .instrument-screen__top strong {
+    color: #d9ded8;
+  }
+
+  .instrument-screen__top span {
+    color: #747f7b;
+  }
+
+  .instrument-screen__flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(7rem, 0.86fr) minmax(7.2rem, 0.9fr);
+    min-height: 10.5rem;
+  }
+
+  .instrument-screen__inputs {
+    display: grid;
+    align-content: center;
+    border-right: 1px solid #313836;
+  }
+
+  .instrument-screen__inputs span {
+    --channel: #78817d;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.35rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.38rem;
+    min-width: 0;
+    padding: 0.33rem 0.62rem 0.33rem 0.72rem;
+    color: #abb2ae;
+  }
+
+  .instrument-screen__inputs span + span {
+    border-top: 1px solid #282e2c;
+  }
+
+  .instrument-screen__inputs span::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    width: 1.8rem;
+    height: 1px;
+    translate: 0 -50%;
+    background: var(--channel);
+    opacity: 0.75;
+  }
+
+  .instrument-screen__inputs svg {
+    color: var(--channel);
+  }
+
+  .instrument-screen__inputs b {
+    overflow: hidden;
+    color: #b9c0bc;
+    font-size: 0.61rem;
+    font-weight: 620;
+    text-overflow: ellipsis;
+  }
+
+  .instrument-screen__api,
+  .instrument-screen__result {
+    position: relative;
+    display: grid;
+    place-content: center;
+    gap: 0.22rem;
+    padding: 0.8rem;
+    text-align: center;
+  }
+
+  .instrument-screen__api {
+    border-right: 1px solid #313836;
+    background:
+      linear-gradient(rgba(229, 234, 227, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(229, 234, 227, 0.04) 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+
+  .instrument-screen__api::before,
+  .instrument-screen__result::before {
+    content: '';
+    position: absolute;
+    left: -0.34rem;
+    top: 50%;
+    width: 0.68rem;
+    height: 0.68rem;
+    translate: 0 -50%;
+    border: 1px solid #66716d;
+    background: #171d1c;
+  }
+
+  .instrument-screen__api strong,
+  .instrument-screen__result strong {
+    color: #d8ddd7;
+    font-size: 0.69rem;
+    line-height: 1.2;
+  }
+
+  .instrument-screen__api span,
+  .instrument-screen__result span {
+    color: #747f7b;
+    font-size: 0.55rem;
+    line-height: 1.3;
+  }
+
+  .instrument-screen__result strong {
+    color: #ced8d2;
   }
 
   .category-rail {
-    position: relative;
-    z-index: 3;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    margin: -1px 0 0;
-    border: 1px solid #cfd2cf;
+    margin-top: -1px;
+    border: 1px solid #c9cbc5;
     border-top: 0;
-    border-radius: 0 0 6px 6px;
-    background: #f2efe8;
+    border-radius: 0 0 5px 5px;
+    background: #f3f1eb;
   }
 
   .category-rail a {
+    --channel: #66716d;
+    position: relative;
     min-width: 0;
     display: grid;
-    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.68rem 0.78rem;
-    border-right: 1px solid #d7d9d5;
-    color: #2b3030;
+    gap: 0.58rem;
+    padding: 0.7rem 0.78rem;
+    border-right: 1px solid #d3d5cf;
+    color: #313936;
     text-decoration: none;
     transition: background 120ms ease, color 120ms ease;
+  }
+
+  .category-rail a::after {
+    content: '';
+    position: absolute;
+    right: 0.7rem;
+    bottom: -1px;
+    left: 0.7rem;
+    height: 2px;
+    background: var(--channel);
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale 150ms ease;
   }
 
   .category-rail a:last-child {
@@ -345,32 +371,35 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   }
 
   .category-rail a:hover {
-    color: #171a1b;
-    background: #eae7df;
+    color: #1f2724;
+    background: #ebe9e2;
   }
 
-  .category-rail small {
-    color: #8a8f8c;
-    font: 600 0.56rem var(--font-mono);
-    letter-spacing: 0.05em;
+  .category-rail a:hover::after {
+    scale: 1 1;
   }
 
   .category-rail__icon {
     display: grid;
     place-items: center;
-    color: #626a68;
+    color: #626b68;
     transition: color 120ms ease;
   }
 
   .category-rail a:hover .category-rail__icon {
-    color: #b85f40;
+    color: var(--channel);
   }
 
-  .category-rail a > span:nth-child(3) {
+  .category-rail a > span:nth-child(2) {
     overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 0.79rem;
-    font-weight: 720;
+    font-weight: 700;
+    text-overflow: ellipsis;
+  }
+
+  .category-rail small {
+    color: #969b96;
+    font: 600 0.6rem var(--font-mono);
   }
 
   .home-tools {
@@ -388,8 +417,8 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   }
 
   .home-tools__header h2 {
-    margin: 0.25rem 0 0;
-    font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 1.95rem);
     letter-spacing: -0.035em;
   }
 
@@ -415,17 +444,18 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   }
 
   .tool-group {
+    --channel: #66716d;
     min-width: 0;
     overflow: hidden;
     border: 1px solid #cfd3d1;
-    border-radius: 6px;
+    border-radius: 5px;
     background: #faf9f5;
     scroll-margin-top: 1rem;
   }
 
   .tool-group__header {
     display: grid;
-    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-columns: 0.22rem auto minmax(0, 1fr);
     align-items: center;
     gap: 0.65rem;
     padding: 0.72rem 0.82rem;
@@ -433,21 +463,21 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     background: #f0ede6;
   }
 
-  .tool-group__code {
-    color: #929793;
-    font: 600 0.57rem var(--font-mono);
-    letter-spacing: 0.06em;
+  .tool-group__signal {
+    width: 0.2rem;
+    height: 1.75rem;
+    background: var(--channel);
   }
 
   .tool-group__icon {
     display: grid;
     place-items: center;
-    color: #5d6563;
+    color: #59625f;
   }
 
   .tool-group h3 {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.91rem;
     letter-spacing: -0.01em;
   }
 
@@ -463,14 +493,28 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
   }
 
   .tool-link {
+    position: relative;
     min-width: 0;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.72rem;
-    padding: 0.76rem 0.82rem;
+    padding: 0.77rem 0.82rem 0.79rem;
     text-decoration: none;
     transition: background 110ms ease;
+  }
+
+  .tool-link::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: var(--channel);
+    scale: 0 1;
+    transform-origin: left;
+    transition: scale 165ms ease;
   }
 
   .tool-link + .tool-link {
@@ -479,19 +523,25 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
   .tool-link:hover {
     color: #171a1b;
-    background: #f2efe8;
+    background: #f3f1eb;
+  }
+
+  .tool-link:hover::after,
+  .tool-link:focus-visible::after {
+    scale: 1 1;
   }
 
   .tool-link__icon {
     display: grid;
     place-items: center;
-    color: #555d5b;
-    transition: color 110ms ease, translate 110ms ease;
+    color: #56605d;
+    transition: color 120ms ease, translate 120ms ease;
   }
 
-  .tool-link:hover .tool-link__icon {
-    color: #b85f40;
-    translate: 1px 0;
+  .tool-link:hover .tool-link__icon,
+  .tool-link:focus-visible .tool-link__icon {
+    color: var(--channel);
+    translate: 2px 0;
   }
 
   .tool-link__copy {
@@ -505,7 +555,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
   .tool-link strong {
     color: #242a29;
-    font-size: 0.88rem;
+    font-size: 0.89rem;
     line-height: 1.25;
   }
 
@@ -516,49 +566,55 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     line-height: 1.35;
   }
 
-  .tool-link__arrow {
-    color: #9ca09d;
-    transition: translate 110ms ease, color 110ms ease;
+  @media (prefers-reduced-motion: no-preference) {
+    .instrument-screen__inputs span::after {
+      animation: channel-flow 4.5s ease-in-out infinite;
+    }
+
+    .instrument-screen__inputs span:nth-child(2)::after { animation-delay: 0.35s; }
+    .instrument-screen__inputs span:nth-child(3)::after { animation-delay: 0.7s; }
+    .instrument-screen__inputs span:nth-child(4)::after { animation-delay: 1.05s; }
+    .instrument-screen__inputs span:nth-child(5)::after { animation-delay: 1.4s; }
   }
 
-  .tool-link:hover .tool-link__arrow {
-    color: #b85f40;
-    translate: 3px 0;
+  @keyframes channel-flow {
+    0%, 72%, 100% { opacity: 0.28; scale: 0.45 1; transform-origin: right; }
+    12%, 28% { opacity: 0.9; scale: 1 1; transform-origin: right; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .category-rail a,
+    .category-rail a::after,
     .category-rail__icon,
     .tool-link,
-    .tool-link__icon,
-    .tool-link__arrow {
+    .tool-link::after,
+    .tool-link__icon {
       transition: none;
     }
   }
 
   @media (max-width: 52rem) {
     .home-hero {
-      grid-template-columns: minmax(0, 1fr) 14rem;
+      grid-template-columns: minmax(0, 1fr) 17rem;
       gap: var(--space-4);
     }
 
-    .signal-map__flow {
-      grid-template-columns: 1fr 0.9fr;
+    .instrument-screen__flow {
+      grid-template-columns: 1fr 0.92fr;
     }
 
-    .signal-map__result {
+    .instrument-screen__result {
       grid-column: 1 / -1;
-      border-top: 1px solid #353a39;
+      border-top: 1px solid #313836;
     }
 
-    .signal-map__browser {
+    .instrument-screen__api {
       border-right: 0;
     }
 
-    .signal-map__result::before {
+    .instrument-screen__result::before {
       left: 50%;
-      top: -0.45rem;
-      rotate: 90deg;
+      top: -0.35rem;
     }
 
     .category-rail {
@@ -570,7 +626,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     }
 
     .category-rail a:nth-child(n + 4) {
-      border-top: 1px solid #d7d9d5;
+      border-top: 1px solid #d3d5cf;
     }
 
     .tool-columns {
@@ -583,7 +639,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       display: block;
       min-height: auto;
       padding: var(--space-5) var(--space-5) 1.35rem;
-      border-radius: 4px;
+      border-radius: 4px 4px 0 0;
     }
 
     .home-hero .page-heading {
@@ -598,23 +654,20 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
     .home-facts {
       margin-top: var(--space-3);
-      font-size: 0.66rem;
-      line-height: 1.45;
+      font-size: 0.67rem;
     }
 
     .home-facts span {
-      margin-inline: 0.28rem;
+      margin-inline: 0.25rem;
     }
 
-    .signal-map {
+    .instrument-screen {
       display: none;
     }
 
     .category-rail {
       display: flex;
-      gap: 0;
-      margin: -1px 0 0;
-      padding: 0;
+      margin-top: -1px;
       overflow-x: auto;
       border-radius: 0 0 4px 4px;
       overscroll-behavior-inline: contain;
@@ -627,11 +680,11 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
     }
 
     .category-rail a {
-      flex: 0 0 8.7rem;
+      flex: 0 0 8.9rem;
       scroll-snap-align: start;
-      padding: 0.64rem 0.68rem;
+      padding: 0.65rem 0.68rem;
       border-top: 0 !important;
-      border-right: 1px solid #d7d9d5 !important;
+      border-right: 1px solid #d3d5cf !important;
     }
 
     .category-rail a:last-child {
@@ -661,7 +714,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
     .tool-link {
       gap: 0.58rem;
-      padding: 0.72rem 0.66rem;
+      padding: 0.72rem 0.66rem 0.74rem;
     }
   }
 </style>
