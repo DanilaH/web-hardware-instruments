@@ -11,6 +11,7 @@ interface FrameSkippingSurface {
 
 export class FrameSkippingRenderer {
   private readonly context: CanvasRenderingContext2D | null;
+  private surface: FrameSkippingSurface | null = null;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     this.context = canvas.getContext('2d');
@@ -20,8 +21,9 @@ export class FrameSkippingRenderer {
     return this.context !== null;
   }
 
-  private prepareSurface(): FrameSkippingSurface | null {
+  private getSurface(): FrameSkippingSurface | null {
     if (!this.context) return null;
+    if (this.surface) return this.surface;
 
     const rect = this.canvas.getBoundingClientRect();
     const width = Math.max(1, rect.width);
@@ -36,18 +38,19 @@ export class FrameSkippingRenderer {
     }
 
     this.context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { context: this.context, width, height };
+    this.surface = { context: this.context, width, height };
+    return this.surface;
   }
 
   clear(): void {
-    const surface = this.prepareSurface();
+    const surface = this.getSurface();
     if (!surface) return;
     surface.context.fillStyle = '#000000';
     surface.context.fillRect(0, 0, surface.width, surface.height);
   }
 
   render(view: FrameSkippingRenderData): void {
-    const surface = this.prepareSurface();
+    const surface = this.getSurface();
     if (!surface) return;
 
     surface.context.fillStyle = '#000000';
