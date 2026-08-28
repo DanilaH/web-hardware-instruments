@@ -2,28 +2,46 @@
 
 ## Design decision
 
-The site should not copy the plain minimalism of a generic text utility.
+The product should feel like a purpose-built browser diagnostic instrument, not a generic utility directory, SaaS dashboard, gaming surface, developer console, or AI-generated technology landing page.
 
-Hardware diagnostics benefit from a stronger visual identity because the thing being measured is dynamic, spatial, or temporal.
-
-The chosen direction is:
+The approved direction is:
 
 ```text
-instrument minimalism
+instrument minimalism + authored identity
 =
-mostly monochrome interface
-+ one restrained live signal accent
-+ data-driven motion
-+ strong numeric typography
-+ simple technical geometry
+light instrument chassis
++ dark diagnostic surfaces only where they have functional meaning
++ restrained hardware-channel color coding
++ domain-specific browser/input geometry
++ strong measurement typography
++ motion tied to state, signal, or recency
 ```
 
-The site should feel closer to a clean measuring instrument than to:
+Visual personality is a product requirement. If two solutions are equally functional and lightweight, prefer the one that gives Hardware Tests a more distinctive and high-quality identity.
 
-- a SaaS dashboard;
-- a gaming product;
-- a developer console;
-- a generic form website.
+Distinctiveness must come from the product domain rather than generic decorative novelty.
+
+Good sources of identity:
+
+- hardware input channels;
+- browser/API boundaries;
+- measurement geometry;
+- actual signal/state changes;
+- device-specific spatial relationships;
+- clear local-processing/privacy cues.
+
+Bad sources of identity:
+
+- generic dark-tech atmosphere;
+- gradient washes;
+- glow for mood;
+- fake measurements;
+- fake instrument readouts;
+- decorative grids that imply data which is not real;
+- arbitrary numbered sections;
+- excessive monospace/uppercase microcopy;
+- generic SaaS card chrome;
+- visual motifs that could be moved unchanged to an unrelated AI, crypto, or CRM landing page.
 
 ## Functional beauty rule
 
@@ -33,53 +51,96 @@ A visual element earns its place only if it does at least one of these:
 2. makes the result easier to understand;
 3. shows change over time;
 4. exposes instability, drift, noise, position, coverage, or input state;
-5. makes current state obvious.
+5. makes current state obvious;
+6. explains a real product boundary, such as hardware input being observed through browser-native APIs on the current device;
+7. creates product identity from a true hardware/browser concept without implying fake measurements.
 
 If it does none of these, remove it.
 
 Decorative visuals must never compete with diagnostic visuals.
 
-## Visual language
+## Authorship / anti-generic rule
 
-### Base palette
+The product should remain structurally familiar and easy to trust, but its visual signature should be specific to Hardware Tests.
 
-Prefer a light-first, mostly monochrome interface:
-
-- off-white / very light neutral page background;
-- near-black text;
-- white or slightly elevated tool surfaces;
-- neutral gray dividers, grid lines, inactive controls;
-- one cool signal accent for active/live data.
-
-The exact accent may be tuned during visual review, but it should feel technical rather than playful.
-
-Recommended direction:
+Use this test:
 
 ```text
-cool blue / cyan-blue signal
+If the brand name were replaced with an unrelated product,
+would this visual still make equal sense?
 ```
 
-Use it for:
+If yes, the visual is probably too generic.
 
-- live position;
-- current sample;
-- active control;
-- selected state;
-- primary action;
-- live trace;
-- active coverage/contact state.
+Do not chase novelty by making navigation or controls unusual. Keep interaction patterns conventional; put individuality into typography, material treatment, hardware-channel coding, browser-boundary diagrams, and functional motion.
 
-Do not wash the entire interface in the accent.
+## Visual language
+
+### Base palette and material model
+
+The approved base is light-first and neutral:
+
+- warm off-white / instrument-neutral page and chassis surfaces;
+- near-black / graphite text;
+- crisp neutral borders and separators;
+- white or slightly warm working surfaces;
+- dark graphite only for surfaces that intentionally read as a diagnostic display, measurement stage, or browser-boundary instrument screen.
+
+The homepage establishes the material metaphor:
+
+```text
+light chassis
++
+dark instrument display
+```
+
+Do not turn every tool card into a dark panel. Dark surfaces are meaningful exceptions, not a global theme.
+
+### Hardware-channel colors
+
+The product may use five restrained channel colors for the five current hardware families:
+
+```text
+Controller
+Mouse
+Keyboard
+Display
+Touch
+```
+
+The current approved direction uses muted, low-saturation channel tones rather than a single global cyan/blue accent.
+
+The exact hue values may be tuned during implementation, but the semantic mapping should remain stable once shared across the product.
+
+Channel color is appropriate for:
+
+- small category signal ticks;
+- category icons;
+- active/focused state;
+- short signal traces;
+- live input markers where the hardware family is relevant;
+- subtle hover/focus reinforcement;
+- matching input-channel lines inside a browser-boundary diagram.
+
+Channel color is **not** appropriate for:
+
+- full card fills;
+- large tinted backgrounds;
+- coloring every line of copy;
+- giving every one of the 18 tools its own unrelated color;
+- replacing success/warning/error semantics.
+
+The user should be able to notice the category system without needing hover, but the page must still read primarily as a neutral diagnostic instrument rather than a rainbow UI.
 
 ### Semantic colors
 
-Success, warning, and error colors are allowed when they carry meaning.
+Success, warning, and error colors are allowed when they carry real meaning.
 
-They are exceptions to the mostly monochrome system.
+They are independent of hardware-channel colors.
 
-Never rely on them without text or numeric labels.
+Never rely on semantic colors without text or numeric labels.
 
-Do not introduce semantic success/error colors merely to imply hardware health when the tool only reports browser observation or visual inspection.
+Do not introduce success/error styling merely to imply hardware health when the tool only reports browser observation or visual inspection.
 
 ### Dark mode
 
@@ -93,7 +154,11 @@ A system-following dark mode may be added later after the light system is stable
 
 Use a clean sans-serif for interface text.
 
-Use tabular or monospaced numerals for measurements:
+The typography should feel deliberate and technical without becoming a generic startup/system-default look or a full-page monospace interface.
+
+A production webfont may be introduced only if it materially improves identity/readability and has acceptable licensing, loading cost, fallback behavior, and maintenance cost. Self-hosting is preferred if a font is adopted.
+
+Use tabular or monospaced numerals for actual measurements:
 
 ```text
 144 FPS
@@ -103,27 +168,32 @@ Use tabular or monospaced numerals for measurements:
 972 Hz
 ```
 
-Do not set the whole page in monospace.
+Do not use monospace merely to make ordinary navigation or decorative labels look technical.
 
-Measurement numbers can be visually large, but headings should remain compact.
+Measurement numbers can be visually large, but headings should remain compact and task-first.
 
 ## Geometry
 
 Prefer:
 
 - thin crisp lines;
-- subtle technical grids;
 - restrained borders;
 - modest corner radius;
-- simple circles, axes, tracks, crosshairs.
+- straight structural divisions;
+- simple circles, axes, tracks, crosshairs when the underlying test actually needs them;
+- hardware/browser-boundary diagrams whose geometry explains the product.
 
 Avoid:
 
 - giant pill-shaped cards;
+- repeated 12–20px rounded rectangles as the default visual grammar;
 - glossy or decorative gradient washes;
 - glass effects;
 - 3D hardware renderings;
-- large decorative blobs.
+- large decorative blobs;
+- nested-card soup;
+- fake oscilloscope/calibration imagery with invented values;
+- arbitrary blueprint grids used only to signal “technical”.
 
 ### CSS gradient implementation note
 
@@ -147,13 +217,24 @@ Acceptable when useful:
 1px technical grid lines
 reference rulings
 simple measurement-oriented repeating guides
+browser-boundary instrument screen guides
 ```
 
 Judge the rendered purpose, not the CSS function name.
 
+## Icons and brand mark
+
+Use one coherent thin-line icon language for hardware/tool recognition.
+
+Icons should normally appear directly on the surface rather than automatically inside rounded colored tiles.
+
+A small local subset of lightweight SVG geometry is preferred over shipping a large runtime icon system when only a narrow set is needed. If a package is later adopted, it must remain tree-shakeable and must not add client-side runtime cost for static icons.
+
+The brand mark should derive from the product model, not a generic tech symbol. The approved direction is based on input traces meeting a browser/local-observation boundary rather than a generic target/crosshair mark.
+
 ## Motion
 
-Motion should represent data or state.
+Motion should represent data, state, recency, or a meaningful signal path.
 
 Good:
 
@@ -164,14 +245,22 @@ Good:
 - mouse button/wheel feedback reacting to input;
 - touch markers/trails following actually observed contacts;
 - a key lighting up on press;
-- a frame-skipping test pattern advancing with browser timing.
+- a frame-skipping test pattern advancing with browser timing;
+- a short category-colored signal line reacting on hover/focus;
+- a restrained homepage input-channel trace that visually terminates at the browser boundary.
 
 Bad:
 
 - floating background particles;
 - pulsing cards for decoration;
-- continuously animated hero graphics;
-- unnecessary page transitions.
+- decorative hero motion unrelated to input/browser concepts;
+- card lift/bounce as the main personality device;
+- unnecessary page transitions;
+- continuous glow or ambient animation.
+
+Use CSS for small UI/state motion. Do not add an animation library for identity polish alone.
+
+Respect `prefers-reduced-motion`.
 
 ### Recency encoding
 
@@ -425,7 +514,7 @@ Concept:
 
 The latest point is visually emphasized.
 
-The trail stays compact and mostly monochrome, with the current/live portion using the signal accent.
+The trail stays compact and mostly monochrome, with the current/live portion using the relevant signal treatment.
 
 ### Meaning
 
@@ -568,29 +657,56 @@ Use Canvas with the documented sequential pattern. The primary textual state dis
 
 # Homepage visual direction
 
-The homepage should remain calmer than tool pages but must scale with the catalog.
+The homepage is the identity reference for the visual refresh.
 
-The current 18-tool catalog should be grouped by device/job cluster rather than presented as one undifferentiated vertical feed:
+It should feel like a real product surface rather than a plain directory, while staying compact enough that the catalog remains visible quickly.
+
+Approved composition:
 
 ```text
-Controller
-Mouse
-Keyboard
-Display
-Touch
+compact branded header
+light instrument-chassis hero
+  ├─ H1 + concise explanation + human-readable trust facts
+  └─ dark browser-boundary instrument screen
+hardware category rail
+catalog grouped by Controller / Mouse / Keyboard / Display / Touch
 ```
 
-Use compact category/tool rows or cards with:
+The hero must not contain fake measurement values or decorative oscilloscope/calibration readouts.
 
-- simple line icon or tiny functional glyph;
-- tool name;
-- one-line job description.
+The dark instrument screen may explain the true product model:
 
-Desktop should use the available shell width efficiently without becoming a dashboard. Mobile should preserve clear category landmarks so users do not have to scan 18 consecutive undifferentiated cards.
+```text
+hardware input
+→ browser-native APIs / browser boundary
+→ observed on this device
+```
 
-Do not autoplay mini diagnostic animations across the homepage.
+Trust copy should use language an ordinary user can understand, for example:
 
-The rich visuals belong inside the tools themselves.
+```text
+no install
+no account
+input stays on this device
+```
+
+Do not rely on unexplained phrases such as `raw input stays local` as the only privacy/trust statement.
+
+The five category channels may use visible but restrained color coding in:
+
+- category rail signal lines;
+- category icons;
+- section signal ticks;
+- matching browser-boundary input traces;
+- hover/focus signal motion.
+
+Tool rows themselves should remain mostly neutral.
+
+Desktop should use the available shell width efficiently without becoming a dashboard. Mobile should preserve clear category landmarks and show real tool content in the first viewport whenever practical.
+
+Do not autoplay decorative mini diagnostic animations across the homepage. Any homepage motion must explain a signal path or state and must respect reduced-motion preferences.
+
+The rich measurement visuals still belong inside the tools themselves.
 
 ## Retention through useful continuation
 
@@ -623,6 +739,7 @@ Functional beauty must remain accessible.
 
 - live traces need numeric equivalents;
 - active states cannot rely only on color;
+- channel colors must never be the sole category/state indicator;
 - SVG controls need semantic labels where relevant;
 - motion must remain legible with reduced-motion preference;
 - reduced motion should remove decorative interpolation, not real diagnostic state;
@@ -635,21 +752,31 @@ Functional beauty must remain accessible.
 Target visuals should be lightweight.
 
 - use SVG for controller/radial geometry and generic mouse visuals where appropriate;
-- use DOM/CSS for keyboard, controls, and simple state surfaces;
+- use DOM/CSS for keyboard, controls, simple state surfaces, category signals, and homepage browser-boundary diagrams;
 - use Canvas for FPS/refresh traces and Frame Skipping pattern;
 - use DOM/SVG for touch overlays only with bounded nodes/state;
 - cap histories/trails/sample-driven visuals;
 - do not retain unbounded arrays;
-- avoid third-party chart libraries;
+- avoid third-party chart or animation libraries;
 - clean up animation loops/listeners;
-- do not create DOM nodes per high-frequency polling sample.
+- do not create DOM nodes per high-frequency polling sample;
+- static iconography must not require client-side runtime JavaScript.
 
-# Final design test
+# Final design tests
 
 For every visual ask:
 
 ```text
-If I remove this visual, does the user lose information or task clarity?
+If I remove this visual, does the user lose information, task clarity,
+or a product-specific identity cue grounded in a true hardware/browser concept?
 ```
 
 If the answer is no, remove it.
+
+Also ask:
+
+```text
+Could this exact visual be moved unchanged to an unrelated AI/CRM/crypto site?
+```
+
+If yes, make it more product-specific or remove it.

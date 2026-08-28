@@ -151,6 +151,51 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* Homepage identity only. Extract these channel values into shared tokens when the approved visual system is propagated beyond the homepage. */
+.page-main--homepage [data-channel='controller'] { --channel: #4d6fac; }
+.page-main--homepage [data-channel='mouse'] { --channel: #ad5d4c; }
+.page-main--homepage [data-channel='keyboard'] { --channel: #768148; }
+.page-main--homepage [data-channel='display'] { --channel: #745f8d; }
+.page-main--homepage [data-channel='touch'] { --channel: #3f8178; }
+
+.page-main--homepage .category-rail a::after {
+  right: 0;
+  left: 0;
+  height: 4px;
+  scale: 1 1;
+  opacity: 0.92;
+}
+
+.page-main--homepage .category-rail a:hover::after,
+.page-main--homepage .category-rail a:focus-visible::after {
+  opacity: 1;
+}
+
+.page-main--homepage .category-rail__icon,
+.page-main--homepage .category-rail a:hover .category-rail__icon,
+.page-main--homepage .category-rail a:focus-visible .category-rail__icon {
+  color: var(--channel);
+}
+
+.page-main--homepage .tool-group__signal {
+  width: 0.28rem;
+  height: 2.2rem;
+  border-radius: 1px;
+}
+
+.page-main--homepage .tool-group__icon {
+  color: var(--channel);
+}
+
+.page-main--homepage .instrument-screen__inputs svg {
+  color: var(--channel);
+}
+
+.page-main--homepage .instrument-screen__inputs span::after {
+  height: 2px;
+  opacity: 0.95;
+}
+
 @media (max-width: 40rem) {
   .page-main {
     padding-block: var(--space-5) var(--space-6);
