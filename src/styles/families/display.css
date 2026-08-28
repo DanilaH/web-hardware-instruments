@@ -1,1 +1,94 @@
-/* Display family identity layer. */
+/* Display family identity layer. Exact inspection colors and camera-pattern output remain untouched. */
+.page-main :is(
+  [data-fps-test],
+  [data-refresh-rate-test],
+  [data-frame-skipping-test],
+  [data-dead-pixel-test],
+  [data-backlight-bleed-test]
+) {
+  --color-signal: var(--color-channel-display);
+}
+
+.page-main :is([data-fps-test], [data-refresh-rate-test]) {
+  --trace-grid: #dfded7;
+  --trace-signal: var(--color-channel-display);
+  --trace-neutral: #7f8883;
+}
+
+.page-main [data-fps-test] :is(.fps-layout, .fps-trace-panel, .supporting-metric),
+.page-main [data-refresh-rate-test] :is(.refresh-result-row, .common-mode, .cadence-panel),
+.page-main [data-frame-skipping-test] :is(
+  .frame-skipping-pattern,
+  .frame-skipping-steps li,
+  .frame-skipping-examples
+) {
+  border-color: var(--color-border);
+}
+
+.page-main [data-fps-test] .fps-trace-panel {
+  background-color: #f5f3ed;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-channel-display) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-channel-display) 6%, transparent) 1px, transparent 1px);
+}
+
+.page-main [data-refresh-rate-test] .cadence-panel {
+  background: #f5f3ed;
+}
+
+.page-main :is([data-fps-test], [data-refresh-rate-test]) .trace-label,
+.page-main [data-frame-skipping-test] :is(
+  .frame-skipping-pattern__label,
+  .frame-skipping-examples > div > span
+) {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.page-main [data-fps-test][data-state='live'] .metric-value,
+.page-main [data-refresh-rate-test][data-state='live'] :is(.refresh-value, .common-mode strong) {
+  color: var(--color-channel-display);
+}
+
+.page-main [data-frame-skipping-test] .frame-skipping-pattern__canvas {
+  /* Diagnostic evidence surface: keep the renderer's exact black/pattern output. */
+  border-color: #252829;
+}
+
+.page-main [data-frame-skipping-test] .frame-skipping-steps li::before,
+.page-main [data-frame-skipping-test] .frame-example i {
+  color: var(--color-channel-display);
+  background-color: var(--color-channel-display);
+}
+
+.page-main :is([data-dead-pixel-test], [data-backlight-bleed-test])
+  :is(.dead-pixel-action, .backlight-action) {
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.page-main [data-dead-pixel-test] .dead-pixel-action--primary,
+.page-main [data-backlight-bleed-test] .backlight-action--primary {
+  border-color: var(--color-channel-display);
+  background: color-mix(in srgb, var(--color-channel-display) 10%, var(--color-surface));
+  box-shadow: inset 3px 0 0 var(--color-channel-display);
+  color: var(--color-text);
+}
+
+.page-main [data-dead-pixel-test] .dead-pixel-chip {
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #f5f3ed;
+}
+
+.page-main [data-dead-pixel-test] .dead-pixel-chip__swatch {
+  border-color: var(--color-border-strong);
+  /* --chip-color remains the exact inspection color. */
+}
+
+.page-main [data-backlight-bleed-test] .backlight-tool__context {
+  border-left: 2px solid var(--color-border);
+  padding-left: var(--space-3);
+}
+
+/* Do not target .display-inspection-stage background: it must remain --inspection-color exactly. */
