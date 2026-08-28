@@ -20,7 +20,7 @@ The original seven-tool catalog was implemented and code-side audited:
 /keyboard-tester
 ```
 
-That phase established the durable capability boundaries:
+That phase established the durable acquisition boundaries:
 
 ```text
 GamepadService
@@ -51,12 +51,12 @@ All stages are complete.
 
 The sequential order was an implementation-safety mechanism. It prevented a wide parallel scaffold from spreading unreviewed measurement/UX patterns across the catalog. It is now historical process context, not a permanent ban on reviewed cross-catalog maintenance.
 
-Expansion 1 added only the approved new capability boundaries:
+Expansion 1 added two approved acquisition boundaries plus one shared progressive-enhancement helper:
 
 ```text
 MouseInputService
 TouchInputService
-Fullscreen helper
+Fullscreen helper (not an acquisition service)
 ```
 
 ## Lessons that remain binding
