@@ -1,13 +1,163 @@
 ---
+import BrandMark from '../icons/BrandMark.astro';
 import { siteConfig } from '../../config/site';
+
+interface Props {
+  variant?: 'default' | 'homepage';
+}
+
+const { variant = 'default' } = Astro.props;
 ---
 
-<header class="site-header">
+<header class="site-header" data-variant={variant}>
   <div class="site-header__inner shell-width">
-    <a class="site-header__brand" href="/">{siteConfig.name}</a>
+    <a class="site-header__brand" href="/">
+      {variant === 'homepage' && (
+        <span class="site-header__mark" aria-hidden="true"><BrandMark size={31} /></span>
+      )}
+      <span class="site-header__brand-copy">
+        <strong>{siteConfig.name}</strong>
+        {variant === 'homepage' && <small>Browser diagnostics</small>}
+      </span>
+    </a>
+
     <nav class="site-header__nav" aria-label="Primary navigation">
-      <a href="/">Tools</a>
+      {variant === 'homepage' && <span class="site-header__catalog-count"><b>18</b> tools</span>}
+      <a href="/" aria-current={variant === 'homepage' ? 'page' : undefined}>Tools</a>
       <a href="/about">About</a>
     </nav>
   </div>
 </header>
+
+<style>
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .site-header__brand-copy {
+    display: grid;
+  }
+
+  .site-header__brand-copy strong {
+    font: inherit;
+  }
+
+  .site-header__brand-copy small,
+  .site-header__catalog-count {
+    display: none;
+  }
+
+  .site-header[data-variant='homepage'] {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    background: #10252d;
+    color: #edf7f9;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__inner {
+    min-height: 4.15rem;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__brand {
+    color: #f4fbfc;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__mark {
+    width: 2.35rem;
+    height: 2.35rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(123, 211, 228, 0.2);
+    border-radius: 11px;
+    background: rgba(123, 211, 228, 0.07);
+    color: #7bd3e4;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+  }
+
+  .site-header[data-variant='homepage'] .site-header__brand-copy strong {
+    font-size: 0.96rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__brand-copy small {
+    display: block;
+    margin-top: 0.12rem;
+    color: #8faab2;
+    font-size: 0.66rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__nav {
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__nav a {
+    padding: 0.48rem 0.68rem;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #b7c9ce;
+    font-size: 0.82rem;
+    font-weight: 650;
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__nav a:hover,
+  .site-header[data-variant='homepage'] .site-header__nav a[aria-current='page'] {
+    color: #f1f9fa;
+    border-color: rgba(123, 211, 228, 0.16);
+    background: rgba(123, 211, 228, 0.07);
+  }
+
+  .site-header[data-variant='homepage'] .site-header__catalog-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    margin-right: 0.35rem;
+    padding-right: 0.8rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    color: #839ea6;
+    font-size: 0.71rem;
+  }
+
+  .site-header[data-variant='homepage'] .site-header__catalog-count b {
+    color: #7bd3e4;
+    font: 700 0.75rem var(--font-mono);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header[data-variant='homepage'] .site-header__nav a {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .site-header[data-variant='homepage'] .site-header__inner {
+      min-height: 3.8rem;
+    }
+
+    .site-header[data-variant='homepage'] .site-header__mark {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9px;
+    }
+
+    .site-header[data-variant='homepage'] .site-header__brand-copy small,
+    .site-header[data-variant='homepage'] .site-header__catalog-count {
+      display: none;
+    }
+
+    .site-header[data-variant='homepage'] .site-header__nav {
+      gap: 0.2rem;
+    }
+
+    .site-header[data-variant='homepage'] .site-header__nav a {
+      padding-inline: 0.52rem;
+    }
+  }
+</style>
