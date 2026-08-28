@@ -124,6 +124,7 @@ E1.2   focused Mouse tools
 E1.3   Touch Screen Test
 E1.4   Keyboard expansion
 E1.5   display visual-inspection tools
+E1.6   Frame Skipping
 ```
 
 Implemented Expansion 1 routes so far:
@@ -139,6 +140,7 @@ Implemented Expansion 1 routes so far:
 /keyboard-ghosting-test
 /dead-pixel-test
 /backlight-bleed-test
+/frame-skipping-test
 ```
 
 E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
@@ -153,17 +155,12 @@ E1.4 added `/keyboard-rollover-test` and `/keyboard-ghosting-test` on the existi
 
 E1.5 added `/dead-pixel-test` and `/backlight-bleed-test` on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel cycles the fixed five solid colors; Backlight Bleed exposes only a black visual-inspection stage. Neither route performs automatic display diagnosis or emits pass/fail scores.
 
+E1.6 added `/frame-skipping-test` on the existing `FrameSampler`. The readiness monitor gates a sequential READY capture epoch: each accepted READY sample advances exactly one slot, an unstable current delta invalidates the epoch before another pattern step, and a fresh stable epoch starts again from ordinal zero. Browser timestamps never manufacture visual gaps; external camera photos remain the diagnostic evidence and the route has no automatic pass/fail result.
+
 **Next implementation step:**
 
 ```text
-E1.6 Frame Skipping
-```
-
-Then follow the remaining exact order in `20`:
-
-```text
-E1.6 Frame Skipping
-→ E1.7 final Expansion 1 audit
+E1.7 final Expansion 1 audit
 ```
 
 Do not scaffold the whole catalog at once. Each route/pattern must pass its own review/visual/quality gate before the next pattern is propagated.
