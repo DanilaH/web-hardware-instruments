@@ -26,7 +26,7 @@ export class FrameSkippingRenderer {
 
     const slot = Math.min(view.slotCount - 1, Math.max(0, Math.trunc(view.slot)));
     const slotWidth = this.canvas.width / view.slotCount;
-    const squareSize = Math.max(2, Math.min(slotWidth * 0.72, this.canvas.height * 0.55));
+    const squareSize = Math.max(2, Math.min(slotWidth * 0.82, this.canvas.height * 0.55));
     const x = slot * slotWidth + (slotWidth - squareSize) / 2;
     const y = (this.canvas.height - squareSize) / 2;
 
