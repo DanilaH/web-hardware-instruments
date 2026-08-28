@@ -42,7 +42,7 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
     <section class="hands-off" aria-labelledby="hands-off-heading">
       <div>
         <h3 id="hands-off-heading">Hands-off unexpected-touch check</h3>
-        <p data-touch-hands-off-result>Optional: run a separate 15-second hands-off observation.</p>
+        <p data-touch-hands-off-result aria-live="polite">Optional: run a separate 15-second hands-off observation.</p>
       </div>
       <button type="button" class="touch-action" data-touch-hands-off>Run hands-off check</button>
     </section>
