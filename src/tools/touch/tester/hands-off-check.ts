@@ -46,8 +46,13 @@ export const observeHandsOffContactStart = (
   };
 };
 
-export const observeHandsOffActiveContact = (state: HandsOffState): HandsOffState =>
-  state.phase === 'guarding' ? { ...state, phase: 'waiting-for-empty' } : state;
+export const observeHandsOffActiveContact = (state: HandsOffState): HandsOffState => {
+  if (state.phase === 'guarding') return { ...state, phase: 'waiting-for-empty' };
+  if (state.phase === 'armed') {
+    return { phase: 'interrupted', unexpectedStarts: 0, markers: [] };
+  }
+  return state;
+};
 
 export const observeHandsOffContactsEmpty = (state: HandsOffState): HandsOffState =>
   state.phase === 'waiting-for-empty' ? { ...state, phase: 'guarding' } : state;
