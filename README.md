@@ -12,7 +12,7 @@ Post-v1 **Hardware Expansion 1** is approved for sequential implementation under
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
 ```
 
-E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, and **E1.5 display visual-inspection tools** are complete. The next product-code step is **E1.6 Frame Skipping**.
+E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, **E1.5 display visual-inspection tools**, and **E1.6 Frame Skipping** are complete. The next step is **E1.7 final Expansion 1 audit**.
 
 Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
@@ -41,11 +41,6 @@ Implemented Expansion 1 routes:
 /keyboard-ghosting-test
 /dead-pixel-test
 /backlight-bleed-test
-```
-
-Approved Expansion 1 routes still to implement:
-
-```text
 /frame-skipping-test
 ```
 
@@ -93,8 +88,8 @@ E1.0 source-of-truth approval ✅
 → E1.3 Touch ✅
 → E1.4 Keyboard expansion ✅
 → E1.5 display visual-inspection tools ✅
-→ E1.6 Frame Skipping ← next
-→ E1.7 final Expansion 1 audit
+→ E1.6 Frame Skipping ✅
+→ E1.7 final Expansion 1 audit ← next
 ```
 
 E1.0.1 specifically removed ambiguous measurement/source-of-truth behavior before implementation: polling attempts use one source selected before measurement and never mix streams; Touch coverage counts only real in-surface browser-observed samples (including real coalesced samples where available); confirmation passes are separate; interrupted hands-off checks are invalid; Frame Skipping uses a **readiness-gated sequential READY capture epoch** so browser timestamp arithmetic cannot manufacture pattern gaps.
@@ -108,6 +103,8 @@ E1.3 adds the mobile-first Touch Screen Test with real browser-observed/coalesce
 E1.4 adds Keyboard Rollover as browser-observed simultaneous-key measurement and Keyboard Ghosting as a guided expected-combination observation. Both reuse `KeyboardInputService`; neither claims NKRO certification, hardware failure, or confirmed ghosting from browser events alone.
 
 E1.5 adds Dead Pixel and Backlight Bleed as visual-inspection utilities on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel uses only the fixed Black/White/Red/Green/Blue sequence; Backlight Bleed uses a pure black stage. Neither route produces an automatic score, pass/fail result, or hardware diagnosis.
+
+E1.6 adds the camera-assisted Frame Skipping Test on the existing `FrameSampler`. Browser timing is only a READY validity gate: every accepted READY frame advances exactly one sequential pattern slot, timing instability invalidates the capture epoch before another step, and only an external camera photo can provide skipped-refresh evidence. The page never manufactures visible gaps from timestamp arithmetic and never outputs an automatic pass/fail verdict.
 
 Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
 
