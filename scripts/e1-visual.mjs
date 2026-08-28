@@ -9,8 +9,11 @@ const viewports = [
   { width: 390, height: 844 },
 ];
 
+const executablePath = process.env.CHROME_PATH;
+assert.ok(executablePath, 'CHROME_PATH must point to the runner Chrome binary');
+
 await fs.mkdir('visual-output', { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, executablePath });
 
 try {
   for (const viewport of viewports) {
