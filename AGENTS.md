@@ -98,23 +98,35 @@ Completed Expansion 1 stages:
 E1.0   source-of-truth approval
 E1.0.1 independent review corrections
 E1.1   Mouse foundation + Mouse Tester
+E1.2   focused Mouse tools
+```
+
+Implemented Expansion 1 routes so far:
+
+```text
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
 ```
 
 E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
 
-E1.1 added the reviewed `MouseInputService`, shared generic semantic mouse visual, and `/mouse-tester`. The service keeps normal Mouse diagnostics separate from the existing Mouse DPI `MouseMovementService`; tool state remains in controllers, and the polling profile selects exactly one source per attempt for E1.2 reuse.
+E1.1 added the reviewed `MouseInputService`, shared generic semantic mouse visual, and `/mouse-tester`. The service keeps normal Mouse diagnostics separate from the existing Mouse DPI `MouseMovementService`; tool state remains in controllers.
+
+E1.2 added focused Mouse Button, Scroll, Double Click, and Polling Rate routes. The polling profile is sampling-only, selects exactly one browser source per attempt, keeps bounded two-second data, and does not attach unrelated button/wheel suppression.
 
 **Next implementation step:**
 
 ```text
-E1.2 focused Mouse tools
+E1.3 Touch
 ```
 
 Then follow the remaining exact order in `20`:
 
 ```text
-E1.2 focused Mouse tools
-→ E1.3 Touch
+E1.3 Touch
 → E1.4 Keyboard expansion
 → E1.5 display visual-inspection tools
 → E1.6 Frame Skipping
