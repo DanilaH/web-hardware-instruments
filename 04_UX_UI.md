@@ -21,7 +21,7 @@ not feature-rich.
 
 ## First-screen acceptance target
 
-At `1366 × 768` desktop:
+At `1366 × 768` desktop, for desktop-relevant tools:
 
 - compact header is visible;
 - H1 is visible;
@@ -33,6 +33,8 @@ At `1366 × 768` desktop:
 At `1440 × 900`, the same should feel comfortable rather than cramped.
 
 Below-the-fold explanatory content may scroll normally.
+
+Touch Screen Test is explicitly mobile/tablet oriented in Expansion 1. Its active surface follows the route-specific mobile-first acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not shrink the diagnostic area merely to satisfy a desktop-shaped one-screen rule.
 
 ## Page density
 
@@ -81,6 +83,7 @@ When interaction is passive/live, there may be no CTA:
 ```text
 Press any key
 Move the controller sticks
+Move, click, or scroll inside the test surface
 ```
 
 ## Progressive disclosure
@@ -125,6 +128,8 @@ stable layout
 ```
 
 Reserve result space where useful to prevent layout shift.
+
+For long/mobile-first active surfaces, status/metrics may remain adjacent/sticky/predictably placed according to the route design; do not sacrifice usable touch area simply to eliminate all vertical movement.
 
 ## Visual direction
 
@@ -172,7 +177,7 @@ Keep very small:
 Brand       Tools       About
 ```
 
-No mega-menu in MVP.
+No mega-menu in current scope.
 
 ## Tool card
 
@@ -187,7 +192,7 @@ Requirements:
 - enough padding;
 - no nested-card maze;
 - no heavy shadow;
-- predictable placement across tool pages.
+- predictable placement across related tool pages.
 
 ## Instructions
 
@@ -200,6 +205,7 @@ Connect your controller and press any button.
 Release both sticks and keep them untouched.
 Move your mouse exactly 10 cm.
 Press any key to test it.
+Touch and drag across the whole test area.
 ```
 
 Bad:
@@ -208,7 +214,7 @@ Bad:
 Follow the steps below to begin the comprehensive diagnostic process.
 ```
 
-If instructions require more than 2–3 short lines, reconsider the interaction.
+If instructions require more than 2–3 short lines, reconsider the interaction. Camera-assisted Frame Skipping may use a compact numbered instruction block because its physical procedure genuinely requires multiple steps; keep those steps inside the primary tool and concise.
 
 ## State model
 
@@ -218,9 +224,9 @@ The visible UX should usually collapse them into a small set:
 
 ```text
 waiting / ready
-measuring
+measuring / active
 result
-unsupported / error
+unsupported / error / interrupted
 ```
 
 Do not create a visible stepper or wizard unless technically unavoidable.
@@ -242,35 +248,40 @@ The interface should be visually richer than a generic form utility when the mea
 
 Prefer one meaningful live visualization over multiple cards, metrics, tables, or decorative elements.
 
-Good MVP visuals:
+Approved examples include:
 
 - controller SVG with live button/stick states;
 - short stick-position trail;
 - deadzone ring around stick center;
 - mouse relative-movement guide;
+- generic mouse button/wheel/movement feedback;
+- touch coverage/live-contact surface;
 - short FPS time trace;
 - quiet refresh-rate cadence trace;
+- frame-skipping camera pattern;
+- fullscreen solid-color / black inspection stage;
 - visual keyboard with active keys.
 
 These visuals are part of the tool, not decoration.
 
 Do not add a visualization if it does not help perform the test or interpret the result.
 
-Do not use a generic chart library in MVP.
+Do not use a generic chart library.
 
 ## Mobile
 
-Mobile must be tidy, but desktop hardware testing is the primary interaction target where appropriate.
+Mobile must be tidy. Some tools remain desktop-oriented, while Touch Screen Test is intentionally mobile/tablet-oriented.
 
 Mobile requirements:
 
-- no overflow;
+- no page-level overflow;
 - readable controls;
 - clear unsupported/impractical states;
 - no broken visualization;
-- primary actions remain obvious.
+- primary actions remain obvious;
+- diagnostic surfaces remain large enough for the physical task.
 
-Do not distort desktop UX just to make every hardware test equally meaningful on mobile.
+Do not distort desktop UX to make every hardware test equally meaningful on mobile, and do not distort a mobile-first Touch diagnostic merely to imitate desktop proportions.
 
 ## Trust
 
@@ -288,17 +299,9 @@ Only if implementation truly satisfies it.
 
 Do not interrupt the primary task with cross-promotion.
 
-After the user sees a result, show a small related-tools block.
+After the user sees a result/status, show a small related-tools block.
 
-Example:
-
-```text
-Controller detected and working.
-
-Related:
-Check stick drift
-Check deadzone
-```
+Only link implemented routes.
 
 The goal is useful continuation, not artificial pageview inflation.
 
@@ -314,7 +317,7 @@ Do not add:
 - multiple equal-weight CTAs;
 - live technical logs;
 - verbose empty states;
-- autoplay visual effects.
+- autoplay decorative effects.
 
 ## Copy tone
 
@@ -324,10 +327,9 @@ Avoid marketing language.
 
 The page should feel like a tool someone bookmarked, not a campaign landing page.
 
-
 ## Responsive acceptance boundaries
 
-The strict one-screen requirement applies to viewport `1366×768` and larger desktop widths.
+The strict one-screen requirement applies to `1366×768` and larger **desktop-relevant** tool pages.
 
 At `1024×768`:
 
@@ -338,14 +340,14 @@ At `1024×768`:
 At mobile widths around `390px`:
 
 - one-screen completion is not required;
-- the tool must remain understandable and usable where the browser/device capability makes sense.
+- the tool must remain understandable and usable where the browser/device capability makes sense;
+- Touch Screen Test must prioritize usable finger interaction area and route-specific real-device acceptance from `20`.
 
 ## Human visual checkpoint
 
-The first completed Gamepad Tester page establishes the visual system for the rest of the site.
+The completed Gamepad Tester established the base visual system for full v1.
 
-Do not propagate its spacing, palette, geometry, or visualization primitives to all remaining tools until the first vertical slice has passed a human design/UX review at `1366×768` and `1440×900`.
-
+Expansion 1 reuses that system. E1.1 Mouse Tester is a human visual checkpoint before its mouse pattern is propagated to the focused E1.2 routes; later device-specific routes still receive their own visual review.
 
 ## Search-landing independence
 
