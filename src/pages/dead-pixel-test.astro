@@ -1,0 +1,75 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DeadPixelTest from '../tools/display/dead-pixel/DeadPixelTest.astro';
+
+const relatedTools = [
+  {
+    href: '/backlight-bleed-test',
+    name: 'Backlight Bleed Test',
+    description: 'Inspect a backlit display for obvious bright leakage on a black screen.',
+  },
+  {
+    href: '/refresh-rate-test',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Dead Pixel Test — Check Your Screen with Solid Colors"
+  description="Inspect your display for dead or stuck pixels using full-screen black, white, red, green, and blue backgrounds."
+  canonicalPath="/dead-pixel-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Dead Pixel Test</h1>
+    <p class="page-intro">Inspect the screen against solid colors to visually spot pixels that stay dark, bright, or the wrong color.</p>
+  </section>
+
+  <DeadPixelTest />
+
+  <section class="tool-content reading-width" aria-labelledby="dead-pixel-how-to">
+    <h2 id="dead-pixel-how-to">How to inspect for dead or stuck pixels</h2>
+    <ol>
+      <li>Clean the screen first so dust or smudges are not mistaken for pixel defects.</li>
+      <li>Start the test and inspect each solid background from a normal viewing distance.</li>
+      <li>Tap/click the stage or use Space / Arrow Right for the next color; Arrow Left goes back.</li>
+      <li>Look for a point that does not change consistently with the surrounding screen.</li>
+    </ol>
+
+    <h2>Dead pixels and stuck pixels can look different</h2>
+    <p>
+      A dead pixel may remain dark while surrounding pixels light up. A stuck subpixel may remain bright or show the wrong color on some backgrounds. This page only provides controlled solid colors for visual inspection; it does not read or diagnose individual panel pixels.
+    </p>
+
+    <h2>Visual inspection limits</h2>
+    <p>
+      Browser chrome cannot be inspected when fullscreen is unavailable, and reflections, dirt, scaling, or viewing distance can make tiny marks look like pixel defects. The tool does not provide a pass/fail score, warranty classification, camera diagnosis, or flashing pixel-fixer mode.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>

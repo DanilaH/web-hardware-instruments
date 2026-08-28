@@ -1,0 +1,83 @@
+---
+interface Props {
+  label: string;
+  initialColor?: string;
+  interactive?: boolean;
+}
+
+const {
+  label,
+  initialColor = '#000000',
+  interactive = false,
+} = Astro.props;
+---
+
+<div
+  class:list={['display-inspection-stage', interactive && 'display-inspection-stage--interactive']}
+  data-inspection-stage
+  data-overlay-visible="true"
+  tabindex="0"
+  aria-label={label}
+  style={`--inspection-color: ${initialColor};`}
+  hidden
+>
+  <div class="display-inspection-stage__overlay" data-inspection-overlay>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .display-inspection-stage {
+    position: relative;
+    width: 100%;
+    min-height: min(68vh, 38rem);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--inspection-color);
+    cursor: default;
+  }
+
+  .display-inspection-stage--interactive {
+    cursor: pointer;
+  }
+
+  .display-inspection-stage__overlay {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 1;
+    max-width: min(28rem, calc(100% - 1.5rem));
+    border: 1px solid #3d4244;
+    border-radius: var(--radius-sm);
+    background: #17191a;
+    padding: 0.55rem 0.65rem;
+    color: #fff;
+    opacity: 1;
+  }
+
+  .display-inspection-stage[data-overlay-visible='false'] .display-inspection-stage__overlay {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .display-inspection-stage:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  @media (max-width: 40rem) {
+    .display-inspection-stage {
+      min-height: min(64vh, 32rem);
+    }
+
+    .display-inspection-stage__overlay {
+      top: var(--space-2);
+      right: var(--space-2);
+      max-width: calc(100% - 1rem);
+    }
+  }
+</style>

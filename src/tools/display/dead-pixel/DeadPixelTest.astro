@@ -1,0 +1,226 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import DisplayInspectionStage from '../inspection/DisplayInspectionStage.astro';
+import { deadPixelColors } from './dead-pixel-colors';
+---
+
+<ToolShell labelledBy="dead-pixel-tool-heading">
+  <h2 id="dead-pixel-tool-heading" class="dead-pixel-tool__sr">Dead Pixel Test controls</h2>
+
+  <div class="dead-pixel-tool" data-dead-pixel-test data-active="false" data-fullscreen="false">
+    <div class="dead-pixel-tool__preflight">
+      <div class="dead-pixel-tool__status-row">
+        <span class="dead-pixel-tool__signal" aria-hidden="true"></span>
+        <strong>Visual inspection</strong>
+      </div>
+
+      <p class="dead-pixel-tool__instruction">Inspect the screen against solid colors and look for a pixel that stays dark, bright, or the wrong color.</p>
+
+      <button type="button" class="dead-pixel-action dead-pixel-action--primary" data-dead-pixel-start>
+        Start fullscreen test
+      </button>
+
+      <div class="dead-pixel-tool__sequence" aria-label="Inspection color sequence">
+        {deadPixelColors.map((color) => (
+          <span class="dead-pixel-chip">
+            <span class="dead-pixel-chip__swatch" style={`--chip-color: ${color.value};`} aria-hidden="true"></span>
+            {color.name}
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <DisplayInspectionStage
+      label="Dead pixel solid-color inspection stage"
+      initialColor="#000000"
+      interactive={true}
+    >
+      <div class="dead-pixel-overlay">
+        <div class="dead-pixel-overlay__result">
+          <strong data-dead-pixel-color>Black</strong>
+          <span data-dead-pixel-position>1 / 5</span>
+        </div>
+        <span class="dead-pixel-overlay__hint">Tap/click or Space / → next · ← previous</span>
+        <button type="button" data-inspection-control data-inspection-exit>Exit test</button>
+      </div>
+    </DisplayInspectionStage>
+
+    <p class="dead-pixel-tool__fullscreen-note" data-inspection-fullscreen-note role="status" aria-live="polite"></p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountDeadPixelTest } from './dead-pixel-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-dead-pixel-test]');
+  if (root) {
+    const controller = mountDeadPixelTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) controller.start();
+    });
+  }
+</script>
+
+<style>
+  .dead-pixel-tool {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .dead-pixel-tool__preflight {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .dead-pixel-tool[data-active='true'] .dead-pixel-tool__preflight {
+    display: none;
+  }
+
+  .dead-pixel-tool__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .dead-pixel-tool__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .dead-pixel-tool__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .dead-pixel-tool__instruction,
+  .dead-pixel-tool__fullscreen-note {
+    margin: 0;
+  }
+
+  .dead-pixel-tool__instruction {
+    max-width: 48rem;
+    font-size: 0.95rem;
+  }
+
+  .dead-pixel-action {
+    min-height: 2.65rem;
+    width: fit-content;
+    border: 1px solid var(--color-border);
+    border-radius: 0.35rem;
+    background: #fff;
+    padding: 0.55rem 0.9rem;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .dead-pixel-action--primary {
+    border-color: var(--color-signal);
+    background: color-mix(in srgb, var(--color-signal) 10%, white);
+    font-weight: 650;
+  }
+
+  .dead-pixel-tool__sequence {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .dead-pixel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+  }
+
+  .dead-pixel-chip__swatch {
+    width: 0.72rem;
+    height: 0.72rem;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: var(--chip-color);
+  }
+
+  .dead-pixel-overlay {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .dead-pixel-overlay__result {
+    display: grid;
+    min-width: 4.5rem;
+    line-height: 1.15;
+  }
+
+  .dead-pixel-overlay__result strong {
+    font-size: 0.9rem;
+  }
+
+  .dead-pixel-overlay__result span,
+  .dead-pixel-overlay__hint {
+    color: #c6cbcd;
+  }
+
+  .dead-pixel-overlay button {
+    min-height: 2rem;
+    flex: 0 0 auto;
+    border: 1px solid #62696c;
+    border-radius: 0.3rem;
+    background: #242829;
+    padding: 0.3rem 0.5rem;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .dead-pixel-tool__fullscreen-note {
+    min-height: 1.15rem;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+  }
+
+  .dead-pixel-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 40rem) {
+    .dead-pixel-action {
+      width: 100%;
+    }
+
+    .dead-pixel-overlay {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .dead-pixel-overlay__hint {
+      order: 3;
+      width: 100%;
+    }
+  }
+</style>
