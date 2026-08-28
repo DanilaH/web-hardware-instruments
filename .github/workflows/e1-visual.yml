@@ -32,7 +32,7 @@ jobs:
 
       - name: Install visual-test runtime
         run: |
-          npm install --no-save --package-lock=false @playwright/test@1.55.0
+          npm install --no-save --package-lock=false playwright@1.55.0
           npx playwright install chromium --with-deps
 
       - name: Serve build
@@ -47,7 +47,7 @@ jobs:
           exit 1
 
       - name: Capture visual states
-        run: npx playwright test scripts/e1-visual.spec.mjs --workers=1
+        run: node scripts/e1-visual.mjs
 
       - name: Upload screenshots
         if: always()
