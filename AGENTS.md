@@ -74,7 +74,7 @@ All seven approved full-v1 tools and the full-v1 code-side audit are complete:
 /keyboard-tester
 ```
 
-Post-v1 Hardware Expansion 1 is now approved for sequential implementation under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Post-v1 Hardware Expansion 1 is approved for sequential implementation under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
 Approved Expansion 1 routes:
 
@@ -92,9 +92,36 @@ Approved Expansion 1 routes:
 /frame-skipping-test
 ```
 
-Follow the exact E1.0 → E1.7 implementation order in `20`. Do not scaffold the whole catalog at once. Each route must pass its own review/visual/quality gate before the next pattern is propagated.
+The docs-only approval/review stages are complete:
 
-Expansion 1 is additive. Existing full-v1 behavior stays stable except for reviewed related-tool/internal-link updates. Do not refactor full v1 merely to make new code aesthetically uniform.
+```text
+E1.0   source-of-truth approval
+E1.0.1 independent review corrections
+```
+
+E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
+
+**Next implementation step:**
+
+```text
+E1.1 Mouse foundation + Mouse Tester
+```
+
+Then follow the remaining exact order in `20`:
+
+```text
+E1.1 Mouse foundation + Mouse Tester
+→ E1.2 focused Mouse tools
+→ E1.3 Touch
+→ E1.4 Keyboard expansion
+→ E1.5 display visual-inspection tools
+→ E1.6 Frame Skipping
+→ E1.7 final Expansion 1 audit
+```
+
+Do not scaffold the whole catalog at once. Each route/pattern must pass its own review/visual/quality gate before the next pattern is propagated.
+
+Expansion 1 is additive. Existing full-v1 behavior stays stable except for reviewed related-tool/internal-link updates and genuine correctness fixes. Do not refactor full v1 merely to make new code aesthetically uniform.
 
 ## Deployment boundary
 
@@ -105,7 +132,7 @@ Until the real production domain is purchased immediately before deployment:
 - do not claim production deployment, Search Console setup, sitemap submission, real-device QA, or cross-browser QA that has not actually happened;
 - code-complete and release-ready remain separate labels when real hardware is unavailable.
 
-Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser smoke, indexing, deployment, GSC, and sitemap gate.
+Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser/camera smoke, indexing, deployment, GSC, and sitemap gate.
 
 Expansion work does not authorize unrelated Audio/CPS/dashboard scope.
 
