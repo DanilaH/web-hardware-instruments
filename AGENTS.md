@@ -194,19 +194,22 @@ Use `18` and `20` for the exact formulas/state machines.
 
 ## 7. Styling and visual boundaries
 
-The product uses instrument minimalism:
+The product uses the authored instrument system defined in `17_FUNCTIONAL_VISUAL_SYSTEM.md`:
 
 ```text
-mostly monochrome
-+ one restrained live signal accent
-+ strong measurement numerals
-+ simple technical geometry
-+ data/state-driven motion only
+light instrument chassis
++ dark diagnostic surfaces only where they have functional meaning
++ five restrained hardware-family channel colors
++ domain-specific browser/input geometry
++ strong measurement typography
++ state/signal-driven motion only
 ```
 
-No decorative gradient washes, glass, neon, gaming chrome, nested dashboard cards, or ornamental charts.
+The five channel colors map to Controller, Mouse, Keyboard, Display, and Touch. They reinforce family identity and active signal; they do not replace success/warning/error semantics and must not turn the catalog into a rainbow UI.
 
-A CSS `linear-gradient()` is allowed when it is only the implementation primitive for a functional technical grid/reference ruling. Judge the rendered purpose, not the CSS function name. See `17_FUNCTIONAL_VISUAL_SYSTEM.md`.
+No decorative gradient washes, glass, neon, gaming chrome, nested dashboard cards, ornamental charts, fake instrument readouts, or generic AI/SaaS visual chrome.
+
+A CSS `linear-gradient()` is allowed when it is only the implementation primitive for a functional technical grid/reference ruling. Judge the rendered purpose, not the CSS function name. `17_FUNCTIONAL_VISUAL_SYSTEM.md` owns the exact visual grammar if a supporting document contains older wording.
 
 Responsive layouts should preserve task/result proximity rather than mechanically stacking every desktop tile into a long column.
 
