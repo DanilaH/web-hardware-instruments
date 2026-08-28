@@ -5,20 +5,20 @@ import TouchScreenTest from '../tools/touch/tester/TouchScreenTest.astro';
 
 const relatedTools = [
   {
-    href: '/mouse-tester',
-    name: 'Mouse Tester',
-    description: 'Check which mouse buttons, wheel input, and movement the browser receives.',
+    href: '/dead-pixel-test',
+    name: 'Dead Pixel Test',
+    description: 'Inspect the screen against solid colors for pixels that stay dark, bright, or the wrong color.',
   },
   {
-    href: '/keyboard-tester',
-    name: 'Keyboard Tester',
-    description: 'Press keys and see which physical key codes the browser detects.',
+    href: '/backlight-bleed-test',
+    name: 'Backlight Bleed Test',
+    description: 'Inspect a backlit display for obvious bright leakage on a black screen.',
   },
 ] as const;
 ---
 
 <BaseLayout
-  title="Touch Screen Test — Test Touch & Multi-Touch Online"
+  title="Touch Screen Test — Check Touch, Dead Areas & Multi-Touch"
   description="Test browser-detected finger input, touchscreen coverage, multi-touch, and unexpected touch events directly on your device."
   canonicalPath="/touch-screen-test"
 >
