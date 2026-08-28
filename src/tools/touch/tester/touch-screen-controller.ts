@@ -275,6 +275,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       } else if (previousHandsOff.phase === 'armed' && handsOff.phase === 'interrupted') {
         clearTimers();
         handsOffResult.textContent = 'Check interrupted — an active touch appeared without an observed start. Start again.';
+        render();
       }
     }
 
