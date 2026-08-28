@@ -123,6 +123,7 @@ E1.1   Mouse foundation + Mouse Tester
 E1.2   focused Mouse tools
 E1.3   Touch Screen Test
 E1.4   Keyboard expansion
+E1.5   display visual-inspection tools
 ```
 
 Implemented Expansion 1 routes so far:
@@ -136,6 +137,8 @@ Implemented Expansion 1 routes so far:
 /touch-screen-test
 /keyboard-rollover-test
 /keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
 ```
 
 E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
@@ -148,17 +151,18 @@ E1.3 added `TouchInputService`, the progressive Fullscreen helper, `/touch-scree
 
 E1.4 added `/keyboard-rollover-test` and `/keyboard-ghosting-test` on the existing `KeyboardInputService` and keyboard visual. Rollover reports only browser-observed held/maximum state. Ghosting uses guided expected combinations and retains one best simultaneous expected-key snapshot; neither route turns browser observation into NKRO certification or an automatic hardware-failure verdict.
 
+E1.5 added `/dead-pixel-test` and `/backlight-bleed-test` on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel cycles the fixed five solid colors; Backlight Bleed exposes only a black visual-inspection stage. Neither route performs automatic display diagnosis or emits pass/fail scores.
+
 **Next implementation step:**
 
 ```text
-E1.5 display visual-inspection tools
+E1.6 Frame Skipping
 ```
 
 Then follow the remaining exact order in `20`:
 
 ```text
-E1.5 display visual-inspection tools
-→ E1.6 Frame Skipping
+E1.6 Frame Skipping
 → E1.7 final Expansion 1 audit
 ```
 
