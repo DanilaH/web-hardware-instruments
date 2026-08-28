@@ -1,0 +1,74 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BacklightBleedTest from '../tools/display/backlight-bleed/BacklightBleedTest.astro';
+
+const relatedTools = [
+  {
+    href: '/dead-pixel-test',
+    name: 'Dead Pixel Test',
+    description: 'Inspect the screen against solid colors for pixels that stay dark, bright, or the wrong color.',
+  },
+  {
+    href: '/refresh-rate-test',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Backlight Bleed Test — Inspect a Black Screen Online"
+  description="Inspect a backlit LCD or LED display for obvious bright leakage or unevenness using a full black screen."
+  canonicalPath="/backlight-bleed-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Backlight Bleed Test</h1>
+    <p class="page-intro">Dim the room and visually inspect a black screen for obvious bright leakage or unevenness.</p>
+  </section>
+
+  <BacklightBleedTest />
+
+  <section class="tool-content reading-width" aria-labelledby="backlight-how-to">
+    <h2 id="backlight-how-to">How to inspect backlight bleed</h2>
+    <ol>
+      <li>Use the room lighting and screen brightness that matter for how you normally use the display.</li>
+      <li>Start the black screen and inspect the panel from your normal viewing position.</li>
+      <li>Look for localized bright leakage around edges or corners rather than relying on a camera photo alone.</li>
+    </ol>
+
+    <h2>Backlight bleed, IPS glow, and OLED are different</h2>
+    <p>
+      Backlight bleed applies to backlit LCD/LED panels and can appear as localized light leakage. IPS glow changes with viewing angle and can be more visible near corners without being the same defect. OLED panels generate light per pixel and have no backlight, so a black-screen observation should not be interpreted as a backlight-bleed diagnosis on OLED.
+    </p>
+
+    <h2>Why there is no pass/fail result</h2>
+    <p>
+      The browser does not measure emitted luminance or panel uniformity. Cameras can exaggerate glow through exposure and image processing, while acceptable unevenness also depends on viewing conditions and use. This tool therefore provides only a controlled visual inspection screen and does not output Pass, No bleed, or Bad bleed.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>
