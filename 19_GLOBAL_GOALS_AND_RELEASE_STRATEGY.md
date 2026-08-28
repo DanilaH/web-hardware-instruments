@@ -1,21 +1,27 @@
 # Global Goals and Release Strategy
 
-This document defines why the product exists, what success means, what gets built first, and what must remain out of scope.
+This document defines the durable product strategy, scope rule, business model, and release boundary for Hardware Tests.
 
-`18_DECISIONS_AND_BOUNDARIES.md` remains the source of truth for global/full-v1 exact implementation algorithms and browser behavior.
+Exact implementation ownership remains:
 
-`20_POST_V1_HARDWARE_EXPANSION_SPEC.md` owns exact behavior, algorithms, UX, QA, and implementation order for the approved post-v1 Hardware Expansion 1 routes.
+```text
+18_DECISIONS_AND_BOUNDARIES.md
+  global + full-v1 exact algorithms / lifecycle / browser behavior
+
+20_POST_V1_HARDWARE_EXPANSION_SPEC.md
+  exact Hardware Expansion 1 route behavior / algorithms / route-specific QA
+```
+
+The E1.0 → E1.7 sequence recorded in older documents is completed development history, not the current implementation roadmap.
 
 # 1. Business thesis
 
-Build a portfolio-style, low-maintenance browser utility asset.
-
-The intended model is:
+Build a low-maintenance browser utility asset whose primary acquisition channel is organic search.
 
 ```text
-organic search traffic
+organic search
 → user completes a useful diagnostic
-→ optional natural navigation to a related tool
+→ optional natural navigation to a related diagnostic
 → display-ad monetization later, after traffic exists
 ```
 
@@ -33,43 +39,36 @@ user-generated content
 community features
 ```
 
-# 2. Acquisition
-
-Primary acquisition channel:
-
-```text
-Google organic search
-```
+# 2. Market and acquisition
 
 Initial content/search-market target:
 
 ```text
-English
+English content
 US keyword market
 ```
 
-The actual tools should remain globally usable.
+The tools themselves should remain globally usable.
 
-Do not create geo pages or US-only product behavior merely because the initial keyword research is US-focused.
+Do not create geo pages or US-only product behavior merely because initial search research is US-focused.
 
 # 3. Core product promise
 
-A user arriving directly from search should:
+A user arriving directly on a tool URL should be able to:
 
 1. understand the job within a few seconds;
 2. immediately know what to do;
-3. perform the diagnostic without login/install;
-4. see the result in the same tool region;
-5. understand the limitation of the measurement;
-6. optionally discover one or two relevant next diagnostics.
+3. perform the diagnostic without login or installation;
+4. find the live state/result in the same tool region;
+5. understand what the browser actually observed or estimated;
+6. understand the measurement limitation;
+7. optionally continue to one or two genuinely related diagnostics.
 
-Do not optimize for artificial dwell time.
+Do not optimize for artificial dwell time. Useful task completion is the retention mechanism.
 
-Useful task completion is the retention mechanism.
+# 4. Cost and maintenance boundary
 
-# 4. Cost / maintenance constraint
-
-The site should remain close to a static asset operationally.
+The product should remain close to a static asset operationally.
 
 Expected ongoing infrastructure:
 
@@ -77,12 +76,10 @@ Expected ongoing infrastructure:
 static hosting
 Search Console
 optional lightweight analytics
-future ads
+future display ads
 ```
 
-Avoid any feature that creates recurring operational burden without strong evidence of value.
-
-Examples to avoid:
+Avoid features that create recurring operational burden without strong evidence of value:
 
 ```text
 backend services
@@ -94,70 +91,78 @@ paid runtime APIs
 manual hardware catalogs
 ```
 
-# 5. Product design constraint
+# 5. Product and visual boundary
 
-The product is simple but not visually generic.
+The site is simple but should not look like a generic text utility.
 
 Use functional beauty:
 
 ```text
 measurement visualization
-data-driven motion
+data-driven state/motion
 strong numeric hierarchy
-instrument-like visual language
+instrument-like technical geometry
 ```
 
-Every visual must improve task execution or diagnostic understanding.
+Every visual must improve task execution, state recognition, or diagnostic understanding.
 
-No decorative feature exists merely to make the site feel larger or more premium.
+Do not add decoration merely to make the site feel larger or more premium.
 
-# 6. SEO constraint
+# 6. SEO boundary
 
-Each page maps to one real job/intent.
+Each indexable page maps to one real user job/search intent.
 
 Do not create:
 
-- synonym pages;
+- synonym pages with substantially identical tools;
 - thin generated pages;
 - keyword-stuffed copies;
 - placeholder/coming-soon indexable pages;
-- huge SEO articles that push the tool downward.
+- oversized SEO articles that push the diagnostic down the page.
 
-Tool first. Search content supports the tool.
+Tool first. Supporting search content comes after the primary interaction/result.
 
-# 7. Public deployment boundary
+# 7. Current catalog
 
-The original staged-release intent was to publish the first four tools before finishing the full catalog so Search Console could begin collecting evidence early. Public deployment is now intentionally deferred until a real domain is purchased immediately before deployment.
-
-This changes sequencing, not launch-quality requirements:
-
-- implementation may continue while the reserved placeholder origin and `noindex` protection remain active;
-- do not invent or temporarily publish a fake production origin merely to preserve an earlier release sequence;
-- before the first public indexed deployment, set the real production origin, complete required real-device/browser smoke, enable indexing, deploy, set up Google Search Console, and submit the generated sitemap.
-
-The first public deployment may therefore contain every approved route that has passed its implementation and release-ready gates by that time.
-
-# 8. Full v1
-
-Approved full-v1 catalog:
+Full-v1 and Hardware Expansion 1 are code-side complete and audited.
 
 ```text
+Controller
 /gamepad-tester
 /controller-stick-drift-test
 /controller-deadzone-test
+
+Mouse
+/mouse-tester
+/mouse-button-test
+/mouse-scroll-test
+/double-click-test
+/mouse-polling-rate-test
+/mouse-dpi-test
+
+Keyboard
 /keyboard-tester
+/keyboard-rollover-test
+/keyboard-ghosting-test
+
+Display
 /fps-test
 /refresh-rate-test
-/mouse-dpi-test
+/frame-skipping-test
+/dead-pixel-test
+/backlight-bleed-test
+
+Touch
+/touch-screen-test
 ```
 
-All seven are implemented and the final code-side full-v1 audit is complete.
+The original full-v1 and Expansion 1 implementation order remains useful history, but it no longer constrains justified maintenance across the completed catalog.
 
-Existing full-v1 behavior remains stable during Expansion 1 except reviewed related-tool/internal-link updates or genuine correctness fixes.
+A reviewed correctness, accessibility, IA, SEO, or UX improvement may touch an older route when it preserves that route's measurement semantics and user job.
 
-# 9. Expansion rule
+# 8. Expansion rule
 
-A new tool is normally built only when at least one strong reason exists:
+A new tool outside the current catalog is normally built only when at least one strong reason exists:
 
 ```text
 research validates independent demand/opportunity
@@ -167,69 +172,70 @@ the tool materially strengthens a successful existing cluster
 
 Being technically possible is not enough.
 
-The post-v1 Hardware Expansion 1 catalog has now satisfied this gate through completed search/SERP research plus cluster-fit review. Some routes are independent search opportunities; others are approved because they materially strengthen existing Mouse, Keyboard, Display, or Touch diagnostic coverage at low implementation/maintenance cost.
+Future Audio/CPS/latency/other utility ideas remain out of scope until they satisfy this gate and receive a reviewed contract.
 
-Do not re-litigate the approved Expansion 1 catalog during implementation unless new evidence reveals a real conflict or the user explicitly changes scope.
+Do not use maintenance work as a back door for new product scope.
 
-Future tools outside Expansion 1 still require the normal expansion rule.
+# 9. Measurement-honesty boundary
 
-# 10. Approved Post-v1 Hardware Expansion 1
+Browser diagnostics must describe what they can actually observe.
 
-Exact implementation contract: `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
-
-Approved routes:
+Use language such as:
 
 ```text
-/mouse-tester
-/mouse-button-test
-/mouse-scroll-test
-/double-click-test
-/mouse-polling-rate-test
-/touch-screen-test
-/keyboard-rollover-test
-/keyboard-ghosting-test
-/dead-pixel-test
-/backlight-bleed-test
-/frame-skipping-test
+browser-detected
+observed
+estimated
+heuristic
+visual inspection
+camera-assisted evidence
 ```
 
-Implementation is sequential, not a parallel scaffold:
+Do not silently upgrade browser observations into hardware certification, pass/fail verdicts, warranty claims, or inferred device health.
 
-```text
-E1.0 source-of-truth approval
-→ E1.0.1 independent review corrections
-→ E1.1 Mouse foundation + Mouse Tester
-→ E1.2 focused Mouse tools
-→ E1.3 Touch
-→ E1.4 Keyboard expansion
-→ E1.5 display visual-inspection tools
-→ E1.6 Frame Skipping
-→ E1.7 final Expansion 1 audit
-```
+Exact algorithms and wording boundaries are owned by `18` and `20`.
 
-E1.0.1 closes independent-review ambiguities before product code begins. It does not change the approved route catalog.
+# 10. Code-complete vs release-ready
 
-Do not add placeholder cards/routes for later steps.
-
-Expansion 1 does not authorize unrelated product categories or application-platform scope.
-
-# 11. Code-complete vs release-ready
-
-Expansion 1 preserves the same honesty boundary used during full-v1 work:
+These labels remain deliberately separate:
 
 ```text
 code-complete
-= implementation + source-of-truth compliance + automated tests + visual/headless review
+= implementation + source-of-truth compliance + code review + visual/headless review + automated validation
 
 release-ready
-= code-complete + required real-device/browser/camera checks for that route
+= code-complete + the real-device/browser/camera checks required for the routes being released
 ```
 
-Mock/headless input can validate state and geometry but is never evidence of real hardware behavior.
+Mock/headless input can validate state and geometry. It is never evidence of real hardware behavior.
 
-A route may be code-complete while waiting for external hardware required for release-ready status.
+# 11. Current public-deployment boundary
 
-# 12. Measurement of success
+Public deployment is intentionally deferred until a real production domain is purchased immediately before launch.
+
+Until then:
+
+```text
+origin = https://hardware-testing.invalid
+indexingEnabled = false
+```
+
+Do not invent a temporary production origin and do not enable indexing early.
+
+Before first indexed public release:
+
+1. purchase/set the real production domain;
+2. run the required real-device/browser/camera smoke for the included routes;
+3. verify the real canonical origin and HTTPS behavior;
+4. enable indexing;
+5. deploy;
+6. connect Google Search Console;
+7. submit the generated sitemap;
+8. run final production smoke.
+
+The first public release may contain the entire current catalog if every included route satisfies its release-ready gate.
+
+# 12. Evidence of business success
 
 Evidence progresses roughly as:
 
@@ -243,9 +249,7 @@ crawl/indexing
 → display-ad economics
 ```
 
-Do not treat a technically working site as proof that the business hypothesis worked.
-
-Do not treat early low traffic as failure before the site has had a reasonable indexing/ranking window.
+A technically working site does not prove the business hypothesis. Early low traffic is also not proof of failure before a reasonable indexing/ranking window.
 
 # 13. Monetization boundary
 
@@ -254,25 +258,7 @@ Display ads are a later layer, not an implementation dependency.
 When enabled:
 
 - no ad before the primary tool;
-- no ad inside the tool;
-- no overlay on diagnostic state/result;
-- no layout shift that breaks one-screen tool usage;
-- first preferred ad placement is after the tool/result.
-
-Do not add empty ad boxes before monetization begins.
-
-# 14. Global priorities
-
-When choices conflict, use this order:
-
-```text
-1. User understands the task
-2. User completes it easily
-3. Result is honest and useful
-4. Tool remains lightweight and low-maintenance
-5. Page remains strong for search intent
-6. Functional visual polish
-7. Additional features
-```
-
-Feature richness is last.
+- no ad inside the diagnostic surface;
+- no overlay over live state/result;
+- no layout shift that breaks primary task completion;
+- first preferred placement is after the tool/result.

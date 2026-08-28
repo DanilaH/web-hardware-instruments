@@ -120,11 +120,36 @@ Prefer:
 Avoid:
 
 - giant pill-shaped cards;
-- glossy effects;
-- gradients;
-- glass;
+- glossy or decorative gradient washes;
+- glass effects;
 - 3D hardware renderings;
 - large decorative blobs.
+
+### CSS gradient implementation note
+
+Do **not** interpret the visual rule as a ban on the CSS function name `linear-gradient()`.
+
+A `linear-gradient()` is acceptable when it is merely the lightweight implementation primitive for a functional technical grid/reference line pattern, for example two 1px repeating axes behind a controller or trace. In that case the user perceives a grid, not a gradient effect.
+
+Not acceptable:
+
+```text
+hero gradient washes
+color-fade card backgrounds
+glossy button gradients
+neon/radial atmosphere
+ornamental color transitions
+```
+
+Acceptable when useful:
+
+```text
+1px technical grid lines
+reference rulings
+simple measurement-oriented repeating guides
+```
+
+Judge the rendered purpose, not the CSS function name.
 
 ## Motion
 
@@ -175,7 +200,7 @@ Typical model:
 │                                              │
 │  PRIMARY VISUALIZATION      KEY RESULT       │
 │                             144 FPS          │
-│                             6.9 ms            │
+│                             6.9 ms           │
 │                                              │
 │  compact secondary action/details           │
 └──────────────────────────────────────────────┘
@@ -204,6 +229,8 @@ If a desktop-relevant visualization needs more space, remove secondary content b
 
 At mobile widths, especially Touch Screen Test, optimize the diagnostic surface and time-to-result rather than forcing this desktop budget.
 
+Responsive layout should not mechanically stack every desktop tile into a long single column when a compact 2-column grouping remains readable. Preserve the primary action/result near the task and keep secondary visualization/content below it when appropriate.
+
 ## Visualization primitives
 
 Prefer native SVG / Canvas / DOM/CSS.
@@ -223,7 +250,7 @@ MetricReadout
 StatusBadge
 ```
 
-Expansion 1 may additionally share narrowly scoped primitives such as a generic mouse visual, wheel-event strip, touch surface, fullscreen color stage, or frame-skipping renderer as defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Expansion 1 additionally established narrowly scoped shared primitives such as a generic mouse visual, touch surface, fullscreen color stage, and frame-skipping renderer under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
 These are not a generic dashboard component library. Keep them small and purpose-specific.
 
@@ -332,7 +359,7 @@ Suggested starting deadzone: ~4%
 
 ### Interaction boundary
 
-No deadzone slider or simulator in full v1.
+No deadzone slider or simulator is required in the current product.
 
 The ring visualizes the documented heuristic result; it is not an advanced configuration control.
 
@@ -376,7 +403,7 @@ The visualization supports the physical task itself rather than only decorating 
 
 - run history chart;
 - calibration dashboard;
-- multiple advanced modes.
+- multiple advanced modes without evidence.
 
 ---
 
@@ -424,7 +451,7 @@ Small:
 Median frame time 6.9 ms
 ```
 
-Do not add a categorical stability label in full v1; the trace itself shows recent variance/drops.
+Do not add a categorical stability label without an explicitly approved measurement definition; the trace itself provides recent context.
 
 ### Do not add
 
@@ -432,7 +459,7 @@ Do not add a categorical stability label in full v1; the trace itself shows rece
 - separate variance card;
 - full chart legend;
 - zoom controls;
-- export.
+- export without evidence.
 
 ---
 
@@ -465,11 +492,11 @@ Closest common mode
 
 ### Distinction from FPS
 
-FPS Test emphasizes short-term rendering performance and drops.
+FPS Test emphasizes short-term browser rendering cadence and drops.
 
 Refresh Rate Test emphasizes stable cadence and the inferred display mode.
 
-Do not make the two pages visually identical even if they reuse the same sampler.
+Do not make the two pages visually identical even though they reuse the same sampler.
 
 ---
 
@@ -492,7 +519,7 @@ Last key: Space
 Pressed now: 2
 ```
 
-`code` and `key` may be shown in a small Details area.
+`code` and `key` may be shown as compact secondary information.
 
 ### Do not add
 
@@ -505,7 +532,7 @@ Pressed now: 2
 
 # Expansion 1 visual additions
 
-Exact per-route behavior remains in `20`; this section only defines the shared visual direction.
+Exact per-route behavior remains in `20`; this section defines the shared visual direction learned from the completed implementation.
 
 ## Mouse diagnostics
 
@@ -531,23 +558,35 @@ Out-of-surface pointer-capture samples and visual interpolation must not paint m
 
 ## Dead Pixel / Backlight Bleed
 
-Use a shared fullscreen/large-stage primitive. The diagnostic stage is intentionally visually plain: exact solid color for Dead Pixel, pure black for Backlight. Any overlay is compact and may auto-hide; no decorative chrome belongs on the inspection surface.
+Use the shared fullscreen/large-stage primitive. The diagnostic stage is intentionally visually plain: exact solid color for Dead Pixel, pure black for Backlight. Any overlay is compact and may auto-hide; no decorative chrome belongs on the inspection surface.
 
 ## Frame Skipping
 
-Use Canvas with the documented moving block/slot pattern. The primary textual state distinguishes waiting/unstable from `READY — take the photo now.` The pattern is camera evidence support, not an automatic monitor-health graph.
+Use Canvas with the documented sequential pattern. The primary textual state distinguishes waiting/unstable from `READY — take the photo now.` The pattern supports camera evidence; it is not an automatic monitor-health graph.
 
 ---
 
 # Homepage visual direction
 
-The homepage should remain much calmer than tool pages.
+The homepage should remain calmer than tool pages but must scale with the catalog.
 
-Use compact category/tool cards with:
+The current 18-tool catalog should be grouped by device/job cluster rather than presented as one undifferentiated vertical feed:
+
+```text
+Controller
+Mouse
+Keyboard
+Display
+Touch
+```
+
+Use compact category/tool rows or cards with:
 
 - simple line icon or tiny functional glyph;
 - tool name;
 - one-line job description.
+
+Desktop should use the available shell width efficiently without becoming a dashboard. Mobile should preserve clear category landmarks so users do not have to scan 18 consecutive undifferentiated cards.
 
 Do not autoplay mini diagnostic animations across the homepage.
 
@@ -555,7 +594,7 @@ The rich visuals belong inside the tools themselves.
 
 ## Retention through useful continuation
 
-After a result, show one small related-tool section containing only implemented routes.
+After a task/result, show one small related-tool section containing only implemented, genuinely adjacent routes.
 
 This is a better retention mechanism than adding decorative content before the result.
 
@@ -574,6 +613,8 @@ Typical hierarchy:
 6. below-fold explanation
 ```
 
+Route state may change the ordering. In particular, when a result is generated after an action, responsive layouts should keep that result near the action instead of forcing the user past a large secondary visualization to find it.
+
 Do not let H1, navigation, or SEO copy visually overpower the tool.
 
 # Accessibility
@@ -586,7 +627,8 @@ Functional beauty must remain accessible.
 - motion must remain legible with reduced-motion preference;
 - reduced motion should remove decorative interpolation, not real diagnostic state;
 - Touch coverage/live contacts need textual metrics/status;
-- fullscreen visual-inspection tools need clear pre-entry instructions and an obvious exit/fallback path.
+- fullscreen visual-inspection tools need clear pre-entry instructions and an obvious exit/fallback path;
+- responsive visual reordering must preserve a logical DOM/focus experience.
 
 # Performance
 

@@ -2,9 +2,11 @@
 
 This file exists to stop deferred ideas from leaking into approved scope.
 
-## Promoted from backlog
+It is not a roadmap. Nothing listed here is permission to implement it without the evidence/review gate in `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
 
-The following hardware utilities are no longer unvalidated backlog items. They are approved as **Post-v1 Hardware Expansion 1** and are governed by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`:
+## Completed promotion: Hardware Expansion 1
+
+The following routes were promoted from backlog through research/cluster-fit review, implemented, and code-side audited:
 
 ```text
 /mouse-tester
@@ -20,11 +22,13 @@ The following hardware utilities are no longer unvalidated backlog items. They a
 /frame-skipping-test
 ```
 
-Their presence here historically does not mean they should be re-scoped or revalidated during implementation. Follow the approved sequential Expansion 1 roadmap.
+Their exact implemented behavior remains governed by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+They are listed here only to preserve scope history. The old sequential E1 roadmap is complete and is not a current instruction.
 
 ## Audio candidates
 
-Audio is not part of Hardware Expansion 1.
+Audio is not part of the current hardware catalog.
 
 Potential later cluster:
 
@@ -35,7 +39,7 @@ Potential later cluster:
 /microphone-test
 ```
 
-Treat Audio as a separate expansion direction. Do not silently mix it into Hardware Expansion 1.
+Treat Audio as a separate expansion direction. Do not silently add it as a continuation of Expansion 1.
 
 ## Possible richer diagnostics
 
@@ -49,7 +53,7 @@ Potential but not approved:
 - calibration profiles;
 - benchmark scoring;
 - screenshots/export images;
-- deadzone preview slider;
+- deadzone preview/configuration simulator;
 - detailed FPS stability classification;
 - long frame-history exploration;
 - mouse/keyboard hardware latency claims;
@@ -58,32 +62,36 @@ Potential but not approved:
 - OLED burn-in scoring;
 - pixel-fixer/flashing repair modes.
 
+These ideas must still justify user value, search evidence, measurement honesty, maintenance cost, and architecture complexity.
+
 ## Internationalization
 
 Not currently approved.
 
 Only add locales after:
 
-- English site is stable;
+- English site is stable in production;
 - page architecture is proven;
 - localization has actual search justification.
 
-Avoid machine-generating dozens of locale pages without review.
+Avoid machine-generating large locale sets without review.
 
 ## Monetization
 
-Do not add ads until:
+Do not add ads merely because the catalog is code-complete.
 
-- site has meaningful traffic;
+Monetization work should start when:
+
+- the site has meaningful traffic/evidence;
 - page layout is stable;
-- ad provider is selected;
-- ads do not interfere with the tool.
+- an ad provider/integration is selected;
+- placements do not interfere with task completion.
 
-Implement provider-agnostic ad slots only when monetization work actually begins.
+Do not render provider-agnostic empty ad slots before a real monetization integration exists.
 
 ## Accounts
 
-No current reason for accounts.
+No current product reason for accounts.
 
 Do not add login merely to save test history.
 
@@ -91,7 +99,7 @@ Do not add login merely to save test history.
 
 No current product need.
 
-A backend should require a concrete future use case, not architectural preference.
+A backend requires a concrete future job that cannot be solved cleanly by the static/local model. Architectural preference is not enough.
 
 ## Visual/system backlog
 
@@ -102,18 +110,29 @@ Not currently approved:
 - advanced graph controls;
 - chart-library migration.
 
+Small cross-catalog UX/IA/accessibility polish is **not** blocked by this section when it preserves route jobs and measurement contracts.
+
 ## Analytics provider
 
-Provider selection is intentionally deferred. Search Console is enough to launch.
+Provider selection is intentionally deferred. Search Console is sufficient for the first public evidence loop.
 
 ## Search expansion discipline
 
-Expansion 1 has already passed the research/cluster-fit promotion gate.
-
-For **future scope outside Expansion 1**, a backlog item is not permission to implement it. Promote a future tool only when:
+For any future scope, a backlog item is not permission to implement it. Promote a future tool only when at least one strong condition exists:
 
 - external research validates the opportunity; or
 - Search Console repeatedly surfaces the adjacent job; or
 - it materially strengthens an already-successful tool/cluster.
+
+Then still check:
+
+```text
+user value
+measurement honesty
+SEO intent separation
+maintenance cost
+architecture complexity
+functional UX
+```
 
 Do not build tools merely to make the catalog look complete.
