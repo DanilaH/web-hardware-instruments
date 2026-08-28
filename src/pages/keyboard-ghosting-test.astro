@@ -1,0 +1,75 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import KeyboardGhostingTest from '../tools/keyboard/ghosting/KeyboardGhostingTest.astro';
+
+const relatedTools = [
+  {
+    href: '/keyboard-rollover-test',
+    name: 'Keyboard Rollover Test',
+    description: 'Hold several keys and see the largest simultaneous set the browser detects.',
+  },
+  {
+    href: '/keyboard-tester',
+    name: 'Keyboard Tester',
+    description: 'Press keys and see which physical key codes the browser detects.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Keyboard Ghosting Test — Check Key Combinations Online"
+  description="Run guided keyboard combinations and compare the exact expected keys with the best simultaneous key set your browser receives."
+  canonicalPath="/keyboard-ghosting-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Keyboard Ghosting Test</h1>
+    <p class="page-intro">Check one known key combination against what this browser actually receives together.</p>
+  </section>
+
+  <KeyboardGhostingTest />
+
+  <section class="tool-content reading-width" aria-labelledby="ghosting-how-to">
+    <h2 id="ghosting-how-to">How to run the guided test</h2>
+    <ol>
+      <li>Choose one of the non-reserved key combinations.</li>
+      <li>Select Start test and get ready during the short preparation period.</li>
+      <li>Hold every highlighted key throughout the 3-second observation.</li>
+      <li>Compare the best simultaneous browser-detected snapshot with the expected combination.</li>
+    </ol>
+
+    <h2>What a missing key means</h2>
+    <p>
+      A missing code means that key was not part of the best simultaneous browser-observed snapshot for this guided combination. The page cannot prove why: keyboard matrix behavior, firmware, remapping, operating-system shortcuts, browser handling, or the user not fully holding the instructed set can all affect the result.
+    </p>
+
+    <h2>Why this is not an automatic ghosting verdict</h2>
+    <p>
+      A browser can only report key events that reach the page. This test knows the intended set because it gives you the exact combination to hold, but it still does not directly inspect keyboard hardware and therefore does not label the keyboard as failed or ghosting-confirmed.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>
