@@ -96,9 +96,9 @@ All seven approved full-v1 tools and the full-v1 code-side audit are complete:
 /keyboard-tester
 ```
 
-Post-v1 Hardware Expansion 1 is approved for sequential implementation under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Post-v1 Hardware Expansion 1 was implemented sequentially under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` and its code-side final audit is complete.
 
-Approved Expansion 1 routes:
+Implemented Expansion 1 routes:
 
 ```text
 /mouse-tester
@@ -125,22 +125,7 @@ E1.3   Touch Screen Test
 E1.4   Keyboard expansion
 E1.5   display visual-inspection tools
 E1.6   Frame Skipping
-```
-
-Implemented Expansion 1 routes so far:
-
-```text
-/mouse-tester
-/mouse-button-test
-/mouse-scroll-test
-/double-click-test
-/mouse-polling-rate-test
-/touch-screen-test
-/keyboard-rollover-test
-/keyboard-ghosting-test
-/dead-pixel-test
-/backlight-bleed-test
-/frame-skipping-test
+E1.7   final Expansion 1 audit
 ```
 
 E1.0.1 closed the post-approval ambiguities around polling source mixing, Touch observed/coalesced coverage, out-of-surface measurement, confirmation-pass semantics, hands-off visibility/focus invalidation, Frame Skipping capture epochs, and stale normative docs.
@@ -157,15 +142,11 @@ E1.5 added `/dead-pixel-test` and `/backlight-bleed-test` on one shared display 
 
 E1.6 added `/frame-skipping-test` on the existing `FrameSampler`. The readiness monitor gates a sequential READY capture epoch: each accepted READY sample advances exactly one slot, an unstable current delta invalidates the epoch before another pattern step, and a fresh stable epoch starts again from ordinal zero. Browser timestamps never manufacture visual gaps; external camera photos remain the diagnostic evidence and the route has no automatic pass/fail result.
 
-**Next implementation step:**
+E1.7 completed the final cross-cutting code-side audit. It aligned Expansion route titles/internal links with `20`, restored Touch-inclusive privacy wording, closed Touch fullscreen teardown, removed remaining Expansion gradient styling, and restored readable focused-Mouse source formatting without changing approved measurement algorithms.
 
-```text
-E1.7 final Expansion 1 audit
-```
+There is no further approved Expansion 1 implementation step. Do not invent E1.8 or continue product scope by inertia. New product scope outside Expansion 1 requires fresh research/evidence and reviewed source-of-truth approval.
 
-Do not scaffold the whole catalog at once. Each route/pattern must pass its own review/visual/quality gate before the next pattern is propagated.
-
-Expansion 1 is additive. Existing full-v1 behavior stays stable except for reviewed related-tool/internal-link updates and genuine correctness fixes. Do not refactor full v1 merely to make new code aesthetically uniform.
+The next project phase is release preparation when the required external inputs are available: real production domain plus route-specific real-device/browser/camera validation.
 
 ## Deployment boundary
 
