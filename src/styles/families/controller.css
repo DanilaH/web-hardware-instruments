@@ -1,4 +1,8 @@
 /* Controller family identity layer. Measurement/state logic remains in each tool. */
+.page-main:has(:is([data-gamepad-tester], [data-stick-drift-test], [data-controller-deadzone-test])) {
+  --color-signal: var(--color-channel-controller);
+}
+
 .page-main :is([data-gamepad-tester], [data-stick-drift-test], [data-controller-deadzone-test]) {
   --color-signal: var(--color-channel-controller);
 }
