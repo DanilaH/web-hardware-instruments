@@ -1,0 +1,74 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import KeyboardRolloverTest from '../tools/keyboard/rollover/KeyboardRolloverTest.astro';
+
+const relatedTools = [
+  {
+    href: '/keyboard-tester',
+    name: 'Keyboard Tester',
+    description: 'Press keys and see which physical key codes the browser detects.',
+  },
+  {
+    href: '/keyboard-ghosting-test',
+    name: 'Keyboard Ghosting Test',
+    description: 'Check guided key combinations against the exact keys the browser receives together.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Keyboard Rollover Test — Check Simultaneous Keys Online"
+  description="Hold multiple keys and see the largest simultaneous key set your browser detects, with live keyboard highlighting."
+  canonicalPath="/keyboard-rollover-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Keyboard Rollover Test</h1>
+    <p class="page-intro">See how many simultaneous key inputs this browser detects while you hold keys.</p>
+  </section>
+
+  <KeyboardRolloverTest />
+
+  <section class="tool-content reading-width" aria-labelledby="rollover-how-to">
+    <h2 id="rollover-how-to">How to test keyboard rollover</h2>
+    <ol>
+      <li>Hold several non-reserved keys at the same time.</li>
+      <li>Compare the physical keys you are holding with the highlighted browser-detected keys.</li>
+      <li>Watch Maximum detected together as you try different combinations.</li>
+    </ol>
+
+    <h2>What the result means</h2>
+    <p>
+      Maximum detected together is the largest simultaneous set of browser key events observed during this session. It is not an NKRO or hardware certification because operating-system and browser shortcuts can intercept some combinations before the page receives them.
+    </p>
+
+    <h2>Why some combinations may differ</h2>
+    <p>
+      Keyboard matrix design, firmware, operating-system shortcuts, browser behavior, and remapping can all affect which codes reach a web page. Use the guided Keyboard Ghosting Test when you want to compare one known expected combination against what the browser receives together.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>
