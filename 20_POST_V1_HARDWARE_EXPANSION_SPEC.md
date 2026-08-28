@@ -45,15 +45,15 @@ The catalog is approved, but implementation remains sequential. A route is not p
 
 ## E1.0.1 review corrections
 
-Independent review after E1.0 found several ambiguities that could create false measurement semantics. This revision makes the following rules exact:
+Independent review after E1.0 found ambiguities that could create false measurement semantics. This revision makes the following rules exact:
 
-- one polling measurement session uses one timestamp source; fallback restarts the session instead of mixing streams;
+- one Mouse Polling measurement attempt uses one selected timestamp source from start to finish; streams are never mixed and no hidden runtime fallback timeout exists;
 - Touch coverage may consume real coalesced Pointer Event samples, but never synthetic interpolation;
 - touch samples outside the active surface do not get clamped into edge coverage cells;
 - confirmation is offered for any uncovered cell, without an invented `meaningful area` threshold;
 - first-pass and confirmation-pass coverage are stored separately;
 - hands-off Touch observation is cancelled on blur/hidden visibility;
-- Frame Skipping freezes its timing reference for a READY capture epoch and discards that epoch when readiness is lost.
+- Frame Skipping uses a readiness-gated sequential capture epoch: while browser timing remains READY, each valid rAF advances exactly one slot; timing instability invalidates the epoch instead of manufacturing or hiding a camera pattern gap.
 
 These corrections do not change the approved route catalog.
 
@@ -373,13 +373,13 @@ Polling source precedence:
 
 **One measurement attempt uses exactly one timestamp source.** Do not append timestamps from concurrent raw, coalesced, and ordinary streams into one result.
 
-Source selection/fallback rules:
+Source selection rules:
 
 1. choose the highest supported source before the 2-second measurement clock begins;
-2. if feature detection or listener registration for that source fails, fall back to the next source before collecting measurement timestamps;
-3. if a selected source produces no usable timestamp samples while ordinary pointer movement is observed during an initial liveness check, cancel that collection, clear all collected timestamps, select the next source, and restart the full 2-second measurement clock;
-4. a liveness listener may detect that movement exists, but its timestamps must never be mixed into the measured source;
-5. once usable measurement samples are accepted from a source, keep that source for the attempt; insufficient data then returns `Not enough movement — try again.` rather than silently mixing a fallback stream.
+2. if feature detection or listener registration for that source fails synchronously/explicitly, fall back to the next source **before** collecting measurement timestamps;
+3. once a source is selected and the attempt begins, keep it for the entire attempt;
+4. do not introduce a hidden liveness timeout or switch sources after the measurement clock has started;
+5. if the selected source yields fewer than the required valid intervals, return `Not enough movement — try again.` with the selected Source label rather than silently switching/mixing streams.
 
 Timestamp extraction for the selected source is deterministic:
 
@@ -460,7 +460,8 @@ Do **not** clamp out-of-surface samples into `0..1` for measurement. Under point
 
 Rules:
 
-- `insideSurface === true` only when the finite client coordinate is actually within the current active surface bounds;
+- `insideSurface === true` only when finite client coordinates are within the current active surface bounds, including the physical boundary itself;
+- normalized inside-surface coordinates are in `0..1`;
 - only inside-surface samples may mark Touch coverage cells;
 - renderer code may clamp a visual marker to the surface edge if useful, but that visual clamp must not alter measurement state;
 - active-contact lifecycle still follows the pointer ID even while a captured pointer is temporarily outside the surface.
@@ -739,7 +740,7 @@ Source
 Coalesced pointer samples
 ```
 
-One Start action. The accepted measurement source receives a full `2 seconds` after source selection/fallback is complete.
+One Start action. The selected measurement source is registered before the `2 seconds` begin.
 
 Visible source note:
 
@@ -778,7 +779,7 @@ Performance:
 - no DOM write per sample;
 - bounded 2-second data only;
 - render at low cadence;
-- detach high-frequency/liveness listeners immediately after completion/cancel;
+- detach high-frequency listeners immediately after completion/cancel;
 - never combine sample sources to make a result look more complete.
 
 A known 1000Hz mouse reading lower on a fallback source is not automatically a bug if the source/caveat is correct.
@@ -835,6 +836,15 @@ Accepted measurement samples include:
 - finite touch samples returned by `getCoalescedEvents()` for a delivered `pointermove`.
 
 Do not synthesize covered cells between samples. Do not clamp an out-of-surface captured pointer into an edge cell. Either behavior could hide a repeatable area where the browser did not actually report in-surface touch input.
+
+For an inside-surface normalized sample:
+
+```text
+cellX = min(15, floor(x * 16))
+cellY = min(9, floor(y * 10))
+```
+
+This makes exact normalized boundary values `x = 1` / `y = 1` map to the final column/row rather than an out-of-range cell. Reject non-finite/out-of-surface measurement samples before this mapping.
 
 A short visual trail may interpolate between observed samples or clamp a marker for rendering continuity only. Interpolated/clamped visual pixels must not affect coverage percentage, confirmation state, or any diagnostic label.
 
@@ -1220,9 +1230,9 @@ Primary instructions visible without reading the article:
 5. Look for gaps in the captured sequence.
 ```
 
-Visual: Canvas, black background, `48` horizontal slots, one bright square per expected frame ordinal. Reuse `FrameSampler`; no independent rAF loop.
+Visual: Canvas, black background, `48` horizontal slots, one bright square per browser-delivered READY frame. Reuse `FrameSampler`; no independent rAF loop.
 
-Do not simply `slot++` per callback because a browser timing step that is materially late must invalidate/restart the capture epoch rather than silently redefining the expected sequence.
+The page must **not** create visible pattern gaps from its own timestamp arithmetic. Browser timing is used to decide whether the camera pattern is trustworthy; physical display skipping is what the camera is intended to reveal.
 
 ## Readiness monitor
 
@@ -1242,25 +1252,33 @@ Browser timing unstable — close heavy tabs/apps and wait.
 
 When the rule first becomes satisfied, enter a new READY capture epoch.
 
-## Frozen READY capture epoch
+## READY capture epoch
 
-At the transition into READY, freeze together:
+At the transition into READY:
 
 ```text
-referenceInterval = median(most recent 30 positive deltas)
-referenceStart = current rAF timestamp
+frameOrdinal = 0
+previousTimestamp = current rAF timestamp
 ```
 
-The `referenceInterval` for that capture epoch **must not be recomputed in the denominator of elapsed-time ordinals** while the epoch remains READY. A changing median applied to a fixed `referenceStart` can manufacture ordinal jumps/repeats even when delivery is stable.
-
-Within that READY epoch:
+While READY remains valid, each subsequent valid `FrameSampler` sample advances exactly one browser pattern step:
 
 ```text
-frameOrdinal = round((timestamp - referenceStart) / referenceInterval)
+frameOrdinal += 1
 slot = frameOrdinal % 48
+previousTimestamp = timestamp
 ```
 
-The live rolling delta window continues separately only to monitor whether READY remains valid.
+The current `delta = timestamp - previousTimestamp` is still fed into the rolling readiness monitor before that sample is accepted as part of a trustworthy READY pattern.
+
+Rules:
+
+- if adding the current delta makes the readiness rule false, invalidate the capture epoch **before** treating that sample as another trustworthy READY step;
+- do not derive `frameOrdinal` from `(timestamp - referenceStart) / referenceInterval`;
+- do not insert an extra slot jump to represent a browser timing gap;
+- do not keep a pattern READY through a browser timing instability merely to preserve animation continuity.
+
+This deliberately makes browser stability a validity gate rather than a second frame-skipping signal. During a valid READY epoch, the browser supplies a consecutive visual sequence; a physical display that fails to present one of those states can then appear as a gap in a camera exposure.
 
 READY copy:
 
@@ -1273,16 +1291,16 @@ READY — take the photo now.
 If the live readiness rule becomes false at any point:
 
 - remove READY immediately;
-- clear the current `referenceInterval` and `referenceStart` capture epoch;
+- discard the current `frameOrdinal` / `previousTimestamp` capture epoch;
 - show the unstable/waiting state;
-- do not continue rendering ordinals using the stale epoch;
-- when timing becomes stable again, create a **fresh** frozen epoch from that new READY transition.
+- do not interpret a photo taken while not READY as valid evidence;
+- when timing becomes stable again, start a **fresh** epoch from ordinal 0.
 
-On `FrameSampler reset` (including visibility invalidation): clear readiness, rolling readiness state as required, and the frozen capture epoch; perform a fresh warmup.
+On `FrameSampler reset` (including visibility invalidation): clear readiness, rolling readiness state as required, and the capture epoch; perform a fresh warmup.
 
-This readiness/ordinal rule remains provisional until required real-browser/camera QA. If it is materially misleading or unusable in that QA, change it only through reviewed source-of-truth update + regression tests. Never silently tune semantics.
+This readiness rule remains provisional until required real-browser/camera QA. If it is materially misleading or unusable in that QA, change it only through reviewed source-of-truth update + regression tests. Never silently tune semantics.
 
-Interpretation includes tiny continuous/gap examples and states that repeatable gaps in multiple valid photos may indicate skipping, while browser timing/camera exposure can also produce bad captures.
+Interpretation includes tiny continuous/gap examples and states that repeatable gaps in multiple valid READY photos may indicate display skipping, while camera exposure or photographing outside READY can also produce bad captures.
 
 No automatic pass/fail.
 
@@ -1525,8 +1543,8 @@ Mouse polling:
 
 - no per-sample DOM writes;
 - bounded short-session data;
-- high-frequency/liveness listeners removed immediately after test;
-- source fallback clears the previous attempt rather than retaining mixed data.
+- high-frequency listeners removed immediately after test;
+- one selected source per attempt; no duplicate high-frequency source listeners feeding the same result.
 
 Touch:
 
@@ -1542,7 +1560,7 @@ Frame Skipping:
 - one existing FrameSampler loop;
 - Canvas renderer only;
 - no DOM nodes created per frame;
-- frozen capture epoch state is small and reset on readiness loss.
+- capture epoch state is small and reset on readiness loss.
 
 Keyboard:
 
@@ -1566,8 +1584,8 @@ blur/visibility clear signal
 basic profile does not attach polling listeners
 polling source precedence
 one-source-per-attempt invariant
-registration fallback clears/no samples
-liveness-triggered fallback clears timestamps and restarts duration
+registration/feature-detection fallback happens before measurement starts
+selected source is not replaced mid-attempt
 coalesced timestamp extraction
 duplicate removal
 start/stop reuse
@@ -1621,7 +1639,7 @@ lifecycle
 
 ```text
 grid cell mapping
-edge coordinates
+x=1/y=1 maps to final cell
 inside-surface requirement
 out-of-surface sample does not mark edge cell
 observed/coalesced-sample-only coverage
@@ -1630,7 +1648,7 @@ pass1 bitset
 confirmation offered for any uncovered pass1 cell
 pass2 stored separately
 union coverage calculation
-not-detected-in-both-passes intersection/complement semantics
+not-detected-in-both-passes complement semantics
 reset
 ```
 
@@ -1688,12 +1706,13 @@ warmup
 minimum readiness data
 live median interval
 1.5× instability boundary
-READY transition freezes reference interval/start
-frozen denominator remains unchanged during epoch
-elapsed-time frame ordinal
+READY transition starts ordinal 0 epoch
+stable READY sample advances exactly one ordinal
+current unstable delta invalidates before valid pattern advance
+no elapsed-time denominator / no synthetic slot jump
 readiness loss clears epoch
 fresh READY creates fresh epoch
-FrameSampler reset clears readiness/reference
+FrameSampler reset clears readiness/epoch
 ```
 
 ---
@@ -1702,13 +1721,13 @@ FrameSampler reset clears readiness/reference
 
 Automation does not replace hardware checks.
 
-Mouse: basic 3-button mouse, side-button mouse, wheel, known ~1000Hz gaming mouse if available; Chrome/Edge/Firefox and Safari graceful degradation where available. Verify right/middle/side buttons, wheel, rapid-repeat flow, polling source/caveat, no accidental navigation. For polling, verify the visible Source matches the selected single acquisition path and no fallback attempt mixes timestamps.
+Mouse: basic 3-button mouse, side-button mouse, wheel, known ~1000Hz gaming mouse if available; Chrome/Edge/Firefox and Safari graceful degradation where available. Verify right/middle/side buttons, wheel, rapid-repeat flow, polling source/caveat, no accidental navigation. For polling, verify the visible Source matches the single selected acquisition path and the attempt never mixes sources.
 
-Touch: Android Chrome, iPhone/iPad Safari if available, touch laptop/tablet if available. Verify single/multi-touch, edges/corners, coalesced observed-sample coverage where supported, out-of-surface captured movement does not paint edge cells, confirmation pass semantics, pointercancel, scroll/zoom boundaries, fullscreen fallback, hands-off guard/timer, blur/hidden cancellation, mouse ignored.
+Touch: Android Chrome, iPhone/iPad Safari if available, touch laptop/tablet if available. Verify single/multi-touch, edges/corners, coalesced observed-sample coverage where supported, exact edge mapping, out-of-surface captured movement does not paint edge cells, confirmation pass semantics, pointercancel, scroll/zoom boundaries, fullscreen fallback, hands-off guard/timer, blur/hidden cancellation, mouse ignored.
 
 Keyboard: ordinary keyboard + gaming/NKRO keyboard where available. Verify real gaming combinations and reserved-key limitations.
 
-Display: desktop monitor + mobile display for Dead Pixel/Backlight; fullscreen/fallback. Frame Skipping requires real camera, ~1/10s or longer exposure, multiple visible blocks, screenshots rejected, repeatability review. Verify READY epoch resets cleanly when browser timing becomes unstable or visibility changes.
+Display: desktop monitor + mobile display for Dead Pixel/Backlight; fullscreen/fallback. Frame Skipping requires real camera, ~1/10s or longer exposure, multiple visible blocks, screenshots rejected, repeatability review. Verify READY resets cleanly when browser timing becomes unstable or visibility changes, and only photos taken while READY are interpreted.
 
 ---
 
@@ -1899,7 +1918,7 @@ Expansion 1 is code-complete only when:
 12. untouched touch cells are not automatically called dead;
 13. hands-off touch reports only a complete continuously visible/focused 15-second observation and cancels interrupted runs;
 14. Dead Pixel and Backlight remain visual-inspection tools;
-15. Frame Skipping explicitly requires camera evidence and uses a frozen READY capture epoch;
+15. Frame Skipping explicitly requires camera evidence and uses a readiness-gated sequential capture epoch rather than timestamp arithmetic that can create pattern gaps;
 16. screenshots are explicitly invalid for Frame Skipping;
 17. `1366×768` desktop visual/headless gate passes where appropriate;
 18. ~390px layout integrity passes;
