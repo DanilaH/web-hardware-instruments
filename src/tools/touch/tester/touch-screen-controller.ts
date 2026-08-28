@@ -4,6 +4,7 @@ import {
   type TouchInputEvent,
   type TouchPointInputEvent,
 } from '../../../browser/touch-input-service';
+import { renderTouchOverlay } from '../../../visuals/touch/touch-overlay-renderer';
 import {
   armHandsOffCheck,
   beginHandsOffCheck,
@@ -19,6 +20,7 @@ import {
   coveragePercentage,
   createTouchTestState,
   observeTouchSample,
+  repeatableMissedCellCount,
   startTouchConfirmation,
   touchGridCellCount,
   type TouchTestState,
@@ -35,8 +37,6 @@ interface VisualContact {
   y: number;
   trail: { x: number; y: number }[];
 }
-
-const svgNamespace = 'http://www.w3.org/2000/svg';
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
@@ -96,37 +96,10 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     if (visualFrame !== null) return;
     visualFrame = window.requestAnimationFrame(() => {
       visualFrame = null;
-      overlay.replaceChildren();
-
-      visualContacts.forEach((contact) => {
-        if (contact.trail.length > 1) {
-          const path = document.createElementNS(svgNamespace, 'polyline');
-          path.setAttribute(
-            'points',
-            contact.trail.map((point) => `${point.x * 1000},${point.y * 625}`).join(' '),
-          );
-          path.setAttribute('class', 'touch-overlay__trail');
-          overlay.append(path);
-        }
-
-        const marker = document.createElementNS(svgNamespace, 'circle');
-        marker.setAttribute('cx', String(contact.x * 1000));
-        marker.setAttribute('cy', String(contact.y * 625));
-        marker.setAttribute('r', '18');
-        marker.setAttribute('class', 'touch-overlay__marker');
-        overlay.append(marker);
+      renderTouchOverlay(overlay, {
+        contacts: [...visualContacts.values()],
+        unexpectedStarts: handsOff.phase === 'complete' ? handsOff.markers : [],
       });
-
-      if (handsOff.phase === 'complete') {
-        handsOff.markers.forEach((point) => {
-          const marker = document.createElementNS(svgNamespace, 'circle');
-          marker.setAttribute('cx', String(point.x * 1000));
-          marker.setAttribute('cy', String(point.y * 625));
-          marker.setAttribute('r', '10');
-          marker.setAttribute('class', 'touch-overlay__unexpected');
-          overlay.append(marker);
-        });
-      }
     });
   };
 
@@ -171,10 +144,11 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     confirmationButton.disabled = !touchUsable || handsOffRunning;
     confirmationSummary.hidden = state.mode !== 'confirmation';
     if (state.mode === 'confirmation') {
-      confirmationSummary.textContent = 'Sweep the emphasized cells again. Coverage combines observed samples from both passes while the first pass remains stored separately.';
+      confirmationSummary.textContent = `Still not observed in either pass: ${repeatableMissedCellCount(state)} cells. Keep sweeping the emphasized cells; repeatable missed areas may indicate a touch problem, but this browser test cannot identify the failed hardware component.`;
     }
 
     resetButton.disabled = !touchUsable;
+    fullscreenButton.disabled = !touchUsable || handsOffRunning;
     handsOffButton.disabled = !touchUsable || handsOffRunning;
     renderCoverage();
     scheduleOverlayRender();
@@ -338,7 +312,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   };
 
   const handleFullscreen = async (): Promise<void> => {
-    if (!fullscreen.isSupported()) return;
+    if (!fullscreen.isSupported() || !isTouchUsable() || isRunningHandsOff(handsOff)) return;
     const success = fullscreen.getActiveElement() === root
       ? await fullscreen.exit()
       : await fullscreen.request(root);
