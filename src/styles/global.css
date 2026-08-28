@@ -151,19 +151,19 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
-/* Homepage identity spike: channel color must read in the static state. */
-.page-main--homepage [data-channel='controller'] { --channel: #4c70b7; }
-.page-main--homepage [data-channel='mouse'] { --channel: #b45d4d; }
-.page-main--homepage [data-channel='keyboard'] { --channel: #7f8a3f; }
-.page-main--homepage [data-channel='display'] { --channel: #7a6499; }
-.page-main--homepage [data-channel='touch'] { --channel: #3f8a7f; }
+/* Homepage identity only. Extract these channel values into shared tokens when the approved visual system is propagated beyond the homepage. */
+.page-main--homepage [data-channel='controller'] { --channel: #4d6fac; }
+.page-main--homepage [data-channel='mouse'] { --channel: #ad5d4c; }
+.page-main--homepage [data-channel='keyboard'] { --channel: #768148; }
+.page-main--homepage [data-channel='display'] { --channel: #745f8d; }
+.page-main--homepage [data-channel='touch'] { --channel: #3f8178; }
 
 .page-main--homepage .category-rail a::after {
   right: 0;
   left: 0;
   height: 4px;
   scale: 1 1;
-  opacity: 0.82;
+  opacity: 0.92;
 }
 
 .page-main--homepage .category-rail a:hover::after,
@@ -179,7 +179,8 @@ a:hover {
 
 .page-main--homepage .tool-group__signal {
   width: 0.28rem;
-  height: 2rem;
+  height: 2.2rem;
+  border-radius: 1px;
 }
 
 .page-main--homepage .tool-group__icon {
@@ -187,7 +188,7 @@ a:hover {
 }
 
 .page-main--homepage .instrument-screen__inputs svg {
-  color: color-mix(in srgb, var(--channel) 92%, white);
+  color: var(--channel);
 }
 
 .page-main--homepage .instrument-screen__inputs span::after {
