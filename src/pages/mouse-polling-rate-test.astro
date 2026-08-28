@@ -1,4 +1,62 @@
 ---
-import RelatedTools from '../components/navigation/RelatedTools.astro';import BaseLayout from '../layouts/BaseLayout.astro';import MousePollingRateTest from '../tools/mouse/polling/MousePollingRateTest.astro';const relatedTools=[{href:'/mouse-tester',name:'Mouse Tester',description:'Check general browser-detected mouse input.'},{href:'/mouse-dpi-test',name:'Mouse DPI Test',description:'Estimate mouse DPI from a measured physical movement distance.'}] as const;
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MousePollingRateTest from '../tools/mouse/polling/MousePollingRateTest.astro';
+
+const relatedTools = [
+  {
+    href: '/mouse-tester',
+    name: 'Mouse Tester',
+    description: 'Check general browser-detected mouse input.',
+  },
+  {
+    href: '/mouse-dpi-test',
+    name: 'Mouse DPI Test',
+    description: 'Estimate mouse DPI from a measured physical movement distance.',
+  },
+] as const;
 ---
-<BaseLayout title="Mouse Polling Rate Test — Observed Pointer Hz" description="Measure the pointer sample rate this browser observes during a focused two-second mouse movement test." canonicalPath="/mouse-polling-rate-test"><section class="reading-width"><h1 class="page-heading">Mouse Polling Rate Test</h1><p class="page-intro">Measure the pointer sample rate observed by this browser while you move the mouse.</p></section><MousePollingRateTest/><section class="tool-content reading-width"><h2>How the measurement works</h2><p>The tool uses one browser pointer-event source for the whole two-second attempt, calculates positive timestamp intervals, and converts the median interval to an observed rate.</p><h2>Why it may differ from mouse settings</h2><p>Browsers and operating systems can merge, limit, or reschedule pointer events. This is not a direct USB report-rate measurement or manufacturer-equivalent certification.</p></section><RelatedTools tools={relatedTools}/></BaseLayout><style>.tool-content{margin-top:var(--space-7);padding-bottom:var(--space-7)}.tool-content h2{margin:var(--space-6) 0 var(--space-2);font-size:1.15rem}.tool-content p{color:var(--color-muted);line-height:1.65}</style>
+
+<BaseLayout
+  title="Mouse Polling Rate Test — Check Pointer Sample Rate"
+  description="Measure the pointer sample rate this browser observes during a focused two-second mouse movement test."
+  canonicalPath="/mouse-polling-rate-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Mouse Polling Rate Test</h1>
+    <p class="page-intro">Measure the pointer sample rate observed by this browser while you move the mouse.</p>
+  </section>
+
+  <MousePollingRateTest />
+
+  <section class="tool-content reading-width">
+    <h2>How the measurement works</h2>
+    <p>
+      The tool uses one browser pointer-event source for the whole two-second attempt, calculates positive timestamp intervals, and converts the median interval to an observed rate.
+    </p>
+
+    <h2>Why it may differ from mouse settings</h2>
+    <p>
+      Browsers and operating systems can merge, limit, or reschedule pointer events. This is not a direct USB report-rate measurement or manufacturer-equivalent certification.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+</style>
