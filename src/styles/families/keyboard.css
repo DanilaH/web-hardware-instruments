@@ -1,4 +1,8 @@
 /* Keyboard family identity layer. Keyboard state and measurement semantics remain in each tool. */
+.page-main:has(:is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting])) {
+  --color-signal: var(--color-channel-keyboard);
+}
+
 .page-main :is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting]) {
   --color-signal: var(--color-channel-keyboard);
 }
