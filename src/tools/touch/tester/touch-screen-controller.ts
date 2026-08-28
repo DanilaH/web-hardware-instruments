@@ -272,6 +272,9 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
         if (guardTimer !== null) window.clearTimeout(guardTimer);
         guardTimer = null;
         handsOffResult.textContent = 'Lift all fingers to restart the quiet guard.';
+      } else if (previousHandsOff.phase === 'armed' && handsOff.phase === 'interrupted') {
+        clearTimers();
+        handsOffResult.textContent = 'Check interrupted — an active touch appeared without an observed start. Start again.';
       }
     }
 
