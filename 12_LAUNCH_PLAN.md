@@ -2,9 +2,9 @@
 
 ## Current release boundary
 
-All seven full-v1 tools are implemented and audited. Post-v1 Hardware Expansion 1 is also approved for sequential implementation under `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+The full 18-tool hardware catalog is implemented and code-side audited.
 
-Public deployment is intentionally deferred until a real production domain is purchased immediately before release.
+Public deployment is intentionally deferred until a real production domain is purchased immediately before release and the applicable real-device/browser/camera checks are completed.
 
 Until that point:
 
@@ -14,48 +14,76 @@ Until that point:
 - do not claim Google Search Console or sitemap submission;
 - do not substitute mocked/headless checks for required real-device/browser/camera QA.
 
-The first public release may contain full v1 plus any Expansion 1 routes that are actually implemented and have passed their route-specific release-ready gates by deployment time. Approval alone does not make an unfinished route releasable or linkable.
+The first public indexed release is expected to contain the current implemented catalog unless a route fails its release-ready gate and is deliberately withheld. Code completion alone does not make a hardware-dependent route release-ready.
 
 ## Pre-launch
 
-Global release checks:
+### Global release checks
 
-- real production domain configured
-- HTTPS works
-- canonical origin finalized
-- `indexingEnabled` reviewed and enabled only with the real origin
-- every route included in the release returns 200
-- no placeholder/temporary routes are indexable
-- sitemap correct for the real origin
-- robots correct
-- favicon/app icons present
-- metadata complete
-- privacy page accurate
-- analytics tested if custom analytics is enabled
-- no raw device/input data sent to analytics
-- unsupported browser states tested
-- mobile smoke complete
-- latest Chrome, Edge, and Firefox desktop smoke complete where the tool is desktop-relevant
-- Safari/mobile graceful-degradation gaps recorded honestly where applicable
+- real production domain configured;
+- HTTPS works;
+- canonical origin finalized;
+- `indexingEnabled` reviewed and enabled only with the real origin;
+- every released route returns 200;
+- no placeholder/temporary routes are indexable;
+- sitemap correct for the real origin;
+- robots correct;
+- favicon/app icons present;
+- metadata complete;
+- privacy page accurate;
+- analytics tested if custom analytics is enabled;
+- no raw device/input data sent to analytics;
+- unsupported browser states tested;
+- mobile smoke complete;
+- current Chrome, Edge, and Firefox desktop smoke complete where the tool is desktop-relevant;
+- Safari/mobile graceful-degradation gaps recorded honestly where applicable.
 
-Full-v1 hardware/browser checks:
+### Real hardware / browser checks
 
-- real controller QA complete for Gamepad Tester, Stick Drift, and Deadzone where required hardware is available
-- real keyboard QA complete for Keyboard Tester
-- display QA complete for FPS Test and Refresh Rate Test, including high-refresh/multi-monitor behavior where hardware is available
-- Mouse DPI capture/fallback behavior and physical-distance caveats manually reviewed
+Controller cluster:
 
-Expansion 1 checks apply only to routes included in the release, but must not be skipped for those routes:
+- real controller smoke for Gamepad Tester;
+- Stick Drift and Deadzone tested with a standard-mapped controller;
+- disconnect, controller selection, and mapping limitations checked where applicable.
 
-- real mouse smoke for Mouse Tester / Button / Scroll / Double Click / Polling as required by `20`
-- side-button navigation/context-menu behavior checked where applicable
-- real touch-device smoke for Touch Screen Test, including coverage, multi-touch, hands-off visibility/focus invalidation, and fullscreen/fallback behavior
-- real keyboard smoke for Rollover/Ghosting guided flows
-- Dead Pixel and Backlight fullscreen/fallback visual flow checked on real display hardware
-- Frame Skipping checked with a real camera and multiple valid photographs; screenshots are not evidence
-- every untested browser/hardware case documented rather than inferred from mocks
+Keyboard cluster:
 
-A route may be `code-complete` before these external checks, but it is not `release-ready` until its applicable real-device/browser/camera gate is satisfied.
+- real Keyboard Tester smoke;
+- Rollover held-set/max behavior checked with real simultaneous presses;
+- Ghosting guided presets checked without treating reserved shortcuts as hardware failure.
+
+Mouse cluster:
+
+- Mouse Tester / Button / Scroll / Double Click smoke with a real mouse;
+- side-button navigation/context-menu behavior checked where applicable;
+- Polling Rate checked with continuous real movement and source/caveat wording reviewed;
+- Mouse DPI Pointer Lock/fallback flow and measured-distance caveats manually reviewed.
+
+Touch cluster:
+
+- real touch-device smoke for coverage, edges/corners, multi-touch, confirmation pass, and hands-off observation;
+- blur/hidden invalidation checked;
+- fullscreen/fallback behavior checked on a touch-capable device.
+
+Display cluster:
+
+- FPS and Refresh Rate checked on available display/browser combinations, including high-refresh or multi-monitor behavior where available;
+- Dead Pixel and Backlight Bleed fullscreen/fallback flow checked on real display hardware;
+- Frame Skipping checked with a real camera and multiple valid photographs; screenshots are not evidence.
+
+Every untested browser/hardware case must be documented rather than inferred from mocks.
+
+## Code-complete vs release-ready
+
+```text
+code-complete
+= implementation + source-of-truth compliance + review + visual/headless review + automated validation
+
+release-ready
+= code-complete + applicable real-device/browser/camera checks
+```
+
+This distinction is permanent. Do not weaken it merely because the implementation roadmap is complete.
 
 ## Search Console
 
@@ -72,21 +100,23 @@ Immediately after deployment:
 
 First week:
 
-- 404s
-- JS errors
-- API unsupported errors
-- device connection failures
-- layout regressions
-- accidental indexing issues
+- 404s;
+- JS errors;
+- API unsupported errors;
+- device connection failures;
+- layout regressions;
+- accidental indexing issues.
 
 First month:
 
-- Search Console queries
-- country split
-- impressions by page
-- unexpected problem-first queries
-- CTR
-- early position trends
+- Search Console queries;
+- country split;
+- impressions by page;
+- unexpected problem-first queries;
+- CTR;
+- early position trends.
+
+Do not overreact to early low traffic before the site has had a reasonable crawl/index/ranking window.
 
 ## Do not do after launch
 
@@ -97,18 +127,18 @@ Avoid:
 - rewriting every title weekly;
 - adding huge SEO articles due to impatience;
 - purchasing/manipulating backlinks;
-- creating 100 low-value generated pages;
+- creating large sets of low-value generated pages;
 - adding backend complexity without product need.
 
-## Expansion trigger outside approved Expansion 1
+## Future expansion trigger
 
-Expansion 1 has already passed its research/cluster-fit promotion gate and should not be re-litigated during implementation.
+The existing Expansion 1 catalog is complete. It no longer needs implementation-time revalidation.
 
-For any future tool **outside Expansion 1**, require at least one strong condition:
+Any **new** tool requires at least one strong condition:
 
-- research independently validates its search opportunity;
+- external research validates independent search opportunity;
 - Search Console reveals recurring adjacent demand;
-- it materially improves the existing cluster.
+- the tool materially strengthens an already-successful cluster.
 
 Technical ease alone is not enough.
 
@@ -122,10 +152,6 @@ When monetization is introduced later:
 - no ad may appear inside the tool card;
 - no ad may cover or shift the live visualization/result;
 - first preferred placement is below the completed primary tool/result;
-- ad layout must preserve the one-screen diagnostic UX for the tool itself where that gate applies.
+- ad layout must preserve the one-screen diagnostic UX where that gate applies.
 
-## Ad-layout future proofing
-
-Do not render empty ad placeholders before monetization is enabled.
-
-When ads are eventually enabled, reserve their space only then so the chosen ad integration can avoid CLS without making the pre-monetization site look unfinished.
+Do not render empty ad placeholders before monetization is enabled. Reserve ad space only when a real integration is introduced so CLS can be managed without making the pre-monetization site look unfinished.
