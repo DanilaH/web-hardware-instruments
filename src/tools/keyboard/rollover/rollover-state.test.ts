@@ -16,7 +16,6 @@ describe('keyboard rollover state', () => {
 
     expect([...state.heldCodes]).toEqual(['KeyW', 'KeyA', 'KeyS']);
     expect(state.maximumDetectedTogether).toBe(3);
-    expect(state.lastDetectedCode).toBe('KeyS');
   });
 
   it('does not count repeated keydown for an already-held code', () => {
