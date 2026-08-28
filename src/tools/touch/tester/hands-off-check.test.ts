@@ -34,10 +34,9 @@ describe('hands-off check state', () => {
     expect(state.phase).toBe('guarding');
   });
 
-  it('does not count a move-only active contact as a new unexpected start while armed', () => {
+  it('invalidates an armed run when an active contact appears without an observed start', () => {
     const state = observeHandsOffActiveContact(armHandsOffCheck(beginHandsOffCheck(0)));
-    expect(state.phase).toBe('armed');
-    expect(state.unexpectedStarts).toBe(0);
+    expect(state).toEqual({ phase: 'interrupted', unexpectedStarts: 0, markers: [] });
   });
 
   it('counts only new starts while armed and bounds visible markers', () => {
