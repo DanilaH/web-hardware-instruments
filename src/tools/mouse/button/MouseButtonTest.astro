@@ -1,0 +1,33 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astro';
+const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
+---
+<ToolShell labelledBy="mouse-button-heading">
+  <h2 id="mouse-button-heading" class="sr-only">Mouse Button Test</h2>
+  <div class="button-test" data-mouse-button-test>
+    <div class="status"><span class="signal" aria-hidden="true"></span><strong data-mouse-button-status role="status" aria-live="polite">Listening for button input</strong></div>
+    <p class="instruction">Press each mouse button inside the test area.</p>
+    <div class="surface" data-mouse-button-surface>
+      <div class="visual"><StandardMouseVisual /><p>Generic browser button roles; Primary and Secondary can be remapped by the OS.</p></div>
+      <div class="results">
+        <div class="heading"><span>Detected button input</span><button type="button" data-mouse-button-reset>Reset</button></div>
+        {names.map((name, button) => <div class="row" data-mouse-button-row={button} data-held="false"><span>{name}</span><small data-button-detected>Not yet detected</small><strong data-button-count>0</strong></div>)}
+      </div>
+    </div>
+    <p class="note">An unpressed or unsupported side button is not automatically a hardware failure.</p>
+    <p class="sr-only" data-mouse-button-summary>Mouse Button Test is listening.</p>
+  </div>
+</ToolShell>
+<script>
+  import { mountMouseButtonTest } from './mouse-button-controller';
+  const root = document.querySelector<HTMLElement>('[data-mouse-button-test]');
+  if (root) {
+    const controller = mountMouseButtonTest(root);
+    window.addEventListener('pagehide', (event) => event.persisted ? controller.stop() : controller.destroy());
+    window.addEventListener('pageshow', (event) => { if (event.persisted) controller.start(); });
+  }
+</script>
+<style>
+  .button-test{display:grid;gap:var(--space-4)}.status{display:flex;align-items:center;gap:.55rem;color:var(--color-muted);font-size:.88rem}.signal{width:.55rem;height:.55rem;border-radius:50%;background:var(--color-signal)}.instruction,.note,.visual p{margin:0}.surface{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(20rem,.9fr);gap:var(--space-5);padding:var(--space-4);border:1px solid #e3e6e7;background:#fafbfb;user-select:none}.visual{display:grid;align-content:center;gap:var(--space-2)}.visual p,.note{color:var(--color-muted);font-size:.75rem;line-height:1.45;text-align:center}.results{display:grid;align-content:center;gap:.45rem;padding-left:var(--space-5);border-left:1px solid #dfe3e4}.heading,.row{display:grid;align-items:center;gap:var(--space-3)}.heading{grid-template-columns:1fr auto;margin-bottom:.35rem;color:var(--color-muted);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.055em}.heading button{border:0;background:none;color:var(--color-muted);text-decoration:underline;cursor:pointer}.row{grid-template-columns:1fr 7.5rem 2rem;min-height:2.25rem;padding:.35rem .55rem;border:1px solid #e2e5e6;background:#fff}.row span{font-size:.78rem;font-weight:600}.row small{color:var(--color-muted)}.row strong{text-align:right;font:600 1rem var(--font-mono);color:#8c9295}.row[data-held='true']{border-color:color-mix(in srgb,var(--color-signal) 55%,#d8dcde);background:color-mix(in srgb,var(--color-signal) 8%,white)}.row[data-held='true'] strong{color:var(--color-signal)}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}@media(max-width:48rem){.surface{grid-template-columns:1fr}.results{padding:var(--space-4) 0 0;border-left:0;border-top:1px solid #dfe3e4}}@media(max-width:40rem){.surface{padding:var(--space-3)}.row{grid-template-columns:1fr auto}.row small{grid-row:2}.row strong{grid-row:1/3;grid-column:2}}
+</style>
