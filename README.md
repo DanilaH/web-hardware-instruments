@@ -46,7 +46,7 @@ Supporting public routes:
 /privacy
 ```
 
-A post-expansion independent repository audit has also reconciled the current source-of-truth documents, homepage information architecture, selected mobile result/density issues, stale user-facing MVP wording, and remaining focused-Mouse source readability.
+A post-expansion independent repository audit has also reconciled the current source-of-truth documents, homepage information architecture, selected mobile result/density issues, stale user-facing MVP wording, and remaining focused-Mouse source readability. A later visual-system refresh established the current authored identity across the homepage, shared shell, and all five hardware families.
 
 ### Code-complete is not release-ready
 
@@ -174,21 +174,26 @@ Use `18_DECISIONS_AND_BOUNDARIES.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`
 
 ## UX / visual direction
 
-The visual system is **instrument minimalism**:
+The visual system is **instrument minimalism + authored identity**:
 
 ```text
-mostly monochrome
-+ one restrained live signal accent
-+ strong measurement numerals
-+ simple technical geometry
-+ data/state-driven motion only
+light instrument chassis
++ dark diagnostic surfaces only where they have functional meaning
++ five restrained hardware-family channel colors
++ domain-specific browser/input geometry
++ strong measurement typography
++ state/signal-driven motion only
 ```
+
+Controller, Mouse, Keyboard, Display, and Touch each have a stable muted channel color. Channel color is a family/signal cue, not a replacement for semantic success/warning/error states and not permission to turn the product into a rainbow UI.
 
 Desktop-relevant primary tools target a compact `1366×768` first-screen experience. Touch follows its route-specific mobile/tablet acceptance rules.
 
-The homepage groups the 18 tools by device cluster rather than presenting one undifferentiated feed.
+The homepage groups the 18 tools by device cluster rather than presenting one undifferentiated feed. The shared shell stays light and neutral; dark surfaces are reserved for meaningful diagnostic/display contexts.
 
-Decorative gradient washes/glass/neon/dashboard chrome are out. A CSS `linear-gradient()` is still acceptable when it is merely the lightweight implementation primitive for a functional technical grid/reference ruling.
+Decorative gradient washes, fake instrument readouts, glass, neon, generic AI/SaaS chrome, and dashboard-card clutter are out. A CSS `linear-gradient()` is still acceptable when it is merely the lightweight implementation primitive for a functional technical grid/reference ruling.
+
+`17_FUNCTIONAL_VISUAL_SYSTEM.md` owns the exact visual grammar.
 
 ## Privacy
 
