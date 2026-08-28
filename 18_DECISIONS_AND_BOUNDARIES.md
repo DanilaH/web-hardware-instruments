@@ -1,8 +1,10 @@
 # Exact Decisions and Boundaries
 
-This file is the conflict-resolution source of truth for MVP implementation.
+This file is the conflict-resolution source of truth for **global and full-v1/MVP** implementation behavior.
 
-If another numbered document conflicts with this file, this file wins and the mismatch should be fixed.
+`20_POST_V1_HARDWARE_EXPANSION_SPEC.md` may add explicitly approved post-v1 capability boundaries and route semantics for Hardware Expansion 1. It does not retroactively change full-v1 behavior.
+
+If `20` appears to conflict with this file on a genuinely shared global rule such as privacy, dependency direction, lifecycle discipline, measurement honesty, or runtime constraints, the mismatch must be resolved in documentation before product code proceeds. Do not silently choose one interpretation.
 
 # 1. Fixed stack
 
@@ -59,6 +61,8 @@ Hosting provider is intentionally not fixed because the build is static and host
 
 # 2. Rendering boundary
 
+Full-v1 rendering boundary:
+
 ```text
 DOM/CSS
 → controls
@@ -78,9 +82,11 @@ Canvas
 
 No generic chart library.
 
+Expansion 1 may extend these same native rendering families only as explicitly described in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` (for example mouse/touch visuals, fullscreen inspection stages, and the Frame Skipping Canvas pattern). It does not authorize a visualization framework or charting runtime.
+
 # 3. Browser capability services
 
-Exactly four thin acquisition boundaries in MVP:
+Exactly four thin acquisition boundaries were approved for full v1/MVP:
 
 ```text
 GamepadService
@@ -89,9 +95,20 @@ KeyboardInputService
 MouseMovementService
 ```
 
-They own native acquisition, feature detection, normalization, lifecycle, and cleanup.
+They remain stable and must not be renamed/generalized merely to make post-v1 architecture look uniform.
 
-They do not own UI, SEO, analytics, result wording, or tool-specific calculations.
+Expansion 1 explicitly adds only:
+
+```text
+MouseInputService
+TouchInputService
+```
+
+plus the shared Fullscreen helper, which is **not** a hardware acquisition service. Exact Expansion 1 responsibilities live in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+All approved capability services own native acquisition, feature detection, normalization, lifecycle, and cleanup for their assigned job.
+
+They do not own UI, SEO, analytics, result wording, or tool-specific calculations/presentation state.
 
 Lifecycle:
 
@@ -108,11 +125,11 @@ destroy
 
 `destroy()` is idempotent and permanently disposes the instance.
 
-One active acquisition loop/listener set per capability per page.
+One active acquisition loop/listener set per service/capability per page.
 
 ## FrameSampler visibility/reset contract
 
-`FrameSampler` is the only owner of the display capability's `visibilitychange` acquisition lifecycle. FPS and Refresh Rate controllers must not install independent visibility listeners for measurement reset semantics.
+`FrameSampler` is the only owner of the display timing capability's `visibilitychange` acquisition lifecycle. FPS, Refresh Rate, and Expansion 1 Frame Skipping must not install independent competing rAF acquisition/reset loops.
 
 The sampler emits typed events with at least these semantics:
 
@@ -129,9 +146,10 @@ Exact interface syntax may differ, but the semantic contract is fixed:
 - the sampler clears its acquisition state and emits one `reset` notification;
 - no hidden-tab samples are forwarded as valid measurement samples;
 - when the document becomes visible again, acquisition may resume, but consumers must begin a fresh warmup/window after the reset;
-- FPS and Refresh Rate controllers own their own warmup, rolling windows, calculations, trace history, and result presentation.
+- FPS and Refresh Rate controllers own their own warmup, rolling windows, calculations, trace history, and result presentation;
+- Frame Skipping owns its Expansion 1 readiness/capture-epoch interpretation defined in `20`, while still reusing this same sample/reset stream.
 
-The sampler must not calculate FPS or refresh rate itself.
+The sampler must not calculate FPS, refresh rate, or frame-skipping verdicts itself.
 
 # 4. Gamepad behavior
 
@@ -465,6 +483,8 @@ At ~390px mobile:
 - one-screen completion not required;
 - some hardware capabilities may be unsupported.
 
+Expansion 1 Touch Screen Test is explicitly mobile/tablet oriented and follows its additional real-device acceptance rules in `20`.
+
 # 13. Browser support target
 
 Tier 1:
@@ -501,17 +521,17 @@ strong measurement numerals
 
 Exact accent hex value is intentionally left for the first human visual review.
 
-The first Gamepad page is the visual-system checkpoint before styling is propagated.
+The first Gamepad page was the full-v1 visual-system checkpoint. Expansion 1 reuses that system and performs route-specific visual checkpoints defined in `20` rather than redesigning the visual language.
 
 # 15. Analytics boundary
 
-Required:
+Required at public launch:
 
 ```text
 Google Search Console
 ```
 
-Optional at initial launch:
+Optional:
 
 ```text
 coarse product analytics
@@ -520,7 +540,7 @@ coarse product analytics
 If enabled:
 
 - no raw hardware/input streams;
-- no per-frame/per-key events;
+- no per-frame/per-key/per-pointer/per-touch events;
 - prefer no-cookie/no-local-storage configuration;
 - do not interrupt the tool with a product-analytics consent experience unless legally required.
 
@@ -528,7 +548,7 @@ Production DoD does not require custom analytics to be enabled.
 
 # 16. Ads boundary
 
-Ads are post-MVP.
+Ads are a later monetization layer.
 
 When added:
 
@@ -547,11 +567,11 @@ These are not implementation gaps:
 - optional analytics provider;
 - future ad provider.
 
-Everything else in the MVP should follow the numbered docs rather than being re-decided by the agent.
+Global/full-v1 behavior follows this document. Expansion 1 behavior follows `20` within these global boundaries rather than being independently re-decided by the agent.
 
 # 18. Operational simplicity
 
-MVP has no:
+The approved project has no:
 
 ```text
 server process
@@ -565,12 +585,14 @@ paid runtime API
 
 Static hosting plus browser-native execution is the intended operating model.
 
-A feature that requires recurring server/data maintenance is outside MVP unless explicitly approved.
+A feature that requires recurring server/data maintenance is outside current approved scope unless explicitly approved.
 
-# 19. Strategy cross-reference
+# 19. Strategy and Expansion cross-reference
 
-This document owns exact implementation behavior.
+This document owns global/full-v1 exact implementation behavior and cross-cutting technical boundaries.
 
-Business objective, initial search market, staged release order, and expansion rules are defined by `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
+Business objective, approved scope, release order, and expansion rules are defined by `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
 
-If a strategic requirement appears to make an exact implementation decision inappropriate, do not silently override either document; report the conflict.
+Exact post-v1 Hardware Expansion 1 route behavior, additional approved acquisition boundaries, algorithms, UX, and route-specific QA are defined by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+If a requirement appears to conflict across these documents, do not silently override one; resolve the source-of-truth conflict before product code changes.
