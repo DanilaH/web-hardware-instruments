@@ -19,7 +19,6 @@ import {
   coveragePercentage,
   createTouchTestState,
   observeTouchSample,
-  repeatableMissedCellCount,
   startTouchConfirmation,
   touchGridCellCount,
   type TouchTestState,
@@ -71,6 +70,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   const fullscreen = createFullscreenHelper();
   let state: TouchTestState = createTouchTestState();
   let handsOff = createHandsOffState();
+  const globalActiveContacts = new Set<number>();
   const visualContacts = new Map<number, VisualContact>();
   let available = false;
   let destroyed = false;
@@ -135,12 +135,13 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       } else if (state.pass1Covered.has(index)) {
         cell.dataset.coverage = 'pass1';
       } else {
-        cell.dataset.coverage = 'missed';
+        cell.dataset.coverage = 'target';
       }
     });
   };
 
   const render = (): void => {
+    const handsOffRunning = isRunningHandsOff(handsOff);
     activeValue.textContent = String(state.activeContacts.size);
     maximumValue.textContent = String(state.maximumDetectedTogether);
     coverageValue.textContent = `${Math.round(coveragePercentage(state))}%`;
@@ -156,14 +157,14 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     }
 
     confirmationButton.hidden = state.mode === 'confirmation' || state.pass1Covered.size === touchGridCellCount;
-    confirmationButton.disabled = !available;
+    confirmationButton.disabled = !available || handsOffRunning;
     confirmationSummary.hidden = state.mode !== 'confirmation';
     if (state.mode === 'confirmation') {
-      confirmationSummary.textContent = `Not detected in both passes: ${repeatableMissedCellCount(state)} cells. Repeatable missed areas may indicate a touch problem, but this browser test cannot identify the failed hardware component.`;
+      confirmationSummary.textContent = 'Sweep the emphasized cells again. Coverage combines observed samples from both passes while the first pass remains stored separately.';
     }
 
     resetButton.disabled = !available;
-    handsOffButton.disabled = !available || isRunningHandsOff(handsOff);
+    handsOffButton.disabled = !available || handsOffRunning;
     renderCoverage();
     scheduleOverlayRender();
   };
@@ -183,7 +184,6 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     clearTimers();
     handsOff = interruptHandsOffCheck(handsOff);
     handsOffResult.textContent = 'Check interrupted — keep this page visible and start again.';
-    handsOffButton.disabled = !available;
     scheduleOverlayRender();
   };
 
@@ -193,7 +193,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     handsOffResult.textContent = 'Waiting for 500 ms with no touch input…';
     guardTimer = window.setTimeout(() => {
       guardTimer = null;
-      if (handsOff.phase !== 'guarding' || state.activeContacts.size !== 0) return;
+      if (handsOff.phase !== 'guarding' || globalActiveContacts.size !== 0) return;
       handsOff = armHandsOffCheck(handsOff);
       handsOffResult.textContent = 'Place the device down and do not touch the screen. Observing for 15 seconds…';
       observationTimer = window.setTimeout(() => {
@@ -203,16 +203,24 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
         handsOffResult.textContent = handsOff.unexpectedStarts === 0
           ? 'No unexpected touch input observed in 15 seconds'
           : `Unexpected touch input observed: ${handsOff.unexpectedStarts} contacts`;
-        handsOffButton.disabled = !available;
-        scheduleOverlayRender();
+        render();
       }, 15_000);
     }, 500);
+  };
+
+  const updateGlobalContactLifecycle = (event: TouchPointInputEvent): void => {
+    if (event.type === 'start') {
+      globalActiveContacts.add(event.pointerId);
+    } else if (event.type === 'end' || event.type === 'cancel') {
+      globalActiveContacts.delete(event.pointerId);
+    }
   };
 
   const handleTouchEvent = (event: TouchInputEvent): void => {
     if (destroyed) return;
 
     if (event.type === 'clear') {
+      globalActiveContacts.clear();
       state = clearActiveContacts(state);
       visualContacts.clear();
       interruptHandsOff();
@@ -220,20 +228,27 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       return;
     }
 
+    updateGlobalContactLifecycle(event);
+    const handsOffWasRunning = isRunningHandsOff(handsOff);
     const previousState = state;
-    state = observeTouchSample(state, {
-      phase: event.type,
-      contactId: event.pointerId,
-      x: event.x,
-      y: event.y,
-      insideSurface: event.insideSurface,
-    });
 
-    if (event.type === 'start' || event.type === 'move') {
-      updateVisualContact(event);
-    } else {
-      visualContacts.delete(event.pointerId);
-      scheduleOverlayRender();
+    if (!handsOffWasRunning) {
+      state = observeTouchSample(state, {
+        phase: event.type,
+        contactId: event.pointerId,
+        x: event.x,
+        y: event.y,
+        insideSurface: event.insideSurface,
+      });
+
+      if (event.type === 'start') {
+        if (event.insideSurface) updateVisualContact(event);
+      } else if (event.type === 'move') {
+        if (event.insideSurface || visualContacts.has(event.pointerId)) updateVisualContact(event);
+      } else {
+        visualContacts.delete(event.pointerId);
+        scheduleOverlayRender();
+      }
     }
 
     if (event.type === 'start') {
@@ -246,12 +261,15 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
         if (guardTimer !== null) window.clearTimeout(guardTimer);
         guardTimer = null;
         handsOffResult.textContent = 'Lift all fingers to restart the quiet guard.';
-      } else if (handsOff.phase === 'armed') {
+      } else if (previousHandsOff.phase === 'armed' && handsOff.phase === 'armed') {
         handsOffResult.textContent = `Place the device down and do not touch the screen. Unexpected contacts so far: ${handsOff.unexpectedStarts}.`;
       }
     }
 
-    if ((event.type === 'end' || event.type === 'cancel') && state.activeContacts.size === 0) {
+    if (
+      (event.type === 'end' || event.type === 'cancel') &&
+      globalActiveContacts.size === 0
+    ) {
       const previousHandsOff = handsOff;
       handsOff = observeHandsOffContactsEmpty(handsOff);
       if (previousHandsOff.phase === 'waiting-for-empty' && handsOff.phase === 'guarding') {
@@ -271,8 +289,9 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   });
 
   const handleConfirmation = (): void => {
-    if (!available || state.mode === 'confirmation') return;
+    if (!available || state.mode === 'confirmation' || isRunningHandsOff(handsOff)) return;
     state = startTouchConfirmation(state);
+    visualContacts.clear();
     render();
   };
 
@@ -288,13 +307,15 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
   const handleHandsOffStart = (): void => {
     if (!available || isRunningHandsOff(handsOff)) return;
     clearTimers();
-    handsOff = beginHandsOffCheck(state.activeContacts.size);
-    handsOffButton.disabled = true;
+    state = clearActiveContacts(state);
+    visualContacts.clear();
+    handsOff = beginHandsOffCheck(globalActiveContacts.size);
     if (handsOff.phase === 'guarding') {
       beginGuard();
     } else {
       handsOffResult.textContent = 'Lift all fingers to begin the quiet guard.';
     }
+    render();
   };
 
   const handleFullscreen = async (): Promise<void> => {
@@ -326,6 +347,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       if (destroyed) return;
       interruptHandsOff();
       service.stop();
+      globalActiveContacts.clear();
       state = clearActiveContacts(state);
       visualContacts.clear();
       render();
