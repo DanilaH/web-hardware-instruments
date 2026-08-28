@@ -4,7 +4,7 @@ This repository contains a static Astro catalog of browser-based hardware diagno
 
 ## Current state
 
-The full-v1 catalog and Hardware Expansion 1 are **code-side complete and audited**.
+The full-v1 catalog and Hardware Expansion 1 are **code-side complete and audited**. The later authored visual-system refresh is also rolled out across the homepage, shared shell, and all five hardware families.
 
 Implemented diagnostic routes:
 
@@ -95,7 +95,7 @@ These documents provide focused reference but do not override the ownership map 
 01_PRODUCT.md                     product framing and user jobs
 02_INFORMATION_ARCHITECTURE.md    current catalog structure and linking principles
 03_TOOL_SPECS.md                  original full-v1 tool specifications
-04_UX_UI.md                       original full-v1 UX/UI framing
+04_UX_UI.md                       supporting UX/UI framing aligned to the current visual system
 05_SEO_CONTENT.md                 durable SEO rules + current intent ownership map
 06_ARCHITECTURE.md                architecture detail
 07_BROWSER_APIS.md                browser API detail
@@ -106,7 +106,7 @@ These documents provide focused reference but do not override the ownership map 
 15_BACKLOG.md                     evidence-gated future opportunities
 ```
 
-`03_TOOL_SPECS.md` and `04_UX_UI.md` were written around full v1. Their exact full-v1 requirements remain useful, but statements such as “every tool” must not silently override later route-specific exceptions defined in `20`, `16`, or `17`.
+`03_TOOL_SPECS.md` was written around full v1 and remains useful for those original route contracts. `04_UX_UI.md` preserves the durable task-first UX framing but defers exact current visual grammar to `17_FUNCTIONAL_VISUAL_SYSTEM.md`. Neither supporting document may silently override later route-specific exceptions defined in `20`, `16`, or `17`.
 
 ## Historical process language
 
