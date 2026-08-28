@@ -1,0 +1,72 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FrameSkippingTest from '../tools/display/frame-skipping/FrameSkippingTest.astro';
+
+const relatedTools = [
+  {
+    href: '/refresh-rate-test',
+    name: 'Refresh Rate Test',
+    description: 'Estimate the display cadence currently visible to the browser.',
+  },
+  {
+    href: '/fps-test',
+    name: 'FPS Test',
+    description: 'Observe this browser page’s frame delivery and recent drops.',
+  },
+  {
+    href: '/dead-pixel-test',
+    name: 'Dead Pixel Test',
+    description: 'Inspect the screen against solid colors for pixels that stay dark, bright, or the wrong color.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Frame Skipping Test — Check Monitor Frame Skipping"
+  description="Use a camera-assisted moving-block pattern to look for repeatable gaps that may indicate monitor frame skipping."
+  canonicalPath="/frame-skipping-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Frame Skipping Test</h1>
+    <p class="page-intro">Photograph a browser-timed frame sequence and look for repeatable gaps in valid READY captures.</p>
+  </section>
+
+  <FrameSkippingTest />
+
+  <section class="tool-content reading-width" aria-labelledby="frame-skipping-how">
+    <h2 id="frame-skipping-how">How this frame skipping test works</h2>
+    <p>
+      The browser first waits for a stable requestAnimationFrame cadence. While READY remains valid, every accepted browser frame advances the bright block by exactly one consecutive slot. Browser timing is used only to decide whether the camera pattern is trustworthy; it never inserts a visual gap to simulate a skipped refresh.
+    </p>
+
+    <h2>Why a camera photo is required</h2>
+    <p>
+      A long-exposure camera photo can record several displayed pattern states in one image. A screenshot only captures the browser’s current rendered state and cannot show whether the physical display actually presented every refresh. Use roughly 1/10 second or longer so several block positions can appear in one photo.
+    </p>
+
+    <h2>How to interpret gaps</h2>
+    <p>
+      A repeatable missing position across multiple photos taken while the page says READY may indicate that the display did not present every pattern state. One bad photo is not a verdict: camera exposure, motion, timing instability, or photographing after READY was lost can also produce misleading gaps. This page does not automatically pass or fail the monitor.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+</style>
