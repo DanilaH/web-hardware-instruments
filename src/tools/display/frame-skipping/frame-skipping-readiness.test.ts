@@ -30,25 +30,29 @@ describe('Frame Skipping readiness state', () => {
     expect(snapshot.phase).toBe('warming');
     expect(snapshot.ready).toBe(false);
     expect(snapshot.slot).toBeNull();
+    expect(state.epochPreviousTimestamp).toBeNull();
   });
 
   it('enters a fresh READY epoch at ordinal zero after stable warmup', () => {
-    const { state } = pushStableFrames(63, 16);
+    const { state, timestamp } = pushStableFrames(63, 16);
     const snapshot = getFrameSkippingReadinessSnapshot(state);
 
     expect(snapshot.phase).toBe('ready');
     expect(snapshot.frameOrdinal).toBe(0);
     expect(snapshot.slot).toBe(0);
+    expect(state.epochPreviousTimestamp).toBe(timestamp);
   });
 
   it('advances exactly one slot for each subsequent valid READY sample', () => {
     const stable = pushStableFrames(63, 16);
-    const next = pushFrameSkippingSample(stable.state, stable.timestamp + 20);
+    const timestamp = stable.timestamp + 20;
+    const next = pushFrameSkippingSample(stable.state, timestamp);
     const snapshot = getFrameSkippingReadinessSnapshot(next);
 
     expect(snapshot.ready).toBe(true);
     expect(snapshot.frameOrdinal).toBe(1);
     expect(snapshot.slot).toBe(1);
+    expect(next.epochPreviousTimestamp).toBe(timestamp);
   });
 
   it('does not derive a larger slot jump from a longer but still stable interval', () => {
@@ -61,7 +65,7 @@ describe('Frame Skipping readiness state', () => {
     expect(snapshot.slot).toBe(1);
   });
 
-  it('invalidates the READY epoch before advancing when the current delta breaks stability', () => {
+  it('invalidates and discards the READY epoch before advancing when the current delta breaks stability', () => {
     const stable = pushStableFrames(63, 16);
     const invalidated = pushFrameSkippingSample(stable.state, stable.timestamp + 24);
     const snapshot = getFrameSkippingReadinessSnapshot(invalidated);
@@ -70,6 +74,8 @@ describe('Frame Skipping readiness state', () => {
     expect(snapshot.phase).toBe('waiting');
     expect(snapshot.frameOrdinal).toBeNull();
     expect(snapshot.slot).toBeNull();
+    expect(invalidated.epochPreviousTimestamp).toBeNull();
+    expect(invalidated.lastSampleTimestamp).toBe(stable.timestamp + 24);
   });
 
   it('starts a new epoch at zero after the unstable delta ages out of the recent window', () => {
@@ -86,6 +92,7 @@ describe('Frame Skipping readiness state', () => {
     expect(snapshot.ready).toBe(true);
     expect(snapshot.frameOrdinal).toBe(0);
     expect(snapshot.slot).toBe(0);
+    expect(state.epochPreviousTimestamp).toBe(timestamp);
   });
 
   it('wraps the visual slot without changing the sequential ordinal model', () => {
@@ -105,11 +112,13 @@ describe('Frame Skipping readiness state', () => {
     expect(state.deltas).toHaveLength(frameSkippingDeltaWindowSize);
   });
 
-  it('invalidates an active epoch on a non-positive delta', () => {
+  it('invalidates an active epoch on a non-positive delta while preserving cadence sampling state', () => {
     const stable = pushStableFrames(63, 16);
     const invalidated = pushFrameSkippingSample(stable.state, stable.timestamp);
 
     expect(invalidated.ready).toBe(false);
     expect(invalidated.frameOrdinal).toBeNull();
+    expect(invalidated.epochPreviousTimestamp).toBeNull();
+    expect(invalidated.lastSampleTimestamp).toBe(stable.timestamp);
   });
 });
