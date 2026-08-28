@@ -12,7 +12,7 @@ Post-v1 **Hardware Expansion 1** is approved for sequential implementation under
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
 ```
 
-E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, and **E1.4 Keyboard expansion** are complete. The next product-code step is **E1.5 display visual-inspection tools**.
+E1.0 source-of-truth approval, E1.0.1 independent review corrections, **E1.1 Mouse foundation + Mouse Tester**, **E1.2 focused Mouse tools**, **E1.3 Touch Screen Test**, **E1.4 Keyboard expansion**, and **E1.5 display visual-inspection tools** are complete. The next product-code step is **E1.6 Frame Skipping**.
 
 Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
@@ -39,13 +39,13 @@ Implemented Expansion 1 routes:
 /touch-screen-test
 /keyboard-rollover-test
 /keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
 ```
 
 Approved Expansion 1 routes still to implement:
 
 ```text
-/dead-pixel-test
-/backlight-bleed-test
 /frame-skipping-test
 ```
 
@@ -92,8 +92,8 @@ E1.0 source-of-truth approval ✅
 → E1.2 focused Mouse tools ✅
 → E1.3 Touch ✅
 → E1.4 Keyboard expansion ✅
-→ E1.5 display visual-inspection tools ← next
-→ E1.6 Frame Skipping
+→ E1.5 display visual-inspection tools ✅
+→ E1.6 Frame Skipping ← next
 → E1.7 final Expansion 1 audit
 ```
 
@@ -106,6 +106,8 @@ E1.2 adds the focused Mouse Button, Scroll, Double Click, and browser-observed P
 E1.3 adds the mobile-first Touch Screen Test with real browser-observed/coalesced in-surface coverage, separate confirmation coverage, surface-only multi-touch metrics, a progressive Fullscreen helper, and an independently armed 15-second hands-off unexpected-touch observation. `navigator.maxTouchPoints` remains a capability hint rather than a measurement result or absolute gate.
 
 E1.4 adds Keyboard Rollover as browser-observed simultaneous-key measurement and Keyboard Ghosting as a guided expected-combination observation. Both reuse `KeyboardInputService`; neither claims NKRO certification, hardware failure, or confirmed ghosting from browser events alone.
+
+E1.5 adds Dead Pixel and Backlight Bleed as visual-inspection utilities on one shared display inspection stage plus the existing progressive Fullscreen helper. Dead Pixel uses only the fixed Black/White/Red/Green/Blue sequence; Backlight Bleed uses a pure black stage. Neither route produces an automatic score, pass/fail result, or hardware diagnosis.
 
 Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
 
