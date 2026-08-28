@@ -167,7 +167,7 @@ export const createBrowserMouseInputEnvironment = (
     },
     setRawMoveListener: (listener) => {
       if (rawMoveWrapper) {
-        window.removeEventListener('pointerrawupdate', rawMoveWrapper as EventListener);
+        surface.removeEventListener('pointerrawupdate', rawMoveWrapper as EventListener);
         rawMoveWrapper = null;
       }
       if (!listener) return;
@@ -177,7 +177,7 @@ export const createBrowserMouseInputEnvironment = (
           listener(extractCoalescedTimestamps(event));
         }
       };
-      window.addEventListener('pointerrawupdate', rawMoveWrapper as EventListener);
+      surface.addEventListener('pointerrawupdate', rawMoveWrapper as EventListener);
     },
     setCoalescedMoveListener: (listener) => {
       if (coalescedMoveWrapper) {
