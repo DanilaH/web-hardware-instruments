@@ -14,7 +14,7 @@ Can a new visitor immediately understand what to do?
 
 ## 2. One-screen primary tool
 
-At 1366×768 desktop, the complete primary interaction and key result/status must fit in one viewport after the compact header.
+At 1366×768 desktop, the complete primary interaction and key result/status must fit in one viewport for desktop-relevant tools.
 
 If it does not fit:
 
@@ -24,6 +24,8 @@ If it does not fit:
 - simplify the visualization.
 
 Do not solve this by making text unreadably small.
+
+Touch/mobile-first tools follow their explicit device-class acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
 ## 3. One job / one dominant action
 
@@ -35,14 +37,16 @@ Do not combine neighboring tests into one dashboard.
 
 Use visually rich interaction when it directly represents live measurement or physical behavior.
 
-Approved examples:
+Approved examples include:
 
 - controller SVG states;
 - stick trails;
 - deadzone ring;
 - mouse relative-movement guide;
-- FPS trace;
-- refresh cadence trace;
+- mouse input/button/wheel visual feedback;
+- touch coverage/live contacts;
+- fullscreen color/black inspection stages;
+- FPS/refresh/frame-skipping traces or patterns;
 - keyboard key highlighting.
 
 Prefer one meaningful visualization over multiple metrics.
@@ -70,7 +74,9 @@ Use native APIs before libraries for:
 - Gamepad;
 - keyboard;
 - pointer/mouse;
+- touch;
 - timing;
+- fullscreen;
 - DOM;
 - SVG;
 - basic math.
@@ -83,11 +89,11 @@ Keep calculations pure where practical.
 
 ## 8. Cleanup
 
-Every rAF/timer/listener/lock must have cleanup.
+Every rAF/timer/listener/lock/fullscreen observer must have cleanup.
 
 ## 9. Measurement honesty
 
-Do not turn estimates into exact hardware claims.
+Do not turn estimates, browser-observed input, visual inspection, or heuristics into exact hardware claims.
 
 ## 10. SEO must not damage UX
 
@@ -111,6 +117,7 @@ Never send raw:
 
 - key sequences;
 - pointer streams;
+- touch contact streams;
 - gamepad axes;
 - frame timestamp arrays;
 - device identifiers;
@@ -122,6 +129,8 @@ to analytics.
 Do not ship large runtimes for small interactions.
 
 Tool code should load only where needed.
+
+High-frequency pointer/timing paths must use bounded state and avoid per-sample DOM writes.
 
 ## 14. No fake polish
 
@@ -159,11 +168,13 @@ cleanup
 
 Report honestly what was not validated on real hardware.
 
+`code-complete` and `release-ready` are separate labels when an approved tool requires real touch hardware, a specific mouse/keyboard, or camera evidence.
+
 ## 16. Centralize browser capability acquisition
 
 Do not duplicate native browser acquisition across tools.
 
-Use the thin typed service/adapter assigned to the capability:
+Full-v1 capability services remain:
 
 ```text
 GamepadService
@@ -171,6 +182,21 @@ FrameSampler
 KeyboardInputService
 MouseMovementService
 ```
+
+Post-v1 Hardware Expansion 1 additionally approves:
+
+```text
+MouseInputService
+TouchInputService
+```
+
+The shared Fullscreen utility is a progressive-enhancement helper, not a hardware acquisition service.
+
+Use each boundary only for the capability/job assigned in source-of-truth:
+
+- `MouseMovementService` remains specialized for Mouse DPI / Pointer Lock capture;
+- `MouseInputService` owns ordinary mouse buttons/wheel/movement and the explicit polling profile for Expansion 1;
+- `TouchInputService` owns finger-touch Pointer Event acquisition for Touch Screen Test.
 
 Required properties:
 
@@ -205,15 +231,19 @@ Do not invent:
 - alternate deadzone formulas;
 - different sample durations;
 - fake DPI progress;
-- different common-refresh matching tolerances.
+- different common-refresh matching tolerances;
+- mouse hardware polling/latency claims;
+- touch health scores;
+- automatic frame-skipping verdicts;
+- NKRO/ghosting certification from browser observation.
 
-Use `18_DECISIONS_AND_BOUNDARIES.md`.
+Use `18_DECISIONS_AND_BOUNDARIES.md` for full-v1/global exact behavior and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` for Expansion 1 exact behavior.
 
 If a measurement requirement cannot be implemented as specified, report the conflict instead of silently changing the product.
 
 ## 18. Styling/runtime boundaries
 
-MVP uses plain CSS/CSS variables and Astro-scoped styles.
+Use plain CSS/CSS variables and Astro-scoped styles.
 
 Do not add:
 
@@ -226,12 +256,12 @@ global state libraries
 CSS-in-JS runtime
 ```
 
-Functional visual rendering is:
+Functional visual rendering remains native and purpose-specific:
 
 ```text
-SVG       → controller / radial geometry / mouse guide
-Canvas    → FPS / refresh traces
-DOM/CSS   → controls / text / keyboard
+SVG       → controller / radial geometry / mouse visuals / touch overlays where useful
+Canvas    → FPS / refresh traces / frame-skipping pattern
+DOM/CSS   → controls / text / keyboard / simple state surfaces
 ```
 
 ## 19. Optimize for low maintenance
@@ -247,18 +277,12 @@ Do not introduce:
 
 A feature that adds ongoing operational work requires explicit approval.
 
-## 20. Respect the deferred deployment boundary
+## 20. Expansion discipline
 
-All seven approved full-v1 tools are implemented. Do not reopen the old staged-release sequence or add more tools before the current full-v1 code audit and public-deployment gate are closed.
+The Expansion 1 catalog in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` is approved based on completed research and cluster-fit review. Implement it sequentially; do not reclassify it as unvalidated backlog during coding.
 
-Until immediately before public deployment:
+This approval does not extend to unrelated Audio/CPS/dashboard features or future tools outside Expansion 1.
 
-- keep the reserved placeholder origin;
-- keep indexing disabled;
-- do not invent a temporary production domain;
-- do not claim Search Console/sitemap submission before deployment;
-- do not claim real hardware or browser coverage that has not actually been tested.
+The production-domain/indexing gate remains deferred until deployment. Expansion 1 implementation may proceed under the placeholder origin with indexing disabled.
 
-When a real domain is available, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the reviewed origin/indexing change, real-device/browser smoke, deployment, GSC, and sitemap submission.
-
-After launch, choose any additional tool only from fresh research/Search Console evidence. Never create placeholder/coming-soon SEO pages.
+For future scope outside Expansion 1, require research, Search Console evidence, or material value to an already-successful cluster before implementation.
