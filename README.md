@@ -12,7 +12,7 @@ Post-v1 **Hardware Expansion 1** is approved for sequential implementation under
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
 ```
 
-The initial E1.0 source-of-truth approval plus the independent E1.0.1 review-correction pass are complete. The next product-code step is **E1.1 Mouse foundation + Mouse Tester**.
+E1.0 source-of-truth approval, E1.0.1 independent review corrections, and **E1.1 Mouse foundation + Mouse Tester** are complete. The next product-code step is **E1.2 focused Mouse tools**.
 
 Public deployment is intentionally deferred until a real production domain is purchased and the remaining real-device/browser release checks are performed.
 
@@ -28,10 +28,15 @@ Implemented full-v1 tool routes:
 /keyboard-tester
 ```
 
-Approved Expansion 1 routes, not yet implied to be implemented merely by appearing here:
+Implemented Expansion 1 routes:
 
 ```text
 /mouse-tester
+```
+
+Approved Expansion 1 routes still to implement:
+
+```text
 /mouse-button-test
 /mouse-scroll-test
 /double-click-test
@@ -83,8 +88,8 @@ If `18`, `19`, and `20` appear to conflict on a shared boundary, resolve the doc
 ```text
 E1.0 source-of-truth approval ✅
 → E1.0.1 independent review corrections ✅
-→ E1.1 Mouse foundation + Mouse Tester ← next
-→ E1.2 focused Mouse tools
+→ E1.1 Mouse foundation + Mouse Tester ✅
+→ E1.2 focused Mouse tools ← next
 → E1.3 Touch
 → E1.4 Keyboard expansion
 → E1.5 display visual-inspection tools
@@ -93,6 +98,8 @@ E1.0 source-of-truth approval ✅
 ```
 
 E1.0.1 specifically removed ambiguous measurement/source-of-truth behavior before implementation: polling attempts use one source selected before measurement and never mix streams; Touch coverage counts only real in-surface browser-observed samples (including real coalesced samples where available); confirmation passes are separate; interrupted hands-off checks are invalid; Frame Skipping uses a **readiness-gated sequential READY capture epoch** so browser timestamp arithmetic cannot manufacture pattern gaps.
+
+E1.1 established the reviewed Mouse input boundary and visual pattern. `MouseInputService` handles ordinary browser-observed mouse input and an isolated polling profile, while the existing Mouse DPI path remains on `MouseMovementService`.
 
 Do not scaffold all Expansion 1 pages in parallel. Existing full-v1 behavior stays stable except reviewed related-tool/internal-link changes and correctness fixes.
 
