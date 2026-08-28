@@ -1,6 +1,10 @@
 {
   "project": "Hardware Testing browser utilities",
-  "recommended_stack": ["Astro", "TypeScript", "Native Browser APIs"],
+  "recommended_stack": [
+    "Astro",
+    "TypeScript",
+    "Native Browser APIs"
+  ],
   "toolchain": {
     "node": "24 LTS",
     "package_manager": "pnpm",
@@ -12,17 +16,46 @@
   "database": false,
   "auth": false,
   "full_v1_routes": [
-    "/", "/gamepad-tester", "/controller-stick-drift-test", "/controller-deadzone-test", "/mouse-dpi-test", "/fps-test", "/refresh-rate-test", "/keyboard-tester", "/about", "/privacy"
+    "/",
+    "/gamepad-tester",
+    "/controller-stick-drift-test",
+    "/controller-deadzone-test",
+    "/mouse-dpi-test",
+    "/fps-test",
+    "/refresh-rate-test",
+    "/keyboard-tester",
+    "/about",
+    "/privacy"
   ],
   "expansion_1": {
     "name": "Post-v1 Hardware Expansion 1",
     "status": "e1_6_frame_skipping_complete",
     "spec": "20_POST_V1_HARDWARE_EXPANSION_SPEC.md",
     "routes": [
-      "/mouse-tester", "/mouse-button-test", "/mouse-scroll-test", "/double-click-test", "/mouse-polling-rate-test", "/touch-screen-test", "/keyboard-rollover-test", "/keyboard-ghosting-test", "/dead-pixel-test", "/backlight-bleed-test", "/frame-skipping-test"
+      "/mouse-tester",
+      "/mouse-button-test",
+      "/mouse-scroll-test",
+      "/double-click-test",
+      "/mouse-polling-rate-test",
+      "/touch-screen-test",
+      "/keyboard-rollover-test",
+      "/keyboard-ghosting-test",
+      "/dead-pixel-test",
+      "/backlight-bleed-test",
+      "/frame-skipping-test"
     ],
     "implemented_routes": [
-      "/mouse-tester", "/mouse-button-test", "/mouse-scroll-test", "/double-click-test", "/mouse-polling-rate-test", "/touch-screen-test", "/keyboard-rollover-test", "/keyboard-ghosting-test", "/dead-pixel-test", "/backlight-bleed-test", "/frame-skipping-test"
+      "/mouse-tester",
+      "/mouse-button-test",
+      "/mouse-scroll-test",
+      "/double-click-test",
+      "/mouse-polling-rate-test",
+      "/touch-screen-test",
+      "/keyboard-rollover-test",
+      "/keyboard-ghosting-test",
+      "/dead-pixel-test",
+      "/backlight-bleed-test",
+      "/frame-skipping-test"
     ],
     "implementation_order": [
       "E1.0 source-of-truth approval",
@@ -59,15 +92,52 @@
     "deployment_rule": "code-complete and release-ready are separate when real hardware/camera validation is unavailable"
   },
   "documents": [
-    "README.md", "AGENTS.md", "00_README.md", "01_PRODUCT.md", "02_INFORMATION_ARCHITECTURE.md", "03_TOOL_SPECS.md", "04_UX_UI.md", "05_SEO_CONTENT.md", "06_ARCHITECTURE.md", "07_BROWSER_APIS.md", "08_ANALYTICS.md", "09_TESTING_QA.md", "10_PERFORMANCE_ACCESSIBILITY.md", "11_IMPLEMENTATION_PLAN.md", "12_LAUNCH_PLAN.md", "13_AGENT_RULES.md", "14_DEFINITION_OF_DONE.md", "15_BACKLOG.md", "16_UX_ACCEPTANCE.md", "17_FUNCTIONAL_VISUAL_SYSTEM.md", "18_DECISIONS_AND_BOUNDARIES.md", "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md", "20_POST_V1_HARDWARE_EXPANSION_SPEC.md"
+    "README.md",
+    "AGENTS.md",
+    "00_README.md",
+    "01_PRODUCT.md",
+    "02_INFORMATION_ARCHITECTURE.md",
+    "03_TOOL_SPECS.md",
+    "04_UX_UI.md",
+    "05_SEO_CONTENT.md",
+    "06_ARCHITECTURE.md",
+    "07_BROWSER_APIS.md",
+    "08_ANALYTICS.md",
+    "09_TESTING_QA.md",
+    "10_PERFORMANCE_ACCESSIBILITY.md",
+    "11_IMPLEMENTATION_PLAN.md",
+    "12_LAUNCH_PLAN.md",
+    "13_AGENT_RULES.md",
+    "14_DEFINITION_OF_DONE.md",
+    "15_BACKLOG.md",
+    "16_UX_ACCEPTANCE.md",
+    "17_FUNCTIONAL_VISUAL_SYSTEM.md",
+    "18_DECISIONS_AND_BOUNDARIES.md",
+    "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md",
+    "20_POST_V1_HARDWARE_EXPANSION_SPEC.md"
   ],
-  "non_normative_context": ["AUDIT_V4.md", "GLOBAL_GOAL_AUDIT_V5.md", "RESEARCH_EVIDENCE_2026-08.md"],
+  "non_normative_context": [
+    "AUDIT_V4.md",
+    "GLOBAL_GOAL_AUDIT_V5.md",
+    "RESEARCH_EVIDENCE_2026-08.md"
+  ],
   "version": "6.9",
   "ux_priority": "one-screen obvious task completion for desktop-relevant tools; route-specific mobile-first acceptance where appropriate",
   "ux_min_desktop_viewport": "1366x768",
   "visual_direction": "instrument minimalism; mostly monochrome + one functional live signal accent",
   "functional_visuals": [
-    "gamepad SVG", "stick position trail", "deadzone ring", "mouse relative-movement guide", "FPS time trace", "refresh cadence trace", "keyboard live highlighting", "generic mouse input visual", "mouse wheel direction strip", "touch coverage and contact surface", "fullscreen solid-color / black inspection stage", "frame-skipping camera pattern"
+    "gamepad SVG",
+    "stick position trail",
+    "deadzone ring",
+    "mouse relative-movement guide",
+    "FPS time trace",
+    "refresh cadence trace",
+    "keyboard live highlighting",
+    "generic mouse input visual",
+    "mouse wheel direction strip",
+    "touch coverage and contact surface",
+    "fullscreen solid-color / black inspection stage",
+    "frame-skipping camera pattern"
   ],
   "browser_capability_layer": {
     "principle": "thin typed adapters/services around native browser APIs",
@@ -81,9 +151,23 @@
       "mouse_input": "MouseInputService",
       "touch_input": "TouchInputService"
     },
-    "shared_helpers": {"fullscreen": "progressive-enhancement Fullscreen helper"},
-    "responsibilities": ["feature detection", "native acquisition", "normalization", "subscription", "lifecycle", "cleanup"],
-    "explicitly_avoid": ["repository pattern", "event bus", "dependency injection framework", "generic HardwareManager"]
+    "shared_helpers": {
+      "fullscreen": "progressive-enhancement Fullscreen helper"
+    },
+    "responsibilities": [
+      "feature detection",
+      "native acquisition",
+      "normalization",
+      "subscription",
+      "lifecycle",
+      "cleanup"
+    ],
+    "explicitly_avoid": [
+      "repository pattern",
+      "event bus",
+      "dependency injection framework",
+      "generic HardwareManager"
+    ]
   },
   "source_of_truth": {
     "strategy_scope_release": "19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md",
@@ -93,14 +177,39 @@
   },
   "styling": "plain CSS + CSS custom properties + Astro scoped styles",
   "rendering": {
-    "dom_css": ["controls", "text", "keyboard", "simple mouse/touch state surfaces"],
-    "svg": ["controller", "stick plots", "deadzone geometry", "mouse movement guide", "generic mouse visual", "touch overlays where useful"],
-    "canvas": ["FPS trace", "refresh-rate trace", "frame-skipping pattern"]
+    "dom_css": [
+      "controls",
+      "text",
+      "keyboard",
+      "simple mouse/touch state surfaces"
+    ],
+    "svg": [
+      "controller",
+      "stick plots",
+      "deadzone geometry",
+      "mouse movement guide",
+      "generic mouse visual",
+      "touch overlays where useful"
+    ],
+    "canvas": [
+      "FPS trace",
+      "refresh-rate trace",
+      "frame-skipping pattern"
+    ]
   },
   "custom_analytics_required": false,
-  "open_decisions": ["brand/domain", "static hosting provider", "optional analytics provider", "future ad provider"],
+  "open_decisions": [
+    "brand/domain",
+    "static hosting provider",
+    "optional analytics provider",
+    "future ad provider"
+  ],
   "business_model": "low-maintenance organic-search utility asset; display ads later",
-  "initial_market": {"content_language": "English", "keyword_market": "US", "tool_usability": "global"},
+  "initial_market": {
+    "content_language": "English",
+    "keyword_market": "US",
+    "tool_usability": "global"
+  },
   "release_strategy": {
     "development_state": "full v1 code/audit complete; Expansion 1 implementation through E1.6 Frame Skipping complete; E1.7 final Expansion 1 audit is next",
     "public_deployment": "deferred until a real production domain is purchased immediately before deployment",
