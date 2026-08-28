@@ -240,5 +240,25 @@ import { keyboardGhostingPresets } from './ghosting-presets';
       display: block;
       margin-top: calc(var(--space-2) * -1);
     }
+
+    .ghosting-tool[data-phase='complete'] .ghosting-result,
+    .ghosting-tool[data-phase='interrupted'] .ghosting-result {
+      order: 1;
+    }
+
+    .ghosting-tool[data-phase='complete'] .ghosting-tool__visual-wrap,
+    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__visual-wrap {
+      order: 2;
+    }
+
+    .ghosting-tool[data-phase='complete'] .ghosting-tool__mobile-hint,
+    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__mobile-hint {
+      order: 3;
+    }
+
+    .ghosting-tool[data-phase='complete'] .ghosting-tool__note,
+    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__note {
+      order: 4;
+    }
   }
 </style>
