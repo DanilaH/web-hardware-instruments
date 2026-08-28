@@ -10,7 +10,6 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     <div class="rollover-tool__status-row">
       <span class="rollover-tool__signal" aria-hidden="true"></span>
       <strong data-rollover-status role="status" aria-live="polite">Listening for simultaneous keys</strong>
-      <span class="rollover-tool__status-note">No Start button needed.</span>
     </div>
 
     <p class="rollover-tool__instruction">Hold several keys at the same time and compare them with the highlighted keyboard.</p>
@@ -33,6 +32,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     <div class="rollover-tool__visual-wrap">
       <KeyboardGrid />
     </div>
+    <p class="rollover-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
 
     <div class="rollover-tool__footer">
       <p>This is the largest simultaneous key set the browser observed during this session, not a hardware certification.</p>
@@ -90,10 +90,6 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     font-size: 0.9rem;
   }
 
-  .rollover-tool__status-note {
-    margin-left: auto;
-  }
-
   .rollover-tool__signal {
     width: 0.55rem;
     height: 0.55rem;
@@ -107,7 +103,8 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   }
 
   .rollover-tool__instruction,
-  .rollover-tool__footer p {
+  .rollover-tool__footer p,
+  .rollover-tool__mobile-hint {
     margin: 0;
   }
 
@@ -156,6 +153,12 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     max-width: 100%;
     overflow-x: auto;
     padding-bottom: 0.2rem;
+  }
+
+  .rollover-tool__mobile-hint {
+    display: none;
+    color: var(--color-muted);
+    font-size: 0.75rem;
   }
 
   .rollover-tool__footer {
@@ -220,16 +223,6 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   }
 
   @media (max-width: 44rem) {
-    .rollover-tool__status-row {
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .rollover-tool__status-note {
-      width: 100%;
-      margin-left: 1.1rem;
-    }
-
     .rollover-tool__metrics {
       grid-template-columns: 1fr 1fr;
     }
@@ -237,6 +230,11 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     .rollover-tool__metric--primary {
       order: -1;
       grid-column: 1 / -1;
+    }
+
+    .rollover-tool__mobile-hint {
+      display: block;
+      margin-top: calc(var(--space-2) * -1);
     }
 
     .rollover-tool__footer {
