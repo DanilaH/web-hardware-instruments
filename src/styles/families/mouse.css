@@ -1,5 +1,5 @@
 /* Mouse family identity layer. Event/measurement semantics remain in each tool. */
-:is(
+.page-main :is(
   [data-mouse-tester],
   [data-mouse-button-test],
   [data-mouse-scroll-test],
@@ -10,7 +10,7 @@
   --color-signal: var(--color-channel-mouse);
 }
 
-:is(
+.page-main :is(
   [data-mouse-tester],
   [data-mouse-button-test],
   [data-mouse-scroll-test],
@@ -22,124 +22,124 @@
   background: #f7f5ef;
 }
 
-[data-mouse-tester] :is(.mouse-tester__results, .signal-results),
-[data-mouse-button-test] .results,
-[data-double-click-test] .metrics,
-[data-mouse-polling-test] .result,
-[data-mouse-dpi-test] :is(.mouse-controls, .dpi-result) {
+.page-main [data-mouse-tester] :is(.mouse-tester__results, .signal-results),
+.page-main [data-mouse-button-test] .results,
+.page-main [data-double-click-test] .metrics,
+.page-main [data-mouse-polling-test] .result,
+.page-main [data-mouse-dpi-test] :is(.mouse-controls, .dpi-result) {
   border-color: var(--color-border);
 }
 
-:is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-body {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-body {
   fill: #f6f3ec;
   stroke: #9ca39f;
 }
 
-:is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-divider {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-divider {
   stroke: #c9cdc7;
 }
 
-:is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .button-zone {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .button-zone {
   fill: #ebe9e2;
   stroke: #bdc2bc;
 }
 
-:is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse :is(.wheel-arrow) {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .wheel-arrow {
   fill: #b9beb8;
 }
 
-:is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .movement-signal {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .movement-signal {
   stroke: #b9beb8;
 }
 
-[data-mouse-tester] :is(.mouse-result__heading > span, .button-result > span, .signal-results span),
-[data-mouse-button-test] .heading,
-[data-mouse-scroll-test] .metrics span,
-[data-double-click-test] .metrics span,
-[data-mouse-polling-test] :is(.result > span, .result dt),
-[data-mouse-dpi-test] :is(.distance-control label, .movement-panel__heading, .dpi-result > span) {
+.page-main [data-mouse-tester] :is(.mouse-result__heading > span, .button-result > span, .signal-results span),
+.page-main [data-mouse-button-test] .heading,
+.page-main [data-mouse-scroll-test] .metrics span,
+.page-main [data-double-click-test] .metrics span,
+.page-main [data-mouse-polling-test] :is(.result > span, .result dt),
+.page-main [data-mouse-dpi-test] :is(.distance-control label, .movement-panel__heading, .dpi-result > span) {
   text-transform: none;
   letter-spacing: 0.01em;
 }
 
-[data-mouse-tester] .button-results,
-[data-mouse-button-test] .results {
+.page-main [data-mouse-tester] .button-results,
+.page-main [data-mouse-button-test] .results {
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
 
-[data-mouse-tester] .button-result,
-[data-mouse-button-test] .row {
+.page-main [data-mouse-tester] .button-result,
+.page-main [data-mouse-button-test] .row {
   border: 0;
   background: transparent;
 }
 
-[data-mouse-tester] .button-result + .button-result,
-[data-mouse-button-test] .row + .row {
+.page-main [data-mouse-tester] .button-result + .button-result,
+.page-main [data-mouse-button-test] .row + .row {
   border-top: 1px solid var(--color-border);
 }
 
-[data-mouse-tester] .button-result[data-held='true'],
-[data-mouse-button-test] .row[data-held='true'] {
+.page-main [data-mouse-tester] .button-result[data-held='true'],
+.page-main [data-mouse-button-test] .row[data-held='true'] {
   border-color: transparent;
   background: color-mix(in srgb, var(--color-channel-mouse) 8%, var(--color-surface));
   box-shadow: inset 3px 0 0 var(--color-channel-mouse);
 }
 
-[data-mouse-scroll-test] .strip {
+.page-main [data-mouse-scroll-test] .strip {
   border-color: var(--color-border);
   background: var(--color-surface);
 }
 
-[data-mouse-scroll-test] .metrics {
+.page-main [data-mouse-scroll-test] .metrics {
   gap: 0;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
 
-[data-mouse-scroll-test] .metrics > div {
+.page-main [data-mouse-scroll-test] .metrics > div {
   border: 0;
   background: transparent;
 }
 
-[data-mouse-scroll-test] .metrics > div + div {
+.page-main [data-mouse-scroll-test] .metrics > div + div {
   border-left: 1px solid var(--color-border);
 }
 
-[data-double-click-test] .metrics {
+.page-main [data-double-click-test] .metrics {
   gap: 0;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
 
-[data-double-click-test] .metrics > div {
+.page-main [data-double-click-test] .metrics > div {
   border: 0;
   background: transparent;
 }
 
-[data-double-click-test] .metrics > div:nth-child(even) {
+.page-main [data-double-click-test] .metrics > div:nth-child(even) {
   border-left: 1px solid var(--color-border);
 }
 
-[data-double-click-test] .metrics > div:nth-child(n + 3) {
+.page-main [data-double-click-test] .metrics > div:nth-child(n + 3) {
   border-top: 1px solid var(--color-border);
 }
 
-[data-mouse-polling-test] .move-field {
+.page-main [data-mouse-polling-test] .move-field {
   border-color: var(--color-border);
   background: #f2f0e9;
 }
 
-[data-mouse-polling-test] .move-field::before,
-[data-mouse-polling-test] .move-field::after {
+.page-main [data-mouse-polling-test] .move-field::before,
+.page-main [data-mouse-polling-test] .move-field::after {
   background: #d3d5cf;
 }
 
-[data-mouse-polling-test] .move-field span {
+.page-main [data-mouse-polling-test] .move-field span {
   background: #f2f0e9;
 }
 
-[data-mouse-polling-test] .result button {
+.page-main [data-mouse-polling-test] .result button {
   padding: 0.68rem 0.95rem;
   border-color: var(--color-channel-mouse);
   border-radius: var(--radius-sm);
@@ -148,25 +148,25 @@
   font-weight: 700;
 }
 
-[data-mouse-dpi-test] .movement-panel {
+.page-main [data-mouse-dpi-test] .movement-panel {
   background-color: #f5f3ed;
   background-image:
     linear-gradient(color-mix(in srgb, var(--color-channel-mouse) 7%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--color-channel-mouse) 7%, transparent) 1px, transparent 1px);
 }
 
-[data-mouse-dpi-test] :is(.distance-control input, .distance-control select) {
+.page-main [data-mouse-dpi-test] :is(.distance-control input, .distance-control select) {
   border-color: var(--color-border);
   background: var(--color-surface);
 }
 
-[data-mouse-dpi-test] .primary-action {
+.page-main [data-mouse-dpi-test] .primary-action {
   border-color: var(--color-channel-mouse);
   background: var(--color-channel-mouse);
 }
 
 @media (max-width: 40rem) {
-  [data-mouse-scroll-test] .metrics > div + div {
+  .page-main [data-mouse-scroll-test] .metrics > div + div {
     border-left: 1px solid var(--color-border);
   }
 }
