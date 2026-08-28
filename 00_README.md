@@ -1,4 +1,4 @@
-# Hardware Testing — Agent Handoff v6.1
+# Hardware Testing — Agent Handoff v6.2
 
 ## Purpose
 
@@ -8,15 +8,13 @@ This is not a dashboard, benchmark suite, hardware portal, or generic SaaS produ
 
 Each page must solve one concrete job immediately in the browser.
 
-Initial cluster:
+Current product clusters:
 
 - Gamepad / Controller testing
-- Stick drift
-- Controller deadzone
-- Mouse DPI estimation
-- FPS / frame-rate testing
-- Refresh-rate estimation
-- Keyboard testing
+- Mouse diagnostics
+- Display diagnostics
+- Keyboard diagnostics
+- Touch diagnostics in approved Expansion 1
 
 ## Global product/business goal
 
@@ -33,7 +31,7 @@ useful search landing pages
 fast task completion
 very low operating cost
 very low maintenance
-early Search Console feedback
+Search Console feedback
 safe expansion into adjacent validated tools
 ```
 
@@ -51,7 +49,7 @@ The most important product requirement is not feature count. It is task clarity.
 
 A first-time visitor arriving from search should understand what to do within a few seconds and be able to perform the main test without reading documentation.
 
-On desktop, the primary interaction must fit into one viewport.
+On desktop-relevant tools, the primary interaction must fit into one viewport.
 
 Target acceptance viewport:
 
@@ -69,13 +67,11 @@ the complete primary interaction
 the primary result area
 ```
 
-without scrolling.
+without scrolling where the device class makes that requirement appropriate.
 
 Long explanations, limitations, FAQs, SEO copy, related tools, and technical details belong below the primary tool.
 
 The primary tool may be visually rich when the visual directly represents the measurement. Prefer one meaningful live visualization over several metric cards.
-
-Do not optimize for artificial dwell time. Optimize for successful task completion. A clear useful tool naturally creates meaningful engagement.
 
 ## Default page shape
 
@@ -104,16 +100,6 @@ Below the fold:
 
 If information does not help the user perform the current test or interpret the primary result, it should not be visible in the main tool by default.
 
-Examples of data that may belong below the fold or in a compact optional “Details” disclosure:
-
-```text
-raw axis arrays
-raw timing statistics
-variance
-technical event codes
-measurement methodology
-```
-
 Do not turn diagnostic pages into dashboards.
 
 ## Core constraints
@@ -121,11 +107,10 @@ Do not turn diagnostic pages into dashboards.
 - Static frontend first
 - TypeScript
 - Native browser APIs
-- No backend for MVP
+- No backend unless explicitly approved by a future evidence-backed scope change
 - No database
 - No user accounts
 - No authentication
-- No payment flow
 - No paid external API dependency
 - No AI features
 - No device fingerprinting
@@ -140,16 +125,16 @@ Do not turn diagnostic pages into dashboards.
 - TypeScript
 - small framework-free interactive modules
 - native browser APIs
-- a tiny typed browser capability service/adapter layer
+- small typed browser capability service/adapter boundaries
 - SVG where visual device feedback is useful
 - Canvas only when repeated drawing clearly benefits from it
 - static hosting
 
 React is not required.
 
-Approved scaffolding toolchain is fixed in `18_DECISIONS_AND_BOUNDARIES.md` and `11_IMPLEMENTATION_PLAN.md`.
+Approved full-v1 toolchain is fixed in `18_DECISIONS_AND_BOUNDARIES.md` and `11_IMPLEMENTATION_PLAN.md`.
 
-## Full v1 routes
+## Full v1 routes — complete in code
 
 ```text
 /
@@ -164,21 +149,33 @@ Approved scaffolding toolchain is fixed in `18_DECISIONS_AND_BOUNDARIES.md` and 
 /privacy
 ```
 
-These are separate pages because they solve distinct jobs. Do not create additional pages for synonyms.
+## Post-v1 Hardware Expansion 1 — approved
 
-## Phase 2 only
+Exact implementation contract:
 
 ```text
-/dead-pixel-test
+20_POST_V1_HARDWARE_EXPANSION_SPEC.md
+```
+
+Approved sequential additions:
+
+```text
+/mouse-tester
 /mouse-button-test
 /mouse-scroll-test
 /double-click-test
-/keyboard-rollover-test
-/frame-skipping-test
+/mouse-polling-rate-test
 /touch-screen-test
+/keyboard-rollover-test
+/keyboard-ghosting-test
+/dead-pixel-test
+/backlight-bleed-test
+/frame-skipping-test
 ```
 
-Do not implement Phase 2 during MVP unless explicitly requested.
+These routes were promoted based on completed search/SERP research and/or material cluster fit. Do not reclassify them as unvalidated backlog during implementation.
+
+Expansion 1 is additive: do not redesign completed full-v1 tools merely for aesthetic uniformity.
 
 ## Document map
 
@@ -186,67 +183,69 @@ Do not implement Phase 2 during MVP unless explicitly requested.
 - `AGENTS.md` — mandatory coding-agent bootstrap
 - `01_PRODUCT.md` — product and UX priorities
 - `02_INFORMATION_ARCHITECTURE.md` — routes and page relationships
-- `03_TOOL_SPECS.md` — exact MVP behavior
+- `03_TOOL_SPECS.md` — exact full-v1/MVP tool behavior
 - `04_UX_UI.md` — strict interaction/layout rules
 - `05_SEO_CONTENT.md` — SEO/content rules
-- `06_ARCHITECTURE.md` — technical architecture
+- `06_ARCHITECTURE.md` — base technical architecture
 - `07_BROWSER_APIS.md` — API limitations
 - `08_ANALYTICS.md` — measurement plan
-- `09_TESTING_QA.md` — QA
+- `09_TESTING_QA.md` — base QA rules
 - `10_PERFORMANCE_ACCESSIBILITY.md` — performance/accessibility
-- `11_IMPLEMENTATION_PLAN.md` — development sequence
+- `11_IMPLEMENTATION_PLAN.md` — historical full-v1 development sequence
 - `12_LAUNCH_PLAN.md` — launch checklist
 - `13_AGENT_RULES.md` — mandatory agent constraints
-- `14_DEFINITION_OF_DONE.md` — acceptance criteria
-- `15_BACKLOG.md` — deferred scope
+- `14_DEFINITION_OF_DONE.md` — base/project acceptance criteria
+- `15_BACKLOG.md` — still-deferred scope plus promoted-history note
 - `16_UX_ACCEPTANCE.md` — explicit UX acceptance tests
 - `17_FUNCTIONAL_VISUAL_SYSTEM.md` — functional beauty and visual language
-- `18_DECISIONS_AND_BOUNDARIES.md` — exact technical/product boundaries and measurement algorithms
-- `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business/SEO goals, launch sequence, and scope priorities
-- `RESEARCH_EVIDENCE_2026-08.md` — non-normative research snapshot behind initial tool selection
+- `18_DECISIONS_AND_BOUNDARIES.md` — exact global/full-v1 technical/product boundaries and measurement algorithms
+- `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — business/SEO goals, approved scope, launch sequence, and expansion priorities
+- `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` — exact approved Expansion 1 behavior, algorithms, QA, and implementation order
+- `RESEARCH_EVIDENCE_2026-08.md` — non-normative research snapshot behind initial full-v1 selection
 
 ## Browser API acquisition layer
 
 Do not access browser APIs ad hoc from many UI modules.
 
-Each browser capability should have one very small typed service/adapter that owns acquisition and lifecycle.
+Full-v1 capability boundaries:
 
 ```text
 GamepadService
-    → navigator.getGamepads()
-
 FrameSampler
-    → requestAnimationFrame() callback timestamp
-    → visibility/reset lifecycle
-
 KeyboardInputService
-    → keydown / keyup
-
 MouseMovementService
-    → pointer/mouse movement events
 ```
 
-These wrappers exist only to centralize:
+Expansion 1 additionally approves:
 
-- feature detection;
-- native listeners/polling;
-- normalization into typed samples;
-- subscriptions/callbacks;
-- focus/visibility handling where relevant;
-- start/stop lifecycle;
-- cleanup.
+```text
+MouseInputService
+TouchInputService
+```
 
-Keep them thin.
+and one shared progressive-enhancement helper:
 
-Do not turn this into repositories, dependency injection, a generic event bus, a global `HardwareManager`, or an abstract device framework.
+```text
+Fullscreen helper
+```
+
+These wrappers exist only to centralize feature detection, native listeners/polling, normalization, subscriptions, lifecycle, and cleanup.
+
+Tool-specific state and interpretation remain in controllers/pure helpers. Do not turn this into repositories, dependency injection, a generic event bus, a global `HardwareManager`, or an abstract device framework.
 
 ## Source-of-truth rule
 
-Normative implementation requirements are the numbered product documents `00_...` through `19_...` plus `project-manifest.json`, with the conflict-resolution priority below.
+Normative implementation requirements are the numbered product documents `00_...` through `20_...` plus `project-manifest.json`, with the priority below.
 
-Use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for business/scope/release priorities and `18_DECISIONS_AND_BOUNDARIES.md` for exact implementation behavior. If those two appear to conflict, stop and report the conflict rather than guessing.
+For scope/release decisions use `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`.
 
-The following files are explicitly non-normative review/research history and must not be treated as product requirements:
+For global/full-v1 exact implementation behavior use `18_DECISIONS_AND_BOUNDARIES.md`.
+
+For approved post-v1 Hardware Expansion 1 exact behavior use `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+If `18`, `19`, and `20` appear to conflict on a shared boundary, stop and resolve the documentation conflict rather than guessing.
+
+The following files are explicitly non-normative review/research history and must not be treated as implementation requirements:
 
 - `AUDIT_V4.md`
 - `GLOBAL_GOAL_AUDIT_V5.md`
