@@ -4,12 +4,14 @@ export interface KeyboardGhostingPreset {
   readonly codes: readonly string[];
 }
 
+const defaultKeyboardGhostingPreset: KeyboardGhostingPreset = {
+  id: 'wasd-shift-space',
+  label: 'W + A + S + D + Left Shift + Space',
+  codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'Space'],
+};
+
 export const keyboardGhostingPresets: readonly KeyboardGhostingPreset[] = [
-  {
-    id: 'wasd-shift-space',
-    label: 'W + A + S + D + Left Shift + Space',
-    codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'Space'],
-  },
+  defaultKeyboardGhostingPreset,
   {
     id: 'wa-shift-space',
     label: 'W + A + Left Shift + Space',
@@ -25,10 +27,10 @@ export const keyboardGhostingPresets: readonly KeyboardGhostingPreset[] = [
     label: 'Q + W + E + A + S + D',
     codes: ['KeyQ', 'KeyW', 'KeyE', 'KeyA', 'KeyS', 'KeyD'],
   },
-] as const;
+];
 
 export const getKeyboardGhostingPreset = (id: string): KeyboardGhostingPreset =>
-  keyboardGhostingPresets.find((preset) => preset.id === id) ?? keyboardGhostingPresets[0];
+  keyboardGhostingPresets.find((preset) => preset.id === id) ?? defaultKeyboardGhostingPreset;
 
 export const formatKeyboardCode = (code: string): string => {
   if (code.startsWith('Key') && code.length === 4) return code.slice(3);
