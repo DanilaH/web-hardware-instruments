@@ -1,4 +1,15 @@
 /* Mouse family identity layer. Event/measurement semantics remain in each tool. */
+.page-main:has(:is(
+  [data-mouse-tester],
+  [data-mouse-button-test],
+  [data-mouse-scroll-test],
+  [data-double-click-test],
+  [data-mouse-polling-test],
+  [data-mouse-dpi-test]
+)) {
+  --color-signal: var(--color-channel-mouse);
+}
+
 .page-main :is(
   [data-mouse-tester],
   [data-mouse-button-test],
@@ -153,6 +164,29 @@
   background-image:
     linear-gradient(color-mix(in srgb, var(--color-channel-mouse) 7%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--color-channel-mouse) 7%, transparent) 1px, transparent 1px);
+}
+
+.page-main [data-mouse-dpi-test] :is(.mouse-guide__axis, .mouse-guide__arrow) {
+  stroke: #b9beb8;
+}
+
+.page-main [data-mouse-dpi-test] .mouse-guide__origin {
+  stroke: #858e8a;
+}
+
+.page-main [data-mouse-dpi-test] .mouse-guide__dot {
+  fill: #c9cdc7;
+  stroke: #858e8a;
+}
+
+.page-main [data-mouse-dpi-test] .mouse-guide[data-active='true'] .mouse-guide__dot {
+  fill: var(--color-channel-mouse);
+  stroke: var(--color-channel-mouse);
+}
+
+.page-main [data-mouse-dpi-test] .mouse-guide__labels {
+  text-transform: none;
+  letter-spacing: 0.01em;
 }
 
 .page-main [data-mouse-dpi-test] :is(.distance-control input, .distance-control select) {

@@ -1,4 +1,8 @@
 /* Touch family identity layer. Coverage semantics and touch-state logic remain in the tool. */
+.page-main:has([data-touch-screen-test]) {
+  --color-signal: var(--color-channel-touch);
+}
+
 .page-main [data-touch-screen-test] {
   --color-signal: var(--color-channel-touch);
 }

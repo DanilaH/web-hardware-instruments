@@ -1,4 +1,14 @@
 /* Display family identity layer. Exact inspection colors and camera-pattern output remain untouched. */
+.page-main:has(:is(
+  [data-fps-test],
+  [data-refresh-rate-test],
+  [data-frame-skipping-test],
+  [data-dead-pixel-test],
+  [data-backlight-bleed-test]
+)) {
+  --color-signal: var(--color-channel-display);
+}
+
 .page-main :is(
   [data-fps-test],
   [data-refresh-rate-test],
