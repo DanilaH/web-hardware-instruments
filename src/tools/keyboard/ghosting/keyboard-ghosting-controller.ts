@@ -134,10 +134,10 @@ export const mountKeyboardGhostingTest = (root: HTMLElement): KeyboardGhostingCo
         `Not observed together: ${observationResult.missingCodes.map(formatKeyboardCode).join(', ')}.`,
       );
     }
-    if (observationResult.additionalDetectedCodes.length === 1) {
-      detailParts.push(
-        `Additional detected key: ${formatKeyboardCode(observationResult.additionalDetectedCodes[0])}.`,
-      );
+
+    const [onlyAdditionalCode] = observationResult.additionalDetectedCodes;
+    if (observationResult.additionalDetectedCodes.length === 1 && onlyAdditionalCode) {
+      detailParts.push(`Additional detected key: ${formatKeyboardCode(onlyAdditionalCode)}.`);
     } else if (observationResult.additionalDetectedCodes.length > 1) {
       detailParts.push(
         `Additional detected keys: ${observationResult.additionalDetectedCodes.map(formatKeyboardCode).join(', ')}.`,
