@@ -1,0 +1,116 @@
+/* Controller family identity layer. Measurement/state logic remains in each tool. */
+.page-main :is([data-gamepad-tester], [data-stick-drift-test], [data-controller-deadzone-test]) {
+  --color-signal: var(--color-channel-controller);
+}
+
+.page-main :is([data-gamepad-tester], [data-stick-drift-test], [data-controller-deadzone-test])
+  :is(.gamepad-tool__signal, .drift-tool__signal, .deadzone-tool__signal) {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-strong);
+}
+
+.page-main [data-gamepad-tester] .gamepad-tool__visual,
+.page-main [data-gamepad-tester] .gamepad-fallback,
+.page-main [data-gamepad-tester] .gamepad-tool__unavailable,
+.page-main [data-stick-drift-test] .drift-tool__results,
+.page-main [data-stick-drift-test] .drift-tool__limitation,
+.page-main [data-controller-deadzone-test] .deadzone-tool__layout {
+  border-color: var(--color-border);
+}
+
+.page-main [data-gamepad-tester] .gamepad-tool__visual {
+  background-color: #f7f5ef;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-channel-controller) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-channel-controller) 8%, transparent) 1px, transparent 1px);
+}
+
+.page-main [data-gamepad-tester] .controller-body {
+  fill: #f6f3ec;
+  stroke: #313b38;
+}
+
+.page-main [data-gamepad-tester] :is(
+  .controller-shoulders rect,
+  .controller-center-buttons rect,
+  .controller-center-buttons circle,
+  .controller-dpad rect,
+  .controller-face circle,
+  .controller-stick circle
+) {
+  fill: var(--color-surface);
+  stroke: #858e8a;
+}
+
+.page-main [data-gamepad-tester] .controller-dpad__center {
+  fill: #deddd6;
+}
+
+.page-main [data-gamepad-tester] .controller-stick-well > circle:first-child {
+  fill: #ebe9e2;
+  stroke: #b9beb8;
+}
+
+.page-main [data-gamepad-tester] .controller-stick-guide {
+  stroke: #c9ccc6;
+}
+
+.page-main [data-gamepad-tester] .trigger-track {
+  fill: #dfddd6;
+  stroke: #adb3ad;
+}
+
+.page-main [data-gamepad-tester] :is(.gamepad-tool__mapping-note, .gamepad-tool__footer) {
+  border-color: var(--color-border);
+}
+
+.page-main :is([data-stick-drift-test], [data-controller-deadzone-test])
+  :is(.drift-tool__selector, .deadzone-tool__selector, .stick-choice legend) {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.page-main [data-stick-drift-test] .drift-result strong,
+.page-main [data-controller-deadzone-test] .deadzone-result strong {
+  color: #9da39f;
+}
+
+.page-main [data-stick-drift-test] .stick-drift-plot__heading,
+.page-main [data-controller-deadzone-test] .deadzone-plot__heading {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.page-main [data-stick-drift-test] :is(.stick-drift-plot__boundary, .stick-drift-plot__axis),
+.page-main [data-controller-deadzone-test] :is(.deadzone-plot__boundary, .deadzone-plot__axis) {
+  stroke: color-mix(in srgb, var(--color-channel-controller) 18%, var(--color-border-strong));
+}
+
+.page-main [data-stick-drift-test] .stick-drift-plot__center,
+.page-main [data-controller-deadzone-test] .deadzone-plot__center {
+  fill: #949b97;
+}
+
+.page-main [data-stick-drift-test] .stick-drift-plot__point,
+.page-main [data-controller-deadzone-test] .deadzone-plot__point {
+  fill: #949b97;
+  stroke: var(--color-surface);
+}
+
+.page-main [data-controller-deadzone-test] .deadzone-plot__noise-ring {
+  stroke: #858e8a;
+}
+
+.page-main [data-controller-deadzone-test] .deadzone-plot__legend-noise {
+  border-color: #858e8a !important;
+}
+
+.page-main :is([data-stick-drift-test], [data-controller-deadzone-test]) .primary-action {
+  border-color: var(--color-channel-controller);
+  background: var(--color-channel-controller);
+}
+
+.page-main :is([data-stick-drift-test], [data-controller-deadzone-test]) :is(select, .stick-choice span) {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
