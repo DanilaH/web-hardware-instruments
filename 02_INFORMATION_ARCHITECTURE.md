@@ -1,23 +1,35 @@
 # Information Architecture
 
-## Full-v1 implemented structure
+This document describes the **current** catalog structure and internal-linking model.
+
+Exact route behavior remains owned by `18_DECISIONS_AND_BOUNDARIES.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+## IA principles
+
+1. One route = one real diagnostic job/search intent.
+2. A user may land directly on any tool from search; every route must work independently.
+3. Related tools appear after the primary task/result, never before it.
+4. Do not create synonym pages for substantially identical tools.
+5. Homepage grouping should help users scan the catalog without turning it into a dashboard.
+6. Only implemented routes may appear in navigation/catalog surfaces.
+
+## Current catalog
+
+### Controller
 
 ```text
-/
-├── gamepad-tester
-├── controller-stick-drift-test
-├── controller-deadzone-test
-├── mouse-dpi-test
-├── fps-test
-├── refresh-rate-test
-├── keyboard-tester
-├── about
-└── privacy
+/gamepad-tester
+/controller-stick-drift-test
+/controller-deadzone-test
 ```
 
-## Approved Post-v1 Hardware Expansion 1
+Jobs:
 
-Approved additions are implemented sequentially and are **not** treated as live until the corresponding route exists and passes its code-side gate:
+- broad controller input check;
+- analog-stick center-offset observation;
+- center-noise measurement + heuristic starting deadzone.
+
+### Mouse
 
 ```text
 /mouse-tester
@@ -25,51 +37,71 @@ Approved additions are implemented sequentially and are **not** treated as live 
 /mouse-scroll-test
 /double-click-test
 /mouse-polling-rate-test
-/touch-screen-test
-/keyboard-rollover-test
-/keyboard-ghosting-test
-/dead-pixel-test
-/backlight-bleed-test
-/frame-skipping-test
+/mouse-dpi-test
 ```
 
-Exact behavior and implementation order live in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Jobs:
 
-## Homepage role
+- broad browser-detected mouse input;
+- focused button registration;
+- wheel direction/reverse-event observation;
+- unintended rapid repeat observation;
+- browser-observed pointer sample rate;
+- estimated DPI from user-supplied physical travel.
 
-The homepage is a utility directory, not a long marketing landing page.
-
-Current implemented shape:
+### Keyboard
 
 ```text
-Header
-
-H1: Hardware Tests in Your Browser
-Short value proposition
-
-Controller
-- Gamepad Tester
-- Stick Drift Test
-- Deadzone Test
-
-Mouse
-- Mouse DPI Test
-
-Display
-- FPS Test
-- Refresh Rate Test
-
-Keyboard
-- Keyboard Tester
-
-Short privacy/trust section
-Short explanation of browser-based testing
-Footer
+/keyboard-tester
+/keyboard-rollover-test
+/keyboard-ghosting-test
 ```
 
-Add Expansion 1 routes to homepage/category navigation only as they become real implemented tools. Do not create coming-soon cards or placeholder links.
+Jobs:
 
-Once enough approved routes are implemented, categories may naturally become:
+- simple key registration;
+- maximum simultaneous browser-detected held set;
+- guided expected-combination observation.
+
+### Display
+
+```text
+/fps-test
+/refresh-rate-test
+/frame-skipping-test
+/dead-pixel-test
+/backlight-bleed-test
+```
+
+Jobs:
+
+- browser-page frame delivery;
+- browser-visible display cadence estimate;
+- camera-assisted frame-skipping evidence;
+- fullscreen solid-color pixel inspection;
+- fullscreen black-screen backlight inspection.
+
+### Touch
+
+```text
+/touch-screen-test
+```
+
+One substantial route owns:
+
+- live finger contact observation;
+- multi-touch observation;
+- coverage mapping;
+- missed-area confirmation;
+- hands-off unexpected-touch observation.
+
+Do not split thin synonym Touch routes without fresh query evidence.
+
+## Homepage
+
+The catalog is now large enough that a single flat list is no longer the preferred IA.
+
+Use the five device clusters above as compact homepage sections:
 
 ```text
 Controller
@@ -79,184 +111,86 @@ Display
 Touch
 ```
 
-Do not redesign the homepage into a large dashboard merely because the catalog grows.
+The grouping exists for scanability, not to create category landing pages by default.
 
-## Category relationships
+Homepage rules:
 
-### Controller
+- keep the intro compact;
+- show every implemented diagnostic once;
+- use short job descriptions;
+- use simple functional glyphs only;
+- prefer a compact multi-column list on desktop and one column on narrow mobile;
+- do not add autoplay previews, dashboard metrics, filters, search, or category tabs unless future catalog scale creates a real need.
 
-```text
-Gamepad Tester
-├── Stick Drift Test
-└── Deadzone Test
-```
+## Related-tool model
 
-The Gamepad Tester is the broad entry point.
+Keep related navigation narrow: normally 2, at most 3 when the connection is genuinely useful.
 
-Stick Drift and Deadzone are separate pages because they solve distinct jobs, not because they are synonyms.
-
-### Mouse
-
-Current:
-
-```text
-Mouse DPI Test
-```
-
-Approved Expansion 1 model:
-
-```text
-Mouse Tester             broad browser input check
-├── Mouse Button Test    button registration
-├── Mouse Scroll Test    wheel/scroll events
-├── Double Click Test    suspicious rapid repeat observation
-└── Polling Rate Test    browser-observed pointer sample rate
-
-Mouse DPI Test           separate physical-distance estimation job
-```
-
-The broad Mouse Tester must not absorb the focused jobs into a dashboard. Focused pages link back naturally once implemented.
-
-### Display
-
-Current:
-
-```text
-FPS Test
-└── Refresh Rate Test
-```
-
-Approved Expansion 1 additions:
-
-```text
-Dead Pixel Test
-Backlight Bleed Test
-Frame Skipping Test
-```
-
-These are distinct jobs:
-
-- FPS Test: browser/rendering frame cadence;
-- Refresh Rate Test: estimate display refresh frequency from stable browser timing;
-- Dead Pixel Test: fullscreen/large-stage solid-color visual inspection;
-- Backlight Bleed Test: black-screen visual inspection;
-- Frame Skipping Test: camera-assisted displayed-sequence inspection with browser readiness support.
-
-Do not merge them into one display dashboard.
-
-### Keyboard
-
-`Keyboard Tester` remains the simple broad entry point.
-
-Approved Expansion 1 adds:
-
-```text
-Keyboard Tester
-├── Keyboard Rollover Test
-└── Keyboard Ghosting Test
-```
-
-Rollover is free-form maximum browser-observed simultaneous input. Ghosting is a guided expected-combination comparison. They are already approved routes; do not reclassify them as hypothetical future ideas during implementation.
-
-### Touch
-
-Expansion 1 adds one substantial route:
-
-```text
-Touch Screen Test
-```
-
-It owns live finger-touch detection, multi-touch observation, test-area coverage, confirmation of repeatedly missed areas, and the separate hands-off unexpected-touch check.
-
-Do not split thin synonym pages such as `/multi-touch-test` or `/ghost-touch-test` without new evidence and a reviewed scope change.
-
-## Internal linking rules
-
-Each implemented tool page should link to 2–4 genuinely related **implemented** tools.
-
-Examples as routes become available:
+Preferred clusters:
 
 ```text
 Gamepad Tester
-→ Stick Drift Test
-→ Deadzone Test
+↔ Stick Drift
+↔ Deadzone
 
 Mouse Tester
-→ Mouse Button Test
-→ Mouse Scroll Test
-→ Double Click Test
+↔ Mouse Button
+↔ Mouse Scroll
+↔ Double Click / Polling where contextually useful
 
-Double Click Test
-→ Mouse Button Test
-→ Mouse Tester
-
-Polling Rate Test
-→ Mouse DPI Test
-→ Mouse Tester
-
-FPS Test
-→ Refresh Rate Test
-→ Frame Skipping Test
+Mouse DPI
+↔ Mouse Tester
+↔ Polling Rate
 
 Keyboard Tester
-→ Keyboard Rollover Test
-→ Keyboard Ghosting Test
+↔ Rollover
+↔ Ghosting
 
-Dead Pixel Test
-→ Backlight Bleed Test
-→ Refresh Rate Test
+Touch Screen
+↔ Dead Pixel
+↔ Backlight Bleed
+
+FPS
+↔ Refresh Rate
+↔ Frame Skipping
+
+Dead Pixel
+↔ Backlight Bleed
+↔ Refresh Rate
+
+Backlight Bleed
+↔ Dead Pixel
+
+Frame Skipping
+↔ Refresh Rate
+↔ FPS
 ```
 
-Never link an unimplemented route merely because it is approved in Expansion 1.
+This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count.
 
-Do not create a site-wide block containing every tool on every page.
-
-## URL rules
-
-- lowercase
-- hyphen-separated
-- no dates
-- no locale prefix for initial English version
-- no query-string-dependent canonical content
-- canonical URL points to the clean route
-
-## Duplicate-intent rule
-
-Do not create:
+## Supporting routes
 
 ```text
-/gamepad-tester
-/controller-tester
-/gamepad-test-online
+/
+/about
+/privacy
 ```
 
-as three pages if SERP overlap shows one intent.
-
-One canonical page should naturally mention the valid synonyms in text.
-
-Expansion 1 routes were explicitly approved as distinct jobs; do not create additional synonym routes around them without a new reviewed scope decision.
-
-## Future category expansion outside Expansion 1
-
-Potential later categories:
+Primary header navigation remains intentionally small:
 
 ```text
-Audio
-Camera / Microphone
-File / Metadata
-Network
+Tools
+About
 ```
 
-Do not introduce them into navigation until at least one real approved tool exists.
+Privacy may live in the footer/supporting navigation; it does not need equal visual weight in the primary header.
 
-## Release-aware navigation
+## Future IA changes
 
-Before a tool is implemented and intended for release:
+Do not create category landing pages, site search, filters, or a mega-navigation pre-emptively.
 
-- do not link to a placeholder route;
-- do not show `Coming soon` cards merely to make the homepage look larger;
-- homepage/category lists contain only real working tools.
+Revisit IA only when:
 
-The reserved `.invalid` origin and `noindex` remain until the public deployment gate. Approval in `20` means permission to implement, not permission to expose an empty route.
-
-Every tool page must work as a standalone search landing page. It must not rely on homepage onboarding or a previous tool visit.
+- the catalog grows enough that the homepage grouping no longer scans well;
+- Search Console reveals meaningful category-level intent;
+- a cluster becomes large enough to justify its own navigation surface.
