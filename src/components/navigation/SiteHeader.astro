@@ -12,9 +12,7 @@ const { variant = 'default' } = Astro.props;
 <header class="site-header" data-variant={variant}>
   <div class="site-header__inner shell-width">
     <a class="site-header__brand" href="/">
-      {variant === 'homepage' && (
-        <span class="site-header__mark" aria-hidden="true"><BrandMark size={29} /></span>
-      )}
+      <span class="site-header__mark" aria-hidden="true"><BrandMark size={29} /></span>
       <span class="site-header__brand-copy">
         <strong>{siteConfig.name}</strong>
       </span>
@@ -28,10 +26,29 @@ const { variant = 'default' } = Astro.props;
 </header>
 
 <style>
+  .site-header {
+    border-bottom-color: var(--color-border-strong);
+    background: var(--color-surface-strong);
+    color: var(--color-text);
+  }
+
+  .site-header__inner {
+    min-height: 3.9rem;
+  }
+
   .site-header__brand {
     display: inline-flex;
     align-items: center;
     gap: 0.72rem;
+    color: var(--color-text);
+  }
+
+  .site-header__mark {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    color: #42504c;
   }
 
   .site-header__brand-copy {
@@ -40,52 +57,27 @@ const { variant = 'default' } = Astro.props;
 
   .site-header__brand-copy strong {
     font: inherit;
-  }
-
-  .site-header[data-variant='homepage'] {
-    border-bottom: 1px solid #c9cbc5;
-    background: #ece9e1;
-    color: #202725;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__inner {
-    min-height: 3.9rem;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__brand {
-    color: #202725;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__mark {
-    width: 2rem;
-    height: 2rem;
-    display: grid;
-    place-items: center;
-    color: #42504c;
-  }
-
-  .site-header[data-variant='homepage'] .site-header__brand-copy strong {
     font-size: 0.95rem;
     line-height: 1.1;
     letter-spacing: -0.018em;
   }
 
-  .site-header[data-variant='homepage'] .site-header__nav {
+  .site-header__nav {
     align-items: center;
     gap: 1rem;
   }
 
-  .site-header[data-variant='homepage'] .site-header__nav a {
+  .site-header__nav a {
     position: relative;
     padding: 0.45rem 0.04rem;
-    color: #69716e;
+    color: var(--color-muted);
     font-size: 0.8rem;
     font-weight: 650;
     letter-spacing: 0.005em;
     transition: color 120ms ease;
   }
 
-  .site-header[data-variant='homepage'] .site-header__nav a::after {
+  .site-header__nav a::after {
     content: '';
     position: absolute;
     right: 0;
@@ -98,34 +90,34 @@ const { variant = 'default' } = Astro.props;
     transition: scale 120ms ease;
   }
 
-  .site-header[data-variant='homepage'] .site-header__nav a:hover,
-  .site-header[data-variant='homepage'] .site-header__nav a[aria-current='page'] {
-    color: #202725;
+  .site-header__nav a:hover,
+  .site-header__nav a[aria-current='page'] {
+    color: var(--color-text);
   }
 
-  .site-header[data-variant='homepage'] .site-header__nav a:hover::after,
-  .site-header[data-variant='homepage'] .site-header__nav a[aria-current='page']::after {
+  .site-header__nav a:hover::after,
+  .site-header__nav a[aria-current='page']::after {
     scale: 1 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .site-header[data-variant='homepage'] .site-header__nav a,
-    .site-header[data-variant='homepage'] .site-header__nav a::after {
+    .site-header__nav a,
+    .site-header__nav a::after {
       transition: none;
     }
   }
 
   @media (max-width: 40rem) {
-    .site-header[data-variant='homepage'] .site-header__inner {
+    .site-header__inner {
       min-height: 3.65rem;
     }
 
-    .site-header[data-variant='homepage'] .site-header__mark {
+    .site-header__mark {
       width: 1.8rem;
       height: 1.8rem;
     }
 
-    .site-header[data-variant='homepage'] .site-header__nav {
+    .site-header__nav {
       gap: 0.75rem;
     }
   }
