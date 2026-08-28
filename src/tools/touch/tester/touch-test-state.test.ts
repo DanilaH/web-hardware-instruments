@@ -39,13 +39,22 @@ describe('touch test state', () => {
     expect(repeatableMissedCellCount(state)).toBe(158);
   });
 
-  it('tracks active contacts and maximum detected together', () => {
+  it('tracks only contacts observed in the test surface for multi-touch metrics', () => {
     let state = createTouchTestState();
-    state = observeTouchSample(state, { phase: 'start', contactId: 1, x: 0, y: 0, insideSurface: false });
-    state = observeTouchSample(state, { phase: 'start', contactId: 2, x: 0, y: 0, insideSurface: false });
-    state = observeTouchSample(state, { phase: 'end', contactId: 1, x: 0, y: 0, insideSurface: false });
-    expect(state.activeContacts.size).toBe(1);
+    state = observeTouchSample(state, { phase: 'start', contactId: 1, x: -0.2, y: 0.5, insideSurface: false });
+    expect(state.activeContacts.size).toBe(0);
+    expect(state.maximumDetectedTogether).toBe(0);
+
+    state = observeTouchSample(state, { phase: 'move', contactId: 1, x: 0.1, y: 0.5, insideSurface: true });
+    state = observeTouchSample(state, { phase: 'start', contactId: 2, x: 0.8, y: 0.5, insideSurface: true });
+    expect(state.activeContacts.size).toBe(2);
     expect(state.maximumDetectedTogether).toBe(2);
+
+    state = observeTouchSample(state, { phase: 'move', contactId: 1, x: 1.2, y: 0.5, insideSurface: false });
+    expect(state.activeContacts.size).toBe(2);
+
+    state = observeTouchSample(state, { phase: 'end', contactId: 1, x: 1.2, y: 0.5, insideSurface: false });
+    expect(state.activeContacts.size).toBe(1);
     state = clearActiveContacts(state);
     expect(state.activeContacts.size).toBe(0);
     expect(state.maximumDetectedTogether).toBe(2);
