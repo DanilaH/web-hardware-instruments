@@ -98,7 +98,7 @@
   },
   "post_expansion_audit": {
     "status": "complete",
-    "date": "2026-08-28",
+    "date": "2026-08-29",
     "scope": [
       "independent requirements/source-of-truth reconciliation",
       "whole-catalog code and measurement-boundary review",
@@ -106,10 +106,11 @@
       "homepage information architecture review",
       "focused maintenance/source-readability cleanup",
       "approved authored visual-system rollout across homepage, shared shell, and all hardware families",
-      "post-refresh source-of-truth and release-prep hygiene"
+      "post-refresh source-of-truth and release-prep hygiene",
+      "final whole-catalog on-page, technical, intent, internal-linking, and search-appearance SEO audit"
     ],
-    "result": "No new measurement or acquisition-architecture blockers found. Durable requirements were separated from completed roadmap history; homepage/catalog UX was polished; the authored instrument identity was rolled out across all five hardware families; stale visual-source wording was reconciled; branded favicon plumbing was added.",
-    "current_work_mode": "external release-ready gate only unless a concrete maintenance defect is found or fresh evidence approves new product scope",
+    "result": "No new measurement or acquisition-architecture blockers found. Durable requirements were separated from completed roadmap history; homepage/catalog UX was polished; the authored instrument identity was rolled out across all five hardware families; stale source wording was reconciled; final SEO review confirmed unique tool intents and metadata, aligned the Refresh Rate title contract, and added Google-compatible favicon/site-name signals.",
+    "current_work_mode": "external release-ready and production SEO validation gate only unless a concrete maintenance defect is found or fresh evidence approves new product scope",
     "real_hardware_validation": "still pending release-ready gate and must not be inferred from headless/mock review"
   },
   "documents": [
@@ -142,7 +143,7 @@
     "GLOBAL_GOAL_AUDIT_V5.md",
     "RESEARCH_EVIDENCE_2026-08.md"
   ],
-  "version": "7.2",
+  "version": "7.3",
   "ux_priority": "one-screen obvious task completion for desktop-relevant tools; route-specific mobile-first acceptance where appropriate",
   "ux_min_desktop_viewport": "1366x768",
   "visual_direction": "instrument minimalism + authored identity; light chassis, meaningful dark diagnostic surfaces, five restrained hardware-family channel colors, domain-specific browser/input geometry, and state/signal-driven motion",
@@ -195,6 +196,7 @@
     "global_full_v1_exact_implementation": "18_DECISIONS_AND_BOUNDARIES.md",
     "expansion_1_exact_implementation": "20_POST_V1_HARDWARE_EXPANSION_SPEC.md",
     "visual_system": "17_FUNCTIONAL_VISUAL_SYSTEM.md",
+    "seo_content": "05_SEO_CONTENT.md",
     "agent_bootstrap": "AGENTS.md"
   },
   "styling": "plain CSS + CSS custom properties + Astro scoped styles",
@@ -233,7 +235,7 @@
     "tool_usability": "global"
   },
   "release_strategy": {
-    "development_state": "full 18-tool catalog code-side audited; authored visual refresh and post-refresh source/release-prep hygiene complete",
+    "development_state": "full 18-tool catalog code-side audited; authored visual refresh, release-prep hygiene, and final code-side SEO audit complete",
     "public_deployment": "deferred until a real production domain is purchased immediately before deployment",
     "placeholder_origin": "https://hardware-testing.invalid",
     "indexing_enabled_before_real_origin": false,
