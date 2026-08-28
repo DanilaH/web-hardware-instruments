@@ -1,0 +1,88 @@
+/* Keyboard family identity layer. Keyboard state and measurement semantics remain in each tool. */
+.page-main :is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting]) {
+  --color-signal: var(--color-channel-keyboard);
+}
+
+.page-main :is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting]) .keyboard-visual {
+  border-color: var(--color-border);
+  background: #f5f3ec;
+}
+
+.page-main :is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting]) .keyboard-key {
+  border-color: #c9ccc2;
+  background: #fbfaf5;
+  color: #5f6662;
+}
+
+.page-main :is([data-keyboard-tester], [data-keyboard-rollover], [data-keyboard-ghosting]) .keyboard-key[data-pressed='true'] {
+  border-color: var(--color-channel-keyboard);
+  background: color-mix(in srgb, var(--color-channel-keyboard) 15%, #fbfaf5);
+  color: var(--color-text);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--color-channel-keyboard) 35%, transparent);
+}
+
+.page-main [data-keyboard-tester] .keyboard-tool__results,
+.page-main [data-keyboard-rollover] :is(.rollover-tool__metrics > div, .rollover-tool__footer),
+.page-main [data-keyboard-ghosting] .ghosting-result {
+  border-color: var(--color-border);
+}
+
+.page-main [data-keyboard-tester] .keyboard-result span,
+.page-main [data-keyboard-rollover] .rollover-tool__metrics span,
+.page-main [data-keyboard-ghosting] :is(.ghosting-tool__controls label > span, .ghosting-result > span) {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.page-main [data-keyboard-tester] .keyboard-result strong,
+.page-main [data-keyboard-rollover] .rollover-tool__metrics strong {
+  color: #979d94;
+}
+
+.page-main [data-keyboard-tester][data-state='detected'] .keyboard-result--primary strong,
+.page-main [data-keyboard-rollover] .rollover-tool__metric--primary strong,
+.page-main [data-keyboard-rollover][data-state='detected'] .rollover-tool__metrics strong {
+  color: var(--color-channel-keyboard);
+}
+
+.page-main [data-keyboard-rollover] .rollover-action,
+.page-main [data-keyboard-ghosting] :is(.ghosting-tool__controls select, .ghosting-action) {
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.page-main [data-keyboard-rollover] .rollover-tool__examples code {
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #f5f3ec;
+}
+
+.page-main [data-keyboard-ghosting] .ghosting-action--primary {
+  border-color: var(--color-channel-keyboard);
+  background: color-mix(in srgb, var(--color-channel-keyboard) 12%, var(--color-surface));
+  color: var(--color-text);
+  box-shadow: inset 3px 0 0 var(--color-channel-keyboard);
+}
+
+.page-main [data-keyboard-ghosting] .ghosting-tool__visual-wrap [data-key-code][data-expected='true'] {
+  border-color: color-mix(in srgb, var(--color-channel-keyboard) 58%, var(--color-border));
+  background: color-mix(in srgb, var(--color-channel-keyboard) 8%, #fbfaf5);
+  color: var(--color-text);
+}
+
+.page-main [data-keyboard-ghosting] .ghosting-tool__visual-wrap [data-key-code][data-observation='matched'] {
+  border-color: var(--color-channel-keyboard);
+  background: color-mix(in srgb, var(--color-channel-keyboard) 18%, #fbfaf5);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--color-channel-keyboard) 38%, transparent);
+}
+
+.page-main [data-keyboard-ghosting] .ghosting-tool__visual-wrap [data-key-code][data-observation='missed'] {
+  border-color: #9da49b;
+  background: #efeee8;
+  box-shadow: inset 0 0 0 1px #c9ccc5;
+}
+
+.page-main [data-keyboard-ghosting] .ghosting-tool__visual-wrap [data-key-code][data-additional='true'] {
+  outline-color: #767d78;
+}
