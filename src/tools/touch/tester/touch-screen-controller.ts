@@ -298,6 +298,17 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     fullscreenNote.textContent = active ? 'Full screen active.' : '';
   });
 
+  const resetFullscreenUi = (): void => {
+    root.dataset.fullscreen = 'false';
+    fullscreenButton.textContent = 'Full screen';
+    fullscreenNote.textContent = '';
+  };
+
+  const exitFullscreenForTeardown = (): void => {
+    if (fullscreen.getActiveElement() === root) void fullscreen.exit();
+    resetFullscreenUi();
+  };
+
   const handleConfirmation = (): void => {
     if (!isTouchUsable() || state.mode === 'confirmation' || isRunningHandsOff(handsOff)) return;
     state = startTouchConfirmation(state);
@@ -356,6 +367,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     stop: () => {
       if (destroyed) return;
       interruptHandsOff();
+      exitFullscreenForTeardown();
       service.stop();
       globalActiveContacts.clear();
       state = clearActiveContacts(state);
@@ -364,6 +376,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
     },
     destroy: () => {
       if (destroyed) return;
+      exitFullscreenForTeardown();
       destroyed = true;
       clearTimers();
       if (visualFrame !== null) window.cancelAnimationFrame(visualFrame);

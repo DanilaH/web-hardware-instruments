@@ -1,4 +1,62 @@
 ---
-import RelatedTools from '../components/navigation/RelatedTools.astro';import BaseLayout from '../layouts/BaseLayout.astro';import MouseScrollTest from '../tools/mouse/scroll/MouseScrollTest.astro';const relatedTools=[{href:'/mouse-tester',name:'Mouse Tester',description:'Check general browser-detected mouse input.'},{href:'/mouse-polling-rate-test',name:'Mouse Polling Rate Test',description:'Measure the browser-observed pointer sample rate while moving.'}] as const;
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MouseScrollTest from '../tools/mouse/scroll/MouseScrollTest.astro';
+
+const relatedTools = [
+  {
+    href: '/mouse-tester',
+    name: 'Mouse Tester',
+    description: 'Check general browser-detected mouse input.',
+  },
+  {
+    href: '/mouse-button-test',
+    name: 'Mouse Button Test',
+    description: 'Check which semantic mouse button roles the browser receives.',
+  },
+] as const;
 ---
-<BaseLayout title="Mouse Scroll Test — Test Wheel Direction Online" description="Test browser-detected mouse wheel and scroll direction events, including up, down, and horizontal input." canonicalPath="/mouse-scroll-test"><section class="reading-width"><h1 class="page-heading">Mouse Scroll Test</h1><p class="page-intro">Check whether browser wheel events arrive in the direction you expect.</p></section><MouseScrollTest/><section class="tool-content reading-width"><h2>How to test scrolling</h2><p>Scroll steadily in one direction inside the test area, then reverse. The recent direction strip makes unexpected opposite events easy to spot without declaring a hardware verdict.</p><h2>Browser limitations</h2><p>Wheel events can come from a physical wheel, trackpad, or another scrolling device. Counts are events observed by this page, not physical wheel notches.</p></section><RelatedTools tools={relatedTools}/></BaseLayout><style>.tool-content{margin-top:var(--space-7);padding-bottom:var(--space-7)}.tool-content h2{margin:var(--space-6) 0 var(--space-2);font-size:1.15rem}.tool-content p{color:var(--color-muted);line-height:1.65}</style>
+
+<BaseLayout
+  title="Mouse Scroll Test — Check Your Scroll Wheel"
+  description="Test browser-detected mouse wheel and scroll direction events, including up, down, and horizontal input."
+  canonicalPath="/mouse-scroll-test"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Mouse Scroll Test</h1>
+    <p class="page-intro">Check whether browser wheel events arrive in the direction you expect.</p>
+  </section>
+
+  <MouseScrollTest />
+
+  <section class="tool-content reading-width">
+    <h2>How to test scrolling</h2>
+    <p>
+      Scroll steadily in one direction inside the test area, then reverse. The recent direction strip makes unexpected opposite events easy to spot without declaring a hardware verdict.
+    </p>
+
+    <h2>Browser limitations</h2>
+    <p>
+      Wheel events can come from a physical wheel, trackpad, or another scrolling device. Counts are events observed by this page, not physical wheel notches.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+</style>
