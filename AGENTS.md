@@ -38,6 +38,28 @@ If `18`, `19`, and `20` appear to conflict on shared architecture, privacy, life
 - One page = one user job.
 - Primary interaction must satisfy the one-screen UX acceptance rules where the device class makes that appropriate.
 
+## Review and validation order
+
+For each implementation block, use this exact sequence:
+
+```text
+implementation
+→ self-review #1
+→ review fixes
+→ visual / UX review
+→ visual / UX fixes
+→ self-review #2 on the final diff
+→ review fixes
+→ only then run build / typecheck / tests / CI
+→ fix any validation failures
+→ rerun validation until green
+→ merge
+```
+
+Do **not** wait for, poll, or use CI/test results while either self-review or the visual/UX review is still in progress. Reviews must be completed from the code/diff/product contract first. Automated validation is the final gate after review findings are closed, not an input to the review process.
+
+If the final validation run finds an error, fix it, rerun the affected review only when the fix changes behavior/architecture/UX materially, then rerun validation. Pure compile/test-only corrections do not require restarting the whole review cycle.
+
 ## Toolchain
 
 Use:
