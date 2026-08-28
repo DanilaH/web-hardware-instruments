@@ -1,0 +1,305 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astro';
+---
+
+<ToolShell labelledBy="mouse-tester-tool-heading">
+  <h2 id="mouse-tester-tool-heading" class="mouse-tester__sr">Mouse Tester controls</h2>
+
+  <div class="mouse-tester" data-mouse-tester data-state="ready">
+    <div class="mouse-tester__status-row">
+      <span class="mouse-tester__signal" aria-hidden="true"></span>
+      <strong data-mouse-status role="status" aria-live="polite" aria-atomic="true">Listening for mouse input</strong>
+      <span class="mouse-tester__status-note">Listening automatically.</span>
+    </div>
+
+    <p class="mouse-tester__instruction">Move, click, and scroll inside the test area.</p>
+
+    <div class="mouse-tester__surface" data-mouse-test-surface>
+      <div class="mouse-tester__visual-column">
+        <StandardMouseVisual />
+        <p class="mouse-tester__semantic-note">
+          Button positions are a generic reference. Primary/Secondary are browser semantic roles and can be remapped by the OS.
+        </p>
+      </div>
+
+      <div class="mouse-tester__results" aria-label="Browser-detected mouse input">
+        <div class="mouse-result__heading">
+          <span>Browser-detected mouse input</span>
+          <button type="button" class="mouse-tester__reset" data-mouse-reset>Reset</button>
+        </div>
+
+        <div class="button-results">
+          {['Primary', 'Middle', 'Secondary', 'Back', 'Forward'].map((name, button) => (
+            <div class="button-result" data-mouse-button-row data-held="false">
+              <span>{name}</span>
+              <strong class="measurement-value" data-mouse-button-count={button}>0</strong>
+            </div>
+          ))}
+        </div>
+
+        <div class="signal-results">
+          <div>
+            <span>Wheel</span>
+            <strong data-mouse-wheel>Waiting</strong>
+          </div>
+          <div>
+            <span>Movement</span>
+            <strong data-mouse-movement>Waiting</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="mouse-tester__note" data-mouse-note>
+      Test only inside this surface. Normal right-click, scrolling, and side-button behavior remains unchanged elsewhere on the page.
+    </p>
+
+    <p class="mouse-tester__sr" data-mouse-accessible-summary>
+      Mouse Tester is listening. Move, click, or scroll inside the test area.
+    </p>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountMouseTester } from './mouse-tester-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-mouse-tester]');
+  if (root) {
+    const controller = mountMouseTester(root);
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        controller.start();
+      }
+    });
+  }
+</script>
+
+<style>
+  .mouse-tester {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .mouse-tester__status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .mouse-tester__status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+
+  .mouse-tester__status-note {
+    margin-left: auto;
+  }
+
+  .mouse-tester__signal {
+    width: 0.55rem;
+    height: 0.55rem;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-signal);
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .mouse-tester[data-state='unavailable'] .mouse-tester__signal {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .mouse-tester__instruction,
+  .mouse-tester__note,
+  .mouse-tester__semantic-note {
+    margin: 0;
+  }
+
+  .mouse-tester__instruction {
+    font-size: 0.95rem;
+  }
+
+  .mouse-tester__surface {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(18rem, 0.7fr);
+    gap: var(--space-5);
+    min-height: 20rem;
+    padding: var(--space-4);
+    border: 1px solid #e3e6e7;
+    background-image:
+      linear-gradient(#f0f2f2 1px, transparent 1px),
+      linear-gradient(90deg, #f0f2f2 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #fafbfb;
+    user-select: none;
+  }
+
+  .mouse-tester__visual-column {
+    min-width: 0;
+    display: grid;
+    align-content: center;
+    gap: var(--space-2);
+  }
+
+  .mouse-tester__semantic-note,
+  .mouse-tester__note {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .mouse-tester__semantic-note {
+    max-width: 31rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .mouse-tester__results {
+    align-self: stretch;
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    padding-left: var(--space-5);
+    border-left: 1px solid #dfe3e4;
+  }
+
+  .mouse-result__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .mouse-result__heading > span,
+  .button-result > span,
+  .signal-results span {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+  }
+
+  .mouse-tester__reset {
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    padding: 0.25rem 0.35rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .button-results {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .button-result {
+    min-height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0.35rem 0.55rem;
+    border: 1px solid #e2e5e6;
+    background: rgba(255, 255, 255, 0.78);
+  }
+
+  .button-result strong {
+    color: #8c9295;
+    font-size: 1rem;
+  }
+
+  .button-result[data-held='true'] {
+    border-color: color-mix(in srgb, var(--color-signal) 55%, #d8dcde);
+    background: color-mix(in srgb, var(--color-signal) 8%, white);
+  }
+
+  .button-result[data-held='true'] strong {
+    color: var(--color-signal);
+  }
+
+  .signal-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid #dfe3e4;
+  }
+
+  .signal-results > div {
+    min-width: 0;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .signal-results strong {
+    overflow: hidden;
+    color: var(--color-text);
+    font: 600 1rem/1.2 var(--font-mono);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mouse-tester__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 48rem) {
+    .mouse-tester__surface {
+      grid-template-columns: 1fr;
+    }
+
+    .mouse-tester__results {
+      padding: var(--space-4) 0 0;
+      border-left: 0;
+      border-top: 1px solid #dfe3e4;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .mouse-tester__status-row {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .mouse-tester__status-note {
+      width: 100%;
+      margin-left: 1.1rem;
+    }
+
+    .mouse-tester__surface {
+      min-height: 0;
+      padding: var(--space-3);
+    }
+
+    .button-results {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .button-result:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

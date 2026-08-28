@@ -1,0 +1,74 @@
+---
+import RelatedTools from '../components/navigation/RelatedTools.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MouseTester from '../tools/mouse/tester/MouseTester.astro';
+
+const relatedTools = [
+  {
+    href: '/mouse-dpi-test',
+    name: 'Mouse DPI Test',
+    description: 'Estimate mouse DPI from a measured physical movement distance.',
+  },
+  {
+    href: '/keyboard-tester',
+    name: 'Keyboard Tester',
+    description: 'Press keys and see which physical key codes the browser detects.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Mouse Tester — Test Buttons, Scroll & Movement Online"
+  description="Test mouse buttons, wheel input, and pointer movement directly in your browser. No install or account required."
+  canonicalPath="/mouse-tester"
+>
+  <section class="reading-width">
+    <h1 class="page-heading">Mouse Tester</h1>
+    <p class="page-intro">Check which mouse buttons, wheel input, and movement this browser receives.</p>
+  </section>
+
+  <MouseTester />
+
+  <section class="tool-content reading-width" aria-labelledby="mouse-tester-how-to">
+    <h2 id="mouse-tester-how-to">How to test your mouse</h2>
+    <ol>
+      <li>Move the pointer inside the test area.</li>
+      <li>Press the main, middle, secondary, and side buttons you want to check.</li>
+      <li>Scroll up, down, or horizontally and watch the browser-detected state.</li>
+    </ol>
+
+    <h2>What the result means</h2>
+    <p>
+      The tool shows mouse input events that reached this browser page. Press counts and held highlights confirm observed semantic button roles, while wheel direction and movement show whether those browser events arrived.
+    </p>
+
+    <h2>Browser and hardware limitations</h2>
+    <p>
+      Browser button roles can reflect operating-system remapping, and some side-button behavior varies by browser or platform. A missing event can suggest an input problem, but this page does not certify overall mouse hardware health or measure latency, DPI, or hardware polling rate.
+    </p>
+  </section>
+
+  <RelatedTools tools={relatedTools} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content h2 {
+    margin: var(--space-6) 0 var(--space-2);
+    font-size: 1.15rem;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content ol {
+    padding-left: 1.25rem;
+  }
+</style>

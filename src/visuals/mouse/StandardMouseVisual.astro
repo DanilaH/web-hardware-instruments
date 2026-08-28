@@ -1,0 +1,108 @@
+<div class="standard-mouse" data-standard-mouse-visual aria-hidden="true">
+  <svg viewBox="0 0 360 250" role="img">
+    <title>Generic mouse input visualization</title>
+
+    <path class="mouse-body" d="M180 20C110 20 72 65 72 126v23c0 61 40 87 108 87s108-26 108-87v-23C288 65 250 20 180 20Z" />
+    <path class="mouse-divider" d="M180 22v82" />
+    <path class="mouse-divider" d="M80 108h200" />
+
+    <path class="button-zone button-zone--primary" data-mouse-visual-button="0" d="M82 105V92c0-39 34-64 92-65v78Z" />
+    <path class="button-zone button-zone--secondary" data-mouse-visual-button="2" d="M186 27c58 1 92 26 92 65v13h-92Z" />
+    <rect class="button-zone button-zone--middle" data-mouse-visual-button="1" x="164" y="48" width="32" height="58" rx="14" />
+
+    <rect class="button-zone button-zone--side" data-mouse-visual-button="3" x="58" y="126" width="28" height="38" rx="8" />
+    <rect class="button-zone button-zone--side" data-mouse-visual-button="4" x="58" y="170" width="28" height="38" rx="8" />
+
+    <g class="wheel-signal" data-mouse-visual-wheel data-direction="none">
+      <path class="wheel-arrow wheel-arrow--up" d="M180 39l-7 9h14Z" />
+      <path class="wheel-arrow wheel-arrow--down" d="M180 116l7-9h-14Z" />
+    </g>
+
+    <g class="movement-signal" data-mouse-visual-movement data-active="false">
+      <path d="M118 191h124" />
+      <path d="M118 191l12-8M118 191l12 8M242 191l-12-8M242 191l-12 8" />
+    </g>
+
+    <text class="button-label" x="125" y="84">P</text>
+    <text class="button-label" x="235" y="84">S</text>
+    <text class="button-label" x="180" y="79">M</text>
+    <text class="button-label button-label--side" x="72" y="150">B</text>
+    <text class="button-label button-label--side" x="72" y="194">F</text>
+  </svg>
+</div>
+
+<style>
+  .standard-mouse {
+    width: min(100%, 27rem);
+    margin-inline: auto;
+  }
+
+  .standard-mouse svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .mouse-body {
+    fill: #fafbfb;
+    stroke: #aeb4b7;
+    stroke-width: 2;
+  }
+
+  .mouse-divider {
+    fill: none;
+    stroke: #d8dcde;
+    stroke-width: 1.5;
+  }
+
+  .button-zone {
+    fill: #f0f2f2;
+    stroke: #c9ced0;
+    stroke-width: 1.5;
+    transition: fill 100ms ease, stroke 100ms ease;
+  }
+
+  .button-zone[data-active='true'] {
+    fill: color-mix(in srgb, var(--color-signal) 20%, white);
+    stroke: var(--color-signal);
+  }
+
+  .button-label {
+    pointer-events: none;
+    fill: #777d80;
+    font: 600 12px var(--font-sans);
+    text-anchor: middle;
+  }
+
+  .button-label--side {
+    font-size: 10px;
+  }
+
+  .wheel-arrow {
+    fill: #c7ccce;
+  }
+
+  .wheel-signal[data-direction='up'] .wheel-arrow--up,
+  .wheel-signal[data-direction='down'] .wheel-arrow--down,
+  .wheel-signal[data-direction='horizontal'] .wheel-arrow {
+    fill: var(--color-signal);
+  }
+
+  .movement-signal {
+    fill: none;
+    stroke: #c7ccce;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .movement-signal[data-active='true'] {
+    stroke: var(--color-signal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .button-zone {
+      transition: none;
+    }
+  }
+</style>
