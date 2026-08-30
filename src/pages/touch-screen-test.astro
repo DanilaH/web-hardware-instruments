@@ -43,14 +43,14 @@ const relatedTools = [
       Coverage is the portion of this browser test area where actual finger-touch samples were observed. The tool does not interpolate between samples and does not turn out-of-area captured movement into edge coverage.
     </p>
 
-    <h2>Missed areas and confirmation</h2>
+    <h2>Missed areas, dead spots, and dead zones</h2>
     <p>
       The first and confirmation passes are stored separately. A cell can be described as not detected in both passes only when neither pass received an in-area touch sample there. Repeatable missed areas may indicate a touch problem, but this browser test cannot identify the failed hardware component.
     </p>
 
-    <h2>Browser and hardware limitations</h2>
+    <h2>Ghost touch and unexpected input</h2>
     <p>
-      Browser Pointer Events are not a hardware certification. Mouse and stylus input are intentionally excluded, fullscreen is optional, and a quiet 15-second hands-off sample cannot rule out intermittent touch faults or prove that a touchscreen is healthy.
+      The 15-second hands-off check can help you observe unexpected touch-contact starts sometimes described as ghost touch. It does not confirm a ghost-touch fault, and a quiet run cannot rule out intermittent problems or prove that a touchscreen is healthy. Browser Pointer Events are not a hardware certification; mouse and stylus input are intentionally excluded, and fullscreen is optional.
     </p>
   </section>
 
