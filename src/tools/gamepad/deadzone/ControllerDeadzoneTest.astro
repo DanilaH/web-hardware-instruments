@@ -18,7 +18,7 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
 
       <label class="deadzone-tool__selector" data-deadzone-selector-wrap hidden>
         <span>Controller</span>
-        <select data-deadzone-selector aria-label="Select controller"></select>
+        <select class="tool-control" data-deadzone-selector aria-label="Select controller"></select>
       </label>
     </div>
 
@@ -153,11 +153,6 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
   }
 
   .deadzone-tool__selector select {
-    min-height: 2.35rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
     padding-inline: var(--space-2);
     text-transform: none;
     letter-spacing: 0;
@@ -207,7 +202,7 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
   }
 
   .stick-choice span {
-    min-height: 2.5rem;
+    block-size: var(--tool-control-height);
     display: grid;
     place-items: center;
     border: 1px solid var(--color-border);
