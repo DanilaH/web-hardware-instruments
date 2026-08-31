@@ -32,3 +32,29 @@
     display: none;
   }
 }
+
+@media (max-width: 22rem) {
+  .page-main--homepage .category-rail.category-rail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .page-main--homepage .category-rail.category-rail a,
+  .page-main--homepage .category-rail.category-rail a:nth-child(n + 4) {
+    grid-column: span 2;
+  }
+
+  .page-main--homepage .category-rail.category-rail a:nth-child(2),
+  .page-main--homepage .category-rail.category-rail a:nth-child(4),
+  .page-main--homepage .category-rail.category-rail a:nth-child(5) {
+    border-right: 0 !important;
+  }
+
+  .page-main--homepage .category-rail.category-rail a:nth-child(3) {
+    border-top: 1px solid #d3d5cf !important;
+    border-right: 1px solid #d3d5cf !important;
+  }
+
+  .page-main--homepage .category-rail.category-rail a:nth-child(5) {
+    grid-column: 1 / -1;
+  }
+}
