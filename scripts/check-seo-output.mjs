@@ -1,5 +1,5 @@
 import { readdir, readFile } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = dirname(fileURLToPath(import.meta.url));
@@ -28,11 +28,24 @@ const walkHtml = async (dir) => {
   return files;
 };
 
-const extractCanonical = (html) =>
-  html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["'][^>]*>/i)?.[1] ?? null;
+const extractAttribute = (tag, name) =>
+  tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1] ?? null;
 
-const hasNoindex = (html) =>
-  /<meta\s+name=["']robots["']\s+content=["'][^"']*\bnoindex\b[^"']*["'][^>]*>/i.test(html);
+const findTagByAttribute = (html, tagName, attribute, value) => {
+  const tags = html.match(new RegExp(`<${tagName}\\b[^>]*>`, 'gi')) ?? [];
+  return tags.find((tag) => extractAttribute(tag, attribute)?.toLowerCase() === value) ?? null;
+};
+
+const extractCanonical = (html) => {
+  const tag = findTagByAttribute(html, 'link', 'rel', 'canonical');
+  return tag ? extractAttribute(tag, 'href') : null;
+};
+
+const hasNoindex = (html) => {
+  const tag = findTagByAttribute(html, 'meta', 'name', 'robots');
+  const content = tag ? extractAttribute(tag, 'content') : null;
+  return content !== null && /\bnoindex\b/i.test(content);
+};
 
 const extractLocs = (xml) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 
@@ -61,17 +74,43 @@ if (!indexingEnabled) {
   process.exit(0);
 }
 
-if (!/^Allow:\s*\/$/m.test(robots) || !/^Sitemap:\s*https?:\/\//m.test(robots)) {
-  fail('indexing is enabled but robots.txt is missing Allow: / or the sitemap declaration');
+if (!/^Allow:\s*\/$/m.test(robots)) {
+  fail('indexing is enabled but robots.txt is missing Allow: /');
 }
 
 if (!hasSitemapIndex || sitemapFiles.length === 0) {
   fail('indexing is enabled but the generated sitemap set is incomplete');
 }
 
+const homepageHtml = await readText(join(distDir, 'index.html'));
+const homepageCanonical = extractCanonical(homepageHtml);
+if (!homepageCanonical) fail('homepage is missing a canonical URL');
+
+const canonicalOrigin = new URL(homepageCanonical).origin;
+const declaredSitemap = robots.match(/^Sitemap:\s*(\S+)\s*$/mi)?.[1] ?? null;
+const expectedSitemapIndex = new URL('/sitemap-index.xml', canonicalOrigin).href;
+if (declaredSitemap !== expectedSitemapIndex) {
+  fail(`robots.txt sitemap must use the canonical origin: expected ${expectedSitemapIndex}, got ${declaredSitemap ?? 'none'}`);
+}
+
+const sitemapIndexUrls = new Set(extractLocs(await readText(join(distDir, 'sitemap-index.xml'))));
+const expectedSitemapFiles = new Set(
+  sitemapFiles.map((file) => new URL(`/${basename(file)}`, canonicalOrigin).href),
+);
+
+for (const expected of expectedSitemapFiles) {
+  if (!sitemapIndexUrls.has(expected)) fail(`sitemap index is missing ${expected}`);
+}
+for (const indexed of sitemapIndexUrls) {
+  if (!expectedSitemapFiles.has(indexed)) fail(`sitemap index references an unexpected sitemap: ${indexed}`);
+}
+
 const sitemapUrls = new Set();
 for (const sitemapFile of sitemapFiles) {
   for (const url of extractLocs(await readText(sitemapFile))) {
+    if (new URL(url).origin !== canonicalOrigin) {
+      fail(`sitemap URL uses a different origin: ${url}`);
+    }
     sitemapUrls.add(url);
   }
 }
@@ -89,6 +128,7 @@ for (const htmlFile of htmlFiles) {
   }
 
   if (!canonical) fail(`${rel} is missing a canonical URL`);
+  if (new URL(canonical).origin !== canonicalOrigin) fail(`${rel} canonical uses a different origin: ${canonical}`);
   if (hasNoindex(html)) fail(`${rel} is unexpectedly noindex while indexing is enabled`);
   if (canonicalUrls.has(canonical)) fail(`duplicate canonical URL: ${canonical}`);
 
