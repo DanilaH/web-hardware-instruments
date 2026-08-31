@@ -21,12 +21,12 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          touch = Path('src/tools/touch/tester/touch-screen-controller.ts')
-          text = touch.read_text()
+          touch_controller = Path('src/tools/touch/tester/touch-screen-controller.ts')
+          text = touch_controller.read_text()
           old_touch = "No touchscreen capability is reported on this device. Open this page on the device you want to test."
           new_touch = "No touchscreen capability reported on this device."
           if old_touch in text:
-              touch.write_text(text.replace(old_touch, new_touch))
+              touch_controller.write_text(text.replace(old_touch, new_touch))
 
           dpi = Path('src/tools/mouse/dpi/MouseDpiTest.astro')
           text = dpi.read_text()
@@ -36,6 +36,23 @@ jobs:
               dpi.write_text(text.replace(old_dpi, new_dpi))
           elif new_dpi not in text:
               raise SystemExit('Expected DPI media block not found')
+
+          touch = Path('src/tools/touch/tester/TouchScreenTest.astro')
+          text = touch.read_text()
+          old_note = """  .touch-tool__fullscreen-note {\n    color: var(--color-muted);\n    font-size: 0.76rem;\n  }"""
+          new_note = """  .touch-tool__fullscreen-note {\n    min-block-size: 1.15rem;\n    flex: 0 0 100%;\n    color: var(--color-muted);\n    font-size: 0.76rem;\n  }"""
+          if old_note in text:
+              text = text.replace(old_note, new_note)
+          elif new_note not in text:
+              raise SystemExit('Expected fullscreen note block not found')
+
+          old_hands = """    .hands-off {\n      align-items: stretch;\n      flex-direction: column;\n      gap: var(--space-2);\n    }"""
+          new_hands = """    .hands-off {\n      align-items: stretch;\n      flex-direction: column;\n      gap: var(--space-2);\n    }\n\n    .hands-off p {\n      min-block-size: 3.6rem;\n    }"""
+          if old_hands in text:
+              text = text.replace(old_hands, new_hands)
+          elif new_hands not in text:
+              raise SystemExit('Expected hands-off mobile block not found')
+          touch.write_text(text)
           PY
       - name: Commit fixes
         run: |
@@ -44,6 +61,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/tools/touch/tester/touch-screen-controller.ts src/tools/mouse/dpi/MouseDpiTest.astro
-          git commit -m "UI: finalize content-driven stability"
+          git add src/tools/touch/tester/touch-screen-controller.ts src/tools/touch/tester/TouchScreenTest.astro src/tools/mouse/dpi/MouseDpiTest.astro
+          git commit -m "UI: stabilize touch dynamic actions"
           git push origin HEAD:ui-content-driven-stability
