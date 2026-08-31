@@ -1,0 +1,34 @@
+@media (max-width: 40rem) {
+  .page-main--homepage .category-rail.category-rail {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    overflow: visible;
+    overscroll-behavior-inline: auto;
+    scrollbar-width: auto;
+    scroll-snap-type: none;
+  }
+
+  .page-main--homepage .category-rail.category-rail a {
+    grid-column: span 2;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 2.75rem;
+    padding: 0.65rem 0.55rem;
+    border-top: 0 !important;
+    border-right: 1px solid #d3d5cf !important;
+    scroll-snap-align: none;
+  }
+
+  .page-main--homepage .category-rail.category-rail a:nth-child(3),
+  .page-main--homepage .category-rail.category-rail a:nth-child(5) {
+    border-right: 0 !important;
+  }
+
+  .page-main--homepage .category-rail.category-rail a:nth-child(n + 4) {
+    grid-column: span 3;
+    border-top: 1px solid #d3d5cf !important;
+  }
+
+  .page-main--homepage .category-rail.category-rail small {
+    display: none;
+  }
+}
