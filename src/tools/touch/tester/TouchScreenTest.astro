@@ -31,9 +31,9 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
     </div>
 
     <div class="touch-tool__actions">
-      <button type="button" class="touch-action" data-touch-confirmation>Check missed areas</button>
-      <button type="button" class="touch-action" data-touch-reset>Reset</button>
-      <button type="button" class="touch-action" data-touch-fullscreen>Full screen</button>
+      <button type="button" class="touch-action tool-action tool-action--primary" data-touch-confirmation>Check missed areas</button>
+      <button type="button" class="touch-action tool-action tool-action--secondary" data-touch-reset>Reset</button>
+      <button type="button" class="touch-action tool-action tool-action--secondary" data-touch-fullscreen>Full screen</button>
       <span class="touch-tool__fullscreen-note" data-touch-fullscreen-note aria-live="polite"></span>
     </div>
 
@@ -44,7 +44,7 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
         <h3 id="hands-off-heading">Hands-off unexpected-touch check</h3>
         <p data-touch-hands-off-result aria-live="polite">Optional: run a separate 15-second hands-off observation.</p>
       </div>
-      <button type="button" class="touch-action" data-touch-hands-off>Run hands-off check</button>
+      <button type="button" class="touch-action tool-action tool-action--secondary" data-touch-hands-off>Run hands-off check</button>
     </section>
 
     <details class="touch-tool__details">
@@ -237,21 +237,6 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
     gap: var(--space-2);
   }
 
-  .touch-action {
-    min-height: 2.35rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.35rem;
-    background: #fff;
-    padding: 0.5rem 0.75rem;
-    color: var(--color-text);
-    cursor: pointer;
-  }
-
-  .touch-action:disabled {
-    cursor: not-allowed;
-    opacity: 0.48;
-  }
-
   .touch-tool__fullscreen-note {
     color: var(--color-muted);
     font-size: 0.76rem;
@@ -343,19 +328,13 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
       gap: 0.4rem;
     }
 
-    .touch-action {
-      min-height: 2.2rem;
-      padding: 0.45rem 0.6rem;
-      font-size: 0.82rem;
-    }
-
     .hands-off {
       align-items: stretch;
       flex-direction: column;
       gap: var(--space-2);
     }
 
-    .hands-off .touch-action {
+    .hands-off .tool-action {
       align-self: flex-start;
     }
   }
