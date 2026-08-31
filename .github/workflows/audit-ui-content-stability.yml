@@ -32,4 +32,4 @@ jobs:
         with:
           name: content-stability-dist
           path: dist
-# final exact-string stress snapshot
+# final interaction-stress snapshot
