@@ -35,7 +35,7 @@
 
 .page-main [data-mouse-tester] :is(.mouse-tester__results, .signal-results),
 .page-main [data-mouse-button-test] .results,
-.page-main [data-double-click-test] .metrics,
+.page-main [data-double-click-test] :is(.results, .metrics),
 .page-main [data-mouse-polling-test] .result,
 .page-main [data-mouse-dpi-test] :is(.mouse-controls, .dpi-result) {
   border-color: var(--color-border);
