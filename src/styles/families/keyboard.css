@@ -49,12 +49,6 @@
   color: var(--color-channel-keyboard);
 }
 
-.page-main [data-keyboard-rollover] .rollover-action {
-  border-color: var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-}
-
 .page-main [data-keyboard-rollover] .rollover-tool__examples code {
   border-color: var(--color-border);
   border-radius: var(--radius-sm);

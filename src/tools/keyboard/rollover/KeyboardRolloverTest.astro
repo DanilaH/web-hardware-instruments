@@ -36,7 +36,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 
     <div class="rollover-tool__footer">
       <p>This is the largest simultaneous key set the browser observed during this session, not a hardware certification.</p>
-      <button type="button" class="rollover-action" data-rollover-reset>Reset maximum</button>
+      <button type="button" class="rollover-action tool-action tool-action--secondary" data-rollover-reset>Reset maximum</button>
     </div>
 
     <div class="rollover-tool__examples" aria-label="Suggested key combinations">
@@ -177,19 +177,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   }
 
   .rollover-action {
-    min-height: 2.35rem;
     flex: 0 0 auto;
-    border: 1px solid var(--color-border);
-    border-radius: 0.35rem;
-    background: #fff;
-    padding: 0.5rem 0.75rem;
-    color: var(--color-text);
-    cursor: pointer;
-  }
-
-  .rollover-action:disabled {
-    cursor: not-allowed;
-    opacity: 0.48;
   }
 
   .rollover-tool__examples {
