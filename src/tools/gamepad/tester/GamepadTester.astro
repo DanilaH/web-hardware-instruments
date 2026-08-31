@@ -18,7 +18,7 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
 
       <label class="gamepad-tool__selector" data-gamepad-selector-wrap hidden>
         <span>Controller</span>
-        <select data-gamepad-selector aria-label="Select controller"></select>
+        <select class="tool-control" data-gamepad-selector aria-label="Select controller"></select>
       </label>
     </div>
 
@@ -140,11 +140,6 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
 
   .gamepad-tool__selector select {
     width: 100%;
-    min-height: 2.2rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
     padding: 0.35rem 2rem 0.35rem 0.65rem;
   }
 
