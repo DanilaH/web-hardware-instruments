@@ -217,6 +217,14 @@ a:hover {
   opacity: 0.55;
 }
 
+.tool-result-heading {
+  min-block-size: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 [data-channel='controller'] { --channel: var(--color-channel-controller); }
 [data-channel='mouse'] { --channel: var(--color-channel-mouse); }
 [data-channel='keyboard'] { --channel: var(--color-channel-keyboard); }

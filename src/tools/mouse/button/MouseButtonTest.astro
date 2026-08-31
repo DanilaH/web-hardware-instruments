@@ -25,9 +25,9 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
       </div>
 
       <div class="results">
-        <div class="heading">
+        <div class="heading tool-result-heading">
           <span>Detected button input</span>
-          <button type="button" data-mouse-button-reset>Reset</button>
+          <button type="button" class="mouse-reset tool-action tool-action--quiet" data-mouse-button-reset>Reset</button>
         </div>
 
         {names.map((name, button) => (
@@ -119,7 +119,6 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
     border-left: 1px solid #dfe3e4;
   }
 
-  .heading,
   .row {
     display: grid;
     align-items: center;
@@ -127,21 +126,12 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
   }
 
   .heading {
-    grid-template-columns: 1fr auto;
     margin-bottom: 0.35rem;
     color: var(--color-muted);
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.055em;
-  }
-
-  .heading button {
-    border: 0;
-    background: none;
-    color: var(--color-muted);
-    text-decoration: underline;
-    cursor: pointer;
   }
 
   .row {

@@ -24,9 +24,9 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
       </div>
 
       <div class="mouse-tester__results" aria-label="Browser-detected mouse input">
-        <div class="mouse-result__heading">
+        <div class="mouse-result__heading tool-result-heading">
           <span>Browser-detected mouse input</span>
-          <button type="button" class="mouse-tester__reset" data-mouse-reset>Reset</button>
+          <button type="button" class="mouse-reset tool-action tool-action--quiet" data-mouse-reset>Reset</button>
         </div>
 
         <div class="button-results">
@@ -170,13 +170,6 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
     border-left: 1px solid #dfe3e4;
   }
 
-  .mouse-result__heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-
   .mouse-result__heading > span,
   .button-result > span,
   .signal-results span {
@@ -185,17 +178,6 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.055em;
-  }
-
-  .mouse-tester__reset {
-    border: 0;
-    background: transparent;
-    color: var(--color-muted);
-    padding: 0.25rem 0.35rem;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .button-results {
