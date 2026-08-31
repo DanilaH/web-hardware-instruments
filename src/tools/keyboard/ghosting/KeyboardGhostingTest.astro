@@ -18,23 +18,23 @@ import { keyboardGhostingPresets } from './ghosting-presets';
     <div class="ghosting-tool__controls">
       <label>
         <span>Combination</span>
-        <select data-ghosting-preset>
+        <select class="tool-control" data-ghosting-preset>
           {keyboardGhostingPresets.map((preset) => <option value={preset.id}>{preset.label}</option>)}
         </select>
       </label>
-      <button type="button" class="ghosting-action ghosting-action--primary" data-ghosting-start>Start test</button>
+      <button type="button" class="tool-action tool-action--primary" data-ghosting-start>Start test</button>
     </div>
-
-    <div class="ghosting-tool__visual-wrap">
-      <KeyboardGrid />
-    </div>
-    <p class="ghosting-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
 
     <section class="ghosting-result" aria-labelledby="ghosting-result-heading">
       <span id="ghosting-result-heading">Observed for this combination</span>
       <strong data-ghosting-result>Choose a combination, then start the guided observation.</strong>
       <p data-ghosting-detail></p>
     </section>
+
+    <div class="ghosting-tool__visual-wrap">
+      <KeyboardGrid />
+    </div>
+    <p class="ghosting-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
 
     <p class="ghosting-tool__note">The result assumes you physically held the instructed keys. Reserved operating-system or browser shortcuts may never reach this page.</p>
 
@@ -128,38 +128,8 @@ import { keyboardGhostingPresets } from './ghosting-presets';
     letter-spacing: 0.055em;
   }
 
-  .ghosting-tool__controls select,
-  .ghosting-action {
-    min-height: 2.55rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.35rem;
-    font: inherit;
-  }
-
   .ghosting-tool__controls select {
     width: 100%;
-    background: #fff;
-    padding: 0.45rem 0.65rem;
-    color: var(--color-text);
-  }
-
-  .ghosting-action {
-    background: #fff;
-    padding: 0.5rem 0.9rem;
-    color: var(--color-text);
-    cursor: pointer;
-  }
-
-  .ghosting-action--primary {
-    border-color: var(--color-signal);
-    background: color-mix(in srgb, var(--color-signal) 10%, white);
-    font-weight: 650;
-  }
-
-  .ghosting-action:disabled,
-  .ghosting-tool__controls select:disabled {
-    cursor: not-allowed;
-    opacity: 0.52;
   }
 
   .ghosting-tool__visual-wrap {
@@ -232,33 +202,13 @@ import { keyboardGhostingPresets } from './ghosting-presets';
       grid-template-columns: 1fr;
     }
 
-    .ghosting-action {
+    .ghosting-tool__controls .tool-action {
       width: 100%;
     }
 
     .ghosting-tool__mobile-hint {
       display: block;
       margin-top: calc(var(--space-2) * -1);
-    }
-
-    .ghosting-tool[data-phase='complete'] .ghosting-result,
-    .ghosting-tool[data-phase='interrupted'] .ghosting-result {
-      order: 1;
-    }
-
-    .ghosting-tool[data-phase='complete'] .ghosting-tool__visual-wrap,
-    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__visual-wrap {
-      order: 2;
-    }
-
-    .ghosting-tool[data-phase='complete'] .ghosting-tool__mobile-hint,
-    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__mobile-hint {
-      order: 3;
-    }
-
-    .ghosting-tool[data-phase='complete'] .ghosting-tool__note,
-    .ghosting-tool[data-phase='interrupted'] .ghosting-tool__note {
-      order: 4;
     }
   }
 </style>
