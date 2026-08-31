@@ -16,34 +16,27 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ui-content-driven-stability
-      - name: Apply review fixes
+      - name: Apply DPI capture-note stability fix
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          touch = Path('src/tools/touch/tester/TouchScreenTest.astro')
-          text = touch.read_text()
-          dup = """    .hands-off p {\n      min-block-size: 3.6rem;\n    }\n\n    .hands-off p {\n      min-block-size: 3.6rem;\n    }"""
-          single = """    .hands-off p {\n      min-block-size: 3.6rem;\n    }"""
-          if dup in text:
-              touch.write_text(text.replace(dup, single))
-          elif text.count(single) != 1:
-              raise SystemExit('Unexpected hands-off stability block')
-
-          scroll = Path('src/tools/mouse/scroll/MouseScrollTest.astro')
-          text = scroll.read_text()
-          narrow = """\n  @media (max-width: 22rem) {\n    .strip {\n      padding: 0.65rem;\n      font-size: 0.9rem;\n      line-height: 1.5;\n    }\n  }\n"""
-          if '@media (max-width: 22rem)' not in text:
-              text = text.replace('\n</style>', narrow + '</style>')
-              scroll.write_text(text)
+          dpi = Path('src/tools/mouse/dpi/MouseDpiTest.astro')
+          text = dpi.read_text()
+          marker = """    .mouse-tool__instruction {\n      min-block-size: 4.3rem;\n    }\n"""
+          fixed = marker + """\n    .capture-note {\n      min-block-size: 3.3rem;\n    }\n"""
+          if fixed not in text:
+              if marker not in text:
+                  raise SystemExit('Expected mobile DPI instruction block not found')
+              dpi.write_text(text.replace(marker, fixed, 1))
           PY
-      - name: Commit review fixes
+      - name: Commit DPI stability fix
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/tools/touch/tester/TouchScreenTest.astro src/tools/mouse/scroll/MouseScrollTest.astro
-            git commit -m "UI: fix final stability review findings"
+            git add src/tools/mouse/dpi/MouseDpiTest.astro
+            git commit -m "UI: stabilize DPI capture note"
             git push origin HEAD:ui-content-driven-stability
           fi
       - name: Set up Node
