@@ -309,6 +309,10 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
       gap: var(--space-3);
     }
 
+    .touch-tool__status-row {
+      min-block-size: 2.6rem;
+    }
+
     .touch-tool__metrics {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-2);
