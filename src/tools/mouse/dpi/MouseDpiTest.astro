@@ -275,6 +275,10 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       margin-left: 1.1rem;
     }
 
+    .mouse-tool__instruction {
+      min-block-size: 4.3rem;
+    }
+
     .mouse-tool__layout {
       grid-template-columns: 1fr;
       min-height: 0;
@@ -306,6 +310,12 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       align-items: flex-start;
       flex-direction: column;
       gap: 0.2rem;
+    }
+  }
+
+  @media (max-width: 22rem) {
+    .mouse-tool__status-row {
+      min-block-size: 4.3rem;
     }
   }
 </style>
