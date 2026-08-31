@@ -159,6 +159,64 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+.tool-control,
+.tool-action {
+  block-size: var(--tool-control-height);
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+.tool-control {
+  min-width: 0;
+  padding-inline: var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.tool-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 650;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tool-action--primary {
+  border-color: var(--color-signal);
+  background: var(--color-signal);
+  color: white;
+  font-weight: 700;
+}
+
+.tool-action--secondary {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.tool-action--quiet {
+  block-size: auto;
+  min-block-size: 2.25rem;
+  border-color: transparent;
+  background: transparent;
+  padding-inline: var(--space-2);
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.tool-action:disabled,
+.tool-control:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 [data-channel='controller'] { --channel: var(--color-channel-controller); }
 [data-channel='mouse'] { --channel: var(--color-channel-mouse); }
 [data-channel='keyboard'] { --channel: var(--color-channel-keyboard); }
