@@ -73,6 +73,15 @@
   letter-spacing: 0.01em;
 }
 
+.page-main :is(
+  [data-mouse-tester],
+  [data-mouse-button-test],
+  [data-mouse-scroll-test],
+  [data-double-click-test]
+) .mouse-reset {
+  font-size: 0.8rem;
+}
+
 .page-main [data-mouse-tester] .button-results,
 .page-main [data-mouse-button-test] .results {
   border-top: 1px solid var(--color-border);
@@ -150,15 +159,6 @@
   background: #f2f0e9;
 }
 
-.page-main [data-mouse-polling-test] .result button {
-  padding: 0.68rem 0.95rem;
-  border-color: var(--color-channel-mouse);
-  border-radius: var(--radius-sm);
-  background: var(--color-channel-mouse);
-  color: white;
-  font-weight: 700;
-}
-
 .page-main [data-mouse-dpi-test] .movement-panel {
   background-color: #f5f3ed;
   background-image:
@@ -192,11 +192,6 @@
 .page-main [data-mouse-dpi-test] :is(.distance-control input, .distance-control select) {
   border-color: var(--color-border);
   background: var(--color-surface);
-}
-
-.page-main [data-mouse-dpi-test] .primary-action {
-  border-color: var(--color-channel-mouse);
-  background: var(--color-channel-mouse);
 }
 
 @media (max-width: 40rem) {
