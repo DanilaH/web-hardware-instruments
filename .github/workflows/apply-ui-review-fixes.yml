@@ -1,0 +1,66 @@
+name: Apply UI review fixes
+
+on:
+  push:
+    branches:
+      - ui-content-driven-stability
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ui-content-driven-stability
+      - name: Apply review fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          touch = Path('src/tools/touch/tester/TouchScreenTest.astro')
+          text = touch.read_text()
+          dup = """    .hands-off p {\n      min-block-size: 3.6rem;\n    }\n\n    .hands-off p {\n      min-block-size: 3.6rem;\n    }"""
+          single = """    .hands-off p {\n      min-block-size: 3.6rem;\n    }"""
+          if dup in text:
+              touch.write_text(text.replace(dup, single))
+          elif text.count(single) != 1:
+              raise SystemExit('Unexpected hands-off stability block')
+
+          scroll = Path('src/tools/mouse/scroll/MouseScrollTest.astro')
+          text = scroll.read_text()
+          narrow = """\n  @media (max-width: 22rem) {\n    .strip {\n      padding: 0.65rem;\n      font-size: 0.9rem;\n      line-height: 1.5;\n    }\n  }\n"""
+          if '@media (max-width: 22rem)' not in text:
+              text = text.replace('\n</style>', narrow + '</style>')
+              scroll.write_text(text)
+          PY
+      - name: Commit review fixes
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/tools/touch/tester/TouchScreenTest.astro src/tools/mouse/scroll/MouseScrollTest.astro
+            git commit -m "UI: fix final stability review findings"
+            git push origin HEAD:ui-content-driven-stability
+          fi
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.23.0
+          run_install: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-ui-dist
+          path: dist
