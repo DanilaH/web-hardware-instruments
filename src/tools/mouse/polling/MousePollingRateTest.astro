@@ -28,7 +28,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
             <dd data-polling-source>Waiting</dd>
           </div>
         </dl>
-        <button type="button" data-polling-start>Start 2-second test</button>
+        <button type="button" class="tool-action tool-action--primary" data-polling-start>Start 2-second test</button>
       </div>
     </div>
 
@@ -166,17 +166,8 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     font-size: 0.9rem;
   }
 
-  button {
+  .result .tool-action {
     justify-self: start;
-    padding: 0.65rem 0.9rem;
-    border: 1px solid var(--color-border);
-    background: #fff;
-    cursor: pointer;
-  }
-
-  button:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
   }
 
   .note {
