@@ -1,0 +1,49 @@
+name: Apply content stability final fixes
+
+on:
+  push:
+    branches:
+      - ui-content-driven-stability
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message != 'UI: finalize content-driven stability'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ui-content-driven-stability
+      - name: Apply targeted fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          touch = Path('src/tools/touch/tester/touch-screen-controller.ts')
+          text = touch.read_text()
+          old = "No touchscreen capability is reported on this device. Open this page on the device you want to test."
+          new = "No touchscreen capability reported on this device."
+          if old in text:
+              touch.write_text(text.replace(old, new))
+
+          dpi = Path('src/tools/mouse/dpi/MouseDpiTest.astro')
+          text = dpi.read_text()
+          old = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n  }"""
+          new = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n\n    .mouse-tool__instruction {\n      min-block-size: 5.75rem;\n    }\n  }"""
+          if old not in text:
+              raise SystemExit('Expected DPI media block not found')
+          dpi.write_text(text.replace(old, new))
+          PY
+      - name: Commit fixes
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/tools/touch/tester/touch-screen-controller.ts src/tools/mouse/dpi/MouseDpiTest.astro
+          git commit -m "UI: finalize content-driven stability"
+          git push origin HEAD:ui-content-driven-stability
