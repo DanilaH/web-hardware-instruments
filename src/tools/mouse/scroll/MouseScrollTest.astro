@@ -16,6 +16,11 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     </p>
 
     <div class="surface" data-scroll-surface>
+      <div class="result-heading tool-result-heading">
+        <span>Browser-detected wheel input</span>
+        <button type="button" class="mouse-reset tool-action tool-action--quiet" data-scroll-reset>Reset</button>
+      </div>
+
       <div class="strip" data-scroll-strip aria-label="Recent browser-detected wheel directions">
         Scroll inside the area
       </div>
@@ -34,8 +39,6 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
           <strong data-scroll-horizontal>0</strong>
         </div>
       </div>
-
-      <button type="button" data-scroll-reset>Reset</button>
     </div>
 
     <p class="note">
@@ -93,6 +96,12 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     background: #fafbfb;
   }
 
+  .result-heading > span {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
   .strip {
     min-height: 8rem;
     display: grid;
@@ -130,15 +139,6 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 
   .metrics strong {
     font: 600 1.35rem var(--font-mono);
-  }
-
-  button {
-    justify-self: start;
-    border: 0;
-    background: none;
-    color: var(--color-muted);
-    text-decoration: underline;
-    cursor: pointer;
   }
 
   .note {
