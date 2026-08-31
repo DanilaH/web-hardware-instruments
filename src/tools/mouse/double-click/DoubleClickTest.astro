@@ -19,24 +19,30 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
         <StandardMouseVisual />
       </div>
 
-      <div class="metrics">
-        <div>
-          <span>Total presses</span>
-          <strong data-double-total>0</strong>
+      <div class="results">
+        <div class="result-heading tool-result-heading">
+          <span>Browser-detected click timing</span>
+          <button type="button" class="mouse-reset tool-action tool-action--quiet" data-double-reset>Reset</button>
         </div>
-        <div>
-          <span>Rapid repeat events</span>
-          <strong data-double-rapid>0</strong>
+
+        <div class="metrics">
+          <div>
+            <span>Total presses</span>
+            <strong data-double-total>0</strong>
+          </div>
+          <div>
+            <span>Rapid repeat events</span>
+            <strong data-double-rapid>0</strong>
+          </div>
+          <div>
+            <span>Shortest same-button gap</span>
+            <strong data-double-shortest>—</strong>
+          </div>
+          <div>
+            <span>Last same-button gap</span>
+            <strong data-double-last>—</strong>
+          </div>
         </div>
-        <div>
-          <span>Shortest same-button gap</span>
-          <strong data-double-shortest>—</strong>
-        </div>
-        <div>
-          <span>Last same-button gap</span>
-          <strong data-double-last>—</strong>
-        </div>
-        <button type="button" data-double-reset>Reset</button>
       </div>
     </div>
 
@@ -102,13 +108,24 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
     align-content: center;
   }
 
-  .metrics {
+  .results {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     align-content: center;
     gap: var(--space-3);
     padding-left: var(--space-5);
     border-left: 1px solid #dfe3e4;
+  }
+
+  .result-heading > span {
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
   }
 
   .metrics > div {
@@ -128,16 +145,6 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
 
   .metrics strong {
     font: 600 1.05rem var(--font-mono);
-  }
-
-  button {
-    grid-column: 1 / -1;
-    justify-self: start;
-    border: 0;
-    background: none;
-    color: var(--color-muted);
-    text-decoration: underline;
-    cursor: pointer;
   }
 
   .note {
@@ -161,7 +168,7 @@ import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astr
       grid-template-columns: 1fr;
     }
 
-    .metrics {
+    .results {
       padding: var(--space-4) 0 0;
       border-left: 0;
       border-top: 1px solid #dfe3e4;
