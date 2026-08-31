@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   patch:
-    if: github.event.head_commit.message != 'UI: finalize content-driven stability'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,18 +23,19 @@ jobs:
 
           touch = Path('src/tools/touch/tester/touch-screen-controller.ts')
           text = touch.read_text()
-          old = "No touchscreen capability is reported on this device. Open this page on the device you want to test."
-          new = "No touchscreen capability reported on this device."
-          if old in text:
-              touch.write_text(text.replace(old, new))
+          old_touch = "No touchscreen capability is reported on this device. Open this page on the device you want to test."
+          new_touch = "No touchscreen capability reported on this device."
+          if old_touch in text:
+              touch.write_text(text.replace(old_touch, new_touch))
 
           dpi = Path('src/tools/mouse/dpi/MouseDpiTest.astro')
           text = dpi.read_text()
-          old = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n  }"""
-          new = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n\n    .mouse-tool__instruction {\n      min-block-size: 5.75rem;\n    }\n  }"""
-          if old not in text:
+          old_dpi = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n  }"""
+          new_dpi = """  @media (max-width: 22rem) {\n    .mouse-tool__status-row {\n      min-block-size: 4.3rem;\n    }\n\n    .mouse-tool__instruction {\n      min-block-size: 5.75rem;\n    }\n  }"""
+          if old_dpi in text:
+              dpi.write_text(text.replace(old_dpi, new_dpi))
+          elif new_dpi not in text:
               raise SystemExit('Expected DPI media block not found')
-          dpi.write_text(text.replace(old, new))
           PY
       - name: Commit fixes
         run: |
