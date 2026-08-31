@@ -49,8 +49,7 @@
   color: var(--color-channel-keyboard);
 }
 
-.page-main [data-keyboard-rollover] .rollover-action,
-.page-main [data-keyboard-ghosting] :is(.ghosting-tool__controls select, .ghosting-action) {
+.page-main [data-keyboard-rollover] .rollover-action {
   border-color: var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
@@ -60,13 +59,6 @@
   border-color: var(--color-border);
   border-radius: var(--radius-sm);
   background: #f5f3ec;
-}
-
-.page-main [data-keyboard-ghosting] .ghosting-action--primary {
-  border-color: var(--color-channel-keyboard);
-  background: color-mix(in srgb, var(--color-channel-keyboard) 12%, var(--color-surface));
-  color: var(--color-text);
-  box-shadow: inset 3px 0 0 var(--color-channel-keyboard);
 }
 
 .page-main [data-keyboard-ghosting] .ghosting-tool__visual-wrap [data-key-code][data-expected='true'] {

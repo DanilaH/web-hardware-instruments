@@ -44,19 +44,6 @@
   color: #8e9691;
 }
 
-.page-main [data-touch-screen-test] .touch-action {
-  border-color: var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-}
-
-.page-main [data-touch-screen-test] [data-touch-confirmation] {
-  border-color: var(--color-channel-touch);
-  background: color-mix(in srgb, var(--color-channel-touch) 10%, var(--color-surface));
-  box-shadow: inset 3px 0 0 var(--color-channel-touch);
-  font-weight: 650;
-}
-
 .page-main [data-touch-screen-test] .touch-tool__confirmation {
   border-left-color: var(--color-channel-touch);
 }
