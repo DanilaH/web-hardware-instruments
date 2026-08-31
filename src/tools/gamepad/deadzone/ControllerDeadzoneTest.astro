@@ -298,6 +298,10 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
       flex-direction: column;
     }
 
+    .deadzone-tool__status-copy {
+      min-block-size: 4.35rem;
+    }
+
     .deadzone-tool__selector {
       width: 100%;
     }
@@ -309,6 +313,12 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
     .deadzone-tool__layout :global(.deadzone-plot) {
       max-width: 18rem;
       margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 22rem) {
+    .deadzone-tool__status-copy {
+      min-block-size: 5.75rem;
     }
   }
 </style>

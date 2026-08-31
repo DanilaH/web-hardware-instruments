@@ -180,7 +180,16 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     }
 
     .strip {
+      block-size: 6rem;
       min-height: 6rem;
+      overflow: hidden;
+    }
+  }
+  @media (max-width: 22rem) {
+    .strip {
+      padding: 0.65rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
     }
   }
 </style>

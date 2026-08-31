@@ -238,6 +238,8 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
   }
 
   .touch-tool__fullscreen-note {
+    min-block-size: 1.15rem;
+    flex: 0 0 100%;
     color: var(--color-muted);
     font-size: 0.76rem;
   }
@@ -309,6 +311,10 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
       gap: var(--space-3);
     }
 
+    .touch-tool__status-row {
+      min-block-size: 2.6rem;
+    }
+
     .touch-tool__metrics {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-2);
@@ -332,6 +338,10 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
       align-items: stretch;
       flex-direction: column;
       gap: var(--space-2);
+    }
+
+    .hands-off p {
+      min-block-size: 3.6rem;
     }
 
     .hands-off .tool-action {

@@ -133,7 +133,7 @@ export const mountTouchScreenTest = (root: HTMLElement): TouchScreenController =
       status.textContent = 'Touch input is unavailable in this browser.';
     } else if (!touchUsable) {
       root.dataset.state = 'unavailable';
-      status.textContent = 'No touchscreen capability is reported on this device. Open this page on the device you want to test.';
+      status.textContent = 'No touchscreen capability reported on this device.';
     } else {
       root.dataset.state = state.mode === 'confirmation' ? 'confirmation' : 'ready';
       status.textContent = state.mode === 'confirmation'
