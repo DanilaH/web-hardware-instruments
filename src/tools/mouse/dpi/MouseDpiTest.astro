@@ -286,9 +286,13 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       border-bottom: 1px solid #e3e6e7;
     }
 
-    .mouse-tool[data-state='result'] .dpi-result {
+    .mouse-measurement {
+      grid-template-rows: auto 1fr;
+    }
+
+    .dpi-result {
       order: -1;
-      min-height: 4.5rem;
+      min-height: 5.5rem;
       padding: 0 0 var(--space-4);
       border-top: 0;
       border-bottom: 1px solid #e3e6e7;
