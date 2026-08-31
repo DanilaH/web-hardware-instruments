@@ -24,6 +24,7 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
           <div class="distance-control__fields">
             <input
               id="mouse-distance"
+              class="tool-control"
               data-distance
               type="number"
               value="10"
@@ -32,14 +33,14 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
               inputmode="decimal"
               required
             />
-            <select data-distance-unit aria-label="Distance unit">
+            <select class="tool-control" data-distance-unit aria-label="Distance unit">
               <option value="cm" selected>cm</option>
               <option value="in">in</option>
             </select>
           </div>
         </div>
 
-        <button class="primary-action" type="submit" data-start>Start test</button>
+        <button class="tool-action tool-action--primary" type="submit" data-start>Start test</button>
 
         <p class="capture-note" data-capture-note>
           Raw Pointer Lock is preferred; the tool falls back when it is unavailable.
@@ -173,46 +174,18 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
 
   .distance-control input,
   .distance-control select {
-    min-height: 2.75rem;
     width: 100%;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font: inherit;
   }
 
   .distance-control input {
-    padding: 0 var(--space-3);
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
 
-  .distance-control select {
-    padding: 0 var(--space-2);
-  }
-
   .distance-control input:focus-visible,
-  .distance-control select:focus-visible,
-  .primary-action:focus-visible {
+  .distance-control select:focus-visible {
     outline: 2px solid var(--color-signal);
     outline-offset: 2px;
-  }
-
-  .primary-action {
-    min-height: 2.85rem;
-    border: 1px solid var(--color-signal);
-    border-radius: var(--radius-sm);
-    background: var(--color-signal);
-    color: white;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .primary-action:disabled {
-    cursor: default;
-    opacity: 0.55;
   }
 
   .capture-note {
