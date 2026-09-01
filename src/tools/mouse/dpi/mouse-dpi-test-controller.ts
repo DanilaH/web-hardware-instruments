@@ -248,6 +248,10 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     distanceInput.setCustomValidity('');
     const value = Number(distanceInput.value);
     physicalDistanceInches = distanceToInches(value, currentUnit);
+    if (state !== 'ready') {
+      renderReady();
+      return;
+    }
     renderDistanceEvidence();
   };
 
@@ -265,6 +269,10 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     }
 
     currentUnit = nextUnit;
+    if (state !== 'ready') {
+      renderReady();
+      return;
+    }
     renderDistanceEvidence();
   };
 
