@@ -33,7 +33,7 @@
   background: #f7f5ef;
 }
 
-.page-main [data-mouse-tester] :is(.mouse-tester__results, .signal-results),
+.page-main [data-mouse-tester] .mouse-tester__results,
 .page-main [data-mouse-button-test] .results,
 .page-main [data-double-click-test] :is(.results, .metrics),
 .page-main [data-mouse-polling-test] .result,
@@ -41,12 +41,12 @@
   border-color: var(--color-border);
 }
 
-.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-body {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-shell {
   fill: #f6f3ec;
   stroke: #9ca39f;
 }
 
-.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-divider {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .mouse-center-seam {
   stroke: #c9cdc7;
 }
 
@@ -63,7 +63,7 @@
   stroke: #b9beb8;
 }
 
-.page-main [data-mouse-tester] :is(.mouse-result__heading > span, .button-result > span, .signal-results span),
+.page-main [data-mouse-tester] :is(.mouse-result__heading > span, .overview-result > span),
 .page-main [data-mouse-button-test] .heading,
 .page-main [data-mouse-scroll-test] .metrics span,
 .page-main [data-double-click-test] .metrics span,
@@ -82,24 +82,20 @@
   font-size: 0.8rem;
 }
 
-.page-main [data-mouse-tester] .button-results,
 .page-main [data-mouse-button-test] .results {
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
 
-.page-main [data-mouse-tester] .button-result,
 .page-main [data-mouse-button-test] .row {
   border: 0;
   background: transparent;
 }
 
-.page-main [data-mouse-tester] .button-result + .button-result,
 .page-main [data-mouse-button-test] .row + .row {
   border-top: 1px solid var(--color-border);
 }
 
-.page-main [data-mouse-tester] .button-result[data-held='true'],
 .page-main [data-mouse-button-test] .row[data-held='true'] {
   border-color: transparent;
   background: color-mix(in srgb, var(--color-channel-mouse) 8%, var(--color-surface));
@@ -194,8 +190,16 @@
   background: var(--color-surface);
 }
 
-@media (max-width: 40rem) {
+@media (max-width: 44rem) {
   .page-main [data-mouse-scroll-test] .metrics > div + div {
+    border-left: 0;
+  }
+
+  .page-main [data-mouse-scroll-test] .metrics > div:nth-child(even) {
     border-left: 1px solid var(--color-border);
+  }
+
+  .page-main [data-mouse-scroll-test] .metrics > div:nth-child(n + 3) {
+    border-top: 1px solid var(--color-border);
   }
 }
