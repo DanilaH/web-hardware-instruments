@@ -21,6 +21,7 @@ type PollingListener = (timestamps: readonly number[]) => void;
 export interface MouseInputServiceEnvironment {
   setButtonDownListener(listener: ButtonListener | null): void;
   setButtonUpListener(listener: ButtonListener | null): void;
+  setAuxClickListener(listener: ButtonListener | null): void;
   setWheelListener(listener: WheelListener | null): void;
   setBasicMoveListener(listener: MoveListener | null): void;
   setRawMoveListener(listener: PollingListener | null): void;
@@ -41,6 +42,8 @@ export interface MouseInputService {
   subscribe(listener: (event: MouseInputServiceEvent) => void): Unsubscribe;
   getPollingSource(): MousePollingSource | null;
 }
+
+const AUX_CLICK_DEDUPE_MS = 750;
 
 const isMousePointer = (event: PointerEvent): boolean =>
   event.pointerType === '' || event.pointerType === 'mouse';
@@ -74,6 +77,7 @@ export const createBrowserMouseInputEnvironment = (
 
   let downWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
   let upWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
+  let auxInputWrapper: ((event: MouseEvent) => void) | null = null;
   let wheelWrapper: ((event: WheelEvent) => void) | null = null;
   let basicMoveWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
   let rawMoveWrapper: ((event: PointerEvent) => void) | null = null;
@@ -136,6 +140,16 @@ export const createBrowserMouseInputEnvironment = (
         listener(event.button, event.timeStamp);
       };
       addPointerOrMouseListener(window, 'pointerup', 'mouseup', upWrapper as EventListener);
+    },
+    setAuxClickListener: (listener) => {
+      if (auxInputWrapper) {
+        surface.removeEventListener('auxclick', auxInputWrapper);
+        auxInputWrapper = null;
+      }
+      if (!listener) return;
+
+      auxInputWrapper = (event) => listener(event.button, event.timeStamp);
+      surface.addEventListener('auxclick', auxInputWrapper);
     },
     setWheelListener: (listener) => {
       if (wheelWrapper) {
@@ -252,6 +266,7 @@ export const createMouseInputService = (
     : null,
 ): MouseInputService => {
   const listeners = new Set<(event: MouseInputServiceEvent) => void>();
+  const lastNativeButtonDownAt = new Map<MouseSemanticButton, number>();
   let started = false;
   let destroyed = false;
   let pollingSource: MousePollingSource | null = null;
@@ -264,6 +279,7 @@ export const createMouseInputService = (
     if (!environment) return;
     environment.setButtonDownListener(null);
     environment.setButtonUpListener(null);
+    environment.setAuxClickListener(null);
     environment.setWheelListener(null);
     environment.setBasicMoveListener(null);
     environment.setRawMoveListener(null);
@@ -272,6 +288,7 @@ export const createMouseInputService = (
     environment.setAuxClickSuppression(false);
     environment.setBlurListener(null);
     environment.setVisibilityListener(null);
+    lastNativeButtonDownAt.clear();
     pollingSource = null;
   };
 
@@ -345,10 +362,38 @@ export const createMouseInputService = (
   const attachBasicInput = (): void => {
     if (!environment) return;
     environment.setButtonDownListener((button, timestamp) => {
-      if (started && !destroyed) emitButton('buttondown', button, timestamp);
+      if (!started || destroyed) return;
+      if (isMouseSemanticButton(button) && Number.isFinite(timestamp)) {
+        lastNativeButtonDownAt.set(button, timestamp);
+      }
+      emitButton('buttondown', button, timestamp);
     });
     environment.setButtonUpListener((button, timestamp) => {
       if (started && !destroyed) emitButton('buttonup', button, timestamp);
+    });
+    environment.setAuxClickListener((button, timestamp) => {
+      if (
+        !started ||
+        destroyed ||
+        (button !== 3 && button !== 4) ||
+        !Number.isFinite(timestamp)
+      ) {
+        return;
+      }
+
+      const lastNativeDown = lastNativeButtonDownAt.get(button);
+      if (
+        lastNativeDown !== undefined &&
+        timestamp >= lastNativeDown &&
+        timestamp - lastNativeDown <= AUX_CLICK_DEDUPE_MS
+      ) {
+        return;
+      }
+
+      // Some browser/OS combinations expose X1/X2 only as auxclick. Synthesize a
+      // complete press so consumers can count it without leaving a stuck held state.
+      emit({ type: 'buttondown', button, timestamp });
+      emit({ type: 'buttonup', button, timestamp });
     });
     environment.setWheelListener((deltaX, deltaY, deltaMode, timestamp) => {
       if (

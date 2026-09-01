@@ -5,6 +5,7 @@ describe('MouseInputService polling profile', () => {
   it('attaches sampling and lifecycle without basic button/wheel suppression', () => {
     let buttonDownAttached = false;
     let buttonUpAttached = false;
+    let auxInputAttached = false;
     let wheelAttached = false;
     let basicMoveAttached = false;
     let rawListener: ((timestamps: readonly number[]) => void) | null = null;
@@ -14,6 +15,7 @@ describe('MouseInputService polling profile', () => {
     const environment: MouseInputServiceEnvironment = {
       setButtonDownListener: (listener) => { buttonDownAttached = listener !== null; },
       setButtonUpListener: (listener) => { buttonUpAttached = listener !== null; },
+      setAuxClickListener: (listener) => { auxInputAttached = listener !== null; },
       setWheelListener: (listener) => { wheelAttached = listener !== null; },
       setBasicMoveListener: (listener) => { basicMoveAttached = listener !== null; },
       setRawMoveListener: (listener) => { rawListener = listener; },
@@ -31,9 +33,10 @@ describe('MouseInputService polling profile', () => {
     expect(service.start()).toBe(true);
     expect(service.getPollingSource()).toBe('raw-pointer');
     expect(rawListener).not.toBeNull();
-    expect({ buttonDownAttached, buttonUpAttached, wheelAttached, basicMoveAttached }).toEqual({
+    expect({ buttonDownAttached, buttonUpAttached, auxInputAttached, wheelAttached, basicMoveAttached }).toEqual({
       buttonDownAttached: false,
       buttonUpAttached: false,
+      auxInputAttached: false,
       wheelAttached: false,
       basicMoveAttached: false,
     });

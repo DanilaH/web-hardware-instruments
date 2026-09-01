@@ -8,6 +8,7 @@ import {
 const createEnvironment = (options?: { raw?: boolean; coalesced?: boolean }) => {
   let buttonDown: ((button: number, timestamp: number) => void) | null = null;
   let buttonUp: ((button: number, timestamp: number) => void) | null = null;
+  let auxClick: ((button: number, timestamp: number) => void) | null = null;
   let wheel: ((dx: number, dy: number, mode: number, timestamp: number) => void) | null = null;
   let basicMove: ((dx: number, dy: number, timestamp: number) => void) | null = null;
   let rawMove: ((timestamps: readonly number[]) => void) | null = null;
@@ -21,6 +22,7 @@ const createEnvironment = (options?: { raw?: boolean; coalesced?: boolean }) => 
   const environment: MouseInputServiceEnvironment = {
     setButtonDownListener: (listener) => { buttonDown = listener; },
     setButtonUpListener: (listener) => { buttonUp = listener; },
+    setAuxClickListener: (listener) => { auxClick = listener; },
     setWheelListener: (listener) => { wheel = listener; },
     setBasicMoveListener: (listener) => { basicMove = listener; },
     setRawMoveListener: (listener) => { rawMove = listener; },
@@ -38,6 +40,7 @@ const createEnvironment = (options?: { raw?: boolean; coalesced?: boolean }) => 
     environment,
     emitButtonDown: (button: number, timestamp = 1) => buttonDown?.(button, timestamp),
     emitButtonUp: (button: number, timestamp = 2) => buttonUp?.(button, timestamp),
+    emitAuxClick: (button: number, timestamp = 2) => auxClick?.(button, timestamp),
     emitWheel: (dx: number, dy: number, mode = 0, timestamp = 3) => wheel?.(dx, dy, mode, timestamp),
     emitBasicMove: (dx: number, dy: number, timestamp = 4) => basicMove?.(dx, dy, timestamp),
     emitRaw: (timestamps: readonly number[]) => rawMove?.(timestamps),
@@ -45,6 +48,7 @@ const createEnvironment = (options?: { raw?: boolean; coalesced?: boolean }) => 
     emitBlur: () => blur?.(),
     hide: () => { visibilityState = 'hidden'; visibility?.(); },
     getSuppression: () => ({ contextSuppressed, auxSuppressed }),
+    hasAuxClick: () => auxClick !== null,
     hasRaw: () => rawMove !== null,
     hasCoalesced: () => coalescedMove !== null,
     hasBasic: () => basicMove !== null,
@@ -82,6 +86,27 @@ describe('MouseInputService', () => {
     ]);
   });
 
+  it('uses auxclick as an X1/X2 fallback without duplicating a normal pointer press', () => {
+    const fake = createEnvironment();
+    const service = createMouseInputService(null, 'basic', fake.environment);
+    const events: MouseInputServiceEvent[] = [];
+    service.subscribe((event) => events.push(event));
+    service.start();
+
+    fake.emitAuxClick(4, 100);
+    fake.emitButtonDown(3, 200);
+    fake.emitButtonUp(3, 220);
+    fake.emitAuxClick(3, 230);
+    fake.emitAuxClick(2, 300);
+
+    expect(events).toEqual([
+      { type: 'buttondown', button: 4, timestamp: 100 },
+      { type: 'buttonup', button: 4, timestamp: 100 },
+      { type: 'buttondown', button: 3, timestamp: 200 },
+      { type: 'buttonup', button: 3, timestamp: 220 },
+    ]);
+  });
+
   it('emits wheel and ordinary movement only in the basic profile', () => {
     const fake = createEnvironment();
     const service = createMouseInputService(null, 'basic', fake.environment);
@@ -95,6 +120,7 @@ describe('MouseInputService', () => {
     expect(events).toContainEqual({ type: 'wheel', deltaX: 0, deltaY: -100, deltaMode: 0, timestamp: 20 });
     expect(events).toContainEqual({ type: 'move', movementX: 3, movementY: -2, timestamp: 21 });
     expect(fake.getSuppression()).toEqual({ contextSuppressed: true, auxSuppressed: true });
+    expect(fake.hasAuxClick()).toBe(true);
   });
 
   it('emits clear signals for blur and hidden visibility', () => {
@@ -122,6 +148,7 @@ describe('MouseInputService', () => {
     expect(fake.hasRaw()).toBe(true);
     expect(fake.hasCoalesced()).toBe(false);
     expect(fake.hasBasic()).toBe(false);
+    expect(fake.hasAuxClick()).toBe(false);
 
     fake.emitRaw([1, 2, Number.NaN, 3]);
     expect(events).toContainEqual({ type: 'poll-samples', source: 'raw-pointer', timestamps: [1, 2, 3] });
@@ -160,6 +187,7 @@ describe('MouseInputService', () => {
     service.stop();
 
     expect(fake.getSuppression()).toEqual({ contextSuppressed: false, auxSuppressed: false });
+    expect(fake.hasAuxClick()).toBe(false);
     fake.emitButtonDown(0);
     expect(listener).not.toHaveBeenCalled();
 
