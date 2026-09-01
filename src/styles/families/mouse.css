@@ -190,7 +190,7 @@
   background: var(--color-surface);
 }
 
-@media (max-width: 44rem) {
+@media (max-width: 40rem) {
   .page-main [data-mouse-scroll-test] .metrics > div + div {
     border-left: 0;
   }
