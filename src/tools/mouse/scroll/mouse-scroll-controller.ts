@@ -18,7 +18,7 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
 };
 
 const symbol = (direction: ScrollDirection): string =>
-  direction === 'up' ? '↑' : direction === 'down' ? '↓' : '↔';
+  direction === 'up' ? '↑' : direction === 'down' ? '↓' : direction === 'left' ? '←' : '→';
 
 export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController => {
   const surface = requireElement<HTMLElement>(root, '[data-scroll-surface]');
@@ -27,7 +27,8 @@ export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController =
   const reset = requireElement<HTMLButtonElement>(root, '[data-scroll-reset]');
   const up = requireElement<HTMLElement>(root, '[data-scroll-up]');
   const down = requireElement<HTMLElement>(root, '[data-scroll-down]');
-  const horizontal = requireElement<HTMLElement>(root, '[data-scroll-horizontal]');
+  const left = requireElement<HTMLElement>(root, '[data-scroll-left]');
+  const right = requireElement<HTMLElement>(root, '[data-scroll-right]');
   const service = createMouseInputService(surface, 'basic');
   let state = createMouseScrollState();
   let destroyed = false;
@@ -36,7 +37,8 @@ export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController =
   const render = (): void => {
     up.textContent = String(state.up);
     down.textContent = String(state.down);
-    horizontal.textContent = String(state.horizontal);
+    left.textContent = String(state.left);
+    right.textContent = String(state.right);
     strip.textContent = state.recent.length
       ? state.recent.map(symbol).join(' ')
       : 'Scroll inside the area';

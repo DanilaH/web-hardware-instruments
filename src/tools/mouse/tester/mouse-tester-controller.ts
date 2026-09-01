@@ -1,6 +1,5 @@
 import {
   createMouseInputService,
-  isMouseSemanticButton,
   type MouseInputServiceEvent,
 } from '../../../browser/mouse-input-service';
 import { renderStandardMouseVisual } from '../../../visuals/mouse/standard-mouse-renderer';
@@ -20,7 +19,7 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
   return element;
 };
 
-const buttonNames = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
+const buttonNames = ['Primary', 'Middle', 'Secondary', 'Back / X1', 'Forward / X2'] as const;
 
 const toHeldTuple = (state: MouseTesterState): [boolean, boolean, boolean, boolean, boolean] => [
   state.heldButtons.has(0),
@@ -37,19 +36,24 @@ const wheelLabel = (direction: MouseTesterState['wheelDirection']): string => {
   return 'Waiting';
 };
 
+const detectedRoleCount = (state: MouseTesterState): number =>
+  state.pressCounts.filter((count) => count > 0).length;
+
 export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
   const surface = requireElement<HTMLElement>(root, '[data-mouse-test-surface]');
   const visual = requireElement<HTMLElement>(root, '[data-standard-mouse-visual]');
   const status = requireElement<HTMLElement>(root, '[data-mouse-status]');
+  const lastButton = requireElement<HTMLElement>(root, '[data-mouse-last-button]');
+  const rolesSeen = requireElement<HTMLElement>(root, '[data-mouse-roles-seen]');
   const wheel = requireElement<HTMLElement>(root, '[data-mouse-wheel]');
   const movement = requireElement<HTMLElement>(root, '[data-mouse-movement]');
   const reset = requireElement<HTMLButtonElement>(root, '[data-mouse-reset]');
   const note = requireElement<HTMLElement>(root, '[data-mouse-note]');
   const accessibleSummary = requireElement<HTMLElement>(root, '[data-mouse-accessible-summary]');
-  const countElements = [...root.querySelectorAll<HTMLElement>('[data-mouse-button-count]')];
 
   const service = createMouseInputService(surface, 'basic');
   let state = createMouseTesterState();
+  let lastButtonLabel = 'Waiting';
   let destroyed = false;
   let announcedDetection = false;
 
@@ -61,25 +65,15 @@ export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
       movementDetected: state.movementDetected,
     });
 
-    countElements.forEach((element) => {
-      const raw = element.dataset.mouseButtonCount;
-      const button = raw === undefined ? Number.NaN : Number(raw);
-      if (isMouseSemanticButton(button)) {
-        element.textContent = state.pressCounts[button].toString();
-        const row = element.closest<HTMLElement>('[data-mouse-button-row]');
-        if (row) {
-          row.dataset.held = state.heldButtons.has(button) ? 'true' : 'false';
-        }
-      }
-    });
-
+    lastButton.textContent = lastButtonLabel;
+    rolesSeen.textContent = `${detectedRoleCount(state)} / 5`;
     wheel.textContent = wheelLabel(state.wheelDirection);
     movement.textContent = state.movementDetected ? 'Detected' : 'Waiting';
   };
 
   const describeEvent = (event: MouseInputServiceEvent): string | null => {
     if (event.type === 'buttondown') {
-      return `${buttonNames[event.button]} button detected. ${state.pressCounts[event.button]} presses observed.`;
+      return `${buttonNames[event.button]} button detected. ${detectedRoleCount(state)} of 5 button roles seen.`;
     }
     if (event.type === 'wheel' && state.wheelDirection) {
       return `${wheelLabel(state.wheelDirection)} wheel input detected.`;
@@ -101,6 +95,9 @@ export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
     }
 
     state = reduceMouseTesterState(state, event);
+    if (event.type === 'buttondown') {
+      lastButtonLabel = buttonNames[event.button];
+    }
     render();
 
     if (state.anyInputDetected && !announcedDetection) {
@@ -116,6 +113,7 @@ export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
 
   const resetVisibleState = (): void => {
     state = createMouseTesterState();
+    lastButtonLabel = 'Waiting';
     announcedDetection = false;
     status.textContent = 'Listening for mouse input';
     accessibleSummary.textContent = 'Mouse Tester is listening. Move, click, or scroll inside the test area.';

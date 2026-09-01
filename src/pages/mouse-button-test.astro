@@ -24,7 +24,7 @@ const relatedTools = [
 >
   <section class="reading-width">
     <h1 class="page-heading">Mouse Button Test</h1>
-    <p class="page-intro">See which semantic mouse button inputs this browser receives.</p>
+    <p class="page-intro">Check each semantic mouse button role, including Back/X1 and Forward/X2.</p>
   </section>
 
   <MouseButtonTest />
@@ -32,12 +32,12 @@ const relatedTools = [
   <section class="tool-content reading-width">
     <h2>How to test mouse buttons</h2>
     <p>
-      Press each button inside the test area. Held highlighting shows the current browser state and the counter records button-down events.
+      Press each button inside the test area. Held highlighting shows the current browser state and the counter records observed button-down events. Primary is usually the left button and Secondary usually the right, but OS remapping can change those semantic roles.
     </p>
 
     <h2>Middle and side buttons</h2>
     <p>
-      If a middle click or side button seems not to work, press it inside the test area and watch whether the corresponding semantic role is detected. Primary and Secondary can reflect OS remapping, and browser navigation or context-menu behavior can interfere with some buttons. A missing event is a browser observation, not an automatic hardware verdict.
+      Back/X1 and Forward/X2 are additional browser button roles. The test listens for normal pointer presses and uses auxiliary-click events as a fallback for side buttons when available. Some browsers, operating systems, drivers, or mouse utilities can still consume those buttons before the page sees them, so a missing X1/X2 event is not an automatic hardware verdict.
     </p>
   </section>
 

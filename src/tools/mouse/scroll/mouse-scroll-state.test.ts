@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { createMouseScrollState, directionFromWheel, observeWheel } from './mouse-scroll-state';
 
 describe('mouse scroll state', () => {
-  it('classifies vertical and dominant horizontal wheel events', () => {
+  it('classifies vertical and signed dominant horizontal wheel events', () => {
     expect(directionFromWheel(0, -2)).toBe('up');
     expect(directionFromWheel(0, 2)).toBe('down');
-    expect(directionFromWheel(4, 1)).toBe('horizontal');
+    expect(directionFromWheel(-4, 1)).toBe('left');
+    expect(directionFromWheel(4, 1)).toBe('right');
   });
 
   it('ignores zero/non-finite movement', () => {
@@ -18,9 +19,13 @@ describe('mouse scroll state', () => {
     for (let index = 0; index < 30; index += 1) {
       state = observeWheel(state, 0, index % 2 ? 1 : -1);
     }
+    state = observeWheel(state, -3, 0);
+    state = observeWheel(state, 3, 0);
 
     expect(state.up).toBe(15);
     expect(state.down).toBe(15);
+    expect(state.left).toBe(1);
+    expect(state.right).toBe(1);
     expect(state.recent).toHaveLength(24);
   });
 });

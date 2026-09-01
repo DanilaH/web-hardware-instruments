@@ -2,7 +2,7 @@
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astro';
 
-const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
+const names = ['Primary', 'Middle', 'Secondary', 'Back / X1', 'Forward / X2'] as const;
 ---
 
 <ToolShell labelledBy="mouse-button-heading">
@@ -21,7 +21,7 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
     <div class="surface" data-mouse-button-surface>
       <div class="visual">
         <StandardMouseVisual />
-        <p>Generic browser button roles; Primary and Secondary can be remapped by the OS.</p>
+        <p>Primary is usually left, Secondary usually right; Back/Forward are also known as X1/X2.</p>
       </div>
 
       <div class="results">
@@ -40,7 +40,7 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
       </div>
     </div>
 
-    <p class="note">An unpressed or unsupported side button is not automatically a hardware failure.</p>
+    <p class="note">If X1/X2 stay undetected, the browser, OS, or mouse software may not expose those buttons to the page. That is not automatically a hardware failure.</p>
     <p class="sr-only" data-mouse-button-summary>Mouse Button Test is listening.</p>
   </div>
 </ToolShell>
@@ -135,7 +135,7 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
   }
 
   .row {
-    grid-template-columns: 1fr 7.5rem 2rem;
+    grid-template-columns: minmax(0, 1fr) 7.5rem 2rem;
     min-height: 2.25rem;
     padding: 0.35rem 0.55rem;
     border: 1px solid #e2e5e6;
@@ -143,6 +143,7 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
   }
 
   .row span {
+    min-width: 0;
     font-size: 0.78rem;
     font-weight: 600;
   }
