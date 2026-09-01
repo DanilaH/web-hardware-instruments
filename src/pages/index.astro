@@ -1,48 +1,9 @@
 ---
 import ToolIcon from '../components/icons/ToolIcon.astro';
+import { allTools, toolGroups } from '../config/tools';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const controllerTools = [
-  { href: '/gamepad-tester', icon: 'gamepad', name: 'Gamepad Tester', description: 'Test controller buttons, sticks, D-pad, and triggers.' },
-  { href: '/controller-stick-drift-test', icon: 'drift', name: 'Controller Stick Drift Test', description: 'Measure observed analog-stick center offset while untouched.' },
-  { href: '/controller-deadzone-test', icon: 'deadzone', name: 'Controller Deadzone Test', description: 'Measure stick center noise and a heuristic starting deadzone.' },
-] as const;
-
-const mouseTools = [
-  { href: '/mouse-tester', icon: 'mouse', name: 'Mouse Tester', description: 'Check browser-detected mouse buttons, wheel input, and movement.' },
-  { href: '/mouse-button-test', icon: 'button', name: 'Mouse Button Test', description: 'Check primary, middle, secondary, back, and forward button input.' },
-  { href: '/mouse-scroll-test', icon: 'scroll', name: 'Mouse Scroll Test', description: 'Inspect browser-detected wheel directions and recent events.' },
-  { href: '/double-click-test', icon: 'double-click', name: 'Double Click Test', description: 'Look for unusually fast repeated same-button presses.' },
-  { href: '/mouse-polling-rate-test', icon: 'polling', name: 'Mouse Polling Rate Test', description: 'Measure the pointer sample rate observed by this browser.' },
-  { href: '/mouse-dpi-test', icon: 'dpi', name: 'Mouse DPI Test', description: 'Estimate mouse DPI from a measured physical movement distance.' },
-] as const;
-
-const keyboardTools = [
-  { href: '/keyboard-tester', icon: 'keyboard', name: 'Keyboard Tester', description: 'Press keys and see which physical key codes the browser detects.' },
-  { href: '/keyboard-rollover-test', icon: 'rollover', name: 'Keyboard Rollover Test', description: 'See the largest simultaneous key set this browser detects.' },
-  { href: '/keyboard-ghosting-test', icon: 'ghosting', name: 'Keyboard Ghosting Test', description: 'Compare guided key combinations with the keys detected together.' },
-] as const;
-
-const displayTools = [
-  { href: '/fps-test', icon: 'fps', name: 'FPS Test', description: 'Observe this browser page’s frame delivery and recent drops.' },
-  { href: '/refresh-rate-test', icon: 'refresh', name: 'Refresh Rate Test', description: 'Estimate the display cadence currently visible to the browser.' },
-  { href: '/frame-skipping-test', icon: 'frame-skip', name: 'Frame Skipping Test', description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.' },
-  { href: '/dead-pixel-test', icon: 'dead-pixel', name: 'Dead Pixel Test', description: 'Inspect the screen against solid colors for dead or stuck pixels.' },
-  { href: '/backlight-bleed-test', icon: 'backlight', name: 'Backlight Bleed Test', description: 'Inspect a backlit display for bright leakage on a black screen.' },
-] as const;
-
-const touchTools = [
-  { href: '/touch-screen-test', icon: 'touch', name: 'Touch Screen Test', description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.' },
-] as const;
-
-const groups = [
-  { id: 'controller', name: 'Controller', icon: 'gamepad', channel: 'controller', tools: controllerTools },
-  { id: 'mouse', name: 'Mouse', icon: 'mouse', channel: 'mouse', tools: mouseTools },
-  { id: 'keyboard', name: 'Keyboard', icon: 'keyboard', channel: 'keyboard', tools: keyboardTools },
-  { id: 'display', name: 'Display', icon: 'refresh', channel: 'display', tools: displayTools },
-  { id: 'touch', name: 'Touch', icon: 'touch', channel: 'touch', tools: touchTools },
-] as const;
-
+const groups = toolGroups;
 const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
 ---
 
@@ -58,7 +19,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
       <p class="page-intro">
         Focused diagnostics for controllers, mice, keyboards, displays, and touchscreens — built to show what the browser actually detects.
       </p>
-      <p class="home-facts">18 browser tests <span>·</span> no install <span>·</span> no account <span>·</span> input stays on this device</p>
+      <p class="home-facts">{allTools.length} browser tests <span>·</span> no install <span>·</span> no account <span>·</span> input stays on this device</p>
     </div>
 
     <div class="instrument-screen" aria-label="Hardware input is observed through browser APIs on this device">
@@ -136,12 +97,6 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 </BaseLayout>
 
 <style>
-  [data-channel='controller'] { --channel: #5874a8; }
-  [data-channel='mouse'] { --channel: #a45f50; }
-  [data-channel='keyboard'] { --channel: #7b805a; }
-  [data-channel='display'] { --channel: #756b87; }
-  [data-channel='touch'] { --channel: #4f7e78; }
-
   .home-hero {
     position: relative;
     min-height: 14.2rem;
