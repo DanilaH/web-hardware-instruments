@@ -6,7 +6,13 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 <ToolShell labelledBy="rollover-tool-heading">
   <h2 id="rollover-tool-heading" class="rollover-tool__sr">Keyboard Rollover Test controls</h2>
 
-  <div class="rollover-tool" data-keyboard-rollover data-state="ready">
+  <div
+    class="rollover-tool"
+    data-keyboard-rollover
+    data-state="ready"
+    tabindex="0"
+    aria-label="Keyboard rollover test. Press Escape to release page-navigation keys."
+  >
     <div class="rollover-tool__status-row">
       <span class="rollover-tool__signal" aria-hidden="true"></span>
       <strong data-rollover-status role="status" aria-live="polite">Listening for simultaneous keys</strong>
@@ -31,12 +37,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
       </div>
     </div>
 
-    <div
-      class="rollover-tool__visual-wrap"
-      data-keyboard-capture
-      tabindex="0"
-      aria-label="Keyboard rollover test area. Press Escape to release page-navigation keys."
-    >
+    <div class="rollover-tool__visual-wrap">
       <KeyboardGrid />
     </div>
     <p class="rollover-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
@@ -64,21 +65,20 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-rollover]');
   if (root) {
-    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
-    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
+    const capture = mountKeyboardPageCapture(root);
     const controller = mountKeyboardRolloverTest(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
-      capture?.destroy();
+      capture.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
         controller.start();
-        capture?.capture(false);
+        capture.capture(false);
       }
     });
   }
@@ -88,6 +88,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   .rollover-tool {
     display: grid;
     gap: var(--space-4);
+    outline-offset: 2px;
   }
 
   .rollover-tool__status-row {
@@ -167,10 +168,9 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     max-width: 100%;
     overflow-x: auto;
     padding: 0.2rem;
-    outline-offset: 2px;
   }
 
-  .rollover-tool__visual-wrap[data-capture-active='false'] {
+  .rollover-tool[data-capture-active='false'] .rollover-tool__visual-wrap {
     opacity: 0.82;
   }
 
