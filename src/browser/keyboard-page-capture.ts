@@ -51,7 +51,7 @@ export const mountKeyboardPageCapture = (surface: HTMLElement): KeyboardPageCapt
   };
 
   const release = (): void => {
-    if (destroyed) {
+    if (destroyed || !active) {
       return;
     }
     active = false;
@@ -77,16 +77,30 @@ export const mountKeyboardPageCapture = (surface: HTMLElement): KeyboardPageCapt
     }
   };
 
-  const handlePointerDown = (event: PointerEvent): void => {
+  const handleSurfacePointerDown = (event: PointerEvent): void => {
     if (!isInteractiveTarget(event.target)) {
       capture(true);
+    }
+  };
+
+  const handleDocumentPointerDown = (event: PointerEvent): void => {
+    if (event.target instanceof Node && !surface.contains(event.target)) {
+      release();
+    }
+  };
+
+  const handleDocumentFocusIn = (event: FocusEvent): void => {
+    if (event.target instanceof Node && !surface.contains(event.target)) {
+      release();
     }
   };
 
   const handleFocus = (): void => capture(false);
 
   document.addEventListener('keydown', handleKeydown, true);
-  surface.addEventListener('pointerdown', handlePointerDown);
+  document.addEventListener('pointerdown', handleDocumentPointerDown, true);
+  document.addEventListener('focusin', handleDocumentFocusIn);
+  surface.addEventListener('pointerdown', handleSurfacePointerDown);
   surface.addEventListener('focus', handleFocus);
   renderState();
 
@@ -99,7 +113,9 @@ export const mountKeyboardPageCapture = (surface: HTMLElement): KeyboardPageCapt
       }
       destroyed = true;
       document.removeEventListener('keydown', handleKeydown, true);
-      surface.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('pointerdown', handleDocumentPointerDown, true);
+      document.removeEventListener('focusin', handleDocumentFocusIn);
+      surface.removeEventListener('pointerdown', handleSurfacePointerDown);
       surface.removeEventListener('focus', handleFocus);
       surface.dataset.captureActive = 'false';
     },
