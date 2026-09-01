@@ -7,7 +7,14 @@ import { keyboardGhostingPresets } from './ghosting-presets';
 <ToolShell labelledBy="ghosting-tool-heading">
   <h2 id="ghosting-tool-heading" class="ghosting-tool__sr">Keyboard Ghosting Test controls</h2>
 
-  <div class="ghosting-tool" data-keyboard-ghosting data-state="ready" data-phase="idle">
+  <div
+    class="ghosting-tool"
+    data-keyboard-ghosting
+    data-state="ready"
+    data-phase="idle"
+    tabindex="0"
+    aria-label="Keyboard ghosting test. Press Escape to release page-navigation keys."
+  >
     <div class="ghosting-tool__status-row">
       <span class="ghosting-tool__signal" aria-hidden="true"></span>
       <strong data-ghosting-status role="status" aria-live="polite">Ready for a guided combination</strong>
@@ -33,12 +40,7 @@ import { keyboardGhostingPresets } from './ghosting-presets';
       <p data-ghosting-detail></p>
     </section>
 
-    <div
-      class="ghosting-tool__visual-wrap"
-      data-keyboard-capture
-      tabindex="0"
-      aria-label="Keyboard ghosting test area. Press Escape to release page-navigation keys."
-    >
+    <div class="ghosting-tool__visual-wrap">
       <KeyboardGrid />
     </div>
     <p class="ghosting-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
@@ -57,21 +59,20 @@ import { keyboardGhostingPresets } from './ghosting-presets';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-ghosting]');
   if (root) {
-    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
-    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
+    const capture = mountKeyboardPageCapture(root);
     const controller = mountKeyboardGhostingTest(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
-      capture?.destroy();
+      capture.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
         controller.start();
-        capture?.capture(false);
+        capture.capture(false);
       }
     });
   }
@@ -81,6 +82,7 @@ import { keyboardGhostingPresets } from './ghosting-presets';
   .ghosting-tool {
     display: grid;
     gap: var(--space-4);
+    outline-offset: 2px;
   }
 
   .ghosting-tool__status-row {
@@ -150,10 +152,9 @@ import { keyboardGhostingPresets } from './ghosting-presets';
     max-width: 100%;
     overflow-x: auto;
     padding: 0.2rem;
-    outline-offset: 2px;
   }
 
-  .ghosting-tool__visual-wrap[data-capture-active='false'] {
+  .ghosting-tool[data-capture-active='false'] .ghosting-tool__visual-wrap {
     opacity: 0.82;
   }
 
