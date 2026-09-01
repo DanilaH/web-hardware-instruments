@@ -39,7 +39,7 @@ const formatCapturedUnits = (value: number): string => {
 
 const captureModeLabel = (mode: MouseCaptureMode | null): string => {
   if (mode === 'raw-pointer-lock') return 'Raw input';
-  if (mode === 'pointer-lock') return 'Adjusted Pointer Lock';
+  if (mode === 'pointer-lock') return 'Pointer Lock';
   if (mode === 'unlocked') return 'Browser fallback';
   return 'Not started';
 };
@@ -202,7 +202,7 @@ export const mountMouseDpiTest = (root: HTMLElement): MouseDpiToolController => 
     setState('result', 'Estimate ready');
     activeCaptureMode = null;
     accessibleSummary.textContent =
-      `Estimated DPI ${dpiText}. Captured ${formatCapturedUnits(signedHorizontalUnits)} horizontal units. ` +
+      `Estimated DPI ${dpiText}. Net horizontal units ${formatCapturedUnits(signedHorizontalUnits)}. ` +
       `${completedCaptureModeNote(completedMode)}`;
   };
 
