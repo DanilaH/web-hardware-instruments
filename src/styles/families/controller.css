@@ -39,8 +39,8 @@
   .controller-center-buttons rect,
   .controller-center-buttons circle,
   .controller-dpad rect,
-  .controller-face circle,
-  .controller-stick circle
+  .controller-face circle:not(.controller-face__mark),
+  .controller-stick > circle:first-child
 ) {
   fill: var(--color-surface);
   stroke: #858e8a;
