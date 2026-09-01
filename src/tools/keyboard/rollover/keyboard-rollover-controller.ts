@@ -104,6 +104,7 @@ export const mountKeyboardRolloverTest = (root: HTMLElement): KeyboardRolloverCo
   const handleResetMaximum = (): void => {
     state = resetRolloverMaximum(state);
     render();
+    root.focus({ preventScroll: true });
   };
 
   resetButton.addEventListener('click', handleResetMaximum);
