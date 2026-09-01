@@ -86,7 +86,7 @@ describe('MouseInputService', () => {
     ]);
   });
 
-  it('uses auxclick as an X1/X2 fallback and consumes only the matching native release', () => {
+  it('uses auxclick as an X1/X2 fallback and consumes only a completed matching native press', () => {
     const fake = createEnvironment();
     const service = createMouseInputService(null, 'basic', fake.environment);
     const events: MouseInputServiceEvent[] = [];
@@ -114,6 +114,58 @@ describe('MouseInputService', () => {
       { type: 'buttonup', button: 4, timestamp: 420 },
       { type: 'buttondown', button: 4, timestamp: 550 },
       { type: 'buttonup', button: 4, timestamp: 550 },
+    ]);
+  });
+
+  it('does not let a pointerup-only side event suppress the auxclick fallback', () => {
+    const fake = createEnvironment();
+    const service = createMouseInputService(null, 'basic', fake.environment);
+    const events: MouseInputServiceEvent[] = [];
+    service.subscribe((event) => events.push(event));
+    service.start();
+
+    fake.emitButtonUp(3, 100);
+    fake.emitAuxClick(3, 110);
+
+    expect(events).toEqual([
+      { type: 'buttonup', button: 3, timestamp: 100 },
+      { type: 'buttondown', button: 3, timestamp: 110 },
+      { type: 'buttonup', button: 3, timestamp: 110 },
+    ]);
+  });
+
+  it('uses auxclick to close a side press when native buttonup is missing without double-counting', () => {
+    const fake = createEnvironment();
+    const service = createMouseInputService(null, 'basic', fake.environment);
+    const events: MouseInputServiceEvent[] = [];
+    service.subscribe((event) => events.push(event));
+    service.start();
+
+    fake.emitButtonDown(4, 100);
+    fake.emitAuxClick(4, 120);
+
+    expect(events).toEqual([
+      { type: 'buttondown', button: 4, timestamp: 100 },
+      { type: 'buttonup', button: 4, timestamp: 120 },
+    ]);
+  });
+
+  it('clears side-button reconciliation state when focus is invalidated', () => {
+    const fake = createEnvironment();
+    const service = createMouseInputService(null, 'basic', fake.environment);
+    const events: MouseInputServiceEvent[] = [];
+    service.subscribe((event) => events.push(event));
+    service.start();
+
+    fake.emitButtonDown(3, 100);
+    fake.emitBlur();
+    fake.emitAuxClick(3, 120);
+
+    expect(events).toEqual([
+      { type: 'buttondown', button: 3, timestamp: 100 },
+      { type: 'clear', reason: 'blur' },
+      { type: 'buttondown', button: 3, timestamp: 120 },
+      { type: 'buttonup', button: 3, timestamp: 120 },
     ]);
   });
 
