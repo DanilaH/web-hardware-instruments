@@ -56,13 +56,13 @@ const touchTools: readonly HardwareTool[] = [
   { href: '/touch-screen-test', icon: 'touch', name: 'Touch Screen Test', description: 'Map browser-detected finger coverage, multi-touch, and unexpected touch input.', channel: 'touch' },
 ];
 
-export const toolGroups: readonly ToolGroup[] = [
+export const toolGroups = [
   { id: 'controller', name: 'Controller', icon: 'gamepad', channel: 'controller', tools: controllerTools },
   { id: 'mouse', name: 'Mouse', icon: 'mouse', channel: 'mouse', tools: mouseTools },
   { id: 'keyboard', name: 'Keyboard', icon: 'keyboard', channel: 'keyboard', tools: keyboardTools },
   { id: 'display', name: 'Display', icon: 'refresh', channel: 'display', tools: displayTools },
   { id: 'touch', name: 'Touch', icon: 'touch', channel: 'touch', tools: touchTools },
-];
+] as const satisfies readonly ToolGroup[];
 
 export const allTools: readonly HardwareTool[] = toolGroups.flatMap((group) => group.tools);
 
