@@ -59,12 +59,16 @@ export const mountKeyboardPageCapture = (surface: HTMLElement): KeyboardPageCapt
   };
 
   const handleKeydown = (event: KeyboardEvent): void => {
-    if (!active || destroyed || isInteractiveTarget(event.target)) {
+    if (!active || destroyed) {
       return;
     }
 
     if (event.code === 'Escape') {
       release();
+      return;
+    }
+
+    if (isInteractiveTarget(event.target)) {
       return;
     }
 
