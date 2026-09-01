@@ -6,7 +6,13 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 <ToolShell labelledBy="keyboard-tool-heading">
   <h2 id="keyboard-tool-heading" class="keyboard-tool__sr">Keyboard Tester controls</h2>
 
-  <div class="keyboard-tool" data-keyboard-tester data-state="ready">
+  <div
+    class="keyboard-tool"
+    data-keyboard-tester
+    data-state="ready"
+    tabindex="0"
+    aria-label="Keyboard test. Press Escape to release page-navigation keys."
+  >
     <div class="keyboard-tool__status-row">
       <span class="keyboard-tool__signal" aria-hidden="true"></span>
       <strong data-keyboard-status>Listening for keys</strong>
@@ -17,12 +23,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
       Press any key to test it. Space and page-navigation keys stay in the test; press Esc to release normal page scrolling.
     </p>
 
-    <div
-      class="keyboard-tool__visual-wrap"
-      data-keyboard-capture
-      tabindex="0"
-      aria-label="Keyboard test area. Press Escape to release page-navigation keys."
-    >
+    <div class="keyboard-tool__visual-wrap">
       <KeyboardGrid />
     </div>
 
@@ -58,21 +59,20 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-tester]');
   if (root) {
-    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
-    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
+    const capture = mountKeyboardPageCapture(root);
     const controller = mountKeyboardTester(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
-      capture?.destroy();
+      capture.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
         controller.start();
-        capture?.capture(false);
+        capture.capture(false);
       }
     });
   }
@@ -82,6 +82,7 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   .keyboard-tool {
     display: grid;
     gap: var(--space-4);
+    outline-offset: 2px;
   }
 
   .keyboard-tool__status-row {
@@ -129,10 +130,9 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
     max-width: 100%;
     overflow-x: auto;
     padding: 0.2rem;
-    outline-offset: 2px;
   }
 
-  .keyboard-tool__visual-wrap[data-capture-active='false'] {
+  .keyboard-tool[data-capture-active='false'] .keyboard-tool__visual-wrap {
     opacity: 0.82;
   }
 
