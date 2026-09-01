@@ -43,7 +43,7 @@ export interface MouseInputService {
   getPollingSource(): MousePollingSource | null;
 }
 
-const AUX_CLICK_DEDUPE_MS = 750;
+const AUX_CLICK_DEDUPE_MS = 100;
 
 const isMousePointer = (event: PointerEvent): boolean =>
   event.pointerType === '' || event.pointerType === 'mouse';
@@ -266,7 +266,7 @@ export const createMouseInputService = (
     : null,
 ): MouseInputService => {
   const listeners = new Set<(event: MouseInputServiceEvent) => void>();
-  const lastNativeButtonDownAt = new Map<MouseSemanticButton, number>();
+  const pendingNativeSideButtonUpAt = new Map<MouseSemanticButton, number>();
   let started = false;
   let destroyed = false;
   let pollingSource: MousePollingSource | null = null;
@@ -288,7 +288,7 @@ export const createMouseInputService = (
     environment.setAuxClickSuppression(false);
     environment.setBlurListener(null);
     environment.setVisibilityListener(null);
-    lastNativeButtonDownAt.clear();
+    pendingNativeSideButtonUpAt.clear();
     pollingSource = null;
   };
 
@@ -363,13 +363,14 @@ export const createMouseInputService = (
     if (!environment) return;
     environment.setButtonDownListener((button, timestamp) => {
       if (!started || destroyed) return;
-      if (isMouseSemanticButton(button) && Number.isFinite(timestamp)) {
-        lastNativeButtonDownAt.set(button, timestamp);
-      }
       emitButton('buttondown', button, timestamp);
     });
     environment.setButtonUpListener((button, timestamp) => {
-      if (started && !destroyed) emitButton('buttonup', button, timestamp);
+      if (!started || destroyed) return;
+      if ((button === 3 || button === 4) && Number.isFinite(timestamp)) {
+        pendingNativeSideButtonUpAt.set(button, timestamp);
+      }
+      emitButton('buttonup', button, timestamp);
     });
     environment.setAuxClickListener((button, timestamp) => {
       if (
@@ -381,11 +382,12 @@ export const createMouseInputService = (
         return;
       }
 
-      const lastNativeDown = lastNativeButtonDownAt.get(button);
+      const nativeButtonUpAt = pendingNativeSideButtonUpAt.get(button);
+      pendingNativeSideButtonUpAt.delete(button);
       if (
-        lastNativeDown !== undefined &&
-        timestamp >= lastNativeDown &&
-        timestamp - lastNativeDown <= AUX_CLICK_DEDUPE_MS
+        nativeButtonUpAt !== undefined &&
+        timestamp >= nativeButtonUpAt &&
+        timestamp - nativeButtonUpAt <= AUX_CLICK_DEDUPE_MS
       ) {
         return;
       }
