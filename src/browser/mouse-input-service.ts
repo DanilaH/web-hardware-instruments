@@ -266,6 +266,7 @@ export const createMouseInputService = (
     : null,
 ): MouseInputService => {
   const listeners = new Set<(event: MouseInputServiceEvent) => void>();
+  const nativeSideButtonsDown = new Set<MouseSemanticButton>();
   const pendingNativeSideButtonUpAt = new Map<MouseSemanticButton, number>();
   let started = false;
   let destroyed = false;
@@ -273,6 +274,11 @@ export const createMouseInputService = (
 
   const emit = (event: MouseInputServiceEvent): void => {
     listeners.forEach((listener) => listener(event));
+  };
+
+  const clearSideButtonTracking = (): void => {
+    nativeSideButtonsDown.clear();
+    pendingNativeSideButtonUpAt.clear();
   };
 
   const clearRuntimeListeners = (): void => {
@@ -288,7 +294,7 @@ export const createMouseInputService = (
     environment.setAuxClickSuppression(false);
     environment.setBlurListener(null);
     environment.setVisibilityListener(null);
-    pendingNativeSideButtonUpAt.clear();
+    clearSideButtonTracking();
     pollingSource = null;
   };
 
@@ -350,10 +356,14 @@ export const createMouseInputService = (
   const attachLifecycle = (): void => {
     if (!environment) return;
     environment.setBlurListener(() => {
-      if (started && !destroyed) emit({ type: 'clear', reason: 'blur' });
+      if (started && !destroyed) {
+        clearSideButtonTracking();
+        emit({ type: 'clear', reason: 'blur' });
+      }
     });
     environment.setVisibilityListener(() => {
       if (started && !destroyed && environment.getVisibilityState() !== 'visible') {
+        clearSideButtonTracking();
         emit({ type: 'clear', reason: 'visibility-hidden' });
       }
     });
@@ -363,12 +373,19 @@ export const createMouseInputService = (
     if (!environment) return;
     environment.setButtonDownListener((button, timestamp) => {
       if (!started || destroyed) return;
+      if ((button === 3 || button === 4) && Number.isFinite(timestamp)) {
+        pendingNativeSideButtonUpAt.delete(button);
+        nativeSideButtonsDown.add(button);
+      }
       emitButton('buttondown', button, timestamp);
     });
     environment.setButtonUpListener((button, timestamp) => {
       if (!started || destroyed) return;
       if ((button === 3 || button === 4) && Number.isFinite(timestamp)) {
-        pendingNativeSideButtonUpAt.set(button, timestamp);
+        pendingNativeSideButtonUpAt.delete(button);
+        if (nativeSideButtonsDown.delete(button)) {
+          pendingNativeSideButtonUpAt.set(button, timestamp);
+        }
       }
       emitButton('buttonup', button, timestamp);
     });
@@ -389,6 +406,13 @@ export const createMouseInputService = (
         timestamp >= nativeButtonUpAt &&
         timestamp - nativeButtonUpAt <= AUX_CLICK_DEDUPE_MS
       ) {
+        return;
+      }
+
+      if (nativeSideButtonsDown.delete(button)) {
+        // A native down reached the page but its matching up did not. Close that
+        // observed press instead of counting the auxclick as a second press.
+        emit({ type: 'buttonup', button, timestamp });
         return;
       }
 
