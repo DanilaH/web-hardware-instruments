@@ -86,7 +86,7 @@ describe('MouseInputService', () => {
     ]);
   });
 
-  it('uses auxclick as an X1/X2 fallback without duplicating a normal pointer press', () => {
+  it('uses auxclick as an X1/X2 fallback and consumes only the matching native release', () => {
     const fake = createEnvironment();
     const service = createMouseInputService(null, 'basic', fake.environment);
     const events: MouseInputServiceEvent[] = [];
@@ -97,13 +97,23 @@ describe('MouseInputService', () => {
     fake.emitButtonDown(3, 200);
     fake.emitButtonUp(3, 220);
     fake.emitAuxClick(3, 230);
-    fake.emitAuxClick(2, 300);
+    fake.emitAuxClick(3, 240);
+    fake.emitButtonDown(4, 400);
+    fake.emitButtonUp(4, 420);
+    fake.emitAuxClick(4, 550);
+    fake.emitAuxClick(2, 600);
 
     expect(events).toEqual([
       { type: 'buttondown', button: 4, timestamp: 100 },
       { type: 'buttonup', button: 4, timestamp: 100 },
       { type: 'buttondown', button: 3, timestamp: 200 },
       { type: 'buttonup', button: 3, timestamp: 220 },
+      { type: 'buttondown', button: 3, timestamp: 240 },
+      { type: 'buttonup', button: 3, timestamp: 240 },
+      { type: 'buttondown', button: 4, timestamp: 400 },
+      { type: 'buttonup', button: 4, timestamp: 420 },
+      { type: 'buttondown', button: 4, timestamp: 550 },
+      { type: 'buttonup', button: 4, timestamp: 550 },
     ]);
   });
 
