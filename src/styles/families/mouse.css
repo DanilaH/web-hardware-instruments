@@ -50,16 +50,16 @@
   stroke: #c9cdc7;
 }
 
-.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .button-zone {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .button-zone:not([data-active='true']) {
   fill: #ebe9e2;
   stroke: #bdc2bc;
 }
 
-.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .wheel-arrow {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .wheel-signal[data-direction='none'] .wheel-arrow {
   fill: #b9beb8;
 }
 
-.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .movement-signal {
+.page-main :is([data-mouse-tester], [data-mouse-button-test], [data-double-click-test]) .standard-mouse .movement-signal:not([data-active='true']) {
   stroke: #b9beb8;
 }
 
