@@ -36,6 +36,11 @@ export class StickDeadzonePlotRenderer {
     this.label = requireElement<HTMLElement>(root, '[data-deadzone-plot-label]');
   }
 
+  private setLegendVisible(visible: boolean): void {
+    this.legend.dataset.visible = visible ? 'true' : 'false';
+    this.legend.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
+
   renderPosition(position: StickPlotPosition): void {
     if (!Number.isFinite(position.x) || !Number.isFinite(position.y)) {
       return;
@@ -53,7 +58,7 @@ export class StickDeadzonePlotRenderer {
 
     this.noiseRing.setAttribute('r', toRadius(centerNoise).toFixed(2));
     this.suggestedRing.setAttribute('r', toRadius(suggestedDeadzone).toFixed(2));
-    this.legend.hidden = false;
+    this.setLegendVisible(true);
     this.root.dataset.result = 'true';
   }
 
@@ -64,7 +69,7 @@ export class StickDeadzonePlotRenderer {
   resetResult(): void {
     this.noiseRing.setAttribute('r', '0');
     this.suggestedRing.setAttribute('r', '0');
-    this.legend.hidden = true;
+    this.setLegendVisible(false);
     this.root.dataset.result = 'false';
   }
 

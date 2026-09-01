@@ -10,6 +10,20 @@ interface CanvasSurface {
   height: number;
 }
 
+interface ValueRange {
+  min: number;
+  max: number;
+}
+
+interface PlotBounds {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+const FPS_BOUNDS: PlotBounds = { left: 36, right: 10, top: 10, bottom: 12 };
+
 const readColor = (canvas: HTMLCanvasElement, token: string, fallback: string): string => {
   const value = getComputedStyle(canvas).getPropertyValue(token).trim();
   return value || fallback;
@@ -60,7 +74,7 @@ const drawReferenceLines = (
   context.restore();
 };
 
-const getValueRange = (values: readonly number[]): { min: number; max: number } | null => {
+const getValueRange = (values: readonly number[]): ValueRange | null => {
   const finite = values.filter(Number.isFinite);
   if (finite.length === 0) {
     return null;
@@ -76,6 +90,29 @@ const getValueRange = (values: readonly number[]): { min: number; max: number } 
     const padding = (max - min) * 0.12;
     min -= padding;
     max += padding;
+  }
+
+  return { min, max };
+};
+
+const getFpsValueRange = (values: readonly number[]): ValueRange | null => {
+  const finite = values.filter(Number.isFinite);
+  if (finite.length === 0) {
+    return null;
+  }
+
+  const rawMin = Math.min(...finite);
+  const rawMax = Math.max(...finite);
+  const center = (rawMin + rawMax) / 2;
+  const rawSpan = rawMax - rawMin;
+  const minimumSpan = Math.max(4, Math.abs(center) * 0.08);
+  const span = Math.max(minimumSpan, rawSpan * 1.24);
+  let min = center - span / 2;
+  let max = center + span / 2;
+
+  if (min < 0) {
+    max -= min;
+    min = 0;
   }
 
   return { min, max };
@@ -104,6 +141,60 @@ const mapY = (
   padding: number,
 ): number => padding + ((max - value) / (max - min)) * (height - padding * 2);
 
+const mapXInBounds = (
+  timestamp: number,
+  firstTimestamp: number,
+  lastTimestamp: number,
+  width: number,
+  bounds: PlotBounds,
+): number => {
+  const span = lastTimestamp - firstTimestamp;
+  const plotWidth = Math.max(1, width - bounds.left - bounds.right);
+  if (!Number.isFinite(span) || span <= 0) {
+    return bounds.left + plotWidth;
+  }
+  return bounds.left + ((timestamp - firstTimestamp) / span) * plotWidth;
+};
+
+const mapYInBounds = (
+  value: number,
+  range: ValueRange,
+  height: number,
+  bounds: PlotBounds,
+): number => {
+  const plotHeight = Math.max(1, height - bounds.top - bounds.bottom);
+  return bounds.top + ((range.max - value) / (range.max - range.min)) * plotHeight;
+};
+
+const drawFpsScale = (
+  surface: CanvasSurface,
+  range: ValueRange,
+  gridColor: string,
+  labelColor: string,
+): void => {
+  const { context, width, height } = surface;
+  const levels = [range.max, (range.max + range.min) / 2, range.min];
+
+  context.save();
+  context.lineWidth = 1;
+  context.font = '10px ui-monospace, SFMono-Regular, Consolas, monospace';
+  context.textAlign = 'left';
+  context.textBaseline = 'middle';
+
+  for (const value of levels) {
+    const y = mapYInBounds(value, range, height, FPS_BOUNDS);
+    context.fillStyle = labelColor;
+    context.fillText(Math.round(value).toString(), 2, y);
+    context.strokeStyle = gridColor;
+    context.beginPath();
+    context.moveTo(FPS_BOUNDS.left, y + 0.5);
+    context.lineTo(width - FPS_BOUNDS.right, y + 0.5);
+    context.stroke();
+  }
+
+  context.restore();
+};
+
 export class FpsTraceRenderer {
   constructor(private readonly canvas: HTMLCanvasElement) {}
 
@@ -116,24 +207,27 @@ export class FpsTraceRenderer {
     const grid = readColor(this.canvas, '--trace-grid', '#e4e7e8');
     const neutral = readColor(this.canvas, '--trace-neutral', '#8d969a');
     const signal = readColor(this.canvas, '--trace-signal', '#176f9c');
-    drawReferenceLines(surface, grid);
-
     const points = data.points.filter(
       (point): point is TracePointRenderData =>
         Number.isFinite(point.timestamp) && Number.isFinite(point.value),
     );
+    const range = getFpsValueRange(points.map((point) => point.value));
+    if (!range) {
+      return;
+    }
+
+    drawFpsScale(surface, range, grid, neutral);
+
     if (points.length < 2) {
       return;
     }
 
     const first = points[0];
     const last = points.at(-1);
-    const range = getValueRange(points.map((point) => point.value));
-    if (!first || !last || !range) {
+    if (!first || !last) {
       return;
     }
 
-    const padding = 10;
     const { context, width, height } = surface;
     context.save();
     context.strokeStyle = neutral;
@@ -144,8 +238,8 @@ export class FpsTraceRenderer {
     context.beginPath();
 
     points.forEach((point, index) => {
-      const x = mapX(point.timestamp, first.timestamp, last.timestamp, width, padding);
-      const y = mapY(point.value, range.min, range.max, height, padding);
+      const x = mapXInBounds(point.timestamp, first.timestamp, last.timestamp, width, FPS_BOUNDS);
+      const y = mapYInBounds(point.value, range, height, FPS_BOUNDS);
       if (index === 0) {
         context.moveTo(x, y);
       } else {
@@ -162,18 +256,18 @@ export class FpsTraceRenderer {
       context.lineWidth = 2;
       context.beginPath();
       context.moveTo(
-        mapX(previous.timestamp, first.timestamp, last.timestamp, width, padding),
-        mapY(previous.value, range.min, range.max, height, padding),
+        mapXInBounds(previous.timestamp, first.timestamp, last.timestamp, width, FPS_BOUNDS),
+        mapYInBounds(previous.value, range, height, FPS_BOUNDS),
       );
       context.lineTo(
-        mapX(last.timestamp, first.timestamp, last.timestamp, width, padding),
-        mapY(last.value, range.min, range.max, height, padding),
+        mapXInBounds(last.timestamp, first.timestamp, last.timestamp, width, FPS_BOUNDS),
+        mapYInBounds(last.value, range, height, FPS_BOUNDS),
       );
       context.stroke();
     }
 
-    const latestX = mapX(last.timestamp, first.timestamp, last.timestamp, width, padding);
-    const latestY = mapY(last.value, range.min, range.max, height, padding);
+    const latestX = mapXInBounds(last.timestamp, first.timestamp, last.timestamp, width, FPS_BOUNDS);
+    const latestY = mapYInBounds(last.value, range, height, FPS_BOUNDS);
     context.globalAlpha = 1;
     context.fillStyle = signal;
     context.beginPath();

@@ -16,7 +16,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
       <div class="fps-trace-panel">
         <div class="trace-label" aria-hidden="true">
           <span>Recent FPS</span>
-          <span>8 s history</span>
+          <span>up to 8 s history</span>
         </div>
         <canvas
           class="display-trace display-trace--fps"
@@ -27,8 +27,22 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 
       <div class="fps-result-panel">
         <div>
-          <div class="metric-label">Observed FPS</div>
+          <div class="metric-label">
+            <span>Current FPS</span>
+            <small>1 s rolling window</small>
+          </div>
           <div class="metric-value measurement-value" data-fps-result>—</div>
+        </div>
+
+        <div class="fps-range" aria-label="Recent FPS range">
+          <div>
+            <span>Recent low</span>
+            <strong class="measurement-value" data-fps-low>—</strong>
+          </div>
+          <div>
+            <span>Recent high</span>
+            <strong class="measurement-value" data-fps-high>—</strong>
+          </div>
         </div>
 
         <div class="supporting-metric">
@@ -37,7 +51,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
         </div>
 
         <p class="measurement-caveat">
-          This measures frame delivery in this browser page, not FPS inside a game.
+          The large value is the latest one-second estimate. The graph keeps recent history, so an older drop can remain visible after the current FPS recovers.
         </p>
       </div>
     </div>
@@ -119,7 +133,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 
   .fps-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(15rem, 0.75fr);
+    grid-template-columns: minmax(0, 1.55fr) minmax(16rem, 0.75fr);
     min-height: 15rem;
     border-block: 1px solid #e3e6e7;
   }
@@ -140,7 +154,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
-    padding-left: var(--space-3);
+    padding-left: 2.25rem;
     color: var(--color-muted);
     font-size: 0.7rem;
     font-weight: 600;
@@ -163,9 +177,23 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
   }
 
   .metric-label,
+  .fps-range span,
   .supporting-metric span {
     color: var(--color-muted);
     font-size: 0.78rem;
+  }
+
+  .metric-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .metric-label small {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 500;
   }
 
   .metric-value {
@@ -174,6 +202,22 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     font-weight: 700;
     line-height: 0.95;
     letter-spacing: -0.06em;
+  }
+
+  .fps-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .fps-range > div {
+    min-width: 0;
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .fps-range strong {
+    font-size: 1rem;
   }
 
   .supporting-metric {

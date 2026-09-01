@@ -14,7 +14,7 @@
     <circle class="deadzone-plot__point" data-deadzone-point cx="50" cy="50" r="3.2" />
   </svg>
 
-  <div class="deadzone-plot__legend" data-deadzone-legend hidden>
+  <div class="deadzone-plot__legend" data-deadzone-legend data-visible="false" aria-hidden="true">
     <span><i class="deadzone-plot__legend-noise" aria-hidden="true"></i>Observed center noise</span>
     <span><i class="deadzone-plot__legend-suggested" aria-hidden="true"></i>Suggested deadzone</span>
   </div>
@@ -92,11 +92,18 @@
   }
 
   .deadzone-plot__legend {
+    min-block-size: 2.35rem;
     display: flex;
+    align-content: flex-start;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-2) var(--space-3);
+    visibility: hidden;
     color: var(--color-muted);
     font-size: 0.72rem;
+  }
+
+  .deadzone-plot__legend[data-visible='true'] {
+    visibility: visible;
   }
 
   .deadzone-plot__legend span {
