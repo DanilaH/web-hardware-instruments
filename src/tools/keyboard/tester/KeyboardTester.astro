@@ -13,9 +13,16 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
       <span class="keyboard-tool__status-note">Listening automatically.</span>
     </div>
 
-    <p class="keyboard-tool__instruction">Press any key to test it.</p>
+    <p class="keyboard-tool__instruction">
+      Press any key to test it. Space and page-navigation keys stay in the test; press Esc to release normal page scrolling.
+    </p>
 
-    <div class="keyboard-tool__visual-wrap">
+    <div
+      class="keyboard-tool__visual-wrap"
+      data-keyboard-capture
+      tabindex="0"
+      aria-label="Keyboard test area. Press Escape to release page-navigation keys."
+    >
       <KeyboardGrid />
     </div>
 
@@ -46,21 +53,26 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 </ToolShell>
 
 <script>
+  import { mountKeyboardPageCapture } from '../../../browser/keyboard-page-capture';
   import { mountKeyboardTester } from './keyboard-tester-controller';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-tester]');
   if (root) {
+    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
+    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
     const controller = mountKeyboardTester(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
+      capture?.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) {
         controller.start();
+        capture?.capture(false);
       }
     });
   }
@@ -116,7 +128,12 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   .keyboard-tool__visual-wrap {
     max-width: 100%;
     overflow-x: auto;
-    padding-bottom: 0.2rem;
+    padding: 0.2rem;
+    outline-offset: 2px;
+  }
+
+  .keyboard-tool__visual-wrap[data-capture-active='false'] {
+    opacity: 0.82;
   }
 
   .keyboard-tool__results {

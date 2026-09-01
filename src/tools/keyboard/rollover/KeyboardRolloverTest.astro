@@ -12,7 +12,9 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
       <strong data-rollover-status role="status" aria-live="polite">Listening for simultaneous keys</strong>
     </div>
 
-    <p class="rollover-tool__instruction">Hold several keys at the same time and compare them with the highlighted keyboard.</p>
+    <p class="rollover-tool__instruction">
+      Hold several keys at the same time. Space and page-navigation keys are captured for the test; press Esc to release normal page scrolling.
+    </p>
 
     <div class="rollover-tool__metrics" aria-label="Keyboard rollover measurements">
       <div>
@@ -29,7 +31,12 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
       </div>
     </div>
 
-    <div class="rollover-tool__visual-wrap">
+    <div
+      class="rollover-tool__visual-wrap"
+      data-keyboard-capture
+      tabindex="0"
+      aria-label="Keyboard rollover test area. Press Escape to release page-navigation keys."
+    >
       <KeyboardGrid />
     </div>
     <p class="rollover-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
@@ -52,20 +59,27 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
 </ToolShell>
 
 <script>
+  import { mountKeyboardPageCapture } from '../../../browser/keyboard-page-capture';
   import { mountKeyboardRolloverTest } from './keyboard-rollover-controller';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-rollover]');
   if (root) {
+    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
+    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
     const controller = mountKeyboardRolloverTest(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
+      capture?.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
-      if (event.persisted) controller.start();
+      if (event.persisted) {
+        controller.start();
+        capture?.capture(false);
+      }
     });
   }
 </script>
@@ -152,7 +166,12 @@ import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
   .rollover-tool__visual-wrap {
     max-width: 100%;
     overflow-x: auto;
-    padding-bottom: 0.2rem;
+    padding: 0.2rem;
+    outline-offset: 2px;
+  }
+
+  .rollover-tool__visual-wrap[data-capture-active='false'] {
+    opacity: 0.82;
   }
 
   .rollover-tool__mobile-hint {

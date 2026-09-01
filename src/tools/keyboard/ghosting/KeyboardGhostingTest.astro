@@ -13,7 +13,9 @@ import { keyboardGhostingPresets } from './ghosting-presets';
       <strong data-ghosting-status role="status" aria-live="polite">Ready for a guided combination</strong>
     </div>
 
-    <p class="ghosting-tool__instruction">Choose a combination, then hold every highlighted key during the 3-second observation.</p>
+    <p class="ghosting-tool__instruction">
+      Choose a combination, then hold every highlighted key during the 3-second observation. Space and page-navigation keys are captured; press Esc to release normal page scrolling.
+    </p>
 
     <div class="ghosting-tool__controls">
       <label>
@@ -31,7 +33,12 @@ import { keyboardGhostingPresets } from './ghosting-presets';
       <p data-ghosting-detail></p>
     </section>
 
-    <div class="ghosting-tool__visual-wrap">
+    <div
+      class="ghosting-tool__visual-wrap"
+      data-keyboard-capture
+      tabindex="0"
+      aria-label="Keyboard ghosting test area. Press Escape to release page-navigation keys."
+    >
       <KeyboardGrid />
     </div>
     <p class="ghosting-tool__mobile-hint">Scroll the keyboard horizontally for more keys.</p>
@@ -45,20 +52,27 @@ import { keyboardGhostingPresets } from './ghosting-presets';
 </ToolShell>
 
 <script>
+  import { mountKeyboardPageCapture } from '../../../browser/keyboard-page-capture';
   import { mountKeyboardGhostingTest } from './keyboard-ghosting-controller';
 
   const root = document.querySelector<HTMLElement>('[data-keyboard-ghosting]');
   if (root) {
+    const captureSurface = root.querySelector<HTMLElement>('[data-keyboard-capture]');
+    const capture = captureSurface ? mountKeyboardPageCapture(captureSurface) : null;
     const controller = mountKeyboardGhostingTest(root);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
         return;
       }
+      capture?.destroy();
       controller.destroy();
     });
     window.addEventListener('pageshow', (event) => {
-      if (event.persisted) controller.start();
+      if (event.persisted) {
+        controller.start();
+        capture?.capture(false);
+      }
     });
   }
 </script>
@@ -135,7 +149,12 @@ import { keyboardGhostingPresets } from './ghosting-presets';
   .ghosting-tool__visual-wrap {
     max-width: 100%;
     overflow-x: auto;
-    padding-bottom: 0.2rem;
+    padding: 0.2rem;
+    outline-offset: 2px;
+  }
+
+  .ghosting-tool__visual-wrap[data-capture-active='false'] {
+    opacity: 0.82;
   }
 
   .ghosting-tool__mobile-hint {
