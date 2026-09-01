@@ -80,7 +80,8 @@ export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
     frameTime.textContent = frameTimeText;
     accessibleSummary.textContent =
       `Current FPS ${fpsText} using a one-second rolling window. ` +
-      `Recent low ${lowText}, recent high ${highText}. Median frame time ${frameTimeText}.`;
+      `Recent sampled low ${lowText}, recent sampled high ${highText}. ` +
+      `Median frame time ${frameTimeText}.`;
     renderer.render({ points: snapshot.trace });
   };
 
