@@ -142,6 +142,11 @@ a:hover {
   padding: var(--space-5);
 }
 
+body[data-channel] .tool-shell {
+  border-top-color: color-mix(in srgb, var(--color-signal) 55%, var(--color-border));
+  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--color-signal) 78%, transparent);
+}
+
 .foundation-note {
   margin-top: var(--space-6);
   max-width: var(--reading-width);
@@ -230,6 +235,10 @@ a:hover {
 [data-channel='keyboard'] { --channel: var(--color-channel-keyboard); }
 [data-channel='display'] { --channel: var(--color-channel-display); }
 [data-channel='touch'] { --channel: var(--color-channel-touch); }
+
+body[data-channel] {
+  --color-signal: var(--channel);
+}
 
 /* Homepage-specific visibility treatment; shared channel values now live in tokens.css. */
 .page-main--homepage .category-rail a::after {
