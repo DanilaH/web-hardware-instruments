@@ -30,12 +30,12 @@ const controllerTools: readonly HardwareTool[] = [
 ];
 
 const mouseTools: readonly HardwareTool[] = [
-  { href: '/mouse-tester', icon: 'mouse', name: 'Mouse Tester', description: 'Check browser-detected mouse buttons, wheel input, and movement.', channel: 'mouse' },
-  { href: '/mouse-button-test', icon: 'button', name: 'Mouse Button Test', description: 'Check primary, middle, secondary, back, and forward button input.', channel: 'mouse' },
-  { href: '/mouse-scroll-test', icon: 'scroll', name: 'Mouse Scroll Test', description: 'Inspect browser-detected wheel directions and recent events.', channel: 'mouse' },
+  { href: '/mouse-tester', icon: 'mouse', name: 'Mouse Tester', description: 'Quickly check browser-detected mouse buttons, wheel input, and movement.', channel: 'mouse' },
+  { href: '/mouse-button-test', icon: 'button', name: 'Mouse Button Test', description: 'Check primary, middle, secondary, Back/X1, and Forward/X2 button input.', channel: 'mouse' },
+  { href: '/mouse-scroll-test', icon: 'scroll', name: 'Mouse Scroll Test', description: 'Inspect browser-detected up, down, left, and right wheel events.', channel: 'mouse' },
   { href: '/double-click-test', icon: 'double-click', name: 'Double Click Test', description: 'Look for unusually fast repeated same-button presses.', channel: 'mouse' },
   { href: '/mouse-polling-rate-test', icon: 'polling', name: 'Mouse Polling Rate Test', description: 'Measure the pointer sample rate observed by this browser.', channel: 'mouse' },
-  { href: '/mouse-dpi-test', icon: 'dpi', name: 'Mouse DPI Test', description: 'Estimate mouse DPI from a measured physical movement distance.', channel: 'mouse' },
+  { href: '/mouse-dpi-test', icon: 'dpi', name: 'Mouse DPI Test', description: 'Estimate mouse DPI from net browser movement over a measured physical distance.', channel: 'mouse' },
 ];
 
 const keyboardTools: readonly HardwareTool[] = [
@@ -45,7 +45,7 @@ const keyboardTools: readonly HardwareTool[] = [
 ];
 
 const displayTools: readonly HardwareTool[] = [
-  { href: '/fps-test', icon: 'fps', name: 'FPS Test', description: 'Observe this browser page’s frame delivery and recent drops.', channel: 'display' },
+  { href: '/fps-test', icon: 'fps', name: 'FPS Test', description: 'Observe this browser page’s frame delivery and recent sampled FPS range.', channel: 'display' },
   { href: '/refresh-rate-test', icon: 'refresh', name: 'Refresh Rate Test', description: 'Estimate the display cadence currently visible to the browser.', channel: 'display' },
   { href: '/frame-skipping-test', icon: 'frame-skip', name: 'Frame Skipping Test', description: 'Use a camera-assisted pattern to look for repeatable skipped-refresh gaps.', channel: 'display' },
   { href: '/dead-pixel-test', icon: 'dead-pixel', name: 'Dead Pixel Test', description: 'Inspect the screen against solid colors for dead or stuck pixels.', channel: 'display' },
