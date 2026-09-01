@@ -71,3 +71,21 @@ export const getToolByPath = (path: string): HardwareTool | undefined =>
 
 export const getToolsByChannel = (channel: ToolChannel): readonly HardwareTool[] =>
   allTools.filter((tool) => tool.channel === channel);
+
+const touchRelatedPaths = ['/mouse-tester', '/keyboard-tester', '/dead-pixel-test'] as const;
+
+export const getRelatedTools = (path: string): readonly HardwareTool[] => {
+  const current = getToolByPath(path);
+  if (!current) {
+    return [];
+  }
+
+  const siblings = getToolsByChannel(current.channel).filter((tool) => tool.href !== current.href);
+  if (siblings.length > 0) {
+    return siblings;
+  }
+
+  return touchRelatedPaths
+    .map((relatedPath) => getToolByPath(relatedPath))
+    .filter((tool): tool is HardwareTool => tool !== undefined);
+};
