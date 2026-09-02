@@ -15,10 +15,13 @@ const {
   noindex = false,
 } = Astro.props;
 
-const canonicalUrl = new URL(canonicalPath, siteConfig.origin);
+const canonicalUrl = canonicalPath === '/'
+  ? siteConfig.origin
+  : new URL(canonicalPath, siteConfig.origin).href;
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
+<meta property="og:site_name" content={siteConfig.name} />
 <link rel="canonical" href={canonicalUrl} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
