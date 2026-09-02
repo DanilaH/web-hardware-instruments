@@ -30,7 +30,7 @@ const websiteStructuredData = canonicalPath === '/'
       '@type': 'WebSite',
       name: siteConfig.name,
       alternateName: siteConfig.alternateName,
-      url: new URL('/', siteConfig.origin).href,
+      url: siteConfig.origin,
     }
   : null;
 ---
