@@ -29,7 +29,8 @@ const websiteStructuredData = canonicalPath === '/'
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: siteConfig.name,
-      url: new URL('/', siteConfig.origin).href,
+      alternateName: siteConfig.alternateName,
+      url: siteConfig.origin,
     }
   : null;
 ---

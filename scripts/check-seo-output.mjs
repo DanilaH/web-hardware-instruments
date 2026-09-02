@@ -135,7 +135,14 @@ for (const htmlFile of htmlFiles) {
   canonicalUrls.add(canonical);
 
   if (!sitemapUrls.has(canonical)) {
-    fail(`${rel} canonical is not present verbatim in the sitemap: ${canonical}. Align hosting URL form, redirects, canonicals, and sitemap entries before release.`);
+    const canonicalPathname = new URL(canonical).pathname;
+    const nearbySitemapUrls = [...sitemapUrls]
+      .filter((url) => new URL(url).pathname === canonicalPathname || canonicalPathname === '/')
+      .slice(0, 8);
+    const diagnostic = nearbySitemapUrls.length > 0
+      ? ` Sitemap candidates: ${nearbySitemapUrls.join(', ')}.`
+      : ` Sitemap sample: ${[...sitemapUrls].slice(0, 8).join(', ') || 'empty'}.`;
+    fail(`${rel} canonical is not present verbatim in the sitemap: ${canonical}.${diagnostic} Align hosting URL form, redirects, canonicals, and sitemap entries before release.`);
   }
 }
 
