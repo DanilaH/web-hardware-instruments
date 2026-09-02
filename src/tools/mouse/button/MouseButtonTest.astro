@@ -40,7 +40,9 @@ const names = ['Primary', 'Middle', 'Secondary', 'Back / X1', 'Forward / X2'] as
       </div>
     </div>
 
-    <p class="note">If X1/X2 stay undetected, the browser, OS, or mouse software may not expose those buttons to the page. That is not automatically a hardware failure.</p>
+    <p class="note">
+      Inside this test area, normal browser actions for tested buttons — including X1/X2 Back/Forward navigation — are suppressed when the browser exposes those events. Outside the area, normal button behavior is unchanged. If X1/X2 stay undetected, the browser, OS, or mouse software may not expose them to the page; that is not automatically a hardware failure.
+    </p>
     <p class="sr-only" data-mouse-button-summary>Mouse Button Test is listening.</p>
   </div>
 </ToolShell>
