@@ -1,0 +1,18 @@
+name: hardwareinspect
+
+services:
+  hardwareinspect-web:
+    container_name: hardwareinspect-web
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.production
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    external: true
+    name: vps_booking_network
