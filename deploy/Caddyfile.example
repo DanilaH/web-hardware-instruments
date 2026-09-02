@@ -10,7 +10,10 @@ hardwareinspect.com {
   @indexHtml path /index.html
   redir @indexHtml /{?query} 308
 
-  @htmlPath path_regexp htmlPath ^(.+)\.html$
+  @htmlPath {
+    not path /index.html
+    path_regexp htmlPath ^(.+)\.html$
+  }
   redir @htmlPath {re.htmlPath.1}{?query} 308
 
   @trailingSlash path_regexp trailingSlash ^(.+)/$
