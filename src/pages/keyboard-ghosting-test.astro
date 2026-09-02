@@ -24,7 +24,7 @@ const relatedTools = [
 >
   <section class="reading-width">
     <h1 class="page-heading">Keyboard Ghosting Test</h1>
-    <p class="page-intro">Check one known key combination against what this browser actually receives together.</p>
+    <p class="page-intro">Try representative key chords and compare the exact keys you hold with what the browser receives together. There is no universal ghosting combination because keyboard matrix layouts differ by model.</p>
   </section>
 
   <KeyboardGhostingTest />
@@ -32,11 +32,16 @@ const relatedTools = [
   <section class="tool-content reading-width" aria-labelledby="ghosting-how-to">
     <h2 id="ghosting-how-to">How to run the guided test</h2>
     <ol>
-      <li>Choose one of the non-reserved key combinations.</li>
+      <li>Choose one of the representative, non-reserved key combinations.</li>
       <li>Select Start test and get ready during the short preparation period.</li>
       <li>Hold every highlighted key throughout the 3-second observation.</li>
       <li>Compare the best simultaneous browser-detected snapshot with the expected combination.</li>
     </ol>
+
+    <h2>Why these combinations</h2>
+    <p>
+      Ghosting and key blocking depend on the keyboard's internal matrix, so the same problematic combination does not apply to every model. The presets include common gaming chords, smaller three-key chords, and a clearly labelled six-key stress chord. They are representative probes, not a canonical certification set.
+    </p>
 
     <h2>What a missing key means</h2>
     <p>
