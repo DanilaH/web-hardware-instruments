@@ -169,6 +169,7 @@ export const mountKeyboardGhostingTest = (root: HTMLElement): KeyboardGhostingCo
     root.dataset.phase = phase;
     renderExpectedKeys();
     setControlsForRunning(true);
+    root.focus({ preventScroll: true });
     status.textContent = 'Get ready…';
     result.textContent = 'Get ready…';
     detail.textContent = 'Hold every highlighted key when the observation begins.';

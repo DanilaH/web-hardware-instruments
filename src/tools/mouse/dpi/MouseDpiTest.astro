@@ -13,6 +13,13 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       <span class="mouse-tool__status-note">Uses local browser movement only.</span>
     </div>
 
+    <ol class="dpi-steps" aria-label="Mouse DPI measurement steps">
+      <li><strong>Measure</strong><span>Mark a horizontal distance on the desk or mouse pad.</span></li>
+      <li><strong>Enter</strong><span>Set that same distance below.</span></li>
+      <li><strong>Move</strong><span>After Start, move horizontally by exactly that distance.</span></li>
+      <li><strong>Finish</strong><span>Click once to finish; press Esc to cancel.</span></li>
+    </ol>
+
     <p class="mouse-tool__instruction" data-mouse-instruction>
       Set the physical distance, then start the measurement.
     </p>
@@ -60,6 +67,21 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
           <span>Estimated DPI</span>
           <strong class="measurement-value" data-dpi-result>—</strong>
         </div>
+
+        <dl class="dpi-evidence" aria-label="Measurement evidence">
+          <div>
+            <dt>Capture mode</dt>
+            <dd class="measurement-value" data-capture-quality>Not started</dd>
+          </div>
+          <div>
+            <dt>Net horizontal units</dt>
+            <dd class="measurement-value" data-captured-units>—</dd>
+          </div>
+          <div>
+            <dt>Physical distance</dt>
+            <dd class="measurement-value" data-captured-distance>10 cm · 3.94 in</dd>
+          </div>
+        </dl>
       </div>
     </div>
 
@@ -132,7 +154,37 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
     background: #b36a6a;
   }
 
+  .dpi-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 1px;
+    background: var(--color-border);
+    list-style: none;
+  }
+
+  .dpi-steps li {
+    min-width: 0;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.65rem 0.75rem;
+    background: var(--color-surface);
+  }
+
+  .dpi-steps strong {
+    color: var(--color-text);
+    font-size: 0.75rem;
+  }
+
+  .dpi-steps span {
+    color: var(--color-muted);
+    font-size: 0.7rem;
+    line-height: 1.35;
+  }
+
   .mouse-tool__instruction {
+    min-height: 1.45rem;
     margin: 0;
     font-size: 0.95rem;
   }
@@ -157,7 +209,8 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
 
   .distance-control label,
   .movement-panel__heading,
-  .dpi-result > span {
+  .dpi-result > span,
+  .dpi-evidence dt {
     color: var(--color-muted);
     font-size: 0.75rem;
     font-weight: 600;
@@ -189,7 +242,7 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
   }
 
   .capture-note {
-    min-height: 2.7rem;
+    min-height: 3.45rem;
     margin: 0;
     color: var(--color-muted);
     font-size: 0.75rem;
@@ -199,7 +252,7 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
   .mouse-measurement {
     min-width: 0;
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: 1fr auto auto;
     gap: var(--space-4);
   }
 
@@ -252,6 +305,38 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
     letter-spacing: -0.055em;
   }
 
+  .dpi-evidence {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid #e3e6e7;
+  }
+
+  .dpi-evidence > div {
+    min-width: 0;
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .dpi-evidence dt,
+  .dpi-evidence dd {
+    margin: 0;
+  }
+
+  .dpi-evidence dt {
+    font-size: 0.64rem;
+  }
+
+  .dpi-evidence dd {
+    overflow: hidden;
+    color: var(--color-text);
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .mouse-tool__sr {
     position: absolute;
     width: 1px;
@@ -275,12 +360,16 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       margin-left: 1.1rem;
     }
 
+    .dpi-steps {
+      grid-template-columns: 1fr 1fr;
+    }
+
     .mouse-tool__instruction {
       min-block-size: 4.3rem;
     }
 
     .capture-note {
-      min-block-size: 3.3rem;
+      min-block-size: 4.2rem;
     }
 
     .mouse-tool__layout {
@@ -295,7 +384,7 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
     }
 
     .mouse-measurement {
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto 1fr auto;
     }
 
     .dpi-result {
@@ -315,6 +404,10 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
       flex-direction: column;
       gap: 0.2rem;
     }
+
+    .dpi-evidence {
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 22rem) {
@@ -324,6 +417,10 @@ import MouseMovementGuide from '../../../visuals/mouse/MouseMovementGuide.astro'
 
     .mouse-tool__instruction {
       min-block-size: 5.75rem;
+    }
+
+    .dpi-steps {
+      grid-template-columns: 1fr;
     }
   }
 </style>

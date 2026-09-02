@@ -1,84 +1,92 @@
 <svg
   class="controller-visual"
-  viewBox="0 0 640 330"
+  viewBox="0 0 640 360"
   role="img"
   aria-hidden="true"
   focusable="false"
   data-controller-svg
 >
+  <path
+    class="controller-body"
+    d="M150 92C119 94 94 115 82 145L43 273C34 304 45 329 68 335c19 5 33-9 48-29l55-72c13-17 32-26 54-26h190c22 0 41 9 54 26l55 72c15 20 29 34 48 29 23-6 34-31 25-62l-39-128c-12-30-37-51-68-53-70-5-181-5-252 0Z"
+  />
+  <path class="controller-inner" d="M190 100c51-7 209-7 260 0 24 3 43 19 50 42l10 31c-51-20-103-30-190-30s-139 10-190 30l10-31c7-23 26-39 50-42Z" />
+
   <g class="controller-shoulders">
-    <rect x="112" y="50" width="150" height="24" rx="10" data-controller-button="left-shoulder" />
-    <rect x="378" y="50" width="150" height="24" rx="10" data-controller-button="right-shoulder" />
+    <rect x="119" y="76" width="145" height="24" rx="10" data-controller-button="left-shoulder" />
+    <rect x="376" y="76" width="145" height="24" rx="10" data-controller-button="right-shoulder" />
   </g>
 
   <g class="controller-triggers">
     <g>
-      <rect class="trigger-track" x="132" y="18" width="98" height="22" rx="8" />
+      <rect class="trigger-track" x="137" y="45" width="104" height="20" rx="8" />
       <rect
         class="trigger-fill"
-        x="132"
-        y="18"
-        width="98"
-        height="22"
+        x="137"
+        y="45"
+        width="104"
+        height="20"
         rx="8"
         data-controller-trigger="left"
       />
     </g>
     <g>
-      <rect class="trigger-track" x="410" y="18" width="98" height="22" rx="8" />
+      <rect class="trigger-track" x="399" y="45" width="104" height="20" rx="8" />
       <rect
         class="trigger-fill"
-        x="410"
-        y="18"
-        width="98"
-        height="22"
+        x="399"
+        y="45"
+        width="104"
+        height="20"
         rx="8"
         data-controller-trigger="right"
       />
     </g>
   </g>
 
-  <path
-    class="controller-body"
-    d="M161 72C117 76 84 109 71 153L43 252c-9 32 31 55 54 31l60-62c16-17 37-26 60-26h206c23 0 44 9 60 26l60 62c23 24 63 1 54-31l-28-99c-13-44-46-77-90-81-72-7-166-10-278 0Z"
-  />
-
   <g class="controller-center-buttons">
-    <rect x="276" y="111" width="32" height="19" rx="8" data-controller-button="back" />
-    <rect x="332" y="111" width="32" height="19" rx="8" data-controller-button="start" />
-    <circle cx="320" cy="91" r="14" data-controller-button="home" />
+    <rect x="274" y="121" width="30" height="18" rx="8" data-controller-button="back" />
+    <rect x="336" y="121" width="30" height="18" rx="8" data-controller-button="start" />
+    <circle cx="320" cy="105" r="13" data-controller-button="home" />
   </g>
 
-  <g class="controller-dpad" transform="translate(150 150)">
-    <rect x="-17" y="-52" width="34" height="42" rx="7" data-controller-button="dpad-up" />
-    <rect x="-17" y="10" width="34" height="42" rx="7" data-controller-button="dpad-down" />
-    <rect x="-52" y="-17" width="42" height="34" rx="7" data-controller-button="dpad-left" />
-    <rect x="10" y="-17" width="42" height="34" rx="7" data-controller-button="dpad-right" />
-    <circle class="controller-dpad__center" cx="0" cy="0" r="16" />
+  <g class="controller-dpad" transform="translate(157 176)">
+    <path class="controller-dpad__base" d="M-18-55h36v37h37v36H18v37h-36V18h-37v-36h37Z" />
+    <rect x="-16" y="-53" width="32" height="39" rx="7" data-controller-button="dpad-up" />
+    <rect x="-16" y="14" width="32" height="39" rx="7" data-controller-button="dpad-down" />
+    <rect x="-53" y="-16" width="39" height="32" rx="7" data-controller-button="dpad-left" />
+    <rect x="14" y="-16" width="39" height="32" rx="7" data-controller-button="dpad-right" />
+    <circle class="controller-dpad__center" cx="0" cy="0" r="14" />
   </g>
 
-  <g class="controller-face" transform="translate(491 150)">
-    <circle cx="0" cy="45" r="18" data-controller-button="face-bottom" />
-    <circle cx="45" cy="0" r="18" data-controller-button="face-right" />
-    <circle cx="-45" cy="0" r="18" data-controller-button="face-left" />
-    <circle cx="0" cy="-45" r="18" data-controller-button="face-top" />
+  <g class="controller-face" transform="translate(484 169)">
+    <circle cx="0" cy="47" r="18" data-controller-button="face-bottom" />
+    <circle cx="47" cy="0" r="18" data-controller-button="face-right" />
+    <circle cx="-47" cy="0" r="18" data-controller-button="face-left" />
+    <circle cx="0" cy="-47" r="18" data-controller-button="face-top" />
+    <circle class="controller-face__mark" cx="0" cy="47" r="3" />
+    <circle class="controller-face__mark" cx="47" cy="0" r="3" />
+    <circle class="controller-face__mark" cx="-47" cy="0" r="3" />
+    <circle class="controller-face__mark" cx="0" cy="-47" r="3" />
   </g>
 
-  <g class="controller-stick-well" transform="translate(234 221)">
-    <circle r="42" />
-    <circle class="controller-stick-guide" r="24" />
+  <g class="controller-stick-well" transform="translate(238 230)">
+    <circle r="43" />
+    <circle class="controller-stick-guide" r="28" />
     <g class="controller-stick" data-controller-stick="left" data-controller-button="left-stick">
-      <circle r="20" />
-      <circle class="controller-stick-dot" r="4" />
+      <circle r="21" />
+      <circle class="controller-stick-cap" r="13" />
+      <circle class="controller-stick-dot" r="3.5" />
     </g>
   </g>
 
-  <g class="controller-stick-well" transform="translate(407 221)">
-    <circle r="42" />
-    <circle class="controller-stick-guide" r="24" />
+  <g class="controller-stick-well" transform="translate(402 230)">
+    <circle r="43" />
+    <circle class="controller-stick-guide" r="28" />
     <g class="controller-stick" data-controller-stick="right" data-controller-button="right-stick">
-      <circle r="20" />
-      <circle class="controller-stick-dot" r="4" />
+      <circle r="21" />
+      <circle class="controller-stick-cap" r="13" />
+      <circle class="controller-stick-dot" r="3.5" />
     </g>
   </g>
 </svg>
@@ -93,19 +101,26 @@
   }
 
   .controller-body {
-    fill: #f8f9f9;
+    fill: #f7f8f7;
     stroke: var(--color-text);
-    stroke-width: 2;
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+  }
+
+  .controller-inner {
+    fill: #eef1ef;
+    stroke: #d4d9d6;
+    stroke-width: 1.25;
   }
 
   .controller-shoulders rect,
   .controller-center-buttons rect,
   .controller-center-buttons circle,
   .controller-dpad rect,
-  .controller-face circle,
-  .controller-stick circle {
+  .controller-face circle:not(.controller-face__mark),
+  .controller-stick > circle:first-child {
     fill: var(--color-surface);
-    stroke: #92999d;
+    stroke: #8f9895;
     stroke-width: 2;
   }
 
@@ -120,32 +135,52 @@
     stroke-width: 3;
   }
 
+  .controller-dpad__base {
+    fill: #e8ecea;
+    stroke: #c7cdca;
+    stroke-width: 1.5;
+  }
+
   .controller-dpad__center {
-    fill: #e5e8e9;
+    fill: #d8ddda;
     stroke: none;
   }
 
+  .controller-face__mark {
+    fill: #9aa29f;
+    stroke: none;
+    pointer-events: none;
+  }
+
   .controller-stick-well > circle:first-child {
-    fill: #f0f2f2;
-    stroke: #c4c9cb;
+    fill: #e7ebe9;
+    stroke: #c3cac6;
     stroke-width: 2;
   }
 
   .controller-stick-guide {
     fill: none;
-    stroke: #d2d6d8;
+    stroke: #cdd3d0;
     stroke-width: 1;
     stroke-dasharray: 3 4;
+  }
+
+  .controller-stick-cap {
+    fill: #eef1ef !important;
+    stroke: #c9cfcc !important;
+    stroke-width: 1 !important;
+    pointer-events: none;
   }
 
   .controller-stick-dot {
     fill: var(--color-signal) !important;
     stroke: none !important;
+    pointer-events: none;
   }
 
   .trigger-track {
-    fill: #e3e6e7;
-    stroke: #b6bdc0;
+    fill: #dce1de;
+    stroke: #aeb7b2;
     stroke-width: 1;
   }
 

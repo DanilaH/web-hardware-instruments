@@ -21,6 +21,7 @@ type PollingListener = (timestamps: readonly number[]) => void;
 export interface MouseInputServiceEnvironment {
   setButtonDownListener(listener: ButtonListener | null): void;
   setButtonUpListener(listener: ButtonListener | null): void;
+  setAuxClickListener(listener: ButtonListener | null): void;
   setWheelListener(listener: WheelListener | null): void;
   setBasicMoveListener(listener: MoveListener | null): void;
   setRawMoveListener(listener: PollingListener | null): void;
@@ -41,6 +42,8 @@ export interface MouseInputService {
   subscribe(listener: (event: MouseInputServiceEvent) => void): Unsubscribe;
   getPollingSource(): MousePollingSource | null;
 }
+
+const AUX_CLICK_DEDUPE_MS = 100;
 
 const isMousePointer = (event: PointerEvent): boolean =>
   event.pointerType === '' || event.pointerType === 'mouse';
@@ -74,6 +77,7 @@ export const createBrowserMouseInputEnvironment = (
 
   let downWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
   let upWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
+  let auxInputWrapper: ((event: MouseEvent) => void) | null = null;
   let wheelWrapper: ((event: WheelEvent) => void) | null = null;
   let basicMoveWrapper: ((event: PointerEvent | MouseEvent) => void) | null = null;
   let rawMoveWrapper: ((event: PointerEvent) => void) | null = null;
@@ -84,6 +88,7 @@ export const createBrowserMouseInputEnvironment = (
   let visibilityWrapper: (() => void) | null = null;
 
   const usesPointerEvents = typeof window.PointerEvent !== 'undefined';
+  const suppressedSideButtons = new Set<number>();
 
   const removePointerOrMouseListener = (
     target: EventTarget,
@@ -109,11 +114,15 @@ export const createBrowserMouseInputEnvironment = (
         removePointerOrMouseListener(surface, 'pointerdown', 'mousedown', downWrapper as EventListener);
         downWrapper = null;
       }
+      suppressedSideButtons.clear();
       if (!listener) return;
 
       downWrapper = (event) => {
         if (usesPointerEvents && event instanceof window.PointerEvent && !isMousePointer(event)) {
           return;
+        }
+        if (event.button === 3 || event.button === 4) {
+          suppressedSideButtons.add(event.button);
         }
         if (event.button !== 0) {
           event.preventDefault();
@@ -133,9 +142,25 @@ export const createBrowserMouseInputEnvironment = (
         if (usesPointerEvents && event instanceof window.PointerEvent && !isMousePointer(event)) {
           return;
         }
+        if (
+          (event.button === 3 || event.button === 4) &&
+          suppressedSideButtons.delete(event.button)
+        ) {
+          event.preventDefault();
+        }
         listener(event.button, event.timeStamp);
       };
       addPointerOrMouseListener(window, 'pointerup', 'mouseup', upWrapper as EventListener);
+    },
+    setAuxClickListener: (listener) => {
+      if (auxInputWrapper) {
+        surface.removeEventListener('auxclick', auxInputWrapper);
+        auxInputWrapper = null;
+      }
+      if (!listener) return;
+
+      auxInputWrapper = (event) => listener(event.button, event.timeStamp);
+      surface.addEventListener('auxclick', auxInputWrapper);
     },
     setWheelListener: (listener) => {
       if (wheelWrapper) {
@@ -223,7 +248,10 @@ export const createBrowserMouseInputEnvironment = (
         blurWrapper = null;
       }
       if (listener) {
-        blurWrapper = listener;
+        blurWrapper = () => {
+          suppressedSideButtons.clear();
+          listener();
+        };
         window.addEventListener('blur', blurWrapper);
       }
     },
@@ -252,6 +280,8 @@ export const createMouseInputService = (
     : null,
 ): MouseInputService => {
   const listeners = new Set<(event: MouseInputServiceEvent) => void>();
+  const nativeSideButtonsDown = new Set<MouseSemanticButton>();
+  const pendingNativeSideButtonUpAt = new Map<MouseSemanticButton, number>();
   let started = false;
   let destroyed = false;
   let pollingSource: MousePollingSource | null = null;
@@ -260,10 +290,16 @@ export const createMouseInputService = (
     listeners.forEach((listener) => listener(event));
   };
 
+  const clearSideButtonTracking = (): void => {
+    nativeSideButtonsDown.clear();
+    pendingNativeSideButtonUpAt.clear();
+  };
+
   const clearRuntimeListeners = (): void => {
     if (!environment) return;
     environment.setButtonDownListener(null);
     environment.setButtonUpListener(null);
+    environment.setAuxClickListener(null);
     environment.setWheelListener(null);
     environment.setBasicMoveListener(null);
     environment.setRawMoveListener(null);
@@ -272,6 +308,7 @@ export const createMouseInputService = (
     environment.setAuxClickSuppression(false);
     environment.setBlurListener(null);
     environment.setVisibilityListener(null);
+    clearSideButtonTracking();
     pollingSource = null;
   };
 
@@ -333,10 +370,14 @@ export const createMouseInputService = (
   const attachLifecycle = (): void => {
     if (!environment) return;
     environment.setBlurListener(() => {
-      if (started && !destroyed) emit({ type: 'clear', reason: 'blur' });
+      if (started && !destroyed) {
+        clearSideButtonTracking();
+        emit({ type: 'clear', reason: 'blur' });
+      }
     });
     environment.setVisibilityListener(() => {
       if (started && !destroyed && environment.getVisibilityState() !== 'visible') {
+        clearSideButtonTracking();
         emit({ type: 'clear', reason: 'visibility-hidden' });
       }
     });
@@ -345,10 +386,54 @@ export const createMouseInputService = (
   const attachBasicInput = (): void => {
     if (!environment) return;
     environment.setButtonDownListener((button, timestamp) => {
-      if (started && !destroyed) emitButton('buttondown', button, timestamp);
+      if (!started || destroyed) return;
+      if ((button === 3 || button === 4) && Number.isFinite(timestamp)) {
+        pendingNativeSideButtonUpAt.delete(button);
+        nativeSideButtonsDown.add(button);
+      }
+      emitButton('buttondown', button, timestamp);
     });
     environment.setButtonUpListener((button, timestamp) => {
-      if (started && !destroyed) emitButton('buttonup', button, timestamp);
+      if (!started || destroyed) return;
+      if ((button === 3 || button === 4) && Number.isFinite(timestamp)) {
+        pendingNativeSideButtonUpAt.delete(button);
+        if (nativeSideButtonsDown.delete(button)) {
+          pendingNativeSideButtonUpAt.set(button, timestamp);
+        }
+      }
+      emitButton('buttonup', button, timestamp);
+    });
+    environment.setAuxClickListener((button, timestamp) => {
+      if (
+        !started ||
+        destroyed ||
+        (button !== 3 && button !== 4) ||
+        !Number.isFinite(timestamp)
+      ) {
+        return;
+      }
+
+      const nativeButtonUpAt = pendingNativeSideButtonUpAt.get(button);
+      pendingNativeSideButtonUpAt.delete(button);
+      if (
+        nativeButtonUpAt !== undefined &&
+        timestamp >= nativeButtonUpAt &&
+        timestamp - nativeButtonUpAt <= AUX_CLICK_DEDUPE_MS
+      ) {
+        return;
+      }
+
+      if (nativeSideButtonsDown.delete(button)) {
+        // A native down reached the page but its matching up did not. Close that
+        // observed press instead of counting the auxclick as a second press.
+        emit({ type: 'buttonup', button, timestamp });
+        return;
+      }
+
+      // Some browser/OS combinations expose X1/X2 only as auxclick. Synthesize a
+      // complete press so consumers can count it without leaving a stuck held state.
+      emit({ type: 'buttondown', button, timestamp });
+      emit({ type: 'buttonup', button, timestamp });
     });
     environment.setWheelListener((deltaX, deltaY, deltaMode, timestamp) => {
       if (

@@ -12,7 +12,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     </div>
 
     <p class="instruction">
-      Scroll steadily in one direction inside the test area, then repeat in the other direction.
+      Scroll vertically, then try a sideways two-finger trackpad gesture or a tilt wheel if your device supports it.
     </p>
 
     <div class="surface" data-scroll-surface>
@@ -35,14 +35,18 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
           <strong data-scroll-down>0</strong>
         </div>
         <div>
-          <span>Horizontal events</span>
-          <strong data-scroll-horizontal>0</strong>
+          <span>Left events</span>
+          <strong data-scroll-left>0</strong>
+        </div>
+        <div>
+          <span>Right events</span>
+          <strong data-scroll-right>0</strong>
         </div>
       </div>
     </div>
 
     <p class="note">
-      Counts are browser-detected wheel events, not physical wheel notches. Trackpads and other scrolling devices can also produce wheel events.
+      Counts are browser wheel events, not physical wheel notches. Left/Right reflect the browser-reported horizontal delta; natural-scrolling settings can make the physical gesture feel inverted.
     </p>
   </div>
 </ToolShell>
@@ -117,7 +121,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
 
   .metrics {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-3);
   }
 
@@ -163,6 +167,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
     }
 
     .metrics {
+      grid-template-columns: 1fr 1fr;
       gap: var(--space-2);
     }
 
@@ -185,6 +190,7 @@ import ToolShell from '../../../components/tool-shell/ToolShell.astro';
       overflow: hidden;
     }
   }
+
   @media (max-width: 22rem) {
     .strip {
       padding: 0.65rem;

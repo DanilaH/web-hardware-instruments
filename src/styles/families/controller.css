@@ -35,12 +35,12 @@
 }
 
 .page-main [data-gamepad-tester] :is(
-  .controller-shoulders rect,
-  .controller-center-buttons rect,
-  .controller-center-buttons circle,
-  .controller-dpad rect,
-  .controller-face circle,
-  .controller-stick circle
+  .controller-shoulders rect:not(.is-active),
+  .controller-center-buttons rect:not(.is-active),
+  .controller-center-buttons circle:not(.is-active),
+  .controller-dpad rect:not(.is-active),
+  .controller-face circle:not(.controller-face__mark):not(.is-active),
+  .controller-stick:not(.is-active) > circle:first-child
 ) {
   fill: var(--color-surface);
   stroke: #858e8a;

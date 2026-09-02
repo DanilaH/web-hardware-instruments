@@ -18,7 +18,7 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
   return element;
 };
 
-const buttonNames = ['Primary', 'Middle', 'Secondary', 'Back', 'Forward'] as const;
+const buttonNames = ['Primary', 'Middle', 'Secondary', 'Back / X1', 'Forward / X2'] as const;
 const buttonIndices: readonly MouseButtonIndex[] = [0, 1, 2, 3, 4];
 
 export const mountMouseButtonTest = (root: HTMLElement): MouseButtonController => {

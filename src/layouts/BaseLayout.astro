@@ -3,6 +3,7 @@ import SiteFooter from '../components/layout/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import SeoHead from '../components/seo/SeoHead.astro';
 import { siteConfig } from '../config/site';
+import { getToolByPath } from '../config/tools';
 import '../styles/global.css';
 
 interface Props {
@@ -22,6 +23,7 @@ const {
 } = Astro.props;
 
 const effectiveNoindex = noindex || !siteConfig.indexingEnabled;
+const toolChannel = canonicalPath ? getToolByPath(canonicalPath)?.channel : undefined;
 const websiteStructuredData = canonicalPath === '/'
   ? {
       '@context': 'https://schema.org',
@@ -49,7 +51,7 @@ const websiteStructuredData = canonicalPath === '/'
       <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteStructuredData)} />
     )}
   </head>
-  <body>
+  <body data-channel={toolChannel}>
     <SiteHeader variant={headerVariant} />
     <main class:list={['page-main', headerVariant === 'homepage' && 'page-main--homepage']}>
       <slot />

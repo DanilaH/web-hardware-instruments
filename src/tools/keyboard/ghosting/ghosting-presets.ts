@@ -5,27 +5,37 @@ export interface KeyboardGhostingPreset {
 }
 
 const defaultKeyboardGhostingPreset: KeyboardGhostingPreset = {
-  id: 'wasd-shift-space',
-  label: 'W + A + S + D + Left Shift + Space',
-  codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'Space'],
+  id: 'wa-shift-space',
+  label: 'Gaming chord · W + A + Left Shift + Space',
+  codes: ['KeyW', 'KeyA', 'ShiftLeft', 'Space'],
 };
 
 export const keyboardGhostingPresets: readonly KeyboardGhostingPreset[] = [
   defaultKeyboardGhostingPreset,
   {
-    id: 'wa-shift-space',
-    label: 'W + A + Left Shift + Space',
-    codes: ['KeyW', 'KeyA', 'ShiftLeft', 'Space'],
-  },
-  {
     id: 'wd-shift-space',
-    label: 'W + D + Left Shift + Space',
+    label: 'Gaming chord · W + D + Left Shift + Space',
     codes: ['KeyW', 'KeyD', 'ShiftLeft', 'Space'],
   },
   {
-    id: 'qwe-asd',
-    label: 'Q + W + E + A + S + D',
-    codes: ['KeyQ', 'KeyW', 'KeyE', 'KeyA', 'KeyS', 'KeyD'],
+    id: 'qwe',
+    label: '3-key chord · Q + W + E',
+    codes: ['KeyQ', 'KeyW', 'KeyE'],
+  },
+  {
+    id: 'asd',
+    label: '3-key chord · A + S + D',
+    codes: ['KeyA', 'KeyS', 'KeyD'],
+  },
+  {
+    id: 'edc',
+    label: '3-key chord · E + D + C',
+    codes: ['KeyE', 'KeyD', 'KeyC'],
+  },
+  {
+    id: 'wasd-shift-space',
+    label: '6-key stress · W + A + S + D + Left Shift + Space',
+    codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'Space'],
   },
 ];
 

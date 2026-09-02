@@ -1,4 +1,6 @@
 ---
+import { getRelatedTools } from '../../config/tools';
+
 interface RelatedTool {
   href: string;
   name: string;
@@ -6,23 +8,30 @@ interface RelatedTool {
 }
 
 interface Props {
-  tools: readonly RelatedTool[];
+  tools?: readonly RelatedTool[];
 }
 
-const { tools } = Astro.props;
+const { tools = [] } = Astro.props;
+const pathname = Astro.url.pathname.length > 1
+  ? Astro.url.pathname.replace(/\/$/, '')
+  : Astro.url.pathname;
+const catalogTools = getRelatedTools(pathname);
+const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
 ---
 
-<nav class="related-tools reading-width" aria-label="Related tools">
-  <h2>Related tools</h2>
-  <div class="related-tools__list">
-    {tools.map((tool) => (
-      <a class="related-tools__link" href={tool.href}>
-        <strong>{tool.name}</strong>
-        <small>{tool.description}</small>
-      </a>
-    ))}
-  </div>
-</nav>
+{relatedTools.length > 0 && (
+  <nav class="related-tools reading-width" aria-label="Related tools">
+    <h2>Related tools</h2>
+    <div class="related-tools__list">
+      {relatedTools.map((tool) => (
+        <a class="related-tools__link" href={tool.href}>
+          <strong>{tool.name}</strong>
+          <small>{tool.description}</small>
+        </a>
+      ))}
+    </div>
+  </nav>
+)}
 
 <style>
   .related-tools {
@@ -40,8 +49,9 @@ const { tools } = Astro.props;
   .related-tools__list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+    gap: 1px;
+    border: 1px solid var(--color-border);
+    background: var(--color-border);
   }
 
   .related-tools__link {
@@ -49,13 +59,10 @@ const { tools } = Astro.props;
     min-width: 0;
     display: block;
     padding: 0.8rem 0.85rem 0.85rem;
+    background: var(--color-surface);
     color: var(--color-text);
     text-decoration: none;
     transition: background 120ms ease;
-  }
-
-  .related-tools__link + .related-tools__link {
-    border-left: 1px solid var(--color-border);
   }
 
   .related-tools__link::before {
@@ -72,7 +79,7 @@ const { tools } = Astro.props;
   .related-tools__link:hover,
   .related-tools__link:focus-visible {
     color: var(--color-text);
-    background: color-mix(in srgb, var(--color-surface-strong) 62%, transparent);
+    background: color-mix(in srgb, var(--color-surface-strong) 62%, var(--color-surface));
   }
 
   .related-tools__link:hover::before,
@@ -107,11 +114,6 @@ const { tools } = Astro.props;
   @media (max-width: 44rem) {
     .related-tools__list {
       grid-template-columns: 1fr;
-    }
-
-    .related-tools__link + .related-tools__link {
-      border-top: 1px solid var(--color-border);
-      border-left: 0;
     }
   }
 </style>

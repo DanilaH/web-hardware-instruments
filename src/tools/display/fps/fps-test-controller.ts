@@ -18,9 +18,14 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
   return element;
 };
 
+const formatFps = (value: number | null): string =>
+  value === null || !Number.isFinite(value) ? '—' : value.toFixed(1);
+
 export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
   const status = requireElement<HTMLElement>(root, '[data-display-status]');
   const result = requireElement<HTMLElement>(root, '[data-fps-result]');
+  const low = requireElement<HTMLElement>(root, '[data-fps-low]');
+  const high = requireElement<HTMLElement>(root, '[data-fps-high]');
   const frameTime = requireElement<HTMLElement>(root, '[data-frame-time]');
   const canvas = requireElement<HTMLCanvasElement>(root, '[data-fps-trace]');
   const accessibleSummary = requireElement<HTMLElement>(root, '[data-display-accessible-summary]');
@@ -46,6 +51,8 @@ export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
   const renderWarming = (): void => {
     setStatus('Warming up');
     result.textContent = '—';
+    low.textContent = '—';
+    high.textContent = '—';
     frameTime.textContent = '—';
     accessibleSummary.textContent = 'FPS measurement is warming up.';
     renderer.clear();
@@ -58,13 +65,23 @@ export const mountFpsTest = (root: HTMLElement): DisplayToolController => {
     }
 
     setStatus('Measuring live');
-    const fpsText = Math.round(snapshot.fps).toString();
+    const fpsText = formatFps(snapshot.fps);
+    const traceValues = snapshot.trace.map((point) => point.value).filter(Number.isFinite);
+    const lowValue = traceValues.length > 0 ? Math.min(...traceValues) : snapshot.fps;
+    const highValue = traceValues.length > 0 ? Math.max(...traceValues) : snapshot.fps;
+    const lowText = formatFps(lowValue);
+    const highText = formatFps(highValue);
     const frameTimeText =
       snapshot.medianFrameTimeMs === null ? '—' : `${snapshot.medianFrameTimeMs.toFixed(1)} ms`;
 
     result.textContent = fpsText;
+    low.textContent = lowText;
+    high.textContent = highText;
     frameTime.textContent = frameTimeText;
-    accessibleSummary.textContent = `Observed FPS ${fpsText}. Median frame time ${frameTimeText}.`;
+    accessibleSummary.textContent =
+      `Current FPS ${fpsText} using a one-second rolling window. ` +
+      `Recent sampled low ${lowText}, recent sampled high ${highText}. ` +
+      `Median frame time ${frameTimeText}.`;
     renderer.render({ points: snapshot.trace });
   };
 
