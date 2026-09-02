@@ -3,8 +3,6 @@ import { defineConfig } from 'astro/config';
 
 import { siteConfig } from './src/config/site';
 
-const homepageUrl = new URL('/', siteConfig.origin).href;
-
 export default defineConfig({
   output: 'static',
   site: siteConfig.origin,
@@ -12,16 +10,5 @@ export default defineConfig({
   build: {
     format: 'file',
   },
-  integrations: siteConfig.indexingEnabled
-    ? [
-        sitemap({
-          serialize(item) {
-            if (item.url === siteConfig.origin) {
-              item.url = homepageUrl;
-            }
-            return item;
-          },
-        }),
-      ]
-    : [],
+  integrations: siteConfig.indexingEnabled ? [sitemap()] : [],
 });
