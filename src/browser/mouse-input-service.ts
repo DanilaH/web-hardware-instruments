@@ -88,6 +88,7 @@ export const createBrowserMouseInputEnvironment = (
   let visibilityWrapper: (() => void) | null = null;
 
   const usesPointerEvents = typeof window.PointerEvent !== 'undefined';
+  const suppressedSideButtons = new Set<number>();
 
   const removePointerOrMouseListener = (
     target: EventTarget,
@@ -113,11 +114,15 @@ export const createBrowserMouseInputEnvironment = (
         removePointerOrMouseListener(surface, 'pointerdown', 'mousedown', downWrapper as EventListener);
         downWrapper = null;
       }
+      suppressedSideButtons.clear();
       if (!listener) return;
 
       downWrapper = (event) => {
         if (usesPointerEvents && event instanceof window.PointerEvent && !isMousePointer(event)) {
           return;
+        }
+        if (event.button === 3 || event.button === 4) {
+          suppressedSideButtons.add(event.button);
         }
         if (event.button !== 0) {
           event.preventDefault();
@@ -136,6 +141,12 @@ export const createBrowserMouseInputEnvironment = (
       upWrapper = (event) => {
         if (usesPointerEvents && event instanceof window.PointerEvent && !isMousePointer(event)) {
           return;
+        }
+        if (
+          (event.button === 3 || event.button === 4) &&
+          suppressedSideButtons.delete(event.button)
+        ) {
+          event.preventDefault();
         }
         listener(event.button, event.timeStamp);
       };
@@ -237,7 +248,10 @@ export const createBrowserMouseInputEnvironment = (
         blurWrapper = null;
       }
       if (listener) {
-        blurWrapper = listener;
+        blurWrapper = () => {
+          suppressedSideButtons.clear();
+          listener();
+        };
         window.addEventListener('blur', blurWrapper);
       }
     },
