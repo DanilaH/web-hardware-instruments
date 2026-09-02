@@ -6,56 +6,90 @@
 - Canonical host: apex domain (`hardwareinspect.com`)
 - `www.hardwareinspect.com` redirects permanently to the apex host.
 - Public page URLs do not use a trailing slash or `.html` suffix.
-- Build output is fully static and is served directly by Caddy.
+- The Astro build is fully static.
+- The production site runs in an isolated `hardwareinspect-web` container.
+- The existing VPS Caddy container terminates HTTPS and reverse-proxies to `hardwareinspect-web:8080` over the shared Docker network.
 - Production indexing is enabled only for the canonical origin.
 
-## Build
+## Container build
 
-Use the versions pinned by the repository:
+Production uses `deploy/Dockerfile.production`:
+
+1. Node 24 + pnpm 11 install dependencies.
+2. `pnpm build` runs the SEO output guard.
+3. `pnpm typecheck` and `pnpm test` must pass.
+4. Only the generated `dist/` output is copied into the final nginx container.
+
+The VPS does not need Node or pnpm installed on the host.
+
+## VPS compose
+
+Use:
 
 ```bash
-corepack enable
-pnpm install --frozen-lockfile
-pnpm build
-pnpm typecheck
-pnpm test
+docker compose -f deploy/compose.production.yml up -d --build
 ```
 
-`pnpm build` runs the SEO output guard. Do not deploy if it fails.
-
-The deployable artifact is `dist/`.
-
-## Suggested VPS layout
-
-The committed Caddy example assumes:
+The compose file deliberately publishes no host port. The service only exposes port `8080` inside Docker and joins the existing external network:
 
 ```text
-/srv/hardwareinspect/current
+vps_booking_network
 ```
 
-contains the contents of the latest successful `dist/` build. If another directory is used on the VPS, update the `root` in `deploy/Caddyfile.example` before installing the site block.
+The shared Caddy container must also be attached to that network. The expected upstream name is:
+
+```text
+hardwareinspect-web:8080
+```
+
+This keeps Hardware Inspect deployment isolated from the booking/listcontrast compose projects: rebuilding or restarting `hardwareinspect-web` does not restart the shared Caddy container or unrelated application containers.
+
+## Static server behavior
+
+`deploy/nginx.production.conf` serves the generated Astro files internally:
+
+- `/mouse-tester` resolves to `/mouse-tester.html` without an external redirect.
+- unknown routes return a real `404` status and render the generated `404.html` page.
+- `/404` itself also returns `404` rather than becoming a soft-404 page.
+
+Public URL canonicalization remains the responsibility of the external Caddy layer.
 
 ## Caddy
 
-Use `deploy/Caddyfile.example` as the site-specific configuration. It deliberately rewrites extensionless requests such as `/mouse-tester` to the generated `/mouse-tester.html` file internally. This keeps the browser URL, canonical URL, sitemap URL, and internal links on the same no-trailing-slash form.
+Add the site blocks from `deploy/Caddyfile.example` to the existing VPS Caddyfile. They provide:
 
-Before reloading Caddy:
+- `www` → apex redirect;
+- `.html` → extensionless redirect;
+- trailing-slash → no-trailing-slash redirect;
+- immutable caching for fingerprinted `/_astro/*` assets;
+- reverse proxy to `hardwareinspect-web:8080`.
+
+For a Dockerized Caddy instance, validate and reload inside the running container rather than installing another Caddy service on the host:
 
 ```bash
-caddy validate --config /etc/caddy/Caddyfile
+docker exec vps-caddy-1 caddy validate --config /etc/caddy/Caddyfile
+docker exec vps-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 ```
 
-Then reload using the service workflow already used on the VPS, for example:
-
-```bash
-sudo systemctl reload caddy
-```
-
-Caddy manages HTTPS automatically once the domain points to the VPS and ports 80/443 are reachable.
+Do not restart the shared Caddy container merely to add this site when a validated reload is sufficient.
 
 ## DNS
 
-Point the apex `hardwareinspect.com` A record to the VPS IPv4 address. Add an AAAA record only if the VPS has working public IPv6. If `www` is configured, point it to the same server so Caddy can redirect it to the canonical apex host.
+Point the apex `hardwareinspect.com` A record to the VPS IPv4 address. `www.hardwareinspect.com` can be a CNAME to `hardwareinspect.com` (or another A record to the same VPS).
+
+Add an AAAA record only if the VPS has working public IPv6.
+
+## Manual update workflow
+
+On the VPS repository checkout:
+
+```bash
+git checkout main
+git pull --ff-only
+docker compose -f deploy/compose.production.yml up -d --build
+```
+
+Then verify container health and Caddy connectivity before considering the release complete.
 
 ## Live release gate
 
@@ -75,10 +109,10 @@ Required behavior:
 
 - HTTP redirects to HTTPS.
 - `www` redirects to the apex host.
-- `/route/` does not become an indexable alternate URL for `/route`.
-- `/route.html` is not linked or declared canonical.
-- normal routes return 200.
-- missing routes return a real 404 status while rendering `404.html`.
+- `/route/` redirects to `/route`.
+- `/route.html` redirects to `/route`.
+- normal routes return `200`.
+- missing routes return a real `404` status while rendering `404.html`.
 - released pages have no `noindex`.
 - the 404 page remains `noindex`.
 - all canonicals use `https://hardwareinspect.com`.
