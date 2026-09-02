@@ -1,3 +1,5 @@
+name: hardwareinspect
+
 services:
   hardwareinspect-web:
     container_name: hardwareinspect-web
