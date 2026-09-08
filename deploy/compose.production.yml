@@ -10,9 +10,9 @@ services:
     expose:
       - "8080"
     networks:
-      - caddy
+      - web_proxy
 
 networks:
-  caddy:
+  web_proxy:
     external: true
-    name: vps_booking_network
+    name: web_proxy

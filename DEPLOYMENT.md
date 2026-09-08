@@ -33,7 +33,7 @@ docker compose -f deploy/compose.production.yml up -d --build
 The compose file deliberately publishes no host port. The service only exposes port `8080` inside Docker and joins the existing external network:
 
 ```text
-vps_booking_network
+web_proxy
 ```
 
 The shared Caddy container must also be attached to that network. The expected upstream name is:
@@ -42,7 +42,7 @@ The shared Caddy container must also be attached to that network. The expected u
 hardwareinspect-web:8080
 ```
 
-This keeps Hardware Inspect deployment isolated from the booking/listcontrast compose projects: rebuilding or restarting `hardwareinspect-web` does not restart the shared Caddy container or unrelated application containers.
+This keeps Hardware Inspect deployment isolated from unrelated compose projects: rebuilding or restarting `hardwareinspect-web` does not restart the shared Caddy container or other application containers.
 
 ## Static server behavior
 
