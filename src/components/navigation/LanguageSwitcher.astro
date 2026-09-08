@@ -17,14 +17,13 @@ const content = getSiteContent(locale);
     <span>{localeDefinitions[locale].hreflang}</span>
     <span class="language-switcher__chevron" aria-hidden="true">▾</span>
   </summary>
-  <div class="language-switcher__menu" role="list" aria-label={content.nav.language}>
+  <div class="language-switcher__menu" aria-label={content.nav.language}>
     {implementedContentLocales.map((targetLocale) => (
       <a
         href={buildLocalizedPath(targetLocale, semanticPath)}
         hreflang={localeDefinitions[targetLocale].hreflang}
         lang={localeDefinitions[targetLocale].htmlLang}
         aria-current={targetLocale === locale ? 'page' : undefined}
-        role="listitem"
       >
         {localeDefinitions[targetLocale].label}
       </a>
