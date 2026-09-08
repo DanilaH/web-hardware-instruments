@@ -1,6 +1,6 @@
 # Global Goals and Release Strategy
 
-This document defines the durable product strategy, scope rule, business model, and release boundary for Hardware Tests.
+This document defines the durable product strategy, scope rule, business model, localization direction, and current release boundary for Hardware Inspect.
 
 Exact implementation ownership remains:
 
@@ -10,6 +10,9 @@ Exact implementation ownership remains:
 
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
   exact Hardware Expansion 1 route behavior / algorithms / route-specific QA
+
+22_LOCALIZATION_SPEC.md
+  locale set / i18n architecture / localized routing / SEO / runtime strings / hreflang QA
 ```
 
 The E1.0 → E1.7 sequence recorded in older documents is completed development history, not the current implementation roadmap.
@@ -41,16 +44,29 @@ community features
 
 # 2. Market and acquisition
 
-Initial content/search-market target:
+The original research market was English / US, and the English product remains the baseline.
+
+Localization of the existing catalog is now approved for:
 
 ```text
-English content
-US keyword market
+pt-BR
+de
+fr
+es
+ru
 ```
 
-The tools themselves should remain globally usable.
+Phase-2 watchlist:
 
-Do not create geo pages or US-only product behavior merely because initial search research is US-focused.
+```text
+pl
+it
+tr
+```
+
+The tools remain globally usable. Localization changes presentation/search targeting, not diagnostic semantics.
+
+Do not create geo-specific product behavior or country-specific synonym-page trees merely because search wording differs. Spanish ships as one general `/es/` locale unless first-party evidence later justifies regional splits.
 
 # 3. Core product promise
 
@@ -63,6 +79,8 @@ A user arriving directly on a tool URL should be able to:
 5. understand what the browser actually observed or estimated;
 6. understand the measurement limitation;
 7. optionally continue to one or two genuinely related diagnostics.
+
+Localization must preserve this same promise in each language. Do not ship a translated shell around English runtime messages or English limitation copy.
 
 Do not optimize for artificial dwell time. Useful task completion is the retention mechanism.
 
@@ -78,6 +96,8 @@ Search Console
 optional lightweight analytics
 future display ads
 ```
+
+Localization must preserve static generation and single-source diagnostic logic. Avoid five copies of controllers/services/renderers merely to support five languages.
 
 Avoid features that create recurring operational burden without strong evidence of value:
 
@@ -106,7 +126,7 @@ instrument-like technical geometry
 
 Every visual must improve task execution, state recognition, or diagnostic understanding.
 
-Do not add decoration merely to make the site feel larger or more premium.
+Localization may require copy/layout adjustments, but it is not permission to redesign the visual system.
 
 # 6. SEO boundary
 
@@ -121,6 +141,8 @@ Do not create:
 - oversized SEO articles that push the diagnostic down the page.
 
 Tool first. Supporting search content comes after the primary interaction/result.
+
+Localized versions of the **same** semantic tool are allowed and expected under approved locale prefixes. They are language alternates, not independent new product intents.
 
 # 7. Current catalog
 
@@ -156,9 +178,11 @@ Touch
 /touch-screen-test
 ```
 
+Localization adds language variants of these same 18 jobs. It does not expand the diagnostic catalog.
+
 The original full-v1 and Expansion 1 implementation order remains useful history, but it no longer constrains justified maintenance across the completed catalog.
 
-A reviewed correctness, accessibility, IA, SEO, or UX improvement may touch an older route when it preserves that route's measurement semantics and user job.
+A reviewed correctness, accessibility, IA, SEO, localization, or UX improvement may touch an older route when it preserves that route's measurement semantics and user job.
 
 # 8. Expansion rule
 
@@ -172,9 +196,11 @@ the tool materially strengthens a successful existing cluster
 
 Being technically possible is not enough.
 
-Future Audio/CPS/latency/other utility ideas remain out of scope until they satisfy this gate and receive a reviewed contract.
+Adding a new **language version of an existing approved tool** is not a new diagnostic-scope expansion; it is governed by `22_LOCALIZATION_SPEC.md` and the approved locale decision.
 
-Do not use maintenance work as a back door for new product scope.
+Future Audio/CPS/latency/other utility ideas remain out of scope until they satisfy the tool-expansion gate and receive a reviewed contract.
+
+Do not use localization work as a back door for new product scope.
 
 # 9. Measurement-honesty boundary
 
@@ -193,7 +219,9 @@ camera-assisted evidence
 
 Do not silently upgrade browser observations into hardware certification, pass/fail verdicts, warranty claims, or inferred device health.
 
-Exact algorithms and wording boundaries are owned by `18` and `20`.
+Translation must preserve the same epistemic strength. A localized phrase that sounds more certain than the English source is wrong even if linguistically natural.
+
+Exact algorithms and wording boundaries are owned by `18` and `20`; locale terminology and presentation are owned by `22`.
 
 # 10. Code-complete vs release-ready
 
@@ -209,31 +237,40 @@ release-ready
 
 Mock/headless input can validate state and geometry. It is never evidence of real hardware behavior.
 
+Localization work additionally requires locale routing, localized runtime strings, canonical/hreflang/sitemap, and language-leakage QA before that locale is considered ready to index.
+
 # 11. Current public-deployment boundary
 
-Public deployment is intentionally deferred until a real production domain is purchased immediately before launch.
-
-Until then:
+The production origin is already configured:
 
 ```text
-origin = https://hardware-testing.invalid
-indexingEnabled = false
+origin = https://hardwareinspect.com
+indexingEnabled = true
 ```
 
-Do not invent a temporary production origin and do not enable indexing early.
+This supersedes historical planning text that referred to `hardware-testing.invalid` and deferred domain purchase.
 
-Before first indexed public release:
+Do **not** revert the configured production origin or disable indexing merely because an older document still describes the pre-launch state.
 
-1. purchase/set the real production domain;
-2. run the required real-device/browser/camera smoke for the included routes;
-3. verify the real canonical origin and HTTPS behavior;
-4. enable indexing;
-5. deploy;
-6. connect Google Search Console;
-7. submit the generated sitemap;
-8. run final production smoke.
+Current release work should verify, rather than assume, the external state of:
 
-The first public release may contain the entire current catalog if every included route satisfies its release-ready gate.
+1. HTTPS production deployment;
+2. required real-device/browser/camera smoke;
+3. robots and sitemap behavior;
+4. Google Search Console property/access;
+5. sitemap submission and URL inspection;
+6. production smoke after changes.
+
+For localization rollout, additionally verify:
+
+1. English root URLs remain unchanged;
+2. locale prefixes follow `22_LOCALIZATION_SPEC.md`;
+3. each localized page has self canonical;
+4. reciprocal hreflang is complete for actually shipped alternates;
+5. `<html lang>` is correct;
+6. localized URLs are included in the sitemap;
+7. navigation/language switching stays on the same semantic tool;
+8. no forced IP/geography redirects are introduced.
 
 # 12. Evidence of business success
 
@@ -248,6 +285,8 @@ crawl/indexing
 → traffic scale
 → display-ad economics
 ```
+
+For localization, evaluate country/language/page query evidence separately where possible. Do not infer success from translation completeness alone.
 
 A technically working site does not prove the business hypothesis. Early low traffic is also not proof of failure before a reasonable indexing/ranking window.
 
