@@ -11,10 +11,11 @@ Start with:
 1. `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` — durable product strategy, current scope, expansion rule, deployment/release boundary;
 2. `18_DECISIONS_AND_BOUNDARIES.md` — global and full-v1 exact algorithms, lifecycle semantics, browser behavior, and technical boundaries;
 3. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` — exact behavior, algorithms, UX, and route-specific QA for the implemented Expansion 1 routes;
-4. `13_AGENT_RULES.md` — mandatory engineering/review rules;
-5. `16_UX_ACCEPTANCE.md` — interaction and viewport acceptance;
-6. `17_FUNCTIONAL_VISUAL_SYSTEM.md` — durable visual-system rules;
-7. `14_DEFINITION_OF_DONE.md` — code-complete and release-ready gates.
+4. `22_LOCALIZATION_SPEC.md` — exact locale set, localized route/SEO architecture, terminology boundaries, runtime-message i18n rules, hreflang/canonical behavior, and localization QA;
+5. `13_AGENT_RULES.md` — mandatory engineering/review rules;
+6. `16_UX_ACCEPTANCE.md` — interaction and viewport acceptance;
+7. `17_FUNCTIONAL_VISUAL_SYSTEM.md` — durable visual-system rules;
+8. `14_DEFINITION_OF_DONE.md` — code-complete and release-ready gates.
 
 Supporting references when relevant:
 
@@ -27,6 +28,8 @@ Supporting references when relevant:
 - `11_IMPLEMENTATION_PLAN.md` — completed implementation history plus maintenance workflow.
 
 If `18`, `19`, and `20` appear to conflict on shared architecture, privacy, lifecycle, measurement honesty, browser behavior, or scope, stop and report the conflict. Do not guess or invent a compromise.
+
+For localization work, `22_LOCALIZATION_SPEC.md` owns locale routing, translation/i18n architecture, localized SEO metadata, hreflang/canonical behavior, and terminology. It does **not** override diagnostic algorithms or measurement semantics owned by `18` and `20`; translated wording must preserve those exact epistemic boundaries.
 
 The old E1.0 → E1.7 order is completed development history. It is **not** a current instruction to keep implementing Expansion 1 stages.
 
@@ -168,7 +171,9 @@ Full v1 and Hardware Expansion 1 are implementation-complete and code-side audit
 
 There is no approved E1.8.
 
-Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, and UX polish are legitimate cross-catalog maintenance work.
+Localization of the existing catalog is now approved under `22_LOCALIZATION_SPEC.md`. Initial locales are English plus `pt-BR`, `de`, `fr`, `es`, and `ru`. This is an additive language/SEO/runtime-message project over the same 18 semantic jobs; it is **not** permission to add new diagnostic routes or fork tool logic per locale.
+
+Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, localization, and UX polish are legitimate cross-catalog maintenance work.
 
 New product scope outside the current catalog still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
 
@@ -190,7 +195,7 @@ Examples:
 - Dead Pixel and Backlight Bleed are visual-inspection tools, not automatic display diagnosis.
 - Frame Skipping uses browser timing only for readiness/sequential pattern control; real camera photos provide the physical evidence.
 
-Use `18` and `20` for the exact formulas/state machines.
+Use `18` and `20` for the exact formulas/state machines. Localization must preserve the same certainty/uncertainty level in every language.
 
 ## 7. Styling and visual boundaries
 
@@ -213,6 +218,8 @@ A CSS `linear-gradient()` is allowed when it is only the implementation primitiv
 
 Responsive layouts should preserve task/result proximity rather than mechanically stacking every desktop tile into a long column.
 
+Localization must be tested for text expansion, especially German/French/Russian labels; do not shrink critical typography into illegibility merely to preserve an English-width layout.
+
 ## 8. Lifecycle and cleanup
 
 Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, and bfcache transition needs an explicit cleanup/restart path.
@@ -223,22 +230,19 @@ Do not move held sets, counters, heuristic interpretation, or visual state into 
 
 ## 9. Deployment boundary
 
-Public deployment is intentionally deferred until a real production domain is purchased immediately before release.
-
-Until that release change:
+The canonical production origin is now:
 
 ```text
-origin = https://hardware-testing.invalid
-indexingEnabled = false
+https://hardwareinspect.com
 ```
 
-Do not invent a temporary production origin or enable indexing early.
+Current production configuration has indexing enabled. Do not revert the product to the historical placeholder `hardware-testing.invalid` or disable indexing as part of localization work unless an explicit release/incident decision requires it.
 
-Do not claim production deployment, Search Console setup, sitemap submission, real-device QA, camera QA, or cross-browser QA that has not actually happened.
+Localized routes must use the same HTTPS production origin, self-referencing canonicals, and the hreflang rules in `22_LOCALIZATION_SPEC.md`.
 
-`code-complete` and `release-ready` remain separate labels.
+Do not claim Search Console submission, localized indexing, real-device QA, camera QA, or cross-browser QA that has not actually happened for the new locale pages.
 
-Immediately before public deployment, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md` for the real-origin, hardware/browser/camera smoke, indexing, deployment, Search Console, sitemap, and production-smoke gates.
+For deployment/release checks, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`, `12_LAUNCH_PLAN.md`, and the localization-specific SEO/QA gates in `22_LOCALIZATION_SPEC.md`.
 
 ## 10. Non-normative historical/research documents
 
