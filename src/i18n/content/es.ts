@@ -57,8 +57,8 @@ export const esContent = {
     h1: 'Privacidad',
     intro: 'Los diagnósticos están diseñados para ejecutarse localmente en tu navegador.',
     paragraphs: [
-      'Los datos brutos del gamepad, teclado, mouse, tacto y timing de frames no se suben ni se almacenan en el sitio.',
-      'No se requiere cuenta ni inicio de sesión. Si más adelante se introducen analíticas ligeras, esta página deberá actualizarse para describir con precisión el comportamiento en producción.',
+      'Los datos brutos del gamepad, teclado, mouse, tacto y temporización de frames no se suben ni se almacenan en el sitio.',
+      'No se requiere cuenta ni inicio de sesión. Si más adelante se introduce analítica ligera, esta página deberá actualizarse para describir con precisión el comportamiento en producción.',
     ],
   },
   tools: {
@@ -158,7 +158,7 @@ export const esContent = {
       intro: 'Mide la frecuencia de muestras del puntero observada por este navegador mientras mueves el mouse.',
       sections: [
         { heading: 'Cómo funciona la medición', paragraphs: ['La herramienta usa una sola fuente de eventos de puntero del navegador durante todo el intento de dos segundos, calcula intervalos positivos entre marcas de tiempo y convierte el intervalo mediano en una frecuencia observada.'] },
-        { heading: 'Hz del mouse y frecuencia observada por el navegador', paragraphs: ['Este tipo de comprobación suele llamarse test de Hz o polling rate del mouse. El valor mostrado es la frecuencia de muestras del puntero observada por este navegador; los navegadores y sistemas operativos pueden combinar, limitar o reprogramar eventos del puntero, por lo que no es una medición directa del report rate USB ni una certificación equivalente a la del fabricante.'] },
+        { heading: 'Hz del mouse y frecuencia observada por el navegador', paragraphs: ['Este tipo de comprobación suele llamarse test de Hz o polling rate del mouse. El valor mostrado es la frecuencia de muestras del puntero observada por este navegador; los navegadores y sistemas operativos pueden combinar, limitar o reprogramar eventos del puntero, por lo que no es una medición directa de la frecuencia de reportes USB ni una certificación equivalente a la del fabricante.'] },
       ],
     },
     'mouse-dpi-test': {
@@ -209,7 +209,7 @@ export const esContent = {
       intro: 'Prueba combinaciones representativas y compara las teclas que realmente mantienes pulsadas con las que recibe el navegador al mismo tiempo. No existe una combinación universal de ghosting porque las matrices de teclado varían según el modelo.',
       sections: [
         { heading: 'Cómo ejecutar el test guiado', steps: ['Elige una de las combinaciones representativas que no use atajos reservados.', 'Inicia el test y prepárate durante el breve periodo previo a la observación.', 'Mantén pulsadas todas las teclas resaltadas durante los 3 segundos de observación.', 'Compara la mejor instantánea simultánea detectada por el navegador con la combinación esperada.'] },
-        { heading: 'Por qué se usan estas combinaciones', paragraphs: ['El ghosting y el bloqueo de teclas dependen de la matriz del teclado. Los presets son pruebas representativas, no un conjunto oficial de certificación.'] },
+        { heading: 'Por qué se usan estas combinaciones', paragraphs: ['El ghosting y el bloqueo de teclas dependen de la matriz del teclado. Las combinaciones predefinidas son pruebas representativas, no un conjunto oficial de certificación.'] },
         { heading: 'Qué significa una tecla ausente', paragraphs: ['Un código ausente significa que esa tecla no formó parte de la mejor instantánea simultánea observada por el navegador para esta combinación guiada. La página no puede demostrar la causa: la matriz, el firmware, el remapeo, los atajos, el tratamiento del navegador o la forma de mantener las teclas pueden afectar al resultado.'] },
         { heading: 'Por qué no es un veredicto automático de ghosting', paragraphs: ['Un navegador solo puede informar eventos de teclado que llegan a la página. Este test no inspecciona directamente el hardware y, por tanto, no etiqueta el teclado como averiado ni confirma ghosting.'] },
       ],
@@ -234,8 +234,8 @@ export const esContent = {
       h1: 'Test de frecuencia de actualización',
       intro: 'Estima la cadencia de actualización que este navegador está observando actualmente.',
       sections: [
-        { heading: 'Qué significa la estimación', paragraphs: ['Esta página estima la cadencia de pantalla visible para el navegador a partir del timing reciente de <code>requestAnimationFrame</code>. No es una lectura directa del EDID ni del hardware del monitor.'] },
-        { heading: 'Por qué la estimación puede diferir', paragraphs: ['Las configuraciones con varios monitores, la planificación del navegador, los modos de ahorro de energía, la frecuencia de actualización variable y los cambios de pantalla pueden afectar a la cadencia visible para la página. El timing de una pestaña oculta se descarta y la estimación empieza de nuevo al reanudarse el muestreo.'] },
+        { heading: 'Qué significa la estimación', paragraphs: ['Esta página estima la cadencia de pantalla visible para el navegador a partir de la temporización reciente de <code>requestAnimationFrame</code>. No es una lectura directa del EDID ni del hardware del monitor.'] },
+        { heading: 'Por qué la estimación puede diferir', paragraphs: ['Las configuraciones con varios monitores, la planificación del navegador, los modos de ahorro de energía, la frecuencia de actualización variable y los cambios de pantalla pueden afectar a la cadencia visible para la página. La temporización de una pestaña oculta se descarta y la estimación empieza de nuevo al reanudarse el muestreo.'] },
       ],
     },
     'frame-skipping-test': {
@@ -246,9 +246,9 @@ export const esContent = {
       h1: 'Test de frame skipping',
       intro: 'Fotografía una secuencia de frames temporizada por el navegador y busca huecos repetibles en capturas READY válidas.',
       sections: [
-        { heading: 'Cómo funciona este test de frame skipping', paragraphs: ['El navegador espera una cadencia estable de requestAnimationFrame. Mientras READY siga siendo válido, cada frame aceptado del navegador hace avanzar el bloque brillante exactamente una posición consecutiva. El timing del navegador nunca inserta un hueco visual para simular un refresco omitido.'] },
+        { heading: 'Cómo funciona este test de frame skipping', paragraphs: ['El navegador espera una cadencia estable de requestAnimationFrame. Mientras READY siga siendo válido, cada frame aceptado del navegador hace avanzar el bloque brillante exactamente una posición consecutiva. La temporización del navegador nunca inserta un hueco visual para simular un refresco omitido.'] },
         { heading: 'Por qué se necesita una foto de cámara', paragraphs: ['Una foto de cámara con exposición suficientemente larga puede registrar varios estados del patrón mostrado en una sola imagen. Una captura de pantalla solo recoge el estado renderizado actual del navegador y no puede mostrar si la pantalla física presentó cada refresco.'] },
-        { heading: 'Cómo interpretar los huecos', paragraphs: ['Una posición ausente que se repite en varias fotos tomadas mientras la página muestra READY puede indicar que la pantalla no presentó todos los estados del patrón. Una sola foto mala no es un veredicto; la exposición de la cámara o la inestabilidad del timing también pueden producir huecos engañosos.'] },
+        { heading: 'Cómo interpretar los huecos', paragraphs: ['Una posición ausente que se repite en varias fotos tomadas mientras la página muestra READY puede indicar que la pantalla no presentó todos los estados del patrón. Una sola foto mala no es un veredicto; la exposición de la cámara o la inestabilidad de la temporización también pueden producir huecos engañosos.'] },
       ],
     },
     'dead-pixel-test': {
