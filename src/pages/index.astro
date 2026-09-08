@@ -27,7 +27,7 @@ const groups = toolGroups.map((group) => ({
     };
   }),
 }));
-const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
+const columns = [groups.slice(0, 2), groups.slice(2)] as const;
 const facts = content.facts.split(' · ');
 ---
 
