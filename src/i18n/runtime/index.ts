@@ -4,6 +4,7 @@ import { enRuntimeMessages } from './en';
 import { esRuntimeMessages } from './es';
 import { frRuntimeMessages } from './fr';
 import { ptBRRuntimeMessages } from './pt-BR';
+import { ruRuntimeMessages } from './ru';
 import type { RuntimeMessages } from './types';
 
 const runtimeMessagesByLocale = {
@@ -12,6 +13,7 @@ const runtimeMessagesByLocale = {
   de: deRuntimeMessages,
   fr: frRuntimeMessages,
   es: esRuntimeMessages,
+  ru: ruRuntimeMessages,
 } as const satisfies Record<ImplementedContentLocale, RuntimeMessages>;
 
 export const getRuntimeMessages = (locale: ImplementedContentLocale): RuntimeMessages => runtimeMessagesByLocale[locale];
