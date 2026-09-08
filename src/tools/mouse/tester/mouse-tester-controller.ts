@@ -1,45 +1,19 @@
-import {
-  createMouseInputService,
-  type MouseInputServiceEvent,
-} from '../../../browser/mouse-input-service';
+import { createMouseInputService, type MouseInputServiceEvent } from '../../../browser/mouse-input-service';
+import { formatMessage, type ToolRuntimeMessages } from '../../../i18n/runtime';
 import { renderStandardMouseVisual } from '../../../visuals/mouse/standard-mouse-renderer';
 import { createMouseTesterState, reduceMouseTesterState, type MouseTesterState } from './mouse-tester-state';
 
-export interface MouseTesterController {
-  start(): void;
-  stop(): void;
-  destroy(): void;
-}
-
+export interface MouseTesterController { start(): void; stop(): void; destroy(): void; }
+type Messages = ToolRuntimeMessages<'mouseTester'>;
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
-  if (!element) {
-    throw new Error(`Mouse Tester is missing ${selector}`);
-  }
+  if (!element) throw new Error(`Mouse Tester is missing ${selector}`);
   return element;
 };
+const toHeldTuple = (state: MouseTesterState): [boolean, boolean, boolean, boolean, boolean] => [state.heldButtons.has(0), state.heldButtons.has(1), state.heldButtons.has(2), state.heldButtons.has(3), state.heldButtons.has(4)];
+const detectedRoleCount = (state: MouseTesterState): number => state.pressCounts.filter((count) => count > 0).length;
 
-const buttonNames = ['Primary', 'Middle', 'Secondary', 'Back / X1', 'Forward / X2'] as const;
-
-const toHeldTuple = (state: MouseTesterState): [boolean, boolean, boolean, boolean, boolean] => [
-  state.heldButtons.has(0),
-  state.heldButtons.has(1),
-  state.heldButtons.has(2),
-  state.heldButtons.has(3),
-  state.heldButtons.has(4),
-];
-
-const wheelLabel = (direction: MouseTesterState['wheelDirection']): string => {
-  if (direction === 'up') return 'Up';
-  if (direction === 'down') return 'Down';
-  if (direction === 'horizontal') return 'Horizontal';
-  return 'Waiting';
-};
-
-const detectedRoleCount = (state: MouseTesterState): number =>
-  state.pressCounts.filter((count) => count > 0).length;
-
-export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
+export const mountMouseTester = (root: HTMLElement, messages: Messages): MouseTesterController => {
   const surface = requireElement<HTMLElement>(root, '[data-mouse-test-surface]');
   const visual = requireElement<HTMLElement>(root, '[data-standard-mouse-visual]');
   const status = requireElement<HTMLElement>(root, '[data-mouse-status]');
@@ -50,95 +24,76 @@ export const mountMouseTester = (root: HTMLElement): MouseTesterController => {
   const reset = requireElement<HTMLButtonElement>(root, '[data-mouse-reset]');
   const note = requireElement<HTMLElement>(root, '[data-mouse-note]');
   const accessibleSummary = requireElement<HTMLElement>(root, '[data-mouse-accessible-summary]');
-
   const service = createMouseInputService(surface, 'basic');
   let state = createMouseTesterState();
-  let lastButtonLabel = 'Waiting';
+  let lastButtonLabel = messages.waiting;
   let destroyed = false;
   let announcedDetection = false;
 
+  const wheelLabel = (direction: MouseTesterState['wheelDirection']): string => {
+    if (direction === 'up') return messages.wheelUp;
+    if (direction === 'down') return messages.wheelDown;
+    if (direction === 'horizontal') return messages.wheelHorizontal;
+    return messages.waiting;
+  };
+
   const render = (): void => {
     root.dataset.state = state.anyInputDetected ? 'detected' : 'ready';
-    renderStandardMouseVisual(visual, {
-      heldButtons: toHeldTuple(state),
-      wheelDirection: state.wheelDirection,
-      movementDetected: state.movementDetected,
-    });
-
+    renderStandardMouseVisual(visual, { heldButtons: toHeldTuple(state), wheelDirection: state.wheelDirection, movementDetected: state.movementDetected });
     lastButton.textContent = lastButtonLabel;
     rolesSeen.textContent = `${detectedRoleCount(state)} / 5`;
     wheel.textContent = wheelLabel(state.wheelDirection);
-    movement.textContent = state.movementDetected ? 'Detected' : 'Waiting';
+    movement.textContent = state.movementDetected ? messages.detected : messages.waiting;
   };
 
-  const describeEvent = (event: MouseInputServiceEvent): string | null => {
-    if (event.type === 'buttondown') {
-      return `${buttonNames[event.button]} button detected. ${detectedRoleCount(state)} of 5 button roles seen.`;
-    }
-    if (event.type === 'wheel' && state.wheelDirection) {
-      return `${wheelLabel(state.wheelDirection)} wheel input detected.`;
-    }
-    if (event.type === 'move' && state.movementDetected) {
-      return 'Mouse movement detected.';
-    }
-    if (event.type === 'clear') {
-      return event.reason === 'blur'
-        ? 'Held mouse-button state cleared because the page lost focus.'
-        : 'Held mouse-button state cleared because the page became hidden.';
-    }
-    return null;
+  const updateAccessibleSummary = (): void => {
+    accessibleSummary.textContent = formatMessage(messages.eventSummary, {
+      button: lastButtonLabel,
+      roles: detectedRoleCount(state),
+      wheel: wheelLabel(state.wheelDirection),
+      movement: state.movementDetected ? messages.detected : messages.waiting,
+    });
   };
 
   const handleEvent = (event: MouseInputServiceEvent): void => {
-    if (destroyed || event.type === 'poll-samples') {
-      return;
-    }
-
+    if (destroyed || event.type === 'poll-samples') return;
     state = reduceMouseTesterState(state, event);
-    if (event.type === 'buttondown') {
-      lastButtonLabel = buttonNames[event.button];
-    }
+    if (event.type === 'buttondown') lastButtonLabel = messages.buttonNames[event.button];
     render();
-
     if (state.anyInputDetected && !announcedDetection) {
       announcedDetection = true;
-      status.textContent = 'Input detected';
+      status.textContent = messages.inputDetected;
     }
-
-    const description = describeEvent(event);
-    if (description && event.type !== 'move') {
-      accessibleSummary.textContent = description;
-    }
+    if (event.type !== 'move') updateAccessibleSummary();
   };
 
   const resetVisibleState = (): void => {
     state = createMouseTesterState();
-    lastButtonLabel = 'Waiting';
+    lastButtonLabel = messages.waiting;
     announcedDetection = false;
-    status.textContent = 'Listening for mouse input';
-    accessibleSummary.textContent = 'Mouse Tester is listening. Move, click, or scroll inside the test area.';
+    status.textContent = messages.listening;
+    accessibleSummary.textContent = messages.initialSummary;
+    note.textContent = messages.suppressionNote;
     render();
   };
 
   const unsubscribe = service.subscribe(handleEvent);
   const handleReset = (): void => resetVisibleState();
   reset.addEventListener('click', handleReset);
-
   const started = service.start();
   if (!started) {
     root.dataset.state = 'unavailable';
-    status.textContent = 'Mouse input unavailable';
-    note.textContent = 'This browser context could not attach mouse input listeners.';
-    accessibleSummary.textContent = 'Mouse input is unavailable in this browser context.';
-  } else {
-    render();
-  }
+    status.textContent = messages.unavailable;
+    note.textContent = messages.unavailable;
+    accessibleSummary.textContent = messages.unavailable;
+  } else render();
 
   return {
     start: () => {
       if (destroyed) return;
       if (service.start()) {
-        status.textContent = state.anyInputDetected ? 'Input detected' : 'Listening for mouse input';
+        status.textContent = state.anyInputDetected ? messages.inputDetected : messages.listening;
+        note.textContent = messages.suppressionNote;
         render();
       }
     },
