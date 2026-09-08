@@ -3,6 +3,7 @@ import {
   type GamepadServiceState,
   type GamepadSnapshot,
 } from '../../../browser/gamepad-service';
+import { formatMessage, type ToolRuntimeMessages } from '../../../i18n/runtime';
 import {
   FallbackControllerRenderer,
   StandardControllerRenderer,
@@ -14,23 +15,17 @@ import {
   createStandardControllerView,
 } from './gamepad-view-model';
 
-export interface ToolController {
-  start(): void;
-  stop(): void;
-  destroy(): void;
-}
-
+export interface ToolController { start(): void; stop(): void; destroy(): void }
+type Messages = ToolRuntimeMessages<'gamepadTester'>;
 type StatusPresentationKey = 'waiting' | 'connected' | 'unsupported' | 'error';
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
-  if (!element) {
-    throw new Error(`Gamepad Tester is missing ${selector}`);
-  }
+  if (!element) throw new Error(`Gamepad Tester is missing ${selector}`);
   return element;
 };
 
-export const mountGamepadTester = (root: HTMLElement): ToolController => {
+export const mountGamepadTester = (root: HTMLElement, messages: Messages): ToolController => {
   const status = requireElement<HTMLElement>(root, '[data-gamepad-status]');
   const instruction = requireElement<HTMLElement>(root, '[data-gamepad-instruction]');
   const statusLive = requireElement<HTMLElement>(root, '[data-gamepad-status-live]');
@@ -42,28 +37,17 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   const unavailableArea = requireElement<HTMLElement>(root, '[data-gamepad-unavailable]');
   const mappingNote = requireElement<HTMLElement>(root, '[data-gamepad-mapping-note]');
   const accessibleState = requireElement<HTMLElement>(root, '[data-gamepad-accessible-state]');
-
   const service = createGamepadService();
   const standardRenderer = new StandardControllerRenderer(standardArea);
   const fallbackRenderer = new FallbackControllerRenderer(fallbackContent);
-
   let selectedSourceIndex: number | null = null;
   let lastControllerListSignature = '';
   let lastStatusPresentation: StatusPresentationKey | null = null;
   let destroyed = false;
 
-  const setStatusPresentation = (
-    key: StatusPresentationKey,
-    state: 'waiting' | 'connected' | 'unavailable',
-    statusText: string,
-    instructionText: string,
-  ): void => {
+  const setStatusPresentation = (key: StatusPresentationKey, state: 'waiting' | 'connected' | 'unavailable', statusText: string, instructionText: string): void => {
     root.dataset.state = state;
-
-    if (lastStatusPresentation === key) {
-      return;
-    }
-
+    if (lastStatusPresentation === key) return;
     status.textContent = statusText;
     instruction.textContent = instructionText;
     statusLive.textContent = `${statusText}. ${instructionText}`;
@@ -79,55 +63,34 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   const rebuildSelector = (gamepads: readonly GamepadSnapshot[]): void => {
     const signature = gamepads.map((gamepad) => gamepad.sourceIndex).join(',');
     if (signature === lastControllerListSignature) {
-      const selectedIndex = gamepads.findIndex(
-        (gamepad) => gamepad.sourceIndex === selectedSourceIndex,
-      );
-      if (selectedIndex >= 0 && selector.selectedIndex !== selectedIndex) {
-        selector.selectedIndex = selectedIndex;
-      }
+      const selectedIndex = gamepads.findIndex((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
+      if (selectedIndex >= 0 && selector.selectedIndex !== selectedIndex) selector.selectedIndex = selectedIndex;
       return;
     }
-
     lastControllerListSignature = signature;
-    selector.replaceChildren(
-      ...gamepads.map((_, index) => {
-        const option = document.createElement('option');
-        option.value = String(index);
-        option.textContent = `Controller ${index + 1}`;
-        return option;
-      }),
-    );
-
-    const selectedIndex = gamepads.findIndex(
-      (gamepad) => gamepad.sourceIndex === selectedSourceIndex,
-    );
+    selector.replaceChildren(...gamepads.map((_, index) => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = formatMessage(messages.controllerOption, { number: index + 1 });
+      return option;
+    }));
+    const selectedIndex = gamepads.findIndex((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
     selector.selectedIndex = selectedIndex >= 0 ? selectedIndex : 0;
     selectorWrap.hidden = gamepads.length <= 1;
   };
 
   const selectFirstAvailable = (gamepads: readonly GamepadSnapshot[]): GamepadSnapshot => {
     const current = gamepads.find((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
-    if (current) {
-      return current;
-    }
-
+    if (current) return current;
     const first = gamepads[0];
-    if (!first) {
-      throw new Error('Expected a visible gamepad');
-    }
-
+    if (!first) throw new Error('Expected a visible gamepad');
     selectedSourceIndex = first.sourceIndex;
     service.setActiveGamepad(first.sourceIndex);
     return first;
   };
 
   const renderWaiting = (): void => {
-    setStatusPresentation(
-      'waiting',
-      'waiting',
-      'No controller detected',
-      'Connect a controller and press any button.',
-    );
+    setStatusPresentation('waiting', 'waiting', messages.noController, messages.connectInstruction);
     selectorWrap.hidden = true;
     mappingNote.hidden = true;
     unavailableArea.hidden = true;
@@ -135,17 +98,12 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
     standardArea.dataset.live = 'false';
     standardRenderer.reset();
     fallbackRenderer.clear();
-    accessibleState.textContent = 'No controller detected. Connect a controller and press any button.';
+    accessibleState.textContent = `${messages.noController}. ${messages.connectInstruction}`;
   };
 
   const renderUnavailable = (kind: 'unsupported' | 'error'): void => {
-    const statusText =
-      kind === 'unsupported' ? 'Gamepad API unavailable' : 'Gamepad access unavailable';
-    const instructionText =
-      kind === 'unsupported'
-        ? 'This browser does not expose the Gamepad API.'
-        : 'Gamepad access is blocked or unavailable in this browser context.';
-
+    const statusText = kind === 'unsupported' ? messages.apiUnavailable : messages.accessUnavailable;
+    const instructionText = kind === 'unsupported' ? messages.apiUnavailableInstruction : messages.accessUnavailableInstruction;
     setStatusPresentation(kind, 'unavailable', statusText, instructionText);
     selectorWrap.hidden = true;
     mappingNote.hidden = true;
@@ -158,45 +116,30 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   };
 
   const renderConnected = (gamepad: GamepadSnapshot, gamepads: readonly GamepadSnapshot[]): void => {
-    setStatusPresentation(
-      'connected',
-      'connected',
-      'Controller detected',
-      'Press buttons and move the sticks to test them.',
-    );
+    setStatusPresentation('connected', 'connected', messages.controllerDetected, messages.connectedInstruction);
     rebuildSelector(gamepads);
-
     if (gamepad.mapping === 'standard') {
-      const view = createStandardControllerView(gamepad);
+      const view = createStandardControllerView(gamepad, messages);
       mappingNote.hidden = true;
       standardArea.dataset.live = 'true';
       showOnly('standard');
       fallbackRenderer.clear();
       standardRenderer.render(view);
-      accessibleState.textContent = createAccessibleControllerSummary(view);
+      accessibleState.textContent = createAccessibleControllerSummary(view, messages);
       return;
     }
-
-    const view = createFallbackControllerView(gamepad);
+    const view = createFallbackControllerView(gamepad, messages);
     mappingNote.hidden = false;
-    mappingNote.textContent =
-      'Basic input view — this controller does not expose the standard mapping, so physical button and axis positions are not assumed.';
+    mappingNote.textContent = messages.nonStandardNote;
     showOnly('fallback');
     standardRenderer.reset();
     fallbackRenderer.render(view);
-    accessibleState.textContent = createAccessibleFallbackSummary(view);
+    accessibleState.textContent = createAccessibleFallbackSummary(view, messages);
   };
 
   const renderState = (state: GamepadServiceState): void => {
-    if (destroyed || state.status === 'idle') {
-      return;
-    }
-
-    if (state.status === 'unsupported' || state.status === 'error') {
-      renderUnavailable(state.status);
-      return;
-    }
-
+    if (destroyed || state.status === 'idle') return;
+    if (state.status === 'unsupported' || state.status === 'error') return renderUnavailable(state.status);
     if (state.gamepads.length === 0) {
       selectedSourceIndex = null;
       lastControllerListSignature = '';
@@ -204,22 +147,14 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
       renderWaiting();
       return;
     }
-
-    const selected = selectFirstAvailable(state.gamepads);
-    renderConnected(selected, state.gamepads);
+    renderConnected(selectFirstAvailable(state.gamepads), state.gamepads);
   };
 
   const handleSelectorChange = (): void => {
     const state = service.getState();
-    if (state.status !== 'ready') {
-      return;
-    }
-
+    if (state.status !== 'ready') return;
     const selected = state.gamepads[selector.selectedIndex];
-    if (!selected) {
-      return;
-    }
-
+    if (!selected) return;
     selectedSourceIndex = selected.sourceIndex;
     service.setActiveGamepad(selected.sourceIndex);
     renderConnected(selected, state.gamepads);
@@ -228,23 +163,11 @@ export const mountGamepadTester = (root: HTMLElement): ToolController => {
   selector.addEventListener('change', handleSelectorChange);
   const unsubscribe = service.subscribe(renderState);
   service.start();
-
   return {
-    start: () => {
-      if (!destroyed) {
-        service.start();
-      }
-    },
-    stop: () => {
-      if (!destroyed) {
-        service.stop();
-      }
-    },
+    start: () => { if (!destroyed) service.start(); },
+    stop: () => { if (!destroyed) service.stop(); },
     destroy: () => {
-      if (destroyed) {
-        return;
-      }
-
+      if (destroyed) return;
       destroyed = true;
       selector.removeEventListener('change', handleSelectorChange);
       unsubscribe();
