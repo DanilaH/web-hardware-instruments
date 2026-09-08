@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import type { GamepadSnapshot } from '../../../browser/gamepad-service';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import {
   createAccessibleControllerSummary,
   createAccessibleFallbackSummary,
   createFallbackControllerView,
   createStandardControllerView,
 } from './gamepad-view-model';
+
+const messages = getRuntimeMessages('en').gamepadTester;
 
 const createSnapshot = (overrides: Partial<GamepadSnapshot> = {}): GamepadSnapshot => ({
   sourceIndex: 3,
@@ -21,7 +24,7 @@ const createSnapshot = (overrides: Partial<GamepadSnapshot> = {}): GamepadSnapsh
 
 describe('createStandardControllerView', () => {
   it('maps standard buttons, triggers, and stick axes to semantic view data', () => {
-    const view = createStandardControllerView(createSnapshot());
+    const view = createStandardControllerView(createSnapshot(), messages);
 
     expect(view.buttons['face-bottom']).toBe(true);
     expect(view.buttons['dpad-up']).toBe(true);
@@ -33,7 +36,12 @@ describe('createStandardControllerView', () => {
   });
 
   it('creates a concise text equivalent for the live controller state', () => {
-    expect(createAccessibleControllerSummary(createStandardControllerView(createSnapshot()))).toBe(
+    expect(
+      createAccessibleControllerSummary(
+        createStandardControllerView(createSnapshot(), messages),
+        messages,
+      ),
+    ).toBe(
       'Face bottom, D-pad up. Left stick x 50%, y -25%. Right stick x -100%, y 100%. Left trigger 40%. Right trigger 75%.',
     );
   });
@@ -50,6 +58,7 @@ describe('createFallbackControllerView', () => {
         ],
         axes: [-1, 0.25, 1],
       }),
+      messages,
     );
 
     expect(view).toEqual({
@@ -64,7 +73,7 @@ describe('createFallbackControllerView', () => {
       ],
     });
 
-    expect(createAccessibleFallbackSummary(view)).toBe(
+    expect(createAccessibleFallbackSummary(view, messages)).toBe(
       'Controller detected with a non-standard mapping. 1 button is currently pressed.',
     );
   });
