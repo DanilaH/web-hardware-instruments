@@ -77,6 +77,7 @@ a:hover {
   font-size: clamp(1.9rem, 3.2vw, 2.75rem);
   line-height: 1.02;
   letter-spacing: -0.042em;
+  overflow-wrap: anywhere;
 }
 
 .page-intro {
