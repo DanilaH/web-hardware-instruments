@@ -20,6 +20,8 @@ A primary tool page is not done unless all applicable requirements pass:
 
 Touch Screen Test follows its explicit mobile/tablet-oriented acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
+Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
+
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
@@ -73,7 +75,7 @@ Supporting public routes include `/`, `/about`, `/privacy`, and `/404` behavior.
 
 Every listed tool is a real implementation, not a placeholder.
 
-`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. The old sequential implementation order is historical process context, not an ongoing completion requirement.
+`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. `22_LOCALIZATION_SPEC.md` owns approved locale routing/content/i18n/SEO behavior. The old sequential implementation order is historical process context, not an ongoing completion requirement.
 
 ## 3. Code-complete gate
 
@@ -91,7 +93,17 @@ A change is code-complete only when its affected routes/components satisfy all a
 - final self-review is performed on the final diff;
 - build, typecheck, tests, and required CI are green after review.
 
-Mock/headless browser input may validate state, rendering, and geometry. It is never proof of real hardware behavior.
+For localization work, code-complete additionally requires:
+
+- existing English behavior/URLs remain stable;
+- locale routing is centralized/typed;
+- localized presentation does not fork diagnostic algorithms/services/renderers;
+- all primary user-visible runtime strings are localized;
+- `<html lang>` is correct;
+- localized navigation/related links stay in the same locale;
+- no measurement claim becomes stronger through translation.
+
+Mock/headless browser input may validate state, rendering, geometry and locale output. It is never proof of real hardware behavior.
 
 ## 4. Release-ready gate
 
@@ -108,21 +120,41 @@ Examples include:
 
 A route may be code-complete while external hardware is unavailable. Do not claim validation that did not occur.
 
+A localized variant does not require re-proving the underlying hardware algorithm if the exact same implementation is reused, but its translated instructions/status/error/limitation flow must still be manually reviewed for correctness and task usability.
+
 ## 5. Public deployment gate
 
-Public deployment is intentionally deferred until a real production domain is purchased.
+The production origin is already configured:
 
-Before any indexed public release:
+```text
+https://hardwareinspect.com
+indexingEnabled = true
+```
 
-- replace `https://hardware-testing.invalid` with the real production origin;
-- review `indexingEnabled` in the same release change;
-- complete required real-device/browser/camera QA for every released route;
-- verify all released routes return 200;
-- verify canonical, robots, and sitemap output against the real origin;
-- deploy over HTTPS;
-- connect Google Search Console;
-- submit the generated sitemap;
-- run final production smoke.
+This supersedes historical pre-launch references to `hardware-testing.invalid`.
+
+For production changes, verify rather than assume:
+
+- `https://hardwareinspect.com` resolves correctly over HTTPS;
+- released routes return 200;
+- canonical URLs use the production origin;
+- robots and sitemap output are correct;
+- required real-device/browser/camera QA is complete for affected behavior where relevant;
+- Google Search Console access/property state is known;
+- sitemap submission/status is known;
+- final production smoke is performed after deployment.
+
+For localized release, additionally verify:
+
+- only approved locale prefixes from `22_LOCALIZATION_SPEC.md` are generated;
+- localized pages return 200;
+- every localized page is self-canonical;
+- reciprocal hreflang exists for every actually shipped semantic alternate;
+- `<html lang>` is correct;
+- localized pages are included in the sitemap;
+- language switching preserves semantic route identity;
+- no forced IP/geography redirect is introduced;
+- primary UI/runtime content does not leak English unexpectedly.
 
 Do not treat mock/headless checks as proof of real hardware coverage.
 
@@ -185,7 +217,8 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
 - cleanup covers rAF, listeners, timers, locks/capture, fullscreen observers, and bfcache-relevant lifecycle;
-- no unnecessary framework/backend/database/runtime dependency.
+- no unnecessary framework/backend/database/runtime dependency;
+- locale strings are injected/selected explicitly rather than read from a mutable global locale singleton.
 
 ## 8. SEO / information architecture
 
@@ -193,11 +226,14 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - one real job/intent per route;
 - primary tool remains above the fold where its device-class gate applies;
 - explanatory static HTML supports rather than delays the tool;
-- canonical plumbing is ready for the real origin;
-- sitemap/robots switch with reviewed indexing configuration;
+- canonical origin is `https://hardwareinspect.com`;
+- sitemap/robots reflect the current production configuration;
 - no synonym/thin routes;
 - only implemented routes are linked as live tools;
-- homepage and related-tool navigation remain scannable as the catalog grows.
+- homepage and related-tool navigation remain scannable as the catalog grows;
+- localized alternates use self canonicals + reciprocal hreflang;
+- English root routes remain stable;
+- translated slugs are not introduced in localization v1.
 
 ## 9. Performance
 
@@ -207,7 +243,8 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - no decorative payload bloat;
 - bounded histories/trails/sample buffers;
 - avoid avoidable DOM churn in measurement hot paths;
-- no per-sample DOM writes in high-frequency polling/timing paths.
+- no per-sample DOM writes in high-frequency polling/timing paths;
+- localization must not introduce a heavy runtime i18n framework when static typed data is sufficient.
 
 ## 10. Accessibility
 
@@ -219,14 +256,16 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - status/result announcements are useful rather than noisy;
 - `touch-action: none` only on the active touch diagnostic surface;
 - no global keyboard `preventDefault()` to force reserved shortcuts;
-- responsive reordering must preserve a sensible reading/focus order.
+- responsive reordering must preserve a sensible reading/focus order;
+- translated labels/ARIA/live-region copy remain understandable and correctly associated.
 
 ## 11. Privacy
 
 - raw hardware/input streams remain local;
 - privacy copy matches reality;
 - raw gamepad/device identifiers are not displayed, stored, or sent;
-- raw mouse/touch/pointer/key/frame streams are not sent to analytics.
+- raw mouse/touch/pointer/key/frame streams are not sent to analytics;
+- locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
 
@@ -247,10 +286,13 @@ implementation
 
 If a validation fix changes semantics or UX, re-review the impacted part. Compile/test-only corrections do not require restarting unrelated review work.
 
+For localization, sample every device family in every locale rather than validating only one translated page.
+
 ## 13. Exact-boundary compliance
 
 - global/full-v1 dependency and measurement behavior matches `18_DECISIONS_AND_BOUNDARIES.md`;
 - Expansion 1 exact behavior matches `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`;
+- localization behavior matches `22_LOCALIZATION_SPEC.md`;
 - scope/release decisions match `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`;
 - no arbitrary result thresholds are invented outside source-of-truth;
 - standard/non-standard gamepad behavior matches the approved boundary;
@@ -261,4 +303,5 @@ If a validation fix changes semantics or UX, re-review the impacted part. Compil
 - Mouse Polling never claims true USB/hardware sample rate;
 - Rollover/Ghosting never overclaim hardware certification;
 - Dead Pixel/Backlight remain visual inspection rather than automatic diagnosis;
-- Frame Skipping never claims browser-only automatic detection.
+- Frame Skipping never claims browser-only automatic detection;
+- translated wording never increases certainty beyond the owning English measurement contract.
