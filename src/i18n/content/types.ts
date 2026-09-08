@@ -26,10 +26,11 @@ export interface HomeContent {
   readonly boundaryAria: string;
   readonly boundaryTitle: string;
   readonly boundaryLocal: string;
-  readonly boundarySignals: string;
+  readonly boundaryApiTitle: string;
+  readonly boundaryApiDetail: string;
   readonly boundaryObserved: string;
   readonly boundaryNoUpload: string;
-  readonly inputs: readonly string[];
+  readonly inputs: readonly [string, string, string, string, string];
   readonly categoryAria: string;
   readonly chooseTool: string;
   readonly chooseToolIntro: string;
