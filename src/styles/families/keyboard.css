@@ -38,6 +38,10 @@ body[data-channel] .page-main [data-keyboard-ghosting] :is(.ghosting-tool__contr
   letter-spacing: 0.01em;
 }
 
+body[data-channel] .page-main [data-keyboard-tester] .keyboard-result span {
+  overflow-wrap: anywhere;
+}
+
 body[data-channel] .page-main [data-keyboard-tester] .keyboard-result strong,
 body[data-channel] .page-main [data-keyboard-rollover] .rollover-tool__metrics strong {
   color: var(--color-muted);
