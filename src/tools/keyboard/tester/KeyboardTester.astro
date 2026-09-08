@@ -1,219 +1,62 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import KeyboardGrid from '../../../visuals/keyboard/KeyboardGrid.astro';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getRuntimeMessages(locale).keyboardTester;
 ---
 
 <ToolShell labelledBy="keyboard-tool-heading">
-  <h2 id="keyboard-tool-heading" class="keyboard-tool__sr">Keyboard Tester controls</h2>
-
-  <div
-    class="keyboard-tool"
-    data-keyboard-tester
-    data-state="ready"
-    tabindex="0"
-    aria-label="Keyboard test. Press Escape to release page-navigation keys."
-  >
-    <div class="keyboard-tool__status-row">
-      <span class="keyboard-tool__signal" aria-hidden="true"></span>
-      <strong data-keyboard-status>Listening for keys</strong>
-      <span class="keyboard-tool__status-note">Listening automatically.</span>
-    </div>
-
-    <p class="keyboard-tool__instruction">
-      Press any key to test it. Space and page-navigation keys stay in the test; press Esc to release normal page scrolling.
-    </p>
-
-    <div class="keyboard-tool__visual-wrap">
-      <KeyboardGrid />
-    </div>
-
+  <h2 id="keyboard-tool-heading" class="keyboard-tool__sr">{messages.controlsHeading}</h2>
+  <div class="keyboard-tool" data-keyboard-tester data-messages={JSON.stringify(messages)} data-state="ready" tabindex="0" aria-label={messages.rootAria}>
+    <div class="keyboard-tool__status-row"><span class="keyboard-tool__signal" aria-hidden="true"></span><strong data-keyboard-status>{messages.listening}</strong><span class="keyboard-tool__status-note">{messages.automatic}</span></div>
+    <p class="keyboard-tool__instruction">{messages.instruction}</p>
+    <div class="keyboard-tool__visual-wrap"><KeyboardGrid spaceLabel={messages.space} /></div>
     <div class="keyboard-tool__results">
-      <div class="keyboard-result keyboard-result--primary">
-        <span>Last detected key</span>
-        <strong class="measurement-value" data-keyboard-last-key>—</strong>
-      </div>
-      <div class="keyboard-result">
-        <span>Physical code</span>
-        <strong class="measurement-value" data-keyboard-last-code>—</strong>
-      </div>
-      <div class="keyboard-result">
-        <span>Keys held</span>
-        <strong class="measurement-value" data-keyboard-pressed-count>0</strong>
-      </div>
+      <div class="keyboard-result keyboard-result--primary"><span>{messages.lastKey}</span><strong class="measurement-value" data-keyboard-last-key>—</strong></div>
+      <div class="keyboard-result"><span>{messages.physicalCode}</span><strong class="measurement-value" data-keyboard-last-code>—</strong></div>
+      <div class="keyboard-result"><span>{messages.keysHeld}</span><strong class="measurement-value" data-keyboard-pressed-count>0</strong></div>
     </div>
-
-    <p class="keyboard-tool__note" data-keyboard-note>
-      <span class="keyboard-tool__mobile-hint">Scroll the keyboard horizontally for more keys. </span>
-      Key labels are a compact reference. Physical highlighting follows the browser-reported key code.
-    </p>
-
-    <p class="keyboard-tool__sr" data-keyboard-accessible-summary>
-      Keyboard Tester is listening. Press any key to test it.
-    </p>
+    <p class="keyboard-tool__note" data-keyboard-note><span class="keyboard-tool__mobile-hint">{messages.mobileHint}</span><span data-keyboard-note-copy>{messages.note}</span></p>
+    <p class="keyboard-tool__sr" data-keyboard-accessible-summary>{messages.initialSummary}</p>
   </div>
 </ToolShell>
 
 <script>
   import { mountKeyboardPageCapture } from '../../../browser/keyboard-page-capture';
+  import { readSerializedMessages, type ToolRuntimeMessages } from '../../../i18n/runtime';
   import { mountKeyboardTester } from './keyboard-tester-controller';
-
   const root = document.querySelector<HTMLElement>('[data-keyboard-tester]');
   if (root) {
+    const messages = readSerializedMessages<ToolRuntimeMessages<'keyboardTester'>>(root);
     const capture = mountKeyboardPageCapture(root);
-    const controller = mountKeyboardTester(root);
-    window.addEventListener('pagehide', (event) => {
-      if (event.persisted) {
-        controller.stop();
-        return;
-      }
-      capture.destroy();
-      controller.destroy();
-    });
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) {
-        controller.start();
-        capture.capture(false);
-      }
-    });
+    const controller = mountKeyboardTester(root, messages);
+    window.addEventListener('pagehide', (event) => { if (event.persisted) { controller.stop(); return; } capture.destroy(); controller.destroy(); });
+    window.addEventListener('pageshow', (event) => { if (event.persisted) { controller.start(); capture.capture(false); } });
   }
 </script>
 
 <style>
-  .keyboard-tool {
-    display: grid;
-    gap: var(--space-4);
-    outline-offset: 2px;
-  }
-
-  .keyboard-tool__status-row {
-    min-height: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    color: var(--color-muted);
-    font-size: 0.85rem;
-  }
-
-  .keyboard-tool__status-row strong {
-    color: var(--color-text);
-    font-size: 0.9rem;
-  }
-
-  .keyboard-tool__status-note {
-    margin-left: auto;
-  }
-
-  .keyboard-tool__signal {
-    width: 0.55rem;
-    height: 0.55rem;
-    flex: 0 0 auto;
-    border: 1px solid var(--color-signal);
-    border-radius: 50%;
-    background: var(--color-signal);
-  }
-
-  .keyboard-tool[data-state='unavailable'] .keyboard-tool__signal {
-    border-color: #8c5555;
-    background: #b36a6a;
-  }
-
-  .keyboard-tool__instruction,
-  .keyboard-tool__note {
-    margin: 0;
-  }
-
-  .keyboard-tool__instruction {
-    font-size: 0.95rem;
-  }
-
-  .keyboard-tool__visual-wrap {
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 0.2rem;
-  }
-
-  .keyboard-tool[data-capture-active='false'] .keyboard-tool__visual-wrap {
-    opacity: 0.82;
-  }
-
-  .keyboard-tool__results {
-    display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(7rem, 0.55fr);
-    gap: var(--space-4);
-    padding-top: var(--space-3);
-    border-top: 1px solid #e3e6e7;
-  }
-
-  .keyboard-result {
-    min-width: 0;
-    display: grid;
-    gap: 0.25rem;
-  }
-
-  .keyboard-result span {
-    color: var(--color-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.055em;
-  }
-
-  .keyboard-result strong {
-    min-width: 0;
-    overflow: hidden;
-    color: #aeb4b7;
-    font-size: clamp(1.35rem, 3vw, 2rem);
-    line-height: 1.1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .keyboard-tool[data-state='detected'] .keyboard-result--primary strong {
-    color: var(--color-signal);
-  }
-
-  .keyboard-tool__note {
-    color: var(--color-muted);
-    font-size: 0.78rem;
-  }
-
-  .keyboard-tool__mobile-hint {
-    display: none;
-  }
-
-  .keyboard-tool__sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  @media (max-width: 44rem) {
-    .keyboard-tool__status-row {
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .keyboard-tool__status-note {
-      width: 100%;
-      margin-left: 1.1rem;
-    }
-
-    .keyboard-tool__results {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .keyboard-result--primary {
-      grid-column: 1 / -1;
-    }
-
-    .keyboard-tool__mobile-hint {
-      display: inline;
-    }
-  }
+  .keyboard-tool { display: grid; gap: var(--space-4); outline-offset: 2px; }
+  .keyboard-tool__status-row { min-height: 1.5rem; display: flex; align-items: center; gap: 0.55rem; color: var(--color-muted); font-size: 0.85rem; }
+  .keyboard-tool__status-row strong { color: var(--color-text); font-size: 0.9rem; }
+  .keyboard-tool__status-note { margin-left: auto; }
+  .keyboard-tool__signal { width: 0.55rem; height: 0.55rem; flex: 0 0 auto; border: 1px solid var(--color-signal); border-radius: 50%; background: var(--color-signal); }
+  .keyboard-tool[data-state='unavailable'] .keyboard-tool__signal { border-color: #8c5555; background: #b36a6a; }
+  .keyboard-tool__instruction, .keyboard-tool__note { margin: 0; }
+  .keyboard-tool__instruction { font-size: 0.95rem; }
+  .keyboard-tool__visual-wrap { max-width: 100%; overflow-x: auto; padding: 0.2rem; }
+  .keyboard-tool[data-capture-active='false'] .keyboard-tool__visual-wrap { opacity: 0.82; }
+  .keyboard-tool__results { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(7rem, 0.55fr); gap: var(--space-4); padding-top: var(--space-3); border-top: 1px solid #e3e6e7; }
+  .keyboard-result { min-width: 0; display: grid; gap: 0.25rem; }
+  .keyboard-result span { color: var(--color-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.055em; }
+  .keyboard-result strong { min-width: 0; overflow: hidden; color: #aeb4b7; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+  .keyboard-tool[data-state='detected'] .keyboard-result--primary strong { color: var(--color-signal); }
+  .keyboard-tool__note { color: var(--color-muted); font-size: 0.78rem; }
+  .keyboard-tool__mobile-hint { display: none; }
+  .keyboard-tool__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 44rem) { .keyboard-tool__status-row { align-items: flex-start; flex-wrap: wrap; } .keyboard-tool__status-note { width: 100%; margin-left: 1.1rem; } .keyboard-tool__results { grid-template-columns: 1fr 1fr; } .keyboard-result--primary { grid-column: 1 / -1; } .keyboard-tool__mobile-hint { display: inline; } }
 </style>
