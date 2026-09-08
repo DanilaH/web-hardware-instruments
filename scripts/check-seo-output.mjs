@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const rootDir = dirname(fileURLToPath(import.meta.url));
 const distDir = process.env.SEO_DIST_DIR ?? join(rootDir, '..', 'dist');
-const expectedHreflangs = new Set(['en', 'pt-BR', 'de', 'fr', 'es', 'ru', 'x-default']);
+const expectedLocaleHreflangs = new Set(['en', 'pt-BR', 'de', 'fr', 'es', 'ru']);
+const expectedHreflangs = new Set([...expectedLocaleHreflangs, 'x-default']);
 
 const fail = (message) => {
   throw new Error(`[seo-output] ${message}`);
@@ -54,10 +55,12 @@ const extractAlternates = (html, rel) => {
     const href = extractAttribute(tag, 'href');
     if (!hreflang || !href) fail(`${rel} has an alternate link without hreflang or href`);
     if (alternates.has(hreflang)) fail(`${rel} has duplicate hreflang ${hreflang}`);
-    if (hrefs.has(href)) fail(`${rel} points multiple hreflangs at the same alternate URL: ${href}`);
+    if (hrefs.has(href) && hreflang !== 'x-default') {
+      fail(`${rel} points multiple locale hreflangs at the same alternate URL: ${href}`);
+    }
 
     alternates.set(hreflang, href);
-    hrefs.add(href);
+    if (hreflang !== 'x-default') hrefs.add(href);
   }
 
   return alternates;
@@ -198,6 +201,7 @@ for (const htmlFile of htmlFiles) {
 
   const lang = extractHtmlLang(html);
   if (!lang) fail(`${rel} is missing html lang`);
+  if (!expectedLocaleHreflangs.has(lang)) fail(`${rel} uses unsupported html lang ${lang}`);
 
   const title = normalizeVisibleText(extractTitle(html));
   const description = normalizeVisibleText(extractMetaDescription(html));
@@ -216,7 +220,6 @@ for (const htmlFile of htmlFiles) {
   for (const hreflang of alternates.keys()) {
     if (!expectedHreflangs.has(hreflang)) fail(`${rel} exposes unexpected hreflang ${hreflang}`);
   }
-  if (!expectedHreflangs.has(lang)) fail(`${rel} uses unsupported html lang ${lang}`);
   if (alternates.get(lang) !== canonical) {
     fail(`${rel} self hreflang ${lang} must equal its canonical URL`);
   }
