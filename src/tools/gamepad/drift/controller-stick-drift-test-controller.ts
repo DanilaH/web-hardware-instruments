@@ -3,6 +3,8 @@ import {
   type GamepadServiceState,
   type GamepadSnapshot,
 } from '../../../browser/gamepad-service';
+import type { ControllerFlowMessages } from '../../../i18n/runtime/controller-flow';
+import { formatMessage, type ToolRuntimeMessages } from '../../../i18n/runtime';
 import { StickDriftPlotRenderer } from '../../../visuals/controller/stick-drift-plot-renderer';
 import { getStandardStickPositions } from '../gamepad-stick-adapter';
 import type { StickPosition } from '../stick-position';
@@ -17,30 +19,27 @@ export interface ControllerStickDriftToolController {
   destroy(): void;
 }
 
-type ToolState = 'waiting' | 'ready' | 'sampling' | 'result' | 'cancelled' | 'unavailable';
-type PresentationKey =
-  | 'waiting'
-  | 'ready'
-  | 'sampling'
-  | 'result'
-  | 'cancelled'
-  | 'mapping'
-  | 'unsupported'
-  | 'error';
+export interface ControllerStickDriftMessages {
+  common: ToolRuntimeMessages<'gamepadTester'>;
+  tool: ToolRuntimeMessages<'stickDrift'>;
+  flow: ControllerFlowMessages['stickDrift'];
+}
 
+type ToolState = 'waiting' | 'ready' | 'sampling' | 'result' | 'cancelled' | 'unavailable';
+type PresentationKey = 'waiting' | 'ready' | 'sampling' | 'result' | 'cancelled' | 'mapping' | 'unsupported' | 'error';
 const SAMPLE_DURATION_MS = 3_000;
 
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
-  if (!element) {
-    throw new Error(`Controller Stick Drift Test is missing ${selector}`);
-  }
+  if (!element) throw new Error(`Controller Stick Drift Test is missing ${selector}`);
   return element;
 };
 
 export const mountControllerStickDriftTest = (
   root: HTMLElement,
+  messages: ControllerStickDriftMessages,
 ): ControllerStickDriftToolController => {
+  const { common, tool, flow } = messages;
   const status = requireElement<HTMLElement>(root, '[data-drift-status]');
   const instruction = requireElement<HTMLElement>(root, '[data-drift-instruction]');
   const statusLive = requireElement<HTMLElement>(root, '[data-drift-status-live]');
@@ -58,7 +57,6 @@ export const mountControllerStickDriftTest = (
   const service = createGamepadService();
   const leftRenderer = new StickDriftPlotRenderer(leftPlotRoot);
   const rightRenderer = new StickDriftPlotRenderer(rightPlotRoot);
-
   let destroyed = false;
   let toolState: ToolState = 'waiting';
   let selectedSourceIndex: number | null = null;
@@ -68,19 +66,10 @@ export const mountControllerStickDriftTest = (
   let leftSamples: StickPosition[] = [];
   let rightSamples: StickPosition[] = [];
 
-  const setPresentation = (
-    key: PresentationKey,
-    state: ToolState,
-    statusText: string,
-    instructionText: string,
-  ): void => {
+  const setPresentation = (key: PresentationKey, state: ToolState, statusText: string, instructionText: string): void => {
     toolState = state;
     root.dataset.state = state;
-
-    if (lastPresentation === key) {
-      return;
-    }
-
+    if (lastPresentation === key) return;
     status.textContent = statusText;
     instruction.textContent = instructionText;
     statusLive.textContent = `${statusText}. ${instructionText}`;
@@ -93,7 +82,7 @@ export const mountControllerStickDriftTest = (
     rightSamples = [];
     resultLeft.textContent = '—';
     resultRight.textContent = '—';
-    progress.textContent = '3-second sample';
+    progress.textContent = flow.sampleLabel;
     leftRenderer.reset();
     rightRenderer.reset();
   };
@@ -102,19 +91,14 @@ export const mountControllerStickDriftTest = (
     const signature = gamepads.map((gamepad) => gamepad.sourceIndex).join(',');
     if (signature !== lastControllerListSignature) {
       lastControllerListSignature = signature;
-      selector.replaceChildren(
-        ...gamepads.map((_, index) => {
-          const option = document.createElement('option');
-          option.value = String(index);
-          option.textContent = `Controller ${index + 1}`;
-          return option;
-        }),
-      );
+      selector.replaceChildren(...gamepads.map((_, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = formatMessage(common.controllerOption, { number: index + 1 });
+        return option;
+      }));
     }
-
-    const selectedIndex = gamepads.findIndex(
-      (gamepad) => gamepad.sourceIndex === selectedSourceIndex,
-    );
+    const selectedIndex = gamepads.findIndex((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
     selector.selectedIndex = selectedIndex >= 0 ? selectedIndex : 0;
     selectorWrap.hidden = gamepads.length <= 1;
     selector.disabled = toolState === 'sampling';
@@ -122,15 +106,9 @@ export const mountControllerStickDriftTest = (
 
   const selectFirstAvailable = (gamepads: readonly GamepadSnapshot[]): GamepadSnapshot => {
     const selected = gamepads.find((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
-    if (selected) {
-      return selected;
-    }
-
+    if (selected) return selected;
     const first = gamepads[0];
-    if (!first) {
-      throw new Error('Expected a visible controller');
-    }
-
+    if (!first) throw new Error('Expected a visible controller');
     selectedSourceIndex = first.sourceIndex;
     service.setActiveGamepad(first.sourceIndex);
     return first;
@@ -141,16 +119,11 @@ export const mountControllerStickDriftTest = (
     lastControllerListSignature = '';
     selectorWrap.hidden = true;
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
+    startButton.textContent = tool.start;
     limitation.hidden = true;
     clearMeasurement();
-    setPresentation(
-      'waiting',
-      'waiting',
-      'No controller detected',
-      'Connect a controller and press any button.',
-    );
-    accessibleSummary.textContent = 'No controller detected. Connect a controller and press any button.';
+    setPresentation('waiting', 'waiting', common.noController, common.connectInstruction);
+    accessibleSummary.textContent = `${common.noController}. ${common.connectInstruction}`;
   };
 
   const renderApiUnavailable = (kind: 'unsupported' | 'error'): void => {
@@ -158,16 +131,12 @@ export const mountControllerStickDriftTest = (
     service.setActiveGamepad(null);
     selectorWrap.hidden = true;
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
-    limitation.hidden = false;
+    startButton.textContent = tool.start;
     clearMeasurement();
-
     const unsupported = kind === 'unsupported';
-    const statusText = unsupported ? 'Gamepad API unavailable' : 'Gamepad access unavailable';
-    const instructionText = unsupported
-      ? 'This browser does not expose the Gamepad API.'
-      : 'Gamepad access is blocked or unavailable in this browser context.';
-
+    const statusText = unsupported ? common.apiUnavailable : common.accessUnavailable;
+    const instructionText = unsupported ? common.apiUnavailableInstruction : common.accessUnavailableInstruction;
+    limitation.hidden = false;
     limitation.textContent = instructionText;
     setPresentation(kind, 'unavailable', statusText, instructionText);
     accessibleSummary.textContent = `${statusText}. ${instructionText}`;
@@ -176,20 +145,12 @@ export const mountControllerStickDriftTest = (
   const renderMappingUnavailable = (gamepad: GamepadSnapshot, gamepads: readonly GamepadSnapshot[]): void => {
     rebuildSelector(gamepads);
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
+    startButton.textContent = tool.start;
     limitation.hidden = false;
-    limitation.textContent =
-      'Stick Drift requires the browser standard gamepad mapping. This controller is not measured because physical stick axes would otherwise be guessed.';
+    limitation.textContent = flow.mappingLimitation;
     clearMeasurement();
-    setPresentation(
-      'mapping',
-      'unavailable',
-      'Standard mapping required',
-      'Select a standard-mapped controller to run the stick drift test.',
-    );
-    accessibleSummary.textContent =
-      'Stick Drift is unavailable for the selected controller because it does not expose a complete standard gamepad mapping.';
-
+    setPresentation('mapping', 'unavailable', tool.unavailable, flow.mappingInstruction);
+    accessibleSummary.textContent = flow.mappingSummary;
     const positions = getStandardStickPositions(gamepad);
     if (positions) {
       leftRenderer.render(positions.left, false);
@@ -203,47 +164,28 @@ export const mountControllerStickDriftTest = (
       renderMappingUnavailable(gamepad, gamepads);
       return;
     }
-
     rebuildSelector(gamepads);
     selector.disabled = false;
     startButton.disabled = false;
-    startButton.textContent = toolState === 'result' ? 'Test again' : 'Start test';
-    limitation.hidden = true;
+    startButton.textContent = toolState === 'result' ? tool.testAgain : tool.start;
+    limitation.hidden = toolState !== 'cancelled';
     leftRenderer.render(positions.left, false);
     rightRenderer.render(positions.right, false);
-
-    if (toolState === 'result' || toolState === 'cancelled') {
-      return;
-    }
-
-    setPresentation(
-      'ready',
-      'ready',
-      'Ready to test',
-      'Release both sticks and keep them untouched.',
-    );
-    accessibleSummary.textContent =
-      'Controller ready. Release both sticks and keep them untouched, then start the test.';
+    if (toolState === 'result' || toolState === 'cancelled') return;
+    setPresentation('ready', 'ready', tool.statusReady, flow.readyInstruction);
+    accessibleSummary.textContent = `${tool.readySummary} ${flow.readyInstruction}`;
   };
 
-  const cancelMeasurement = (message: string): void => {
-    if (toolState !== 'sampling') {
-      return;
-    }
-
+  const cancelMeasurement = (reason: string): void => {
+    if (toolState !== 'sampling') return;
     clearMeasurement();
     selector.disabled = false;
     startButton.disabled = false;
-    startButton.textContent = 'Start again';
+    startButton.textContent = tool.start;
     limitation.hidden = false;
-    limitation.textContent = message;
-    setPresentation(
-      'cancelled',
-      'cancelled',
-      'Test cancelled',
-      'Release both sticks and start again when the controller is ready.',
-    );
-    accessibleSummary.textContent = `Stick drift test cancelled. ${message}`;
+    limitation.textContent = reason;
+    setPresentation('cancelled', 'cancelled', tool.cancelled, flow.cancelledInstruction);
+    accessibleSummary.textContent = `${tool.cancelled}. ${reason} ${flow.cancelledInstruction}`;
   };
 
   const finishMeasurement = (): void => {
@@ -251,124 +193,81 @@ export const mountControllerStickDriftTest = (
     sampleStartedAt = null;
     selector.disabled = false;
     startButton.disabled = false;
-    startButton.textContent = 'Test again';
-    progress.textContent = '3-second sample complete';
-
+    startButton.textContent = tool.testAgain;
+    progress.textContent = flow.sampleComplete;
     if (!result) {
       clearMeasurement();
       limitation.hidden = false;
-      limitation.textContent = 'No usable stick samples were captured. Start the test again.';
-      setPresentation(
-        'cancelled',
-        'cancelled',
-        'Test cancelled',
-        'No usable stick samples were captured. Start again.',
-      );
-      accessibleSummary.textContent = 'Stick drift test cancelled because no usable samples were captured.';
+      limitation.textContent = flow.noSamples;
+      setPresentation('cancelled', 'cancelled', tool.cancelled, flow.noSamplesInstruction);
+      accessibleSummary.textContent = flow.noSamplesSummary;
       return;
     }
-
     const leftText = formatCenterOffsetPercent(result.left.centerOffset);
     const rightText = formatCenterOffsetPercent(result.right.centerOffset);
+    const resultSummary = formatMessage(tool.resultSummary, {
+      left: (result.left.centerOffset * 100).toFixed(1),
+      right: (result.right.centerOffset * 100).toFixed(1),
+    });
     resultLeft.textContent = leftText;
     resultRight.textContent = rightText;
     limitation.hidden = true;
-    setPresentation(
-      'result',
-      'result',
-      'Measurement complete',
-      'Observed center offset is shown for each stick.',
-    );
-    accessibleSummary.textContent =
-      `Stick drift measurement complete. Left stick observed center offset ${leftText}. ` +
-      `Right stick observed center offset ${rightText}.`;
+    setPresentation('result', 'result', tool.complete, flow.resultInstruction);
+    accessibleSummary.textContent = resultSummary;
   };
 
   const renderSampling = (gamepad: GamepadSnapshot): void => {
     const positions = getStandardStickPositions(gamepad);
     if (!positions || sampleStartedAt === null) {
-      cancelMeasurement('The selected controller can no longer provide standard stick axes.');
+      cancelMeasurement(flow.mappingLost);
       return;
     }
-
     leftSamples.push(positions.left);
     rightSamples.push(positions.right);
     leftRenderer.render(positions.left, true);
     rightRenderer.render(positions.right, true);
-
     const elapsed = performance.now() - sampleStartedAt;
     const remainingSeconds = Math.max(0, SAMPLE_DURATION_MS - elapsed) / 1_000;
-    progress.textContent = `${remainingSeconds.toFixed(1)} s remaining`;
-
-    if (elapsed >= SAMPLE_DURATION_MS) {
-      finishMeasurement();
-    }
+    progress.textContent = formatMessage(tool.remaining, { seconds: remainingSeconds.toFixed(1) });
+    if (elapsed >= SAMPLE_DURATION_MS) finishMeasurement();
   };
 
   const renderState = (state: GamepadServiceState): void => {
-    if (destroyed || state.status === 'idle') {
-      return;
-    }
-
+    if (destroyed || state.status === 'idle') return;
     if (state.status === 'unsupported' || state.status === 'error') {
-      if (toolState === 'sampling') {
-        cancelMeasurement('Gamepad access became unavailable during the sample.');
-      }
+      if (toolState === 'sampling') cancelMeasurement(flow.accessLost);
       renderApiUnavailable(state.status);
       return;
     }
-
     if (state.gamepads.length === 0) {
-      if (toolState === 'sampling') {
-        cancelMeasurement('The controller disconnected during the sample.');
-      }
+      if (toolState === 'sampling') cancelMeasurement(flow.disconnected);
       service.setActiveGamepad(null);
       renderWaiting();
       return;
     }
-
-    if (
-      toolState === 'sampling' &&
-      selectedSourceIndex !== null &&
-      !state.gamepads.some((gamepad) => gamepad.sourceIndex === selectedSourceIndex)
-    ) {
-      cancelMeasurement('The selected controller disconnected during the sample.');
+    if (toolState === 'sampling' && selectedSourceIndex !== null && !state.gamepads.some((gamepad) => gamepad.sourceIndex === selectedSourceIndex)) {
+      cancelMeasurement(flow.selectedDisconnected);
     }
-
     const selected = selectFirstAvailable(state.gamepads);
     rebuildSelector(state.gamepads);
-
     if (toolState === 'sampling') {
       renderSampling(selected);
       return;
     }
-
     renderReady(selected, state.gamepads);
   };
 
   const handleStart = (): void => {
-    if (destroyed || toolState === 'sampling') {
-      return;
-    }
-
+    if (destroyed || toolState === 'sampling') return;
     const state = service.getState();
-    if (state.status !== 'ready') {
-      return;
-    }
-
-    const selected = state.gamepads.find(
-      (gamepad) => gamepad.sourceIndex === selectedSourceIndex,
-    );
-    if (!selected) {
-      return;
-    }
-
+    if (state.status !== 'ready') return;
+    const selected = state.gamepads.find((gamepad) => gamepad.sourceIndex === selectedSourceIndex);
+    if (!selected) return;
     const positions = getStandardStickPositions(selected);
     if (!positions) {
       renderMappingUnavailable(selected, state.gamepads);
       return;
     }
-
     leftSamples = [positions.left];
     rightSamples = [positions.right];
     sampleStartedAt = performance.now();
@@ -381,32 +280,18 @@ export const mountControllerStickDriftTest = (
     rightRenderer.render(positions.right, true);
     selector.disabled = true;
     startButton.disabled = true;
-    startButton.textContent = 'Testing…';
-    progress.textContent = '3.0 s remaining';
-    setPresentation(
-      'sampling',
-      'sampling',
-      'Sampling stick centers',
-      'Keep both sticks untouched for 3 seconds.',
-    );
-    accessibleSummary.textContent = 'Stick drift sampling is active. Keep both sticks untouched for 3 seconds.';
+    startButton.textContent = flow.testingButton;
+    progress.textContent = formatMessage(tool.remaining, { seconds: '3.0' });
+    setPresentation('sampling', 'sampling', tool.testing, flow.samplingInstruction);
+    accessibleSummary.textContent = `${tool.testing}. ${flow.samplingInstruction}`;
   };
 
   const handleSelectorChange = (): void => {
-    if (toolState === 'sampling') {
-      return;
-    }
-
+    if (toolState === 'sampling') return;
     const state = service.getState();
-    if (state.status !== 'ready') {
-      return;
-    }
-
+    if (state.status !== 'ready') return;
     const selected = state.gamepads[selector.selectedIndex];
-    if (!selected) {
-      return;
-    }
-
+    if (!selected) return;
     selectedSourceIndex = selected.sourceIndex;
     clearMeasurement();
     lastPresentation = null;
@@ -416,9 +301,7 @@ export const mountControllerStickDriftTest = (
   };
 
   const handleVisibilityChange = (): void => {
-    if (document.visibilityState !== 'visible' && toolState === 'sampling') {
-      cancelMeasurement('The page became hidden during the sample.');
-    }
+    if (document.visibilityState !== 'visible' && toolState === 'sampling') cancelMeasurement(flow.pageHidden);
   };
 
   selector.addEventListener('change', handleSelectorChange);
@@ -428,24 +311,14 @@ export const mountControllerStickDriftTest = (
   service.start();
 
   return {
-    start: () => {
-      if (!destroyed) {
-        service.start();
-      }
-    },
+    start: () => { if (!destroyed) service.start(); },
     stop: () => {
-      if (destroyed) {
-        return;
-      }
-      if (toolState === 'sampling') {
-        cancelMeasurement('The measurement was stopped before the sample completed.');
-      }
+      if (destroyed) return;
+      if (toolState === 'sampling') cancelMeasurement(flow.stopped);
       service.stop();
     },
     destroy: () => {
-      if (destroyed) {
-        return;
-      }
+      if (destroyed) return;
       destroyed = true;
       selector.removeEventListener('change', handleSelectorChange);
       startButton.removeEventListener('click', handleStart);

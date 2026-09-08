@@ -1,204 +1,63 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import StandardMouseVisual from '../../../visuals/mouse/StandardMouseVisual.astro';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getRuntimeMessages(locale).doubleClick;
 ---
 
 <ToolShell labelledBy="double-heading">
-  <h2 id="double-heading" class="sr-only">Double Click Test</h2>
-
-  <div class="double-test" data-double-click-test>
-    <div class="status">
-      <span aria-hidden="true"></span>
-      <strong data-double-status role="status" aria-live="polite">Listening for slow clicks</strong>
-    </div>
-
-    <p class="instruction">Click slowly, once at a time. Do not intentionally double-click.</p>
-
+  <h2 id="double-heading" class="sr-only">{messages.controlsHeading}</h2>
+  <div class="double-test" data-double-click-test data-messages={JSON.stringify(messages)}>
+    <div class="status"><span aria-hidden="true"></span><strong data-double-status role="status" aria-live="polite">{messages.listening}</strong></div>
+    <p class="instruction">{messages.instruction}</p>
     <div class="surface" data-double-surface>
-      <div class="visual">
-        <StandardMouseVisual />
-      </div>
-
+      <div class="visual"><StandardMouseVisual /></div>
       <div class="results">
-        <div class="result-heading tool-result-heading">
-          <span>Browser-detected click timing</span>
-          <button type="button" class="mouse-reset tool-action tool-action--quiet" data-double-reset>Reset</button>
-        </div>
-
+        <div class="result-heading tool-result-heading"><span>{messages.resultHeading}</span><button type="button" class="mouse-reset tool-action tool-action--quiet" data-double-reset>{messages.reset}</button></div>
         <div class="metrics">
-          <div>
-            <span>Total presses</span>
-            <strong data-double-total>0</strong>
-          </div>
-          <div>
-            <span>Rapid repeat events</span>
-            <strong data-double-rapid>0</strong>
-          </div>
-          <div>
-            <span>Shortest same-button gap</span>
-            <strong data-double-shortest>—</strong>
-          </div>
-          <div>
-            <span>Last same-button gap</span>
-            <strong data-double-last>—</strong>
-          </div>
+          <div><span>{messages.totalPresses}</span><strong data-double-total>0</strong></div>
+          <div><span>{messages.rapidRepeatEvents}</span><strong data-double-rapid>0</strong></div>
+          <div><span>{messages.shortestGap}</span><strong data-double-shortest>—</strong></div>
+          <div><span>{messages.lastGap}</span><strong data-double-last>—</strong></div>
         </div>
       </div>
     </div>
-
-    <p class="note">
-      A gap of 50 ms or less is flagged as an unusually fast same-button repeat. This heuristic is not a hardware standard and does not prove switch chatter.
-    </p>
+    <p class="note">{messages.note}</p>
   </div>
 </ToolShell>
 
 <script>
+  import { readSerializedMessages, type ToolRuntimeMessages } from '../../../i18n/runtime';
   import { mountDoubleClickTest } from './double-click-controller';
-
   const root = document.querySelector<HTMLElement>('[data-double-click-test]');
   if (root) {
-    const controller = mountDoubleClickTest(root);
-    window.addEventListener('pagehide', (event) =>
-      event.persisted ? controller.stop() : controller.destroy(),
-    );
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) controller.start();
-    });
+    const messages = readSerializedMessages<ToolRuntimeMessages<'doubleClick'>>(root);
+    const controller = mountDoubleClickTest(root, messages);
+    window.addEventListener('pagehide', (event) => event.persisted ? controller.stop() : controller.destroy());
+    window.addEventListener('pageshow', (event) => { if (event.persisted) controller.start(); });
   }
 </script>
 
 <style>
-  .double-test {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    color: var(--color-muted);
-    font-size: 0.88rem;
-  }
-
-  .status span {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: var(--color-signal);
-  }
-
-  .instruction,
-  .note {
-    margin: 0;
-  }
-
-  .surface {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
-    gap: var(--space-5);
-    padding: var(--space-4);
-    border: 1px solid #e3e6e7;
-    background: #fafbfb;
-    user-select: none;
-  }
-
-  .visual {
-    display: grid;
-    align-content: center;
-  }
-
-  .results {
-    display: grid;
-    align-content: center;
-    gap: var(--space-3);
-    padding-left: var(--space-5);
-    border-left: 1px solid #dfe3e4;
-  }
-
-  .result-heading > span {
-    color: var(--color-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-
-  .metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-  }
-
-  .metrics > div {
-    display: grid;
-    gap: 0.25rem;
-    padding: var(--space-3);
-    border: 1px solid #e2e5e6;
-    background: #fff;
-  }
-
-  .metrics span {
-    color: var(--color-muted);
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .metrics strong {
-    font: 600 1.05rem var(--font-mono);
-  }
-
-  .note {
-    color: var(--color-muted);
-    font-size: 0.75rem;
-    line-height: 1.45;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-  }
-
-  @media (max-width: 48rem) {
-    .surface {
-      grid-template-columns: 1fr;
-    }
-
-    .results {
-      padding: var(--space-4) 0 0;
-      border-left: 0;
-      border-top: 1px solid #dfe3e4;
-    }
-  }
-
-  @media (max-width: 40rem) {
-    .surface {
-      padding: var(--space-3);
-    }
-
-    .metrics {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-2);
-    }
-
-    .metrics > div {
-      min-width: 0;
-      padding: 0.65rem;
-    }
-
-    .metrics span {
-      font-size: 0.64rem;
-      line-height: 1.3;
-    }
-  }
-
-  @media (max-width: 22rem) {
-    .status {
-      min-block-size: 2.65rem;
-    }
-  }
+  .double-test { display: grid; gap: var(--space-4); }
+  .status { display: flex; align-items: center; gap: 0.55rem; color: var(--color-muted); font-size: 0.88rem; }
+  .status span { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--color-signal); }
+  .instruction, .note { margin: 0; }
+  .surface { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr); gap: var(--space-5); padding: var(--space-4); border: 1px solid #e3e6e7; background: #fafbfb; user-select: none; }
+  .visual { display: grid; align-content: center; }
+  .results { display: grid; align-content: center; gap: var(--space-3); padding-left: var(--space-5); border-left: 1px solid #dfe3e4; }
+  .result-heading > span { color: var(--color-muted); font-size: 0.72rem; font-weight: 600; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .metrics > div { display: grid; gap: 0.25rem; padding: var(--space-3); border: 1px solid #e2e5e6; background: #fff; }
+  .metrics span { color: var(--color-muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+  .metrics strong { font: 600 1.05rem var(--font-mono); }
+  .note { color: var(--color-muted); font-size: 0.75rem; line-height: 1.45; }
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  @media (max-width: 48rem) { .surface { grid-template-columns: 1fr; } .results { padding: var(--space-4) 0 0; border-left: 0; border-top: 1px solid #dfe3e4; } }
+  @media (max-width: 40rem) { .surface { padding: var(--space-3); } .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); } .metrics > div { min-width: 0; padding: 0.65rem; } .metrics span { font-size: 0.64rem; line-height: 1.3; } }
+  @media (max-width: 22rem) { .status { min-block-size: 2.65rem; } }
 </style>

@@ -1,9 +1,21 @@
+---
+import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import { buildLocalizedPath } from '../../i18n/routing';
+
+interface Props {
+  locale?: ImplementedContentLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+const content = getSiteContent(locale);
+---
+
 <footer class="site-footer">
   <div class="site-footer__inner shell-width">
-    <span>Tests run in your browser. Input stays on this device.</span>
-    <nav aria-label="Footer navigation">
-      <a href="/about">About</a>
-      <a href="/privacy">Privacy</a>
+    <span>{content.footer.privacyNote}</span>
+    <nav aria-label={content.footer.navigationAria}>
+      <a href={buildLocalizedPath(locale, '/about')}>{content.footer.about}</a>
+      <a href={buildLocalizedPath(locale, '/privacy')}>{content.footer.privacy}</a>
     </nav>
   </div>
 </footer>

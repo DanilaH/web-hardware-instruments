@@ -62,8 +62,8 @@ export class StickDeadzonePlotRenderer {
     this.root.dataset.result = 'true';
   }
 
-  setSideLabel(side: 'left' | 'right'): void {
-    this.label.textContent = side === 'left' ? 'Left stick' : 'Right stick';
+  setSideLabel(label: string): void {
+    this.label.textContent = label;
   }
 
   resetResult(): void {

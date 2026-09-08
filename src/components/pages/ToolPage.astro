@@ -1,0 +1,116 @@
+---
+import type { ToolId } from '../../config/tool-definitions';
+import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BacklightBleedTest from '../../tools/display/backlight-bleed/BacklightBleedTest.astro';
+import DeadPixelTest from '../../tools/display/dead-pixel/DeadPixelTest.astro';
+import FpsTest from '../../tools/display/fps/FpsTest.astro';
+import FrameSkippingTest from '../../tools/display/frame-skipping/FrameSkippingTest.astro';
+import RefreshRateTest from '../../tools/display/refresh-rate/RefreshRateTest.astro';
+import ControllerDeadzoneTest from '../../tools/gamepad/deadzone/ControllerDeadzoneTest.astro';
+import ControllerStickDriftTest from '../../tools/gamepad/drift/ControllerStickDriftTest.astro';
+import GamepadTester from '../../tools/gamepad/tester/GamepadTester.astro';
+import KeyboardGhostingTest from '../../tools/keyboard/ghosting/KeyboardGhostingTest.astro';
+import KeyboardRolloverTest from '../../tools/keyboard/rollover/KeyboardRolloverTest.astro';
+import KeyboardTester from '../../tools/keyboard/tester/KeyboardTester.astro';
+import DoubleClickTest from '../../tools/mouse/double-click/DoubleClickTest.astro';
+import MouseDpiTest from '../../tools/mouse/dpi/MouseDpiTest.astro';
+import MouseButtonTest from '../../tools/mouse/button/MouseButtonTest.astro';
+import MousePollingRateTest from '../../tools/mouse/polling/MousePollingRateTest.astro';
+import MouseScrollTest from '../../tools/mouse/scroll/MouseScrollTest.astro';
+import MouseTester from '../../tools/mouse/tester/MouseTester.astro';
+import TouchScreenTest from '../../tools/touch/tester/TouchScreenTest.astro';
+import RelatedTools from '../navigation/RelatedTools.astro';
+
+interface Props {
+  locale: ImplementedContentLocale;
+  toolId: ToolId;
+}
+
+const { locale, toolId } = Astro.props;
+const content = getSiteContent(locale).tools[toolId];
+const canonicalPath = `/${toolId}`;
+const toolComponents = {
+  'gamepad-tester': GamepadTester,
+  'controller-stick-drift-test': ControllerStickDriftTest,
+  'controller-deadzone-test': ControllerDeadzoneTest,
+  'mouse-tester': MouseTester,
+  'mouse-button-test': MouseButtonTest,
+  'mouse-scroll-test': MouseScrollTest,
+  'double-click-test': DoubleClickTest,
+  'mouse-polling-rate-test': MousePollingRateTest,
+  'mouse-dpi-test': MouseDpiTest,
+  'keyboard-tester': KeyboardTester,
+  'keyboard-rollover-test': KeyboardRolloverTest,
+  'keyboard-ghosting-test': KeyboardGhostingTest,
+  'fps-test': FpsTest,
+  'refresh-rate-test': RefreshRateTest,
+  'frame-skipping-test': FrameSkippingTest,
+  'dead-pixel-test': DeadPixelTest,
+  'backlight-bleed-test': BacklightBleedTest,
+  'touch-screen-test': TouchScreenTest,
+} as const;
+const ToolComponent = toolComponents[toolId];
+---
+
+<BaseLayout
+  title={content.seoTitle}
+  description={content.metaDescription}
+  canonicalPath={canonicalPath}
+  locale={locale}
+>
+  <section class="reading-width">
+    <h1 class="page-heading">{content.h1}</h1>
+    <p class="page-intro">{content.intro}</p>
+  </section>
+
+  <ToolComponent locale={locale} />
+
+  <section class="tool-content reading-width">
+    {content.sections.map((section, index) => (
+      <section aria-labelledby={`tool-content-${toolId}-${index}`}>
+        <h2 id={`tool-content-${toolId}-${index}`}>{section.heading}</h2>
+        {section.steps && (
+          <ol>
+            {section.steps.map((step) => <li set:html={step} />)}
+          </ol>
+        )}
+        {section.paragraphs?.map((paragraph) => <p set:html={paragraph} />)}
+      </section>
+    ))}
+  </section>
+
+  <RelatedTools locale={locale} toolId={toolId} />
+</BaseLayout>
+
+<style>
+  .tool-content {
+    margin-top: var(--space-7);
+    padding-bottom: var(--space-7);
+  }
+
+  .tool-content section + section {
+    margin-top: var(--space-6);
+  }
+
+  .tool-content h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+
+  .tool-content p,
+  .tool-content ol {
+    color: var(--color-muted);
+    line-height: 1.65;
+  }
+
+  .tool-content p {
+    margin: 0 0 var(--space-3);
+  }
+
+  .tool-content ol {
+    margin-block: 0;
+    padding-left: 1.25rem;
+  }
+</style>

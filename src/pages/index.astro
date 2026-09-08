@@ -1,53 +1,79 @@
 ---
 import ToolIcon from '../components/icons/ToolIcon.astro';
-import { allTools, toolGroups } from '../config/tools';
+import { getToolIdBySemanticPath } from '../config/tool-definitions';
+import { toolGroups } from '../config/tools';
+import { getSiteContent, type ImplementedContentLocale } from '../i18n/content';
+import { buildLocalizedPath } from '../i18n/routing';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const groups = toolGroups;
-const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as const;
+interface Props {
+  locale?: ImplementedContentLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+const siteContent = getSiteContent(locale);
+const content = siteContent.home;
+const groups = toolGroups.map((group) => ({
+  ...group,
+  name: siteContent.categories[group.channel],
+  tools: group.tools.map((tool) => {
+    const toolId = getToolIdBySemanticPath(tool.href);
+    if (!toolId) throw new Error(`Homepage tool is missing a definition for ${tool.href}`);
+    return {
+      ...tool,
+      href: buildLocalizedPath(locale, tool.href),
+      name: siteContent.tools[toolId].name,
+      description: siteContent.tools[toolId].shortDescription,
+    };
+  }),
+}));
+const columns = [groups.slice(0, 2), groups.slice(2)] as const;
+const facts = content.facts.split(' · ');
 ---
 
 <BaseLayout
-  title="Hardware Tests in Your Browser"
-  description="Lightweight browser-based hardware diagnostics. No install or account required."
+  title={content.seoTitle}
+  description={content.metaDescription}
   canonicalPath="/"
+  locale={locale}
   headerVariant="homepage"
 >
   <section class="home-hero">
     <div class="home-hero__copy">
-      <h1 class="page-heading">Hardware Tests in Your Browser</h1>
-      <p class="page-intro">
-        Focused diagnostics for controllers, mice, keyboards, displays, and touchscreens — built to show what the browser actually detects.
+      <h1 class="page-heading">{content.h1}</h1>
+      <p class="page-intro">{content.intro}</p>
+      <p class="home-facts">
+        {facts.map((fact, index) => (
+          <>{index > 0 && <span>·</span>}{fact}</>
+        ))}
       </p>
-      <p class="home-facts">{allTools.length} browser tests <span>·</span> no install <span>·</span> no account <span>·</span> input stays on this device</p>
     </div>
 
-    <div class="instrument-screen" aria-label="Hardware input is observed through browser APIs on this device">
+    <div class="instrument-screen" aria-label={content.boundaryAria}>
       <div class="instrument-screen__top">
-        <strong>Browser boundary</strong>
-        <span>Local observation</span>
+        <strong>{content.boundaryTitle}</strong>
+        <span>{content.boundaryLocal}</span>
       </div>
       <div class="instrument-screen__flow">
         <div class="instrument-screen__inputs" aria-hidden="true">
-          <span data-channel="controller"><ToolIcon kind="gamepad" size={16} /><b>Controller</b></span>
-          <span data-channel="mouse"><ToolIcon kind="mouse" size={16} /><b>Pointer</b></span>
-          <span data-channel="keyboard"><ToolIcon kind="keyboard" size={16} /><b>Keyboard</b></span>
-          <span data-channel="display"><ToolIcon kind="fps" size={16} /><b>Frames</b></span>
-          <span data-channel="touch"><ToolIcon kind="touch" size={16} /><b>Touch</b></span>
+          <span data-channel="controller"><ToolIcon kind="gamepad" size={16} /><b>{content.inputs[0]}</b></span>
+          <span data-channel="mouse"><ToolIcon kind="mouse" size={16} /><b>{content.inputs[1]}</b></span>
+          <span data-channel="keyboard"><ToolIcon kind="keyboard" size={16} /><b>{content.inputs[2]}</b></span>
+          <span data-channel="display"><ToolIcon kind="fps" size={16} /><b>{content.inputs[3]}</b></span>
+          <span data-channel="touch"><ToolIcon kind="touch" size={16} /><b>{content.inputs[4]}</b></span>
         </div>
         <div class="instrument-screen__api" aria-hidden="true">
-          <strong>Native browser APIs</strong>
-          <span>signals cross this boundary</span>
+          <strong>{content.boundarySignals}</strong>
         </div>
         <div class="instrument-screen__result" aria-hidden="true">
-          <strong>Observed on this device</strong>
-          <span>No input upload</span>
+          <strong>{content.boundaryObserved}</strong>
+          <span>{content.boundaryNoUpload}</span>
         </div>
       </div>
     </div>
   </section>
 
-  <nav class="category-rail" aria-label="Hardware categories">
+  <nav class="category-rail" aria-label={content.categoryAria}>
     {groups.map((group) => (
       <a href={`#${group.id}`} data-channel={group.channel}>
         <span class="category-rail__icon"><ToolIcon kind={group.icon} size={18} /></span>
@@ -59,8 +85,8 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
 
   <section class="home-tools" aria-labelledby="available-tools">
     <div class="home-tools__header">
-      <h2 id="available-tools">Choose a tool</h2>
-      <p>Each page does one job and explains what the browser can — and cannot — observe.</p>
+      <h2 id="available-tools">{content.chooseTool}</h2>
+      <p>{content.chooseToolIntro}</p>
     </div>
 
     <div class="tool-columns">
@@ -73,7 +99,7 @@ const columns = [[groups[0], groups[1]], [groups[2], groups[3], groups[4]]] as c
                 <span class="tool-group__icon" aria-hidden="true"><ToolIcon kind={group.icon} size={20} /></span>
                 <div>
                   <h3 id={`tool-group-${group.id}`}>{group.name}</h3>
-                  <p>{group.tools.length} {group.tools.length === 1 ? 'tool' : 'tools'}</p>
+                  <p>{group.tools.length} {group.tools.length === 1 ? content.toolCountSingle : content.toolCountPlural}</p>
                 </div>
               </header>
 

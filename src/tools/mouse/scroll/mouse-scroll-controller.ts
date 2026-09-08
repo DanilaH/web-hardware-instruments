@@ -1,26 +1,17 @@
 import { createMouseInputService } from '../../../browser/mouse-input-service';
-import {
-  createMouseScrollState,
-  observeWheel,
-  type ScrollDirection,
-} from './mouse-scroll-state';
+import type { ToolRuntimeMessages } from '../../../i18n/runtime';
+import { createMouseScrollState, observeWheel, type ScrollDirection } from './mouse-scroll-state';
 
-export interface MouseScrollController {
-  start(): void;
-  stop(): void;
-  destroy(): void;
-}
-
+export interface MouseScrollController { start(): void; stop(): void; destroy(): void; }
+type Messages = ToolRuntimeMessages<'mouseScroll'>;
 const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
   const element = root.querySelector<T>(selector);
   if (!element) throw new Error(`Mouse Scroll Test is missing ${selector}`);
   return element;
 };
+const symbol = (direction: ScrollDirection): string => direction === 'up' ? '↑' : direction === 'down' ? '↓' : direction === 'left' ? '←' : '→';
 
-const symbol = (direction: ScrollDirection): string =>
-  direction === 'up' ? '↑' : direction === 'down' ? '↓' : direction === 'left' ? '←' : '→';
-
-export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController => {
+export const mountMouseScrollTest = (root: HTMLElement, messages: Messages): MouseScrollController => {
   const surface = requireElement<HTMLElement>(root, '[data-scroll-surface]');
   const status = requireElement<HTMLElement>(root, '[data-scroll-status]');
   const strip = requireElement<HTMLElement>(root, '[data-scroll-strip]');
@@ -39,51 +30,21 @@ export const mountMouseScrollTest = (root: HTMLElement): MouseScrollController =
     down.textContent = String(state.down);
     left.textContent = String(state.left);
     right.textContent = String(state.right);
-    strip.textContent = state.recent.length
-      ? state.recent.map(symbol).join(' ')
-      : 'Scroll inside the area';
-    status.textContent = !available
-      ? 'Mouse input unavailable'
-      : state.recent.length
-        ? 'Wheel events detected'
-        : 'Listening for wheel events';
+    strip.textContent = state.recent.length ? state.recent.map(symbol).join(' ') : messages.scrollInside;
+    status.textContent = !available ? messages.unavailable : state.recent.length ? messages.detected : messages.listening;
   };
-
   const unsubscribe = service.subscribe((event) => {
     if (destroyed || event.type !== 'wheel') return;
     const next = observeWheel(state, event.deltaX, event.deltaY);
-    if (next !== state) {
-      state = next;
-      render();
-    }
+    if (next !== state) { state = next; render(); }
   });
-
-  const handleReset = (): void => {
-    state = createMouseScrollState();
-    render();
-  };
-
+  const handleReset = (): void => { state = createMouseScrollState(); render(); };
   reset.addEventListener('click', handleReset);
   available = service.start();
   render();
-
   return {
-    start: () => {
-      if (!destroyed) {
-        available = service.start();
-        render();
-      }
-    },
-    stop: () => {
-      if (!destroyed) service.stop();
-    },
-    destroy: () => {
-      if (!destroyed) {
-        destroyed = true;
-        reset.removeEventListener('click', handleReset);
-        unsubscribe();
-        service.destroy();
-      }
-    },
+    start: () => { if (!destroyed) { available = service.start(); render(); } },
+    stop: () => { if (!destroyed) service.stop(); },
+    destroy: () => { if (!destroyed) { destroyed = true; reset.removeEventListener('click', handleReset); unsubscribe(); service.destroy(); } },
   };
 };
