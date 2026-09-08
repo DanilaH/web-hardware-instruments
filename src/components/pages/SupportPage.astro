@@ -1,0 +1,27 @@
+---
+import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+type SupportPageId = 'about' | 'privacy';
+
+interface Props {
+  locale: ImplementedContentLocale;
+  page: SupportPageId;
+}
+
+const { locale, page } = Astro.props;
+const content = getSiteContent(locale)[page];
+---
+
+<BaseLayout
+  title={content.seoTitle}
+  description={content.metaDescription}
+  canonicalPath={`/${page}`}
+  locale={locale}
+>
+  <article class="reading-width">
+    <h1 class="page-heading">{content.h1}</h1>
+    <p class="page-intro">{content.intro}</p>
+    {content.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+  </article>
+</BaseLayout>

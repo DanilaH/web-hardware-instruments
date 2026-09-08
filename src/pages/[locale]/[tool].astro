@@ -1,0 +1,27 @@
+---
+import ToolPage from '../../components/pages/ToolPage.astro';
+import { toolIds, type ToolId } from '../../config/tool-definitions';
+import { implementedContentLocales, type ImplementedContentLocale } from '../../i18n/content';
+import { localeDefinitions } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return implementedContentLocales
+    .filter((locale) => locale !== 'en')
+    .flatMap((locale) => toolIds.map((toolId) => ({
+      params: {
+        locale: localeDefinitions[locale].routeSegment,
+        tool: toolId,
+      },
+      props: { locale, toolId },
+    })));
+}
+
+interface Props {
+  locale: ImplementedContentLocale;
+  toolId: ToolId;
+}
+
+const { locale, toolId } = Astro.props;
+---
+
+<ToolPage locale={locale} toolId={toolId} />
