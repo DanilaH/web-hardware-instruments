@@ -167,7 +167,7 @@ body[data-channel] .tool-shell {
 
 .tool-control,
 .tool-action {
-  block-size: var(--tool-control-height);
+  min-block-size: var(--tool-control-height);
   box-sizing: border-box;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -175,6 +175,7 @@ body[data-channel] .tool-shell {
 }
 
 .tool-control {
+  block-size: var(--tool-control-height);
   min-width: 0;
   padding-inline: var(--space-3);
   background: var(--color-surface);
@@ -186,11 +187,12 @@ body[data-channel] .tool-shell {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding-inline: var(--space-3);
+  padding: 0.45rem var(--space-3);
   background: var(--color-surface);
   color: var(--color-text);
   font-weight: 650;
-  line-height: 1;
+  line-height: 1.15;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -241,7 +243,25 @@ body[data-channel] {
   --color-signal: var(--channel);
 }
 
-/* Homepage-specific visibility treatment; shared channel values now live in tokens.css. */
+/* Homepage-specific visibility and legibility treatment. */
+.page-main--homepage .home-facts,
+.page-main--homepage .home-facts span {
+  color: #5f6966;
+}
+
+.page-main--homepage .instrument-screen__top span {
+  color: #808b87;
+}
+
+.page-main--homepage .category-rail small,
+.page-main--homepage .tool-group__header p {
+  color: #656d69;
+}
+
+.page-main--homepage .tool-link small {
+  color: #6b7370;
+}
+
 .page-main--homepage .category-rail a::after {
   right: 0;
   left: 0;
@@ -278,6 +298,73 @@ body[data-channel] {
 .page-main--homepage .instrument-screen__inputs span::after {
   height: 2px;
   opacity: 0.95;
+}
+
+body[data-channel] .page-main [data-mouse-button-test] .row:not([data-held='true']) strong {
+  color: var(--color-muted);
+}
+
+@media (max-width: 55rem) {
+  body[data-channel] .page-main [data-controller-deadzone-test] .deadzone-tool__layout {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-channel] .page-main [data-controller-deadzone-test] .deadzone-tool__layout .deadzone-plot {
+    max-width: 18rem;
+    margin-inline: auto;
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .dpi-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .mouse-tool__layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .mouse-controls {
+    padding: 0 0 var(--space-4);
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .mouse-measurement {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .dpi-result {
+    order: -1;
+    min-height: 5.5rem;
+    padding: 0 0 var(--space-4);
+    border-top: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .movement-panel {
+    padding-inline: var(--space-2);
+  }
+
+  body[data-channel] .page-main [data-mouse-dpi-test] .dpi-evidence {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-channel] .page-main [data-frame-skipping-test] .frame-skipping-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body[data-channel] .page-main [data-frame-skipping-test] .frame-skipping-steps li:last-child {
+    grid-column: 1 / -1;
+  }
+
+  body[data-channel] .page-main [data-frame-skipping-test] .frame-skipping-examples {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  body[data-channel] .page-main [data-frame-skipping-test] .frame-skipping-examples p {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 40rem) {
