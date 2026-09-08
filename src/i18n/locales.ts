@@ -64,8 +64,8 @@ export const localeDefinitions = {
 
 export const localizedLocales = locales.filter((locale): locale is Exclude<Locale, 'en'> => locale !== 'en');
 
-const localeByRouteSegment = new Map(
-  localizedLocales.map((locale) => [localeDefinitions[locale].routeSegment, locale] as const),
+const localeByRouteSegment = new Map<string, Exclude<Locale, 'en'>>(
+  localizedLocales.map((locale) => [localeDefinitions[locale].routeSegment, locale]),
 );
 
 export const isLocale = (value: string): value is Locale =>
