@@ -1,74 +1,100 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.astro';
+
+interface Props {
+  locale?: ImplementedContentLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+const runtime = getRuntimeMessages(locale);
+const messages = { common: runtime.gamepadTester, tool: runtime.deadzone };
+const { common, tool } = messages;
 ---
 
 <ToolShell labelledBy="controller-deadzone-tool-heading">
-  <h2 id="controller-deadzone-tool-heading" class="deadzone-tool__sr">Controller Deadzone Test</h2>
+  <h2 id="controller-deadzone-tool-heading" class="deadzone-tool__sr">{tool.controlsHeading}</h2>
 
-  <div class="deadzone-tool" data-controller-deadzone-test data-state="waiting">
+  <div
+    class="deadzone-tool"
+    data-controller-deadzone-test
+    data-messages={JSON.stringify(messages)}
+    data-state="waiting"
+  >
     <div class="deadzone-tool__topline">
       <div class="deadzone-tool__status-copy">
         <div class="deadzone-tool__status-row">
           <span class="deadzone-tool__signal" aria-hidden="true"></span>
-          <strong data-deadzone-status>No controller detected</strong>
+          <strong data-deadzone-status>{common.noController}</strong>
         </div>
-        <p data-deadzone-instruction>Connect a controller and press any button.</p>
+        <p data-deadzone-instruction>{common.connectInstruction}</p>
       </div>
 
       <label class="deadzone-tool__selector" data-deadzone-selector-wrap hidden>
-        <span>Controller</span>
-        <select class="tool-control" data-deadzone-selector aria-label="Select controller"></select>
+        <span>{tool.controllerLabel}</span>
+        <select class="tool-control" data-deadzone-selector aria-label={tool.controllerAria}></select>
       </label>
     </div>
 
     <div class="deadzone-tool__layout">
       <div class="deadzone-tool__controls">
         <fieldset class="stick-choice" data-deadzone-stick-choice disabled>
-          <legend>Stick</legend>
+          <legend>{tool.stickLabel}</legend>
           <label>
             <input type="radio" name="deadzone-stick" value="left" checked data-deadzone-stick />
-            <span>Left</span>
+            <span>{tool.leftStick}</span>
           </label>
           <label>
             <input type="radio" name="deadzone-stick" value="right" data-deadzone-stick />
-            <span>Right</span>
+            <span>{tool.rightStick}</span>
           </label>
         </fieldset>
 
         <div class="deadzone-results">
           <div class="deadzone-result">
-            <span>Observed center noise</span>
+            <span>{tool.observedNoise}</span>
             <strong class="measurement-value" data-deadzone-noise-result>—</strong>
           </div>
           <div class="deadzone-result">
-            <span>Suggested starting deadzone</span>
+            <span>{tool.suggested}</span>
             <strong class="measurement-value" data-deadzone-suggestion-result>—</strong>
           </div>
         </div>
 
-        <button type="button" class="primary-action" data-deadzone-start disabled>Start test</button>
-        <span class="deadzone-tool__progress" data-deadzone-progress>3-second sample</span>
+        <button type="button" class="primary-action" data-deadzone-start disabled>{tool.start}</button>
+        <span class="deadzone-tool__progress" data-deadzone-progress>3 s</span>
       </div>
 
-      <StickDeadzonePlot />
+      <StickDeadzonePlot
+        detailLabel={`${tool.observedNoise} · 20%`}
+        initialSideLabel={tool.leftStick}
+        observedNoiseLabel={tool.observedNoise}
+        suggestedLabel={tool.suggested}
+      />
     </div>
 
     <p class="deadzone-tool__limitation" data-deadzone-limitation hidden></p>
 
     <p class="deadzone-tool__sr" aria-live="polite" aria-atomic="true" data-deadzone-status-live></p>
     <p class="deadzone-tool__sr" data-deadzone-accessible-summary>
-      No controller detected. Connect a controller and press any button.
+      {common.noController}. {common.connectInstruction}
     </p>
   </div>
 </ToolShell>
 
 <script>
-  import { mountControllerDeadzoneTest } from './controller-deadzone-test-controller';
+  import { readSerializedMessages } from '../../../i18n/runtime';
+  import {
+    mountControllerDeadzoneTest,
+    type ControllerDeadzoneMessages,
+  } from './controller-deadzone-test-controller';
 
   const root = document.querySelector<HTMLElement>('[data-controller-deadzone-test]');
   if (root) {
-    const controller = mountControllerDeadzoneTest(root);
+    const messages = readSerializedMessages<ControllerDeadzoneMessages>(root);
+    const controller = mountControllerDeadzoneTest(root, messages);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
@@ -209,6 +235,8 @@ import StickDeadzonePlot from '../../../visuals/controller/StickDeadzonePlot.ast
     border-radius: var(--radius-sm);
     color: var(--color-muted);
     cursor: pointer;
+    padding-inline: var(--space-2);
+    text-align: center;
   }
 
   .stick-choice input:checked + span {

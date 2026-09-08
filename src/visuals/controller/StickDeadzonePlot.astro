@@ -1,7 +1,18 @@
+---
+interface Props {
+  detailLabel: string;
+  initialSideLabel: string;
+  observedNoiseLabel: string;
+  suggestedLabel: string;
+}
+
+const { detailLabel, initialSideLabel, observedNoiseLabel, suggestedLabel } = Astro.props;
+---
+
 <div class="deadzone-plot" data-stick-deadzone-plot data-live="false" data-result="false">
   <div class="deadzone-plot__heading">
-    <span>Center detail · 20% radius</span>
-    <span data-deadzone-plot-label>Left stick</span>
+    <span>{detailLabel}</span>
+    <span data-deadzone-plot-label>{initialSideLabel}</span>
   </div>
 
   <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
@@ -15,8 +26,8 @@
   </svg>
 
   <div class="deadzone-plot__legend" data-deadzone-legend data-visible="false" aria-hidden="true">
-    <span><i class="deadzone-plot__legend-noise" aria-hidden="true"></i>Observed center noise</span>
-    <span><i class="deadzone-plot__legend-suggested" aria-hidden="true"></i>Suggested deadzone</span>
+    <span><i class="deadzone-plot__legend-noise" aria-hidden="true"></i>{observedNoiseLabel}</span>
+    <span><i class="deadzone-plot__legend-suggested" aria-hidden="true"></i>{suggestedLabel}</span>
   </div>
 </div>
 

@@ -3,6 +3,7 @@ import {
   type GamepadServiceState,
   type GamepadSnapshot,
 } from '../../../browser/gamepad-service';
+import { formatMessage, type ToolRuntimeMessages } from '../../../i18n/runtime';
 import { StickDeadzonePlotRenderer } from '../../../visuals/controller/stick-deadzone-plot-renderer';
 import { getStandardStickPosition } from '../gamepad-stick-adapter';
 import type { StickPosition, StickSide } from '../stick-position';
@@ -15,6 +16,11 @@ export interface ControllerDeadzoneToolController {
   start(): void;
   stop(): void;
   destroy(): void;
+}
+
+export interface ControllerDeadzoneMessages {
+  common: ToolRuntimeMessages<'gamepadTester'>;
+  tool: ToolRuntimeMessages<'deadzone'>;
 }
 
 type ToolState = 'waiting' | 'ready' | 'sampling' | 'result' | 'cancelled' | 'unavailable';
@@ -40,7 +46,9 @@ const requireElement = <T extends Element>(root: ParentNode, selector: string): 
 
 export const mountControllerDeadzoneTest = (
   root: HTMLElement,
+  messages: ControllerDeadzoneMessages,
 ): ControllerDeadzoneToolController => {
+  const { common, tool } = messages;
   const status = requireElement<HTMLElement>(root, '[data-deadzone-status]');
   const instruction = requireElement<HTMLElement>(root, '[data-deadzone-instruction]');
   const statusLive = requireElement<HTMLElement>(root, '[data-deadzone-status-live]');
@@ -72,6 +80,9 @@ export const mountControllerDeadzoneTest = (
   let sampleStartedAt: number | null = null;
   let samples: StickPosition[] = [];
 
+  const selectedStickLabel = (): string =>
+    selectedStick === 'left' ? tool.leftStick : tool.rightStick;
+
   const setPresentation = (
     key: PresentationKey,
     state: ToolState,
@@ -96,7 +107,7 @@ export const mountControllerDeadzoneTest = (
     samples = [];
     noiseResult.textContent = '—';
     suggestionResult.textContent = '—';
-    progress.textContent = '3-second sample';
+    progress.textContent = '3 s';
     renderer.resetResult();
   };
 
@@ -108,7 +119,7 @@ export const mountControllerDeadzoneTest = (
         ...gamepads.map((_, index) => {
           const option = document.createElement('option');
           option.value = String(index);
-          option.textContent = `Controller ${index + 1}`;
+          option.textContent = formatMessage(common.controllerOption, { number: index + 1 });
           return option;
         }),
       );
@@ -144,17 +155,13 @@ export const mountControllerDeadzoneTest = (
     selectorWrap.hidden = true;
     stickChoice.disabled = true;
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
+    startButton.textContent = tool.start;
     limitation.hidden = true;
     resetMeasurement();
     renderer.reset();
-    setPresentation(
-      'waiting',
-      'waiting',
-      'No controller detected',
-      'Connect a controller and press any button.',
-    );
-    accessibleSummary.textContent = 'No controller detected. Connect a controller and press any button.';
+    renderer.setSideLabel(selectedStickLabel());
+    setPresentation('waiting', 'waiting', common.noController, common.connectInstruction);
+    accessibleSummary.textContent = `${common.noController}. ${common.connectInstruction}`;
   };
 
   const renderApiUnavailable = (kind: 'unsupported' | 'error'): void => {
@@ -163,15 +170,16 @@ export const mountControllerDeadzoneTest = (
     selectorWrap.hidden = true;
     stickChoice.disabled = true;
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
+    startButton.textContent = tool.start;
     resetMeasurement();
     renderer.reset();
+    renderer.setSideLabel(selectedStickLabel());
 
     const unsupported = kind === 'unsupported';
-    const statusText = unsupported ? 'Gamepad API unavailable' : 'Gamepad access unavailable';
+    const statusText = unsupported ? common.apiUnavailable : common.accessUnavailable;
     const instructionText = unsupported
-      ? 'This browser does not expose the Gamepad API.'
-      : 'Gamepad access is blocked or unavailable in this browser context.';
+      ? common.apiUnavailableInstruction
+      : common.accessUnavailableInstruction;
 
     limitation.hidden = false;
     limitation.textContent = instructionText;
@@ -179,27 +187,18 @@ export const mountControllerDeadzoneTest = (
     accessibleSummary.textContent = `${statusText}. ${instructionText}`;
   };
 
-  const renderMappingUnavailable = (
-    gamepads: readonly GamepadSnapshot[],
-  ): void => {
+  const renderMappingUnavailable = (gamepads: readonly GamepadSnapshot[]): void => {
     rebuildSelector(gamepads);
     stickChoice.disabled = true;
     startButton.disabled = true;
-    startButton.textContent = 'Start test';
+    startButton.textContent = tool.start;
     resetMeasurement();
     renderer.reset();
-    renderer.setSideLabel(selectedStick);
+    renderer.setSideLabel(selectedStickLabel());
     limitation.hidden = false;
-    limitation.textContent =
-      'Deadzone measurement requires the browser standard gamepad mapping. This controller is not measured because physical stick axes would otherwise be guessed.';
-    setPresentation(
-      'mapping',
-      'unavailable',
-      'Standard mapping required',
-      'Select a standard-mapped controller to measure center noise.',
-    );
-    accessibleSummary.textContent =
-      'Controller Deadzone Test is unavailable for the selected controller because it does not expose a complete standard gamepad mapping.';
+    limitation.textContent = tool.unavailableDetail;
+    setPresentation('mapping', 'unavailable', tool.unavailable, tool.unavailableDetail);
+    accessibleSummary.textContent = `${tool.unavailable}. ${tool.unavailableDetail}`;
   };
 
   const renderReady = (gamepad: GamepadSnapshot, gamepads: readonly GamepadSnapshot[]): void => {
@@ -213,28 +212,20 @@ export const mountControllerDeadzoneTest = (
     selector.disabled = false;
     stickChoice.disabled = false;
     startButton.disabled = false;
-    if (toolState !== 'result' && toolState !== 'cancelled') {
-      startButton.textContent = 'Start test';
-    }
+    startButton.textContent = toolState === 'result' ? tool.testAgain : tool.start;
     limitation.hidden = toolState !== 'cancelled';
-    renderer.setSideLabel(selectedStick);
+    renderer.setSideLabel(selectedStickLabel());
     renderer.renderPosition(position);
 
     if (toolState === 'result' || toolState === 'cancelled') {
       return;
     }
 
-    setPresentation(
-      'ready',
-      'ready',
-      'Ready to measure',
-      `Release the ${selectedStick} stick and keep it untouched.`,
-    );
-    accessibleSummary.textContent =
-      `Controller ready. Release the ${selectedStick} stick and keep it untouched, then start the test.`;
+    setPresentation('ready', 'ready', tool.statusReady, tool.connect);
+    accessibleSummary.textContent = `${tool.readySummary} ${tool.connect}`;
   };
 
-  const cancelMeasurement = (message: string): void => {
+  const cancelMeasurement = (): void => {
     if (toolState !== 'sampling') {
       return;
     }
@@ -243,16 +234,11 @@ export const mountControllerDeadzoneTest = (
     selector.disabled = false;
     stickChoice.disabled = false;
     startButton.disabled = false;
-    startButton.textContent = 'Start again';
+    startButton.textContent = tool.start;
     limitation.hidden = false;
-    limitation.textContent = message;
-    setPresentation(
-      'cancelled',
-      'cancelled',
-      'Test cancelled',
-      `Release the ${selectedStick} stick and start again when the controller is ready.`,
-    );
-    accessibleSummary.textContent = `Controller deadzone test cancelled. ${message}`;
+    limitation.textContent = tool.cancelledDetail;
+    setPresentation('cancelled', 'cancelled', tool.cancelled, tool.cancelledDetail);
+    accessibleSummary.textContent = `${tool.cancelled}. ${tool.cancelledDetail}`;
   };
 
   const finishMeasurement = (): void => {
@@ -261,45 +247,37 @@ export const mountControllerDeadzoneTest = (
     selector.disabled = false;
     stickChoice.disabled = false;
     startButton.disabled = false;
-    startButton.textContent = 'Test again';
-    progress.textContent = '3-second sample complete';
+    startButton.textContent = tool.testAgain;
+    progress.textContent = '3 s';
 
     if (!result) {
       resetMeasurement();
       limitation.hidden = false;
-      limitation.textContent = 'No usable stick samples were captured. Start the test again.';
-      setPresentation(
-        'cancelled',
-        'cancelled',
-        'Test cancelled',
-        'No usable stick samples were captured. Start again.',
-      );
-      accessibleSummary.textContent =
-        'Controller deadzone test cancelled because no usable samples were captured.';
+      limitation.textContent = tool.cancelledDetail;
+      setPresentation('cancelled', 'cancelled', tool.cancelled, tool.cancelledDetail);
+      accessibleSummary.textContent = `${tool.cancelled}. ${tool.cancelledDetail}`;
       return;
     }
 
     const noiseText = formatCenterNoisePercent(result.centerNoise);
     const suggestionText = `~${result.suggestedPercent}%`;
+    const resultSummary = formatMessage(tool.resultSummary, {
+      stick: selectedStickLabel(),
+      noise: (result.centerNoise * 100).toFixed(1),
+      deadzone: result.suggestedPercent,
+    });
     noiseResult.textContent = noiseText;
     suggestionResult.textContent = suggestionText;
     renderer.renderResult(result.centerNoise, result.suggestedDeadzone);
     limitation.hidden = true;
-    setPresentation(
-      'result',
-      'result',
-      'Measurement complete',
-      'Observed center noise and a heuristic starting deadzone are shown.',
-    );
-    accessibleSummary.textContent =
-      `${selectedStick === 'left' ? 'Left' : 'Right'} stick measurement complete. ` +
-      `Observed center noise ${noiseText}. Suggested starting deadzone approximately ${result.suggestedPercent} percent.`;
+    setPresentation('result', 'result', tool.complete, resultSummary);
+    accessibleSummary.textContent = resultSummary;
   };
 
   const renderSampling = (gamepad: GamepadSnapshot): void => {
     const position = getStandardStickPosition(gamepad, selectedStick);
     if (!position || sampleStartedAt === null) {
-      cancelMeasurement('The selected controller can no longer provide standard stick axes.');
+      cancelMeasurement();
       return;
     }
 
@@ -308,7 +286,7 @@ export const mountControllerDeadzoneTest = (
 
     const elapsed = performance.now() - sampleStartedAt;
     const remainingSeconds = Math.max(0, SAMPLE_DURATION_MS - elapsed) / 1_000;
-    progress.textContent = `${remainingSeconds.toFixed(1)} s remaining`;
+    progress.textContent = formatMessage(tool.remaining, { seconds: remainingSeconds.toFixed(1) });
 
     if (elapsed >= SAMPLE_DURATION_MS) {
       finishMeasurement();
@@ -322,7 +300,7 @@ export const mountControllerDeadzoneTest = (
 
     if (state.status === 'unsupported' || state.status === 'error') {
       if (toolState === 'sampling') {
-        cancelMeasurement('Gamepad access became unavailable during the sample.');
+        cancelMeasurement();
       }
       renderApiUnavailable(state.status);
       return;
@@ -330,7 +308,7 @@ export const mountControllerDeadzoneTest = (
 
     if (state.gamepads.length === 0) {
       if (toolState === 'sampling') {
-        cancelMeasurement('The controller disconnected during the sample.');
+        cancelMeasurement();
       }
       service.setActiveGamepad(null);
       renderWaiting();
@@ -342,7 +320,7 @@ export const mountControllerDeadzoneTest = (
       selectedSourceIndex !== null &&
       !state.gamepads.some((gamepad) => gamepad.sourceIndex === selectedSourceIndex)
     ) {
-      cancelMeasurement('The selected controller disconnected during the sample.');
+      cancelMeasurement();
     }
 
     const selected = selectFirstAvailable(state.gamepads);
@@ -384,28 +362,22 @@ export const mountControllerDeadzoneTest = (
     noiseResult.textContent = '—';
     suggestionResult.textContent = '—';
     renderer.resetResult();
-    renderer.setSideLabel(selectedStick);
+    renderer.setSideLabel(selectedStickLabel());
     renderer.renderPosition(position);
     limitation.hidden = true;
     selector.disabled = true;
     stickChoice.disabled = true;
     startButton.disabled = true;
-    startButton.textContent = 'Testing…';
-    progress.textContent = '3.0 s remaining';
-    setPresentation(
-      'sampling',
-      'sampling',
-      'Sampling center noise',
-      `Keep the ${selectedStick} stick untouched for 3 seconds.`,
-    );
-    accessibleSummary.textContent =
-      `Controller deadzone sampling is active. Keep the ${selectedStick} stick untouched for 3 seconds.`;
+    startButton.textContent = tool.testing;
+    progress.textContent = formatMessage(tool.remaining, { seconds: '3.0' });
+    setPresentation('sampling', 'sampling', tool.testing, tool.connect);
+    accessibleSummary.textContent = `${tool.testing}. ${tool.connect}`;
   };
 
   const resetForSelection = (): void => {
     resetMeasurement();
     renderer.reset();
-    renderer.setSideLabel(selectedStick);
+    renderer.setSideLabel(selectedStickLabel());
     lastPresentation = null;
     toolState = 'ready';
     limitation.hidden = true;
@@ -459,7 +431,7 @@ export const mountControllerDeadzoneTest = (
 
   const handleVisibilityChange = (): void => {
     if (document.visibilityState !== 'visible' && toolState === 'sampling') {
-      cancelMeasurement('The page became hidden during the sample.');
+      cancelMeasurement();
     }
   };
 
@@ -467,7 +439,7 @@ export const mountControllerDeadzoneTest = (
   stickInputs.forEach((input) => input.addEventListener('change', handleStickChange));
   startButton.addEventListener('click', handleStart);
   document.addEventListener('visibilitychange', handleVisibilityChange);
-  renderer.setSideLabel(selectedStick);
+  renderer.setSideLabel(selectedStickLabel());
   const unsubscribe = service.subscribe(renderState);
   service.start();
 
@@ -482,7 +454,7 @@ export const mountControllerDeadzoneTest = (
         return;
       }
       if (toolState === 'sampling') {
-        cancelMeasurement('The measurement was stopped before the sample completed.');
+        cancelMeasurement();
       }
       service.stop();
     },
