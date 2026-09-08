@@ -64,7 +64,7 @@ const ToolComponent = toolComponents[toolId];
     <p class="page-intro">{content.intro}</p>
   </section>
 
-  <ToolComponent />
+  <ToolComponent locale={locale} />
 
   <section class="tool-content reading-width">
     {content.sections.map((section, index) => (

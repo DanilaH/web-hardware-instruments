@@ -1,24 +1,38 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import StandardControllerVisual from '../../../visuals/controller/StandardControllerVisual.astro';
+
+interface Props {
+  locale?: ImplementedContentLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+const messages = getRuntimeMessages(locale).gamepadTester;
 ---
 
 <ToolShell labelledBy="gamepad-tool-heading">
-  <h2 id="gamepad-tool-heading" class="gamepad-tool__sr">Gamepad Tester controls</h2>
+  <h2 id="gamepad-tool-heading" class="gamepad-tool__sr">{messages.controlsHeading}</h2>
 
-  <div class="gamepad-tool" data-gamepad-tester data-state="waiting">
+  <div
+    class="gamepad-tool"
+    data-gamepad-tester
+    data-messages={JSON.stringify(messages)}
+    data-state="waiting"
+  >
     <div class="gamepad-tool__topline">
       <div class="gamepad-tool__status-copy">
         <div class="gamepad-tool__status-row">
           <span class="gamepad-tool__signal" aria-hidden="true"></span>
-          <strong data-gamepad-status>No controller detected</strong>
+          <strong data-gamepad-status>{messages.noController}</strong>
         </div>
-        <p data-gamepad-instruction>Connect a controller and press any button.</p>
+        <p data-gamepad-instruction>{messages.connectInstruction}</p>
       </div>
 
       <label class="gamepad-tool__selector" data-gamepad-selector-wrap hidden>
-        <span>Controller</span>
-        <select class="tool-control" data-gamepad-selector aria-label="Select controller"></select>
+        <span>{messages.selectorLabel}</span>
+        <select class="tool-control" data-gamepad-selector aria-label={messages.selectorAria}></select>
       </label>
     </div>
 
@@ -31,13 +45,13 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
     </div>
 
     <div class="gamepad-tool__unavailable" data-gamepad-unavailable hidden>
-      <p>Try a current desktop browser with Gamepad API access.</p>
+      <p>{messages.unavailableHint}</p>
     </div>
 
     <p class="gamepad-tool__mapping-note" data-gamepad-mapping-note hidden></p>
 
     <div class="gamepad-tool__footer">
-      <span>Runs locally in your browser. Raw controller data is not uploaded.</span>
+      <span>{messages.localNote}</span>
     </div>
 
     <p
@@ -47,17 +61,22 @@ import StandardControllerVisual from '../../../visuals/controller/StandardContro
       data-gamepad-status-live
     ></p>
     <p class="gamepad-tool__sr" data-gamepad-accessible-state>
-      No controller detected. Connect a controller and press any button.
+      {messages.noController}. {messages.connectInstruction}
     </p>
   </div>
 </ToolShell>
 
 <script>
+  import {
+    readSerializedMessages,
+    type ToolRuntimeMessages,
+  } from '../../../i18n/runtime';
   import { mountGamepadTester } from './gamepad-tester-controller';
 
   const root = document.querySelector<HTMLElement>('[data-gamepad-tester]');
   if (root) {
-    const controller = mountGamepadTester(root);
+    const messages = readSerializedMessages<ToolRuntimeMessages<'gamepadTester'>>(root);
+    const controller = mountGamepadTester(root, messages);
 
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
