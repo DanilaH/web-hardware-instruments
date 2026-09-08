@@ -1,201 +1,58 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getRuntimeMessages(locale).mouseScroll;
 ---
 
 <ToolShell labelledBy="scroll-test-heading">
-  <h2 id="scroll-test-heading" class="sr-only">Mouse Scroll Test</h2>
-
-  <div class="scroll-test" data-mouse-scroll-test>
-    <div class="status">
-      <span aria-hidden="true"></span>
-      <strong data-scroll-status role="status" aria-live="polite">Listening for wheel events</strong>
-    </div>
-
-    <p class="instruction">
-      Scroll vertically, then try a sideways two-finger trackpad gesture or a tilt wheel if your device supports it.
-    </p>
-
+  <h2 id="scroll-test-heading" class="sr-only">{messages.controlsHeading}</h2>
+  <div class="scroll-test" data-mouse-scroll-test data-messages={JSON.stringify(messages)}>
+    <div class="status"><span aria-hidden="true"></span><strong data-scroll-status role="status" aria-live="polite">{messages.listening}</strong></div>
+    <p class="instruction">{messages.instruction}</p>
     <div class="surface" data-scroll-surface>
-      <div class="result-heading tool-result-heading">
-        <span>Browser-detected wheel input</span>
-        <button type="button" class="mouse-reset tool-action tool-action--quiet" data-scroll-reset>Reset</button>
-      </div>
-
-      <div class="strip" data-scroll-strip aria-label="Recent browser-detected wheel directions">
-        Scroll inside the area
-      </div>
-
+      <div class="result-heading tool-result-heading"><span>{messages.resultHeading}</span><button type="button" class="mouse-reset tool-action tool-action--quiet" data-scroll-reset>{messages.reset}</button></div>
+      <div class="strip" data-scroll-strip aria-label={messages.stripAria}>{messages.scrollInside}</div>
       <div class="metrics">
-        <div>
-          <span>Up events</span>
-          <strong data-scroll-up>0</strong>
-        </div>
-        <div>
-          <span>Down events</span>
-          <strong data-scroll-down>0</strong>
-        </div>
-        <div>
-          <span>Left events</span>
-          <strong data-scroll-left>0</strong>
-        </div>
-        <div>
-          <span>Right events</span>
-          <strong data-scroll-right>0</strong>
-        </div>
+        <div><span>{messages.upEvents}</span><strong data-scroll-up>0</strong></div>
+        <div><span>{messages.downEvents}</span><strong data-scroll-down>0</strong></div>
+        <div><span>{messages.leftEvents}</span><strong data-scroll-left>0</strong></div>
+        <div><span>{messages.rightEvents}</span><strong data-scroll-right>0</strong></div>
       </div>
     </div>
-
-    <p class="note">
-      Counts are browser wheel events, not physical wheel notches. Left/Right reflect the browser-reported horizontal delta; natural-scrolling settings can make the physical gesture feel inverted.
-    </p>
+    <p class="note">{messages.note}</p>
   </div>
 </ToolShell>
 
 <script>
+  import { readSerializedMessages, type ToolRuntimeMessages } from '../../../i18n/runtime';
   import { mountMouseScrollTest } from './mouse-scroll-controller';
-
   const root = document.querySelector<HTMLElement>('[data-mouse-scroll-test]');
   if (root) {
-    const controller = mountMouseScrollTest(root);
-    window.addEventListener('pagehide', (event) =>
-      event.persisted ? controller.stop() : controller.destroy(),
-    );
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) controller.start();
-    });
+    const messages = readSerializedMessages<ToolRuntimeMessages<'mouseScroll'>>(root);
+    const controller = mountMouseScrollTest(root, messages);
+    window.addEventListener('pagehide', (event) => event.persisted ? controller.stop() : controller.destroy());
+    window.addEventListener('pageshow', (event) => { if (event.persisted) controller.start(); });
   }
 </script>
 
 <style>
-  .scroll-test {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .status {
-    display: flex;
-    gap: 0.55rem;
-    align-items: center;
-    color: var(--color-muted);
-    font-size: 0.88rem;
-  }
-
-  .status span {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: var(--color-signal);
-  }
-
-  .instruction,
-  .note {
-    margin: 0;
-  }
-
-  .surface {
-    display: grid;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    border: 1px solid #e3e6e7;
-    background: #fafbfb;
-  }
-
-  .result-heading > span {
-    color: var(--color-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-
-  .strip {
-    min-height: 8rem;
-    display: grid;
-    place-items: center;
-    padding: var(--space-4);
-    border: 1px solid #dfe3e4;
-    background: #fff;
-    color: var(--color-signal);
-    font: 600 clamp(1.1rem, 2.5vw, 1.7rem) / 1.8 var(--font-mono);
-    text-align: center;
-    overflow-wrap: anywhere;
-  }
-
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-3);
-  }
-
-  .metrics > div {
-    min-width: 0;
-    display: grid;
-    gap: 0.25rem;
-    padding: var(--space-3);
-    border: 1px solid #e2e5e6;
-    background: #fff;
-  }
-
-  .metrics span {
-    color: var(--color-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  .metrics strong {
-    font: 600 1.35rem var(--font-mono);
-  }
-
-  .note {
-    color: var(--color-muted);
-    font-size: 0.75rem;
-    line-height: 1.45;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-  }
-
-  @media (max-width: 40rem) {
-    .surface {
-      padding: var(--space-3);
-    }
-
-    .metrics {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-2);
-    }
-
-    .metrics > div {
-      padding: 0.65rem 0.5rem;
-    }
-
-    .metrics span {
-      font-size: 0.62rem;
-      line-height: 1.3;
-    }
-
-    .metrics strong {
-      font-size: 1.15rem;
-    }
-
-    .strip {
-      block-size: 6rem;
-      min-height: 6rem;
-      overflow: hidden;
-    }
-  }
-
-  @media (max-width: 22rem) {
-    .strip {
-      padding: 0.65rem;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-  }
+  .scroll-test { display: grid; gap: var(--space-4); }
+  .status { display: flex; gap: 0.55rem; align-items: center; color: var(--color-muted); font-size: 0.88rem; }
+  .status span { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--color-signal); }
+  .instruction, .note { margin: 0; }
+  .surface { display: grid; gap: var(--space-4); padding: var(--space-5); border: 1px solid #e3e6e7; background: #fafbfb; }
+  .result-heading > span { color: var(--color-muted); font-size: 0.72rem; font-weight: 600; }
+  .strip { min-height: 8rem; display: grid; place-items: center; padding: var(--space-4); border: 1px solid #dfe3e4; background: #fff; color: var(--color-signal); font: 600 clamp(1.1rem, 2.5vw, 1.7rem) / 1.8 var(--font-mono); text-align: center; overflow-wrap: anywhere; }
+  .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+  .metrics > div { min-width: 0; display: grid; gap: 0.25rem; padding: var(--space-3); border: 1px solid #e2e5e6; background: #fff; }
+  .metrics span { color: var(--color-muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+  .metrics strong { font: 600 1.35rem var(--font-mono); }
+  .note { color: var(--color-muted); font-size: 0.75rem; line-height: 1.45; }
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  @media (max-width: 40rem) { .surface { padding: var(--space-3); } .metrics { grid-template-columns: 1fr 1fr; gap: var(--space-2); } .metrics > div { padding: 0.65rem 0.5rem; } .metrics span { font-size: 0.62rem; line-height: 1.3; } .metrics strong { font-size: 1.15rem; } .strip { block-size: 6rem; min-height: 6rem; overflow: hidden; } }
+  @media (max-width: 22rem) { .strip { padding: 0.65rem; font-size: 0.9rem; line-height: 1.5; } }
 </style>
