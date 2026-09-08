@@ -310,6 +310,6 @@ Reviewed maintenance may touch any current route when it preserves the route's u
 
 This does not authorize unrelated Audio/CPS/dashboard/latency features or other new tools.
 
-The production-domain/indexing gate remains deferred until deployment. Keep the placeholder origin and indexing disabled until the real-domain release change.
+The production origin and indexing state are already configured as `https://hardwareinspect.com` with indexing enabled. Follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` for the current public-deployment boundary; do not restore historical placeholder-origin or disabled-indexing settings.
 
 For future product scope, require research, Search Console evidence, or material value to an already-successful cluster before implementation, then create/review the exact source-of-truth contract first.
