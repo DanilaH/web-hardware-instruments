@@ -44,6 +44,13 @@ const mouseVisualMessagesByLocale = {
       relativeRight: 'derecha relativa',
     },
   },
+  ru: {
+    movementGuide: {
+      relativeLeft: 'относительно влево',
+      origin: 'начало',
+      relativeRight: 'относительно вправо',
+    },
+  },
 } as const satisfies Record<ImplementedContentLocale, MouseVisualMessages>;
 
 export const getMouseVisualMessages = (locale: ImplementedContentLocale): MouseVisualMessages =>
