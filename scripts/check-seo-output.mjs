@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const rootDir = dirname(fileURLToPath(import.meta.url));
 const distDir = process.env.SEO_DIST_DIR ?? join(rootDir, '..', 'dist');
+const expectedHreflangs = new Set(['en', 'pt-BR', 'de', 'fr', 'es', 'ru', 'x-default']);
 
 const fail = (message) => {
   throw new Error(`[seo-output] ${message}`);
@@ -41,6 +42,45 @@ const extractCanonical = (html) => {
   return tag ? extractAttribute(tag, 'href') : null;
 };
 
+const extractAlternates = (html, rel) => {
+  const tags = html.match(/<link\b[^>]*>/gi) ?? [];
+  const alternates = new Map();
+  const hrefs = new Set();
+
+  for (const tag of tags) {
+    if (extractAttribute(tag, 'rel')?.toLowerCase() !== 'alternate') continue;
+
+    const hreflang = extractAttribute(tag, 'hreflang');
+    const href = extractAttribute(tag, 'href');
+    if (!hreflang || !href) fail(`${rel} has an alternate link without hreflang or href`);
+    if (alternates.has(hreflang)) fail(`${rel} has duplicate hreflang ${hreflang}`);
+    if (hrefs.has(href)) fail(`${rel} points multiple hreflangs at the same alternate URL: ${href}`);
+
+    alternates.set(hreflang, href);
+    hrefs.add(href);
+  }
+
+  return alternates;
+};
+
+const extractHtmlLang = (html) => {
+  const tag = html.match(/<html\b[^>]*>/i)?.[0] ?? null;
+  return tag ? extractAttribute(tag, 'lang') : null;
+};
+
+const extractTitle = (html) => html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? null;
+
+const extractMetaDescription = (html) => {
+  const tag = findTagByAttribute(html, 'meta', 'name', 'description');
+  return tag ? extractAttribute(tag, 'content') : null;
+};
+
+const extractH1s = (html) =>
+  [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map((match) => match[1]);
+
+const normalizeVisibleText = (value) =>
+  value?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLocaleLowerCase() ?? '';
+
 const hasNoindex = (html) => {
   const tag = findTagByAttribute(html, 'meta', 'name', 'robots');
   const content = tag ? extractAttribute(tag, 'content') : null;
@@ -48,6 +88,19 @@ const hasNoindex = (html) => {
 };
 
 const extractLocs = (xml) => [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+
+const expectedPathForHtmlFile = (rel) => {
+  const normalized = rel.replaceAll('\\', '/');
+  if (normalized === 'index.html') return '/';
+  return `/${normalized.replace(/\.html$/, '')}`;
+};
+
+const assertNoEnPrefix = (url, context) => {
+  const pathname = new URL(url).pathname;
+  if (pathname === '/en' || pathname.startsWith('/en/')) {
+    fail(`${context} must not use the forbidden /en/ prefix: ${url}`);
+  }
+};
 
 const rootEntries = await readdir(distDir, { withFileTypes: true });
 const htmlFiles = await walkHtml(distDir);
@@ -111,11 +164,13 @@ for (const sitemapFile of sitemapFiles) {
     if (new URL(url).origin !== canonicalOrigin) {
       fail(`sitemap URL uses a different origin: ${url}`);
     }
+    assertNoEnPrefix(url, 'sitemap URL');
+    if (sitemapUrls.has(url)) fail(`duplicate sitemap URL: ${url}`);
     sitemapUrls.add(url);
   }
 }
 
-const canonicalUrls = new Set();
+const pagesByCanonical = new Map();
 for (const htmlFile of htmlFiles) {
   const rel = relative(distDir, htmlFile);
   const html = await readText(htmlFile);
@@ -128,14 +183,54 @@ for (const htmlFile of htmlFiles) {
   }
 
   if (!canonical) fail(`${rel} is missing a canonical URL`);
-  if (new URL(canonical).origin !== canonicalOrigin) fail(`${rel} canonical uses a different origin: ${canonical}`);
-  if (hasNoindex(html)) fail(`${rel} is unexpectedly noindex while indexing is enabled`);
-  if (canonicalUrls.has(canonical)) fail(`duplicate canonical URL: ${canonical}`);
+  const canonicalUrl = new URL(canonical);
+  if (canonicalUrl.origin !== canonicalOrigin) fail(`${rel} canonical uses a different origin: ${canonical}`);
+  if (canonicalUrl.search || canonicalUrl.hash) fail(`${rel} canonical must not contain a query or fragment: ${canonical}`);
+  assertNoEnPrefix(canonical, `${rel} canonical`);
 
-  canonicalUrls.add(canonical);
+  const expectedPath = expectedPathForHtmlFile(rel);
+  if (canonicalUrl.pathname !== expectedPath) {
+    fail(`${rel} canonical path is not the final built route: expected ${expectedPath}, got ${canonicalUrl.pathname}`);
+  }
+
+  if (hasNoindex(html)) fail(`${rel} is unexpectedly noindex while indexing is enabled`);
+  if (pagesByCanonical.has(canonical)) fail(`duplicate canonical URL: ${canonical}`);
+
+  const lang = extractHtmlLang(html);
+  if (!lang) fail(`${rel} is missing html lang`);
+
+  const title = normalizeVisibleText(extractTitle(html));
+  const description = normalizeVisibleText(extractMetaDescription(html));
+  const h1s = extractH1s(html).map(normalizeVisibleText).filter(Boolean);
+  if (!title) fail(`${rel} is missing a non-empty title`);
+  if (!description) fail(`${rel} is missing a non-empty meta description`);
+  if (h1s.length !== 1) fail(`${rel} must contain exactly one non-empty H1; found ${h1s.length}`);
+
+  const alternates = extractAlternates(html, rel);
+  if (alternates.size !== expectedHreflangs.size) {
+    fail(`${rel} must expose ${expectedHreflangs.size} hreflang entries; found ${alternates.size}`);
+  }
+  for (const hreflang of expectedHreflangs) {
+    if (!alternates.has(hreflang)) fail(`${rel} is missing hreflang ${hreflang}`);
+  }
+  for (const hreflang of alternates.keys()) {
+    if (!expectedHreflangs.has(hreflang)) fail(`${rel} exposes unexpected hreflang ${hreflang}`);
+  }
+  if (!expectedHreflangs.has(lang)) fail(`${rel} uses unsupported html lang ${lang}`);
+  if (alternates.get(lang) !== canonical) {
+    fail(`${rel} self hreflang ${lang} must equal its canonical URL`);
+  }
+
+  for (const [hreflang, href] of alternates) {
+    const alternateUrl = new URL(href);
+    if (alternateUrl.origin !== canonicalOrigin) {
+      fail(`${rel} hreflang ${hreflang} uses a different origin: ${href}`);
+    }
+    assertNoEnPrefix(href, `${rel} hreflang ${hreflang}`);
+  }
 
   if (!sitemapUrls.has(canonical)) {
-    const canonicalPathname = new URL(canonical).pathname;
+    const canonicalPathname = canonicalUrl.pathname;
     const nearbySitemapUrls = [...sitemapUrls]
       .filter((url) => new URL(url).pathname === canonicalPathname || canonicalPathname === '/')
       .slice(0, 8);
@@ -144,12 +239,55 @@ for (const htmlFile of htmlFiles) {
       : ` Sitemap sample: ${[...sitemapUrls].slice(0, 8).join(', ') || 'empty'}.`;
     fail(`${rel} canonical is not present verbatim in the sitemap: ${canonical}.${diagnostic} Align hosting URL form, redirects, canonicals, and sitemap entries before release.`);
   }
+
+  pagesByCanonical.set(canonical, {
+    rel,
+    canonical,
+    lang,
+    title,
+    description,
+    h1: h1s[0],
+    alternates,
+  });
 }
 
 for (const sitemapUrl of sitemapUrls) {
-  if (!canonicalUrls.has(sitemapUrl)) {
+  if (!pagesByCanonical.has(sitemapUrl)) {
     fail(`sitemap URL has no matching indexable canonical page: ${sitemapUrl}`);
   }
 }
 
-console.log(`[seo-output] indexing enabled: ${canonicalUrls.size} canonical URLs match the generated sitemap`);
+for (const page of pagesByCanonical.values()) {
+  for (const [hreflang, href] of page.alternates) {
+    const target = pagesByCanonical.get(href);
+    if (!target) fail(`${page.rel} hreflang ${hreflang} points to a missing/non-indexable page: ${href}`);
+
+    if (hreflang === 'x-default') {
+      if (target.lang !== 'en') fail(`${page.rel} x-default must point to the English semantic page: ${href}`);
+      continue;
+    }
+
+    if (target.lang !== hreflang) {
+      fail(`${page.rel} hreflang ${hreflang} points to a page with html lang ${target.lang}: ${href}`);
+    }
+    if (target.alternates.get(page.lang) !== page.canonical) {
+      fail(`${page.rel} and ${target.rel} do not expose reciprocal hreflang links`);
+    }
+  }
+
+  const english = pagesByCanonical.get(page.alternates.get('x-default'));
+  if (!english) fail(`${page.rel} has no resolvable English x-default page`);
+  if (english.alternates.get('x-default') !== english.canonical) {
+    fail(`${english.rel} x-default must point to its own English canonical`);
+  }
+
+  if (page.lang !== 'en') {
+    if (page.title === english.title) fail(`${page.rel} title appears to fall back to English`);
+    if (page.description === english.description) fail(`${page.rel} meta description appears to fall back to English`);
+    if (page.h1 === english.h1) fail(`${page.rel} H1 appears to fall back to English`);
+  }
+}
+
+console.log(
+  `[seo-output] indexing enabled: ${pagesByCanonical.size} canonical URLs match the generated sitemap; localized lang/title/meta/H1 and reciprocal hreflang contracts pass`,
+);
