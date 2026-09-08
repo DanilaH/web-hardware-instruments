@@ -1,5 +1,7 @@
 ---
-import { getRelatedTools } from '../../config/tools';
+import { getRelatedToolDefinitions, getToolIdBySemanticPath, type ToolId } from '../../config/tool-definitions';
+import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import { buildLocalizedPath, getSemanticPath } from '../../i18n/routing';
 
 interface RelatedTool {
   href: string;
@@ -8,20 +10,28 @@ interface RelatedTool {
 }
 
 interface Props {
+  locale?: ImplementedContentLocale;
+  toolId?: ToolId;
   tools?: readonly RelatedTool[];
 }
 
-const { tools = [] } = Astro.props;
-const pathname = Astro.url.pathname.length > 1
-  ? Astro.url.pathname.replace(/\/$/, '')
-  : Astro.url.pathname;
-const catalogTools = getRelatedTools(pathname);
-const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
+const { locale = 'en', toolId: explicitToolId, tools = [] } = Astro.props;
+const content = getSiteContent(locale);
+const inferredToolId = getToolIdBySemanticPath(getSemanticPath(Astro.url.pathname));
+const toolId = explicitToolId ?? inferredToolId ?? undefined;
+const localizedTools = toolId
+  ? getRelatedToolDefinitions(toolId).map((tool) => ({
+      href: buildLocalizedPath(locale, tool.href),
+      name: content.tools[tool.id].name,
+      description: content.tools[tool.id].shortDescription,
+    }))
+  : [];
+const relatedTools = localizedTools.length > 0 ? localizedTools : tools;
 ---
 
 {relatedTools.length > 0 && (
-  <nav class="related-tools reading-width" aria-label="Related tools">
-    <h2>Related tools</h2>
+  <nav class="related-tools reading-width" aria-label={content.relatedTools}>
+    <h2>{content.relatedTools}</h2>
     <div class="related-tools__list">
       {relatedTools.map((tool) => (
         <a class="related-tools__link" href={tool.href}>
@@ -39,13 +49,7 @@ const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
     padding-top: var(--space-5);
     border-top: 1px solid var(--color-border-strong);
   }
-
-  .related-tools h2 {
-    margin: 0 0 var(--space-3);
-    font-size: 1.02rem;
-    letter-spacing: -0.015em;
-  }
-
+  .related-tools h2 { margin: 0 0 var(--space-3); font-size: 1.02rem; letter-spacing: -0.015em; }
   .related-tools__list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -53,7 +57,6 @@ const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
     border: 1px solid var(--color-border);
     background: var(--color-border);
   }
-
   .related-tools__link {
     position: relative;
     min-width: 0;
@@ -64,7 +67,6 @@ const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
     text-decoration: none;
     transition: background 120ms ease;
   }
-
   .related-tools__link::before {
     content: '';
     position: absolute;
@@ -75,45 +77,19 @@ const relatedTools = catalogTools.length > 0 ? catalogTools : tools;
     transform-origin: bottom;
     transition: scale 140ms ease;
   }
-
   .related-tools__link:hover,
-  .related-tools__link:focus-visible {
-    color: var(--color-text);
-    background: color-mix(in srgb, var(--color-surface-strong) 62%, var(--color-surface));
-  }
-
+  .related-tools__link:focus-visible { color: var(--color-text); background: color-mix(in srgb, var(--color-surface-strong) 62%, var(--color-surface)); }
   .related-tools__link:hover::before,
-  .related-tools__link:focus-visible::before {
-    scale: 1 1;
-  }
-
+  .related-tools__link:focus-visible::before { scale: 1 1; }
   .related-tools__link strong,
-  .related-tools__link small {
-    display: block;
-  }
-
-  .related-tools__link strong {
-    font-size: 0.86rem;
-    line-height: 1.25;
-  }
-
-  .related-tools__link small {
-    margin-top: 0.16rem;
-    color: var(--color-muted);
-    font-size: 0.76rem;
-    line-height: 1.38;
-  }
-
+  .related-tools__link small { display: block; }
+  .related-tools__link strong { font-size: 0.86rem; line-height: 1.25; }
+  .related-tools__link small { margin-top: 0.16rem; color: var(--color-muted); font-size: 0.76rem; line-height: 1.38; }
   @media (prefers-reduced-motion: reduce) {
     .related-tools__link,
-    .related-tools__link::before {
-      transition: none;
-    }
+    .related-tools__link::before { transition: none; }
   }
-
   @media (max-width: 44rem) {
-    .related-tools__list {
-      grid-template-columns: 1fr;
-    }
+    .related-tools__list { grid-template-columns: 1fr; }
   }
 </style>

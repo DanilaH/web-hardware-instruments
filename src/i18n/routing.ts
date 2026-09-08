@@ -38,12 +38,17 @@ export const buildLocalizedPath = (locale: Locale, semanticPath: string): string
   return normalized === '/' ? prefix : `${prefix}${normalized}`;
 };
 
-export const buildAlternateLinks = (semanticPath: string): readonly AlternateLink[] => [
-  ...locales.map((locale) => ({
+export const buildAlternateLinks = (
+  semanticPath: string,
+  availableLocales: readonly Locale[] = locales,
+): readonly AlternateLink[] => [
+  ...availableLocales.map((locale) => ({
     hreflang: localeDefinitions[locale].hreflang,
     path: buildLocalizedPath(locale, semanticPath),
   })),
-  { hreflang: 'x-default', path: buildLocalizedPath('en', semanticPath) },
+  ...(availableLocales.includes('en')
+    ? [{ hreflang: 'x-default', path: buildLocalizedPath('en', semanticPath) }]
+    : []),
 ];
 
 export const getSemanticPath = (path: string): string => parseLocalizedPath(path).semanticPath;

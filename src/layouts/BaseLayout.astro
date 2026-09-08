@@ -2,14 +2,18 @@
 import SiteFooter from '../components/layout/SiteFooter.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import SeoHead from '../components/seo/SeoHead.astro';
+import { getToolDefinitionBySemanticPath } from '../config/tool-definitions';
 import { siteConfig } from '../config/site';
-import { getToolByPath } from '../config/tools';
+import { implementedContentLocales, type ImplementedContentLocale } from '../i18n/content';
+import { localeDefinitions } from '../i18n/locales';
+import { buildAlternateLinks, buildLocalizedPath, getSemanticPath } from '../i18n/routing';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   canonicalPath?: string;
+  locale?: ImplementedContentLocale;
   noindex?: boolean;
   headerVariant?: 'default' | 'homepage';
 }
@@ -18,13 +22,19 @@ const {
   title,
   description,
   canonicalPath,
+  locale = 'en',
   noindex = false,
   headerVariant = 'default',
 } = Astro.props;
 
 const effectiveNoindex = noindex || !siteConfig.indexingEnabled;
-const toolChannel = canonicalPath ? getToolByPath(canonicalPath)?.channel : undefined;
-const websiteStructuredData = canonicalPath === '/'
+const semanticPath = canonicalPath ? getSemanticPath(canonicalPath) : getSemanticPath(Astro.url.pathname);
+const localizedCanonicalPath = buildLocalizedPath(locale, semanticPath);
+const toolChannel = getToolDefinitionBySemanticPath(semanticPath)?.channel;
+const alternates = canonicalPath && !effectiveNoindex
+  ? buildAlternateLinks(semanticPath, implementedContentLocales)
+  : [];
+const websiteStructuredData = semanticPath === '/'
   ? {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
@@ -36,7 +46,7 @@ const websiteStructuredData = canonicalPath === '/'
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={localeDefinitions[locale].htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -45,7 +55,8 @@ const websiteStructuredData = canonicalPath === '/'
     <SeoHead
       title={title}
       description={description}
-      canonicalPath={canonicalPath}
+      canonicalPath={localizedCanonicalPath}
+      alternates={alternates}
       noindex={effectiveNoindex}
     />
     {websiteStructuredData && (
@@ -53,22 +64,17 @@ const websiteStructuredData = canonicalPath === '/'
     )}
   </head>
   <body data-channel={toolChannel}>
-    <SiteHeader variant={headerVariant} />
+    <SiteHeader variant={headerVariant} locale={locale} semanticPath={semanticPath} />
     <main class:list={['page-main', headerVariant === 'homepage' && 'page-main--homepage']}>
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter locale={locale} />
   </body>
 </html>
 
 <style>
-  .page-main--homepage {
-    padding-top: var(--space-4);
-  }
-
+  .page-main--homepage { padding-top: var(--space-4); }
   @media (max-width: 40rem) {
-    .page-main--homepage {
-      padding-top: var(--space-3);
-    }
+    .page-main--homepage { padding-top: var(--space-3); }
   }
 </style>

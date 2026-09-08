@@ -1,27 +1,36 @@
 ---
-import BrandMark from '../icons/BrandMark.astro';
 import { siteConfig } from '../../config/site';
+import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import { buildLocalizedPath } from '../../i18n/routing';
+import BrandMark from '../icons/BrandMark.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 
 interface Props {
   variant?: 'default' | 'homepage';
+  locale?: ImplementedContentLocale;
+  semanticPath?: string;
 }
 
-const { variant = 'default' } = Astro.props;
+const { variant = 'default', locale = 'en', semanticPath = '/' } = Astro.props;
+const content = getSiteContent(locale);
+const homeHref = buildLocalizedPath(locale, '/');
+const aboutHref = buildLocalizedPath(locale, '/about');
 ---
 
 <header class="site-header" data-variant={variant}>
   <div class="site-header__inner shell-width">
-    <a class="site-header__brand" href="/">
+    <a class="site-header__brand" href={homeHref}>
       <span class="site-header__mark" aria-hidden="true"><BrandMark size={29} /></span>
-      <span class="site-header__brand-copy">
-        <strong>{siteConfig.name}</strong>
-      </span>
+      <span class="site-header__brand-copy"><strong>{siteConfig.name}</strong></span>
     </a>
 
-    <nav class="site-header__nav" aria-label="Primary navigation">
-      <a href="/" aria-current={variant === 'homepage' ? 'page' : undefined}>Tools</a>
-      <a href="/about">About</a>
-    </nav>
+    <div class="site-header__actions">
+      <nav class="site-header__nav" aria-label={content.nav.primaryAria}>
+        <a href={homeHref} aria-current={variant === 'homepage' ? 'page' : undefined}>{content.nav.tools}</a>
+        <a href={aboutHref} aria-current={semanticPath === '/about' ? 'page' : undefined}>{content.nav.about}</a>
+      </nav>
+      <LanguageSwitcher locale={locale} semanticPath={semanticPath} />
+    </div>
   </div>
 </header>
 
@@ -51,10 +60,7 @@ const { variant = 'default' } = Astro.props;
     color: #42504c;
   }
 
-  .site-header__brand-copy {
-    display: grid;
-  }
-
+  .site-header__brand-copy { display: grid; }
   .site-header__brand-copy strong {
     font: inherit;
     font-size: 0.95rem;
@@ -62,10 +68,14 @@ const { variant = 'default' } = Astro.props;
     letter-spacing: -0.018em;
   }
 
+  .site-header__actions,
   .site-header__nav {
+    display: flex;
     align-items: center;
-    gap: 1rem;
   }
+
+  .site-header__actions { gap: 0.85rem; }
+  .site-header__nav { gap: 1rem; }
 
   .site-header__nav a {
     position: relative;
@@ -91,34 +101,24 @@ const { variant = 'default' } = Astro.props;
   }
 
   .site-header__nav a:hover,
-  .site-header__nav a[aria-current='page'] {
-    color: var(--color-text);
-  }
-
+  .site-header__nav a[aria-current='page'] { color: var(--color-text); }
   .site-header__nav a:hover::after,
-  .site-header__nav a[aria-current='page']::after {
-    scale: 1 1;
-  }
+  .site-header__nav a[aria-current='page']::after { scale: 1 1; }
 
   @media (prefers-reduced-motion: reduce) {
     .site-header__nav a,
-    .site-header__nav a::after {
-      transition: none;
-    }
+    .site-header__nav a::after { transition: none; }
   }
 
   @media (max-width: 40rem) {
-    .site-header__inner {
-      min-height: 3.65rem;
-    }
+    .site-header__inner { min-height: 3.65rem; }
+    .site-header__mark { width: 1.8rem; height: 1.8rem; }
+    .site-header__actions { gap: 0.55rem; }
+    .site-header__nav { gap: 0.65rem; }
+    .site-header__nav a { font-size: 0.75rem; }
+  }
 
-    .site-header__mark {
-      width: 1.8rem;
-      height: 1.8rem;
-    }
-
-    .site-header__nav {
-      gap: 0.75rem;
-    }
+  @media (max-width: 28rem) {
+    .site-header__brand-copy { display: none; }
   }
 </style>

@@ -1,0 +1,91 @@
+---
+import { implementedContentLocales, getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
+import { localeDefinitions } from '../../i18n/locales';
+import { buildLocalizedPath } from '../../i18n/routing';
+
+interface Props {
+  locale: ImplementedContentLocale;
+  semanticPath: string;
+}
+
+const { locale, semanticPath } = Astro.props;
+const content = getSiteContent(locale);
+---
+
+<details class="language-switcher">
+  <summary aria-label={content.nav.languageAria}>
+    <span>{localeDefinitions[locale].hreflang}</span>
+    <span class="language-switcher__chevron" aria-hidden="true">▾</span>
+  </summary>
+  <div class="language-switcher__menu" role="list" aria-label={content.nav.language}>
+    {implementedContentLocales.map((targetLocale) => (
+      <a
+        href={buildLocalizedPath(targetLocale, semanticPath)}
+        hreflang={localeDefinitions[targetLocale].hreflang}
+        lang={localeDefinitions[targetLocale].htmlLang}
+        aria-current={targetLocale === locale ? 'page' : undefined}
+        role="listitem"
+      >
+        {localeDefinitions[targetLocale].label}
+      </a>
+    ))}
+  </div>
+</details>
+
+<style>
+  .language-switcher {
+    position: relative;
+  }
+
+  .language-switcher summary {
+    min-height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.3rem;
+    padding: 0.28rem 0.45rem;
+    color: var(--color-muted);
+    font-size: 0.72rem;
+    font-weight: 650;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .language-switcher summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .language-switcher__chevron {
+    font-size: 0.65rem;
+  }
+
+  .language-switcher__menu {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    z-index: 20;
+    min-width: 11rem;
+    display: grid;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    box-shadow: 0 0.4rem 1.2rem rgb(25 31 29 / 10%);
+  }
+
+  .language-switcher__menu a {
+    padding: 0.55rem 0.7rem;
+    color: var(--color-text);
+    font-size: 0.78rem;
+    text-decoration: none;
+  }
+
+  .language-switcher__menu a + a {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .language-switcher__menu a:hover,
+  .language-switcher__menu a:focus-visible,
+  .language-switcher__menu a[aria-current='page'] {
+    background: var(--color-surface-strong);
+  }
+</style>
