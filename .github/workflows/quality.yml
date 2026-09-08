@@ -31,13 +31,6 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Upload QA dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: localization-second-qa-dist
-          path: dist
-          retention-days: 1
-
       - name: Typecheck
         run: pnpm typecheck
 
