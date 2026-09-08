@@ -49,6 +49,10 @@ body[data-channel] .page-main [data-keyboard-rollover][data-state='detected'] .r
   color: var(--color-channel-keyboard);
 }
 
+body[data-channel] .page-main [data-keyboard-rollover] .rollover-tool__footer {
+  flex-wrap: wrap;
+}
+
 body[data-channel] .page-main [data-keyboard-rollover] .rollover-tool__examples code {
   border-color: var(--color-border);
   border-radius: var(--radius-sm);
