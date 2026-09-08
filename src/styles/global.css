@@ -244,21 +244,26 @@ body[data-channel] {
 }
 
 /* Homepage-specific visibility and legibility treatment. */
-.page-main--homepage .home-facts,
-.page-main--homepage .home-facts span {
+main.page-main.page-main--homepage .home-facts {
   color: #5f6966;
 }
 
-.page-main--homepage .instrument-screen__top span {
+main.page-main.page-main--homepage .home-facts span {
+  color: #5f6966;
+}
+
+main.page-main.page-main--homepage .instrument-screen__top span,
+main.page-main.page-main--homepage .instrument-screen__api span,
+main.page-main.page-main--homepage .instrument-screen__result span {
   color: #808b87;
 }
 
-.page-main--homepage .category-rail small,
-.page-main--homepage .tool-group__header p {
+main.page-main.page-main--homepage .category-rail small,
+main.page-main.page-main--homepage .tool-group__header p {
   color: #656d69;
 }
 
-.page-main--homepage .tool-link small {
+main.page-main.page-main--homepage .tool-link small {
   color: #6b7370;
 }
 
