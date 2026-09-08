@@ -1,65 +1,86 @@
 ---
 import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import { type ImplementedContentLocale } from '../../../i18n/content';
+import { getRuntimeMessages } from '../../../i18n/runtime';
 import StickDriftPlot from '../../../visuals/controller/StickDriftPlot.astro';
+
+interface Props {
+  locale?: ImplementedContentLocale;
+}
+
+const { locale = 'en' } = Astro.props;
+const runtime = getRuntimeMessages(locale);
+const messages = { common: runtime.gamepadTester, tool: runtime.stickDrift };
+const { common, tool } = messages;
 ---
 
 <ToolShell labelledBy="stick-drift-tool-heading">
-  <h2 id="stick-drift-tool-heading" class="drift-tool__sr">Controller Stick Drift Test</h2>
+  <h2 id="stick-drift-tool-heading" class="drift-tool__sr">{tool.controlsHeading}</h2>
 
-  <div class="drift-tool" data-stick-drift-test data-state="waiting">
+  <div
+    class="drift-tool"
+    data-stick-drift-test
+    data-messages={JSON.stringify(messages)}
+    data-state="waiting"
+  >
     <div class="drift-tool__topline">
       <div class="drift-tool__status-copy">
         <div class="drift-tool__status-row">
           <span class="drift-tool__signal" aria-hidden="true"></span>
-          <strong data-drift-status>No controller detected</strong>
+          <strong data-drift-status>{common.noController}</strong>
         </div>
-        <p data-drift-instruction>Connect a controller and press any button.</p>
+        <p data-drift-instruction>{common.connectInstruction}</p>
       </div>
 
       <label class="drift-tool__selector" data-drift-selector-wrap hidden>
-        <span>Controller</span>
-        <select class="tool-control" data-drift-selector aria-label="Select controller"></select>
+        <span>{tool.controllerLabel}</span>
+        <select class="tool-control" data-drift-selector aria-label={tool.controllerAria}></select>
       </label>
     </div>
 
     <div class="drift-tool__plots" aria-hidden="true">
-      <StickDriftPlot label="Left stick" side="left" />
-      <StickDriftPlot label="Right stick" side="right" />
+      <StickDriftPlot label={tool.leftStick} scaleLabel={`${tool.observedOffset} · 20%`} side="left" />
+      <StickDriftPlot label={tool.rightStick} scaleLabel={`${tool.observedOffset} · 20%`} side="right" />
     </div>
 
     <div class="drift-tool__results">
       <div class="drift-result">
-        <span>Left stick</span>
+        <span>{tool.leftStick}</span>
         <strong class="measurement-value" data-drift-result-left>—</strong>
-        <small>Observed center offset</small>
+        <small>{tool.observedOffset}</small>
       </div>
       <div class="drift-result">
-        <span>Right stick</span>
+        <span>{tool.rightStick}</span>
         <strong class="measurement-value" data-drift-result-right>—</strong>
-        <small>Observed center offset</small>
+        <small>{tool.observedOffset}</small>
       </div>
     </div>
 
     <div class="drift-tool__action-row">
-      <button type="button" class="primary-action" data-drift-start disabled>Start test</button>
-      <span class="drift-tool__progress" data-drift-progress>3-second sample</span>
+      <button type="button" class="primary-action" data-drift-start disabled>{tool.start}</button>
+      <span class="drift-tool__progress" data-drift-progress>3 s</span>
     </div>
 
     <p class="drift-tool__limitation" data-drift-limitation hidden></p>
 
     <p class="drift-tool__sr" aria-live="polite" aria-atomic="true" data-drift-status-live></p>
     <p class="drift-tool__sr" data-drift-accessible-summary>
-      No controller detected. Connect a controller and press any button.
+      {common.noController}. {common.connectInstruction}
     </p>
   </div>
 </ToolShell>
 
 <script>
-  import { mountControllerStickDriftTest } from './controller-stick-drift-test-controller';
+  import { readSerializedMessages } from '../../../i18n/runtime';
+  import {
+    mountControllerStickDriftTest,
+    type ControllerStickDriftMessages,
+  } from './controller-stick-drift-test-controller';
 
   const root = document.querySelector<HTMLElement>('[data-stick-drift-test]');
   if (root) {
-    const controller = mountControllerStickDriftTest(root);
+    const messages = readSerializedMessages<ControllerStickDriftMessages>(root);
+    const controller = mountControllerStickDriftTest(root, messages);
     window.addEventListener('pagehide', (event) => {
       if (event.persisted) {
         controller.stop();
