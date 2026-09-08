@@ -12,6 +12,7 @@ const fail = (message) => {
 };
 
 const readText = (path) => readFile(path, 'utf8');
+const normalizeUrl = (url) => new URL(url).href;
 
 const walkHtml = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -46,7 +47,7 @@ const extractCanonical = (html) => {
 const extractAlternates = (html, rel) => {
   const tags = html.match(/<link\b[^>]*>/gi) ?? [];
   const alternates = new Map();
-  const hrefs = new Set();
+  const localeHrefKeys = new Set();
 
   for (const tag of tags) {
     if (extractAttribute(tag, 'rel')?.toLowerCase() !== 'alternate') continue;
@@ -55,12 +56,14 @@ const extractAlternates = (html, rel) => {
     const href = extractAttribute(tag, 'href');
     if (!hreflang || !href) fail(`${rel} has an alternate link without hreflang or href`);
     if (alternates.has(hreflang)) fail(`${rel} has duplicate hreflang ${hreflang}`);
-    if (hrefs.has(href) && hreflang !== 'x-default') {
+
+    const hrefKey = normalizeUrl(href);
+    if (hreflang !== 'x-default' && localeHrefKeys.has(hrefKey)) {
       fail(`${rel} points multiple locale hreflangs at the same alternate URL: ${href}`);
     }
 
     alternates.set(hreflang, href);
-    if (hreflang !== 'x-default') hrefs.add(href);
+    if (hreflang !== 'x-default') localeHrefKeys.add(hrefKey);
   }
 
   return alternates;
@@ -174,6 +177,7 @@ for (const sitemapFile of sitemapFiles) {
 }
 
 const pagesByCanonical = new Map();
+const rawCanonicalUrls = new Set();
 for (const htmlFile of htmlFiles) {
   const rel = relative(distDir, htmlFile);
   const html = await readText(htmlFile);
@@ -187,6 +191,7 @@ for (const htmlFile of htmlFiles) {
 
   if (!canonical) fail(`${rel} is missing a canonical URL`);
   const canonicalUrl = new URL(canonical);
+  const canonicalKey = canonicalUrl.href;
   if (canonicalUrl.origin !== canonicalOrigin) fail(`${rel} canonical uses a different origin: ${canonical}`);
   if (canonicalUrl.search || canonicalUrl.hash) fail(`${rel} canonical must not contain a query or fragment: ${canonical}`);
   assertNoEnPrefix(canonical, `${rel} canonical`);
@@ -197,7 +202,8 @@ for (const htmlFile of htmlFiles) {
   }
 
   if (hasNoindex(html)) fail(`${rel} is unexpectedly noindex while indexing is enabled`);
-  if (pagesByCanonical.has(canonical)) fail(`duplicate canonical URL: ${canonical}`);
+  if (pagesByCanonical.has(canonicalKey)) fail(`duplicate canonical URL: ${canonical}`);
+  if (rawCanonicalUrls.has(canonical)) fail(`duplicate canonical URL: ${canonical}`);
 
   const lang = extractHtmlLang(html);
   if (!lang) fail(`${rel} is missing html lang`);
@@ -220,7 +226,7 @@ for (const htmlFile of htmlFiles) {
   for (const hreflang of alternates.keys()) {
     if (!expectedHreflangs.has(hreflang)) fail(`${rel} exposes unexpected hreflang ${hreflang}`);
   }
-  if (alternates.get(lang) !== canonical) {
+  if (normalizeUrl(alternates.get(lang)) !== canonicalKey) {
     fail(`${rel} self hreflang ${lang} must equal its canonical URL`);
   }
 
@@ -243,9 +249,11 @@ for (const htmlFile of htmlFiles) {
     fail(`${rel} canonical is not present verbatim in the sitemap: ${canonical}.${diagnostic} Align hosting URL form, redirects, canonicals, and sitemap entries before release.`);
   }
 
-  pagesByCanonical.set(canonical, {
+  rawCanonicalUrls.add(canonical);
+  pagesByCanonical.set(canonicalKey, {
     rel,
     canonical,
+    canonicalKey,
     lang,
     title,
     description,
@@ -255,14 +263,14 @@ for (const htmlFile of htmlFiles) {
 }
 
 for (const sitemapUrl of sitemapUrls) {
-  if (!pagesByCanonical.has(sitemapUrl)) {
+  if (!rawCanonicalUrls.has(sitemapUrl)) {
     fail(`sitemap URL has no matching indexable canonical page: ${sitemapUrl}`);
   }
 }
 
 for (const page of pagesByCanonical.values()) {
   for (const [hreflang, href] of page.alternates) {
-    const target = pagesByCanonical.get(href);
+    const target = pagesByCanonical.get(normalizeUrl(href));
     if (!target) fail(`${page.rel} hreflang ${hreflang} points to a missing/non-indexable page: ${href}`);
 
     if (hreflang === 'x-default') {
@@ -273,14 +281,14 @@ for (const page of pagesByCanonical.values()) {
     if (target.lang !== hreflang) {
       fail(`${page.rel} hreflang ${hreflang} points to a page with html lang ${target.lang}: ${href}`);
     }
-    if (target.alternates.get(page.lang) !== page.canonical) {
+    if (normalizeUrl(target.alternates.get(page.lang)) !== page.canonicalKey) {
       fail(`${page.rel} and ${target.rel} do not expose reciprocal hreflang links`);
     }
   }
 
-  const english = pagesByCanonical.get(page.alternates.get('x-default'));
+  const english = pagesByCanonical.get(normalizeUrl(page.alternates.get('x-default')));
   if (!english) fail(`${page.rel} has no resolvable English x-default page`);
-  if (english.alternates.get('x-default') !== english.canonical) {
+  if (normalizeUrl(english.alternates.get('x-default')) !== english.canonicalKey) {
     fail(`${english.rel} x-default must point to its own English canonical`);
   }
 
