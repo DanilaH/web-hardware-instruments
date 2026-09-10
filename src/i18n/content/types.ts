@@ -29,7 +29,7 @@ export interface HomeContent {
   readonly boundarySignals: string;
   readonly boundaryObserved: string;
   readonly boundaryNoUpload: string;
-  /** @deprecated Homepage signal labels are now keyed by channel in home-signals.ts. */
+  // Retained for content-contract compatibility; the homepage renders keyed labels from home-signals.ts.
   readonly inputs: readonly string[];
   readonly categoryAria: string;
   readonly chooseTool: string;
