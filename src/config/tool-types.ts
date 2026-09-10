@@ -1,0 +1,30 @@
+export type ToolChannel =
+  | 'controller'
+  | 'mouse'
+  | 'keyboard'
+  | 'display'
+  | 'touch'
+  | 'camera'
+  | 'printer';
+
+export type ToolIconKind =
+  | 'gamepad'
+  | 'drift'
+  | 'deadzone'
+  | 'mouse'
+  | 'button'
+  | 'scroll'
+  | 'double-click'
+  | 'polling'
+  | 'dpi'
+  | 'keyboard'
+  | 'rollover'
+  | 'ghosting'
+  | 'fps'
+  | 'refresh'
+  | 'frame-skip'
+  | 'dead-pixel'
+  | 'backlight'
+  | 'touch'
+  | 'camera'
+  | 'printer';
