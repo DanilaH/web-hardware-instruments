@@ -4,53 +4,52 @@
 **Date:** 2026-09-10  
 **Repository:** `DanilaH/web-hardware-instruments`  
 **Production origin:** `https://hardwareinspect.com`  
-**Research:** HardwareInspect Expansion V2  
 **Research ID:** `20260910123657992_60df693e-4cc9-4c0b-b108-739214f99f44`  
 **Discovery run:** `20260910160232265_0097e1d2-a61d-4ab2-a55a-390a1fe525e6`  
 **Enrichment ID:** `20260910162926364_035b90b5-8a9c-4712-8880-be83ccd9685d`
 
-This document is the normalized repository source of truth for Hardware Expansion V2. It incorporates the owner-approved `HARDWAREINSPECT_EXPANSION_V2_IMPLEMENTATION_HANDOFF_2026-09-10.md` and resolves the implementation ambiguities found during independent pre-implementation review.
+This is the normalized repository source of truth for Hardware Expansion V2. It incorporates the owner-approved implementation handoff and the independent pre-implementation review corrections.
 
-It supersedes chat discussion and raw research decision labels for this wave. It does not retroactively change completed Full-v1 or Expansion 1 diagnostic behavior.
+It supersedes chat discussion and raw Runner decision labels for this wave. It does not retroactively change completed Full-v1 or Expansion 1 behavior.
 
 ---
 
-# 0. Source-of-truth integration and precedence
+# 0. Authority and precedence
 
-Use the repository contracts together:
+Use these contracts together:
 
 ```text
 19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md
-  durable business/product strategy, expansion rule, release boundary
+  durable strategy / scope gate / release boundary
 
 18_DECISIONS_AND_BOUNDARIES.md
-  shared/global + Full-v1 exact algorithms, lifecycle and browser behavior
+  shared global + Full-v1 algorithms / lifecycle / browser rules
 
 23_HARDWARE_EXPANSION_V2_SPEC.md
-  exact Expansion V2 scope, route behavior, new capability boundaries,
-  V2 SEO/copy patches, sequencing and route-specific QA
+  exact V2 scope / route behavior / new capability boundaries /
+  V2 SEO patches / sequencing / V2 QA
 
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
-  exact Expansion 1 behavior for already implemented routes
+  exact already-implemented Expansion 1 behavior
 
 22_LOCALIZATION_SPEC.md
-  locale registry, localized routing/content/runtime-message architecture,
-  canonical/hreflang behavior and localization QA
+  locale/routing/content/runtime-message architecture /
+  canonical/hreflang/localization QA
 ```
 
 Rules:
 
-- `23` may add new V2 routes and capability boundaries only where explicitly stated here.
+- `23` may add only the V2 routes/capability boundaries explicitly approved here.
 - `23` does not weaken global privacy, lifecycle, dependency-direction, accessibility or measurement-honesty rules from `18`/`19`.
-- `22` owns how an approved tool is localized; it does not decide whether a new diagnostic job exists.
-- If a genuinely shared rule conflicts across these documents, stop and fix the documentation before product code proceeds.
-- Existing “current catalog = 18” lists in supporting/current-state documents remain factually correct until a V2 route is actually merged. Update those lists atomically with implemented routes rather than pre-advertising placeholders.
+- `22` owns how an approved job is localized; it does not authorize new jobs.
+- Existing “current catalog = 18” lists remain true until a V2 route is actually merged. Update current-state catalog docs atomically with implemented routes; never advertise placeholders.
+- If a genuinely shared rule conflicts, fix the documentation before product code proceeds.
 
-Do not reopen the SEO thesis, invent extra routes, broaden scope into generic benchmark/gaming utilities, or redesign completed tools for aesthetic consistency.
+Do not reopen the SEO thesis, invent extra routes, broaden into generic benchmark/gaming utilities, or redesign completed tools for aesthetic consistency.
 
 ---
 
-# 1. Executive decision
+# 1. Approved scope and order
 
 Expansion V2 adds exactly six production routes:
 
@@ -66,21 +65,21 @@ Expansion V2 adds exactly six production routes:
 Final implementation order:
 
 ```text
-0. Foundation / content-source cleanup / existing SEO patch / IA preparation
+0. Foundation / EN content-source cleanup / IA preparation / existing SEO patch
 1. Printer Test Page
 2. Shared Display Pattern Engine + Monitor Test
 3. Screen Uniformity Test
 4. OLED Burn-In Test
 5. Screen Resolution Checker
 6. Webcam Test
-7. Reassess WATCH items only after shipping + first-party evidence
+7. stop broad expansion; reassess WATCH only from first-party evidence
 ```
 
-The Display order above intentionally groups the three shared pattern-engine consumers before the independent Screen Resolution tool. This resolves the older handoff mismatch where one summary placed Resolution before OLED while the release section grouped OLED with the shared Display foundation.
+This intentionally groups the three Display Pattern Engine consumers before the independent Resolution tool.
 
 ### Existing-page SEO/copy patch
 
-Keep URLs stable while applying the approved wording updates to:
+Keep URLs and diagnostic behavior stable while applying approved presentation wording to:
 
 ```text
 /gamepad-tester
@@ -101,7 +100,7 @@ GPU browser test / stress test
 monitor ghosting test
 ```
 
-### Do not create standalone routes
+### No standalone routes
 
 ```text
 /color-printer-test-page
@@ -117,33 +116,33 @@ monitor ghosting test
 /keyboard-chatter-test
 ```
 
-Those phrases are either sub-intents, synonyms, low-priority jobs or measurement-heavy jobs outside the current honesty/effort threshold.
+These are absorbed sub-intents/synonyms, low-priority jobs, or measurement-heavy directions outside this wave.
 
 ---
 
 # 2. Evidence interpretation
 
-The combined discovery research contains 193 direct root keywords. The human shortlist used 26 representative queries and produced 14 enrichment clusters.
+The research used 193 direct root keywords, a 26-query human shortlist and 14 enrichment clusters.
 
-Treat the evidence carefully:
+Interpretation rules:
 
 - Keyword Surfer figures are US-volume evidence.
-- Google was configured `hl=en`, `gl=us`, but observations reported physical location Chelyabinsk Oblast, Russia; use that SERP primarily as competition/intent evidence rather than a perfect US-localized snapshot.
-- Historical presence is bounded sampled Common Crawl evidence, not exact first-ever-seen date.
-- Do not turn `not_found` into proof that a domain did not exist.
-- Do not sum close synonyms into a traffic forecast.
+- Google was configured `hl=en`, `gl=us`, but observed physical location was Chelyabinsk Oblast, Russia; use that SERP primarily as competition/intent evidence, not a perfect US-localized snapshot.
+- Common Crawl presence is bounded sampled history, not exact first-ever-seen date.
+- `not_found` is not proof of historical absence.
+- Close synonyms are one intent family, not additive traffic.
 
 Examples:
 
 ```text
 webcam test / webcam tester / computer camera test
-  = one dense user-intent family, not additive traffic
+  = one intent family
 
 printer test page / print test page / test print page
-  = one cluster with a measured 22.2k head class, not 66.6k traffic
+  = one 22.2k head class, not 66.6k traffic
 ```
 
-The finalized Runner archive had five decision-label mismatches. For implementation, this document owns the corrected decisions:
+Corrected product decisions override the mismatched persisted Runner labels:
 
 ```text
 OLED / gray uniformity      BUILD
@@ -155,47 +154,29 @@ Monitor ghosting            WATCH
 
 ---
 
-# 3. Product opportunity roles
+# 3. Product roles
 
 ```text
-/printer-test-page
-  acquisition_anchor
-
-/monitor-test
-  acquisition_anchor
-
-/webcam-test
-  acquisition_anchor
-
-/screen-uniformity-test
-  strong_supporting_tool
-
-/screen-resolution-checker
-  strong_supporting_tool
-
-/oled-burn-in-test
-  strong_supporting_tool
+/printer-test-page            acquisition_anchor
+/monitor-test                 acquisition_anchor
+/webcam-test                  acquisition_anchor
+/screen-uniformity-test       strong_supporting_tool
+/screen-resolution-checker    strong_supporting_tool
+/oled-burn-in-test             strong_supporting_tool
 ```
 
-Effort-adjusted rationale:
-
-- Printer is the strongest easy new opportunity: dense 22.2k head class, weak/young entrants, very low implementation burden.
-- Monitor Test fills the broad Display entry-point gap while absorbing screen/display/color-test wording.
-- Uniformity has useful OLED/gray/DSE demand with weak specialized entrants and very low production burden once the shared pattern engine exists.
-- Resolution is a cheap instant-answer browser-information tool.
-- OLED Burn-In is a separate inspection job that reuses the same controlled-pattern foundation.
-- Webcam has by far the largest demand class but a strong established SERP, so it is a long-run acquisition bet rather than an easy ranking claim.
+Printer is the strongest low-burden opportunity; Monitor fills the broad Display-entry gap; Uniformity/Burn-In reuse a cheap shared visual foundation; Resolution is an immediate browser-information tool; Webcam has very large demand but a strong established SERP and should be treated as a long-run acquisition bet.
 
 ---
 
-# 4. Fixed architecture and atomic registration rule
+# 4. Architecture and atomic registration
 
-Current stack remains:
+Keep:
 
 ```text
 Astro static output
 TypeScript strict + noUncheckedIndexedAccess
-plain CSS / CSS custom properties / Astro-scoped styles
+plain CSS / CSS variables / Astro-scoped styles
 native browser APIs
 SVG / Canvas / DOM
 Vitest
@@ -203,11 +184,11 @@ Node 24
 pnpm 11
 ```
 
-No React/Vue/Svelte, Tailwind, UI framework, backend, database, auth, generic hardware abstraction, WebHID/WebUSB experiment, heavy runtime i18n framework or speculative dependency.
+No React/Vue/Svelte, Tailwind, UI framework, backend, database, auth, generic HardwareService, WebHID/WebUSB experiment, heavy runtime i18n framework or speculative dependency.
 
 ## 4.1 Tool channels
 
-`ToolChannel` may be prepared to support:
+The type system may be prepared for:
 
 ```text
 controller
@@ -219,7 +200,7 @@ camera
 printer
 ```
 
-Planned assignments:
+Assignments:
 
 ```text
 printer-test-page           -> printer
@@ -230,14 +211,14 @@ oled-burn-in-test           -> display
 screen-resolution-checker   -> display
 ```
 
-### Atomic ToolId registration — binding clarification
+### Atomic ToolId rule
 
-Do **not** register all six new `ToolId`s during Foundation merely because the type system can represent them.
+Foundation may add `camera` / `printer` **channel capability**, but must not pre-register unfinished V2 ToolIds.
 
-A new V2 `ToolId` enters the central registry only in the same coherent implementation block that also provides:
+A new V2 ToolId enters the central registry only in a coherent block that also supplies:
 
 ```text
-real tool component/controller
+real component/controller
 EN content
 pt-BR content
 de content
@@ -251,38 +232,40 @@ SEO metadata
 applicable tests
 ```
 
-This prevents placeholder pages, incomplete locale matrices, exhaustive-map breakage and temporary English fallbacks.
+This prevents placeholder routes, incomplete locale matrices and silent English fallback.
 
-Camera/Printer channel types and icon capability may be prepared during Foundation, but empty channels must not appear in homepage/navigation until a real tool in that channel is registered.
+Empty Camera/Printer groups must not appear in homepage/navigation.
 
-## 4.2 English content: one source of truth
+## 4.2 English presentation: one source
 
-Current localized routes use the shared `ToolPage` + `src/i18n/content/{locale}.ts` path, while English root tool pages still duplicate presentation copy.
+Current localized tools already use shared `ToolPage` + `src/i18n/content/{locale}.ts`, while EN root pages duplicate presentation content.
 
-Foundation must remove that duplication narrowly:
+Foundation must narrowly converge EN onto the same content path:
 
 ```text
-English root semantic URL
-    -> shared ToolPage
-    -> en content object
-    -> same tool component/controller as localized routes
+EN root semantic URL
+  -> ToolPage
+  -> en content
+  -> shared tool component/controller
 ```
 
-Keep English URLs unchanged. Do not redesign controllers while centralizing page content.
+Keep EN URLs unchanged. Do not alter controller behavior while doing this refactor.
 
-## 4.3 Typed ToolPage map
+## 4.3 ToolPage map
 
-`ToolPage.astro` remains the exhaustive map from stable `ToolId` to tool component. A missing registered `ToolId` should remain a compile-time problem where practical.
+`ToolPage.astro` remains the exhaustive stable `ToolId -> component` map. A registered ToolId missing a component should be a compile-time failure where practical.
 
-## 4.4 Homepage: data driven, no premature exposure
+## 4.4 Homepage
 
-Remove assumptions that there are exactly five channels:
+Remove exact-five assumptions:
 
-- no hard-coded `repeat(5, ...)` category rail;
-- no fixed-index hero label array;
-- no fixed `groups.slice(0, 2)` / `groups.slice(2)` split.
+- no hard-coded `repeat(5, ...)` rail;
+- no positional fixed-index hero labels;
+- no hard-coded `groups.slice(0, 2)` / `groups.slice(2)` split.
 
-Generate categories from implemented group data. When the full wave is live, the catalog has seven taxonomy groups and 24 tools:
+Generate from **implemented** group data. Keep 1366×768 compact; balance two desktop columns approximately 4/3 when all seven groups exist; do not compress seven mobile labels into unreadable columns.
+
+Full-wave taxonomy:
 
 ```text
 Controller
@@ -294,9 +277,17 @@ Camera
 Printer
 ```
 
-Desktop at 1366×768 must remain compact. A two-column group distribution should balance approximately 4/3 once all seven groups exist. Mobile must not compress seven labels into unreadable columns.
+### Homepage browser-boundary timing
 
-Update the browser-boundary concept so Printer is represented honestly as rendered output rather than observed hardware input:
+Foundation makes the hero/input model data-driven but does **not** advertise unimplemented capabilities.
+
+Visible browser-boundary labels must reflect implemented groups only:
+
+- existing five remain visible during Foundation;
+- `Print` is added when Printer Test Page ships;
+- `Camera` is added when Webcam Test ships.
+
+When both are live, the conceptual full-state wording is:
 
 ```text
 Controller · Pointer · Keyboard · Display · Touch · Camera · Print
@@ -307,22 +298,22 @@ Observed · estimated · visual inspection
 No raw diagnostic input upload
 ```
 
-Do not imply printer telemetry.
+Printer must read as rendered diagnostic output, not printer telemetry.
 
-## 4.5 Related tools: explicit and capped
+## 4.5 RelatedTools
 
-Replace implicit all-sibling/fallback behavior with an explicit typed relation graph or equally explicit capped curated selection.
+Replace implicit all-sibling/fallback behavior with explicit typed relations or an equally explicit capped selection.
 
-Durable IA rule remains binding:
+Binding durable rule:
 
 ```text
 normally 2 related tools
 maximum 3 when genuinely useful
 ```
 
-This resolves the raw handoff example that listed five Monitor Test relations and a seven-link focused-path block. Do not turn Display pages into a link directory merely because the channel grows to nine tools.
+This overrides the raw handoff examples that listed five Monitor relations/seven focused links.
 
-Approved V2 examples:
+Approved V2 graph:
 
 ```text
 monitor-test
@@ -351,31 +342,29 @@ dead-pixel-test
   -> backlight-bleed-test
 
 webcam-test
-  -> empty relation set is valid
+  -> empty
 
 printer-test-page
-  -> empty relation set is valid
+  -> empty
 ```
 
-`RelatedTools` must render nothing cleanly for an empty relation set. Do not force unrelated cross-device links.
+`RelatedTools` must render nothing cleanly for an empty set. No unrelated cross-links for singleton channels.
 
-## 4.6 Visual channel rule
+## 4.6 Visual taxonomy
 
-Camera and Printer are new **taxonomy channels**, but this wave does not automatically authorize two more bright chromatic families.
+Camera and Printer are taxonomy channels, not automatic permission for two new bright color families.
 
-The existing five restrained Controller/Mouse/Keyboard/Display/Touch channel colors remain stable. Camera and Printer should use the neutral instrument/chassis treatment plus functional state colors where needed unless a later explicit visual review approves a restrained extension of the channel palette.
+Keep the five existing restrained chromatic mappings for Controller/Mouse/Keyboard/Display/Touch. Camera/Printer use neutral instrument/chassis treatment plus real semantic state colors unless an explicit later visual review approves a restrained palette extension.
 
-Do not turn seven homepage groups into a seven-color rainbow.
+Do not create a seven-color rainbow.
 
 ---
 
-# 5. Shared technical primitives
+# 5. Shared V2 primitives
 
-Do not build a generic `HardwareService`.
+## 5.1 Display Pattern Engine
 
-## 5.1 Shared Display Pattern Engine
-
-Used by:
+Shared by:
 
 ```text
 /monitor-test
@@ -383,21 +372,22 @@ Used by:
 /oled-burn-in-test
 ```
 
-Responsibilities:
+Own only:
 
 ```text
-pattern definition
+pattern definitions/order
 active pattern state
 manual previous/next
-optional bounded auto-advance only where approved for Monitor Test
 fullscreen enter/exit via existing helper
-keyboard controls
-touch/click controls
-hide/show control overlay
+active-stage keyboard navigation
+touch/click navigation
+hide/show overlay
 cleanup
 ```
 
-Suggested pattern model:
+P0 is manual. Do not add unattended auto-advance merely because the engine could support it.
+
+Suggested shape:
 
 ```ts
 type DisplayPattern =
@@ -407,11 +397,39 @@ type DisplayPattern =
   | { kind: 'grid'; label: string; /* deterministic definition */ };
 ```
 
-Keep rendering deterministic/local. SEO wording does not belong in the engine.
+SEO wording does not belong in the primitive.
+
+### Encoded gray-reference rule
+
+Percent gray presets are **encoded sRGB reference levels**, not physical luminance percentages.
+
+For a gray preset `p` in `0..100`:
+
+```ts
+const channel = Math.round((255 * p) / 100);
+const color = `rgb(${channel} ${channel} ${channel})`;
+```
+
+Therefore representative encoded values are:
+
+```text
+5%   -> 13  (#0D0D0D)
+10%  -> 26  (#1A1A1A)
+25%  -> 64  (#404040)
+50%  -> 128 (#808080)
+75%  -> 191 (#BFBFBF)
+100% -> 255 (#FFFFFF)
+```
+
+UI/copy may say `5% Gray` as a reference-pattern label but must not imply measured 5% panel luminance.
+
+### Keyboard handling
+
+Only while the diagnostic stage is active, handled navigation keys may suppress their default page-scroll behavior where needed. Do not install global page-wide interception. Do not block ordinary form-control input. Escape remains browser/fullscreen exit behavior; observe fullscreen state rather than trying to trap Esc.
 
 ## 5.2 Screen-info helper
 
-For `/screen-resolution-checker` and optional Monitor Test summary:
+For Resolution Checker and optional compact Monitor summary:
 
 ```ts
 interface BrowserScreenInfo {
@@ -429,7 +447,14 @@ interface BrowserScreenInfo {
 }
 ```
 
-Binding terminology:
+Exact estimate:
+
+```ts
+estimatedDevicePixelWidth = Math.round(screenWidthCss * devicePixelRatio);
+estimatedDevicePixelHeight = Math.round(screenHeightCss * devicePixelRatio);
+```
+
+Use terminology:
 
 ```text
 Browser-reported screen size
@@ -438,13 +463,13 @@ Browser viewport
 Device pixel ratio
 ```
 
-Never call `screen.width * devicePixelRatio` native/physical panel resolution.
+Never call the estimate native/physical panel resolution.
 
 ## 5.3 CameraService
 
-Expansion V2 approves one focused new acquisition boundary, e.g. `src/browser/camera-service.ts`.
+V2 approves one new acquisition boundary, e.g. `src/browser/camera-service.ts`.
 
-Responsibilities:
+Own:
 
 ```text
 feature detection
@@ -457,12 +482,11 @@ stop/release
 error normalization
 ```
 
-Do not include audio.
+No audio.
 
-Lifecycle may be:
+Small lifecycle:
 
 ```text
-create
 start(deviceId?)
 listVideoDevices
 switchDevice
@@ -471,32 +495,23 @@ stop
 destroy
 ```
 
-`stop()` and `destroy()` must stop every active media track. A switch must stop/replace the prior stream cleanly.
+`stop()`/`destroy()` stop every active media track. Switching must replace/stop the prior stream cleanly.
 
 ## 5.4 Printer has no hardware service
 
-Printer Test Page is a generated printable reference:
+Printer Test Page uses generated local markup/SVG + print CSS + `window.print()`.
 
-```text
-tool controller
-print-pattern component
-print CSS
-window.print()
-```
-
-No printer detection, no cartridge state, no telemetry, no WebUSB/WebHID.
+No printer detection, cartridge/nozzle state, telemetry, WebUSB or WebHID.
 
 ---
 
-# 6. Route contract — `/printer-test-page`
+# 6. `/printer-test-page`
 
 ## User job
 
-> Print a controlled reference page and visually inspect obvious print-quality problems.
+Print a controlled reference page and visually inspect obvious print-quality problems.
 
-## Primary experience
-
-Above the fold:
+## Primary UI
 
 ```text
 Printer Test Page
@@ -504,30 +519,49 @@ short explanation
 paper size: A4 / Letter
 test profile: Full / Color / Grayscale
 [Print Test Page]
-compact on-screen preview
+compact preview
 ```
 
-Printed reference should contain practical diagnostic content:
+Paper references:
+
+```text
+A4     210 × 297 mm
+Letter 8.5 × 11 in
+portrait P0
+```
+
+Profile semantics:
+
+```text
+Full
+  common text/line/alignment references + grayscale + color sections
+
+Color
+  common text/line/alignment references + color patches/gradients
+
+Grayscale
+  common text/line/alignment references + grayscale patches/gradient
+```
+
+Printed content should include:
 
 - fine black text at multiple useful sizes;
-- thin horizontal/vertical line and grid patterns;
-- alignment/crosshair references;
-- discrete grayscale patches + smooth grayscale ramp;
-- red/green/blue/cyan/magenta/yellow/black/neutral-gray patches;
-- useful color gradients for visible transition/banding inspection;
-- page-edge/safe-area references that do not require borderless printing.
+- thin horizontal/vertical line and grid references;
+- alignment/crosshair markers;
+- grayscale patches and smooth ramp;
+- R/G/B/C/M/Y/K/neutral-gray patches in applicable profiles;
+- useful color gradients in applicable profiles;
+- page-edge/safe-area references without requiring borderless printing.
 
-Prefer print-safe SVG/HTML foreground graphics. Essential diagnostic elements must not depend exclusively on CSS background printing.
+Prefer SVG/HTML foreground graphics for essential diagnostics. Do not depend exclusively on print-background settings.
 
-Support A4 and Letter. Tell users to use `100% / Actual Size` when checking physical spacing/alignment.
+Tell users to choose `100% / Actual Size` when checking physical spacing/alignment. Browser print preview is enough; no PDF generator in P0.
 
-Browser print preview is sufficient for P0; no PDF generator.
+## Honesty
 
-## Honesty boundary
+Browser/OS/driver/printer color management may transform colors. No claim of raw CMYK separation, exact nozzle isolation, cartridge state, certified color accuracy or automatic root-cause diagnosis.
 
-A browser/OS/driver/printer pipeline may transform colors. Do not claim raw CMYK separations, exact nozzle isolation, color-accuracy certification, cartridge state or automatic root-cause diagnosis.
-
-Use wording such as:
+Recommended meaning:
 
 > Use the printed pattern to look for missing color, visible banding, blurred text, uneven density or alignment problems.
 
@@ -541,26 +575,23 @@ Meta: Print a free printer test page with color patches, grayscale, fine lines, 
 
 ## Acceptance
 
-- print preview has no site header/footer/navigation;
-- A4 and Letter portrait layouts avoid accidental clipping;
-- essential test elements do not rely on “Print background graphics”;
-- screen preview remains compact;
-- cancelling print leaves UI usable;
-- no printer-health pass/fail;
-- no exact CMYK/nozzle-isolation claim;
-- no user-content upload.
+- no site chrome in print preview/output;
+- A4 + Letter portrait fit without accidental clipping;
+- essential elements survive without background-graphics dependency;
+- compact screen preview;
+- print cancellation leaves UI usable;
+- no printer-health verdict or exact CMYK/nozzle claim;
+- no upload.
 
 ---
 
-# 7. Route contract — `/monitor-test`
+# 7. `/monitor-test`
 
 ## User job
 
-> Run one quick guided visual screen test for common obvious display problems.
+One quick guided visual first pass for common obvious monitor/screen issues.
 
-This is the broad Display entry point; it does not replace focused pages.
-
-## P0 pattern sequence
+## Exact P0 order
 
 ```text
 White
@@ -569,35 +600,35 @@ Red
 Green
 Blue
 50% Gray
-5–10% Gray
+5% Gray
 Grayscale gradient
 Color gradient
-Black-level pattern
-White-level pattern
-Sharpness/grid pattern
+Black-level reference
+White-level reference
+Sharpness/grid reference
 ```
 
-Keep the set modest; do not create a 40-pattern calibration suite.
+`5% Gray` uses the encoded gray rule from section 5.1. It is not a physical luminance statement.
 
 Primary action: `Start Monitor Test`.
 
-Fullscreen is progressive enhancement. Always keep a large in-page fallback.
+Fullscreen is progressive enhancement; keep a large in-page fallback.
 
-Controls:
+Active-stage controls:
 
 ```text
 Click/tap/Space/Right Arrow -> next
 Left Arrow                  -> previous
-Esc                         -> exit
+Esc                         -> browser/fullscreen exit
 ```
 
-Pattern instruction/label may appear temporarily but must be hideable so it does not contaminate inspection.
+Labels/instructions must be hideable during inspection.
 
-The test may help users visually inspect dead/stuck-pixel-like points, tint anomalies, brightness/uniformity differences, leakage/clouding, visible banding, basic black/white-level separation and obvious sharpness/geometry issues.
+May help visually inspect pixel-like points, obvious tint anomalies, brightness/uniformity differences, black-field leakage/clouding, visible gradient banding, basic black/white-level separation and obvious sharpness/geometry issues.
 
-Do not claim color accuracy, physical response time, contrast ratio, panel pass/fail or hardware health.
+No color-accuracy certification, response-time number, contrast-ratio number, pass/fail or health verdict.
 
-Use the capped RelatedTools set from section 4.5. Additional Display diagnostics remain discoverable from homepage/catalog; do not render a seven-link “everything Display” block.
+Use only the capped RelatedTools graph; no seven-link Display directory.
 
 ## EN metadata
 
@@ -607,27 +638,27 @@ H1: Monitor Test
 Meta: Run a guided fullscreen monitor test with solid colors, gray fields, gradients and basic display patterns to visually inspect common screen issues.
 ```
 
-Natural body vocabulary may include `screen test`, `display test`, `monitor color test`, `screen color test` without creating those URLs.
+Natural body vocabulary may include `screen test`, `display test`, `monitor color test`, `screen color test`; no synonym routes.
 
 ## Acceptance
 
-- active pattern renders without scrolling inside the stage;
-- fullscreen and in-page fallback work;
-- touch/click/keyboard navigation works;
-- no automatic pass/fail;
-- related continuation is capped and relevant;
-- static inspection patterns are not contaminated by accidental animation;
-- no unsafe calibration/hardware-measurement claims.
+- no scrolling inside active pattern stage;
+- fullscreen + fallback;
+- touch/click/keyboard navigation;
+- hideable overlay;
+- no automatic verdict;
+- no accidental animation contaminating static inspection fields;
+- no calibration/hardware-measurement overclaim.
 
 ---
 
-# 8. Route contract — `/screen-uniformity-test`
+# 8. `/screen-uniformity-test`
 
 ## User job
 
-> Use flat gray fields to visually inspect uneven brightness, tint, banding, mura or dirty-screen-effect-like patches.
+Flat gray references for visual inspection of uneven brightness, tint, banding, mura/clouding or dirty-screen-effect-like patches.
 
-Recommended presets:
+Exact presets, using section 5.1 encoding:
 
 ```text
 5% Gray
@@ -638,23 +669,23 @@ Recommended presets:
 100% White
 ```
 
-A 1–100% slider is optional only if it stays simpler than presets. Pattern switching is manual; no long unattended loop.
+Manual switching only. A 1–100% slider is optional only if it remains simpler than presets; it is not required.
 
-This is pure visual inspection. Users may look for darker/lighter patches, tint variation, vertical bands, mura/clouding and DSE.
+This is pure visual inspection. The browser does not measure luminance uniformity without external hardware.
 
-The browser does not measure luminance uniformity without external hardware. Do not display uniformity percentage, panel-variance score, pass/fail or color delta.
+Do not display percentage uniformity, panel-variance score, pass/fail or color delta.
 
-Conservative instructions:
+Conservative conditions:
 
 ```text
-use normal viewing brightness
+normal viewing brightness
 reduce distracting reflections
-inspect from normal viewing position first
+normal viewing position first
 compare several gray levels
-confirm whether the issue is visible in real content
+confirm whether issue also appears in real content
 ```
 
-Do not universally instruct maximum brightness.
+No universal maximum-brightness instruction.
 
 ## EN metadata
 
@@ -666,22 +697,22 @@ Meta: Use fullscreen gray fields to visually inspect screen uniformity, dirty sc
 
 ## Acceptance
 
-- deterministic gray values;
-- fullscreen + in-page fallback;
-- controls can be hidden;
-- no score/pass-fail;
-- DSE wording appears naturally;
-- no guarantee that visible variation is a defect.
+- deterministic encoded values;
+- fullscreen + fallback;
+- hideable controls;
+- DSE wording natural;
+- no score/verdict;
+- no guarantee that variation is a defect.
 
 ---
 
-# 9. Route contract — `/oled-burn-in-test`
+# 9. `/oled-burn-in-test`
 
 ## User job
 
-> Use controlled solid colors and gray fields to make persistent image-retention/burn-in-like patterns easier to see.
+Controlled solid/gray references that make persistent image-retention/burn-in-like shapes easier to see.
 
-Recommended short sequence:
+Exact short sequence:
 
 ```text
 Red
@@ -691,14 +722,16 @@ White
 50% Gray
 25% Gray
 75% Gray
-Black optional supporting field
+Black
 ```
 
-This is an inspection tool, not a repair tool.
+Gray fields use section 5.1 encoded values.
 
-Do not add flashing pixel-fixer sequences, long high-brightness loops, “repair burn-in” mode, burn-in percentage or countdowns encouraging hours of static display.
+Inspection only, not repair.
 
-The page must distinguish possible permanent OLED burn-in, temporary image retention, panel non-uniformity and tint/mura. A browser pattern cannot prove which is present.
+Do not add flashing pixel-fixer sequences, long high-brightness loops, repair mode, burn-in percentage or timers encouraging hours of static display.
+
+Copy must distinguish possible permanent OLED burn-in, temporary image retention, panel non-uniformity and tint/mura. Browser patterns cannot prove which is present.
 
 Recommended meaning:
 
@@ -714,22 +747,21 @@ Meta: Use fullscreen solid colors and gray fields to visually check for persiste
 
 ## Acceptance
 
-- no flashing or repair claim;
-- no burn-in percentage;
-- manual pattern navigation;
-- fullscreen fallback;
+- no flashing/repair claim/percentage;
+- manual navigation;
+- fullscreen + fallback;
 - clear burn-in vs retention distinction;
-- relevant links to Uniformity/Dead Pixel/Monitor within the max-3 rule.
+- max-3 relevant relations.
 
 ---
 
-# 10. Route contract — `/screen-resolution-checker`
+# 10. `/screen-resolution-checker`
 
 ## User job
 
-> What screen size, viewport and estimated device-pixel dimensions does this browser report right now?
+Immediately show what screen/viewport values this browser reports now.
 
-No Start button. Render immediately.
+No Start button.
 
 Primary:
 
@@ -738,7 +770,7 @@ Browser-reported screen size
 1920 × 1080 CSS px
 ```
 
-Secondary values:
+Secondary:
 
 ```text
 Estimated device-pixel dimensions
@@ -746,20 +778,25 @@ Browser viewport
 Available screen area
 Device pixel ratio
 Color depth
-Orientation
+Orientation when available
 ```
 
-Recompute on relevant resize/orientation changes. A manual Refresh action is optional.
+Source values:
 
-Do not add Multi-Screen Window Placement API permission complexity in P0.
+```text
+screen.width / height
+screen.availWidth / availHeight
+window.innerWidth / innerHeight
+window.devicePixelRatio
+screen.colorDepth
+screen.orientation?.type when available
+```
 
-## Measurement honesty
+Estimated device-pixel dimensions use the exact `Math.round(css * dpr)` rule from section 5.2.
 
-`window.screen.width/height` are browser-reported CSS-pixel dimensions.
+Recompute on resize and relevant orientation change. No Multi-Screen Window Placement permission in P0.
 
-`screen.width * devicePixelRatio` is an **estimated device-pixel dimension**, not guaranteed native physical panel resolution. Browser zoom, OS scaling, browser behavior and privacy protections can affect values.
-
-Never write “your native monitor resolution is definitely ...”.
+Do not claim native/physical monitor resolution; zoom, OS scaling, browser behavior and privacy behavior can affect reported values.
 
 ## EN metadata
 
@@ -771,22 +808,22 @@ Meta: See the screen size, browser viewport, device pixel ratio and estimated de
 
 ## Acceptance
 
-- primary result appears immediately;
-- viewport updates on resize;
-- orientation changes update applicable values;
-- estimate is explicitly labeled;
-- no exact native-panel claim;
-- no permission required.
+- immediate primary value;
+- resize updates viewport;
+- orientation updates applicable values;
+- estimate visibly labelled;
+- no native-panel claim;
+- no permission.
 
 ---
 
-# 11. Route contract — `/webcam-test`
+# 11. `/webcam-test`
 
 ## User job
 
-> Confirm that a webcam can be opened in the browser and see the video currently delivered by it.
+Confirm a webcam can be opened in-browser and view the current video stream.
 
-Initial state:
+Initial:
 
 ```text
 Webcam Test
@@ -794,15 +831,12 @@ Your camera stays on this device.
 [Start Camera]
 ```
 
-Only the explicit Start action may trigger permission.
+Permission only after Start.
 
 Use:
 
 ```ts
-navigator.mediaDevices.getUserMedia({
-  video: true,
-  audio: false,
-});
+navigator.mediaDevices.getUserMedia({ video: true, audio: false });
 ```
 
 After permission:
@@ -810,42 +844,40 @@ After permission:
 ```text
 live preview
 selected camera
-browser/track-reported stream resolution
+track/browser-reported stream resolution
 track-reported frameRate when available
 aspect ratio
 [Stop Camera]
 ```
 
-After permission, enumerate video devices when supported and allow camera switching if multiple inputs are available.
+After permission, enumerate video inputs when supported and allow switching when multiple cameras exist.
 
-If measured displayed frame rate is later added with `requestVideoFrameCallback`, label it separately as browser/video-frame observation. Do not mix it with track-reported `frameRate` under one ambiguous number. Measured FPS is optional in P0.
+If displayed-frame measurement is ever added via `requestVideoFrameCallback`, label it separately as an observed video-frame rate. Do not merge it with track-reported `frameRate`. Measured FPS is optional and omitted from P0 unless implementation remains clearly simpler with it.
 
-Normalize user-facing errors for at least:
+Normalize at least:
 
 ```text
-camera API unavailable
+API unavailable
 permission denied
 no camera found
-camera already in use / cannot be read
+camera in use / unreadable
 constraint/device-switch failure
 stream ended
 ```
 
-Do not show raw exception stacks.
+No raw exception stacks.
 
-### Privacy — binding
+### Privacy
 
-- no frame upload;
-- no stream upload;
+- no media upload;
 - no recording;
-- no backend;
 - no snapshot persistence;
-- Stop stops all active tracks;
-- destroy/navigation stops all active tracks;
-- switching replaces/stops the prior stream;
-- no microphone permission.
+- no backend;
+- no microphone permission;
+- Stop/destroy/navigation stop active tracks;
+- switch cleans up replaced stream.
 
-A screenshot/capture feature is omitted from P0.
+Screenshot/capture is out of P0.
 
 ## EN metadata
 
@@ -855,26 +887,25 @@ H1: Webcam Test
 Meta: Test your webcam directly in the browser with a live camera preview and browser-reported stream information. No recording or upload.
 ```
 
-Natural supporting vocabulary: `webcam tester`, `camera test online`, `computer camera test`.
+Supporting terms: `webcam tester`, `camera test online`, `computer camera test`.
 
 ## Acceptance
 
-- permission only after explicit action;
-- audio permission never requested;
-- denied permission produces actionable state;
-- active tracks stop on Stop/navigation/destroy;
-- device switching cleans up prior stream;
-- no network request contains media frames;
-- one-camera flow works if enumeration is limited;
+- explicit-action permission;
+- no audio permission;
+- actionable denied/no-camera/in-use states;
+- clean stop/navigation/switch lifecycle;
+- no request carries media frames;
+- one-camera flow works with limited enumeration;
 - no camera-quality score.
 
 ---
 
 # 12. Existing-page SEO/copy patch
 
-These changes are presentation/SEO only. Existing diagnostic algorithms and caveats remain unchanged.
+Presentation only; diagnostic algorithms/caveats remain unchanged.
 
-## `/gamepad-tester`
+## Gamepad Tester
 
 ```text
 H1: Gamepad Tester
@@ -882,11 +913,9 @@ Title: Gamepad Tester — Test Controllers & Joysticks Online
 Meta: Test gamepad and controller buttons, analog sticks, D-pad and triggers directly in your browser. Works as a quick controller and joystick input checker.
 ```
 
-Natural intro may mention gamepad/controller/joystick. Do not imply every controller is supported; standard/non-standard mapping caveats remain.
+No universal compatibility claim.
 
-## `/controller-stick-drift-test`
-
-Front-load the stronger generic head:
+## Stick Drift
 
 ```text
 H1: Stick Drift Test
@@ -894,50 +923,42 @@ Title: Stick Drift Test — Check Controller Analog Stick Drift
 Meta: Test controller stick drift in your browser by measuring the observed center offset of both analog sticks while untouched.
 ```
 
-Measurement logic is unchanged.
+Measurement logic unchanged.
 
-## `/mouse-polling-rate-test`
+## Mouse Polling Rate
 
 ```text
 Title: Mouse Polling Rate Test — Check Mouse Hz Online
 ```
 
-Keep browser-observed pointer-sample-rate caveat; do not imply direct USB reports.
+Keep browser-observed pointer-sample-rate caveat; not USB polling certification.
 
-## `/mouse-dpi-test`
+## Mouse DPI
 
-Keep H1 `Mouse DPI Test`. Add `DPI analyzer` only as secondary natural vocabulary, e.g.:
+Keep `Mouse DPI Test`; add `DPI analyzer` only naturally in explanatory text. Keep `Estimated DPI`.
 
-> This mouse DPI analyzer estimates DPI from browser-observed movement over a physical distance you provide.
-
-Keep `Estimated DPI` terminology.
-
-## `/keyboard-rollover-test`
+## Keyboard Rollover
 
 ```text
 H1: Keyboard Rollover Test
 Title: Keyboard Rollover Test — NKRO & Simultaneous Key Check
 ```
 
-Add natural section wording such as `NKRO testing and browser limitations`. Never claim NKRO certification.
+Add natural `NKRO testing and browser limitations` wording. No NKRO certification.
 
-## `/keyboard-tester`
+## Keyboard Tester
 
-Keep existing dominant Keyboard Tester title/H1 stable. Add `keyboard checker` naturally in intro/explanation only.
+Keep dominant title/H1. Add `keyboard checker` only naturally in intro/explanation.
 
-## `/dead-pixel-test`
+## Dead Pixel / Touch Screen
 
-Mostly leave intact. Existing dead/stuck-pixel coverage already owns the synonym family. No new synonym page.
-
-## `/touch-screen-test`
-
-Do not split into multi-touch, ghost-touch or dead-zone pages. Existing broad route already covers those browser-observable sub-jobs.
+Mostly preserve existing pages. No stuck-pixel synonym route; no multi-touch/ghost-touch/dead-zone synonym routes.
 
 ---
 
-# 13. Localization and content completeness
+# 13. Localization
 
-Implemented locales remain:
+Locales remain:
 
 ```text
 en
@@ -948,20 +969,11 @@ es
 ru
 ```
 
-English remains unprefixed. Localized routes keep the English semantic slug:
+EN is unprefixed. Every locale keeps the same English semantic slug. No localized slugs.
 
-```text
-/webcam-test
-/de/webcam-test
-/es/webcam-test
-/ru/webcam-test
-```
+Every registered V2 ToolId must have complete content for all six locales before route generation. No English placeholder fallback.
 
-No localized slugs in this wave.
-
-Every registered V2 ToolId must have complete content for all six locales before it enters route generation. No per-tool English placeholder fallback.
-
-Preferred primary local vocabulary:
+Preferred primary vocabulary:
 
 | Tool | pt-BR | de | fr | es | ru |
 |---|---|---|---|---|---|
@@ -972,49 +984,47 @@ Preferred primary local vocabulary:
 | Uniformity | Teste de uniformidade da tela | Test der Bildschirmgleichmäßigkeit / Grauuniformität | Test d'uniformité de l'écran | Prueba de uniformidad de pantalla | Тест равномерности экрана |
 | Burn-In | Teste de burn-in OLED | OLED-Burn-in-Test | Test de burn-in OLED | Prueba de burn-in OLED | Тест на выгорание OLED |
 
-Do not mechanically translate established technical terms when local usage keeps a loanword/hybrid.
+Do not mechanically translate established technical loanwords.
 
-### Privacy content timing — binding clarification
+### Privacy timing
 
-Do **not** update public privacy copy in Foundation to describe a camera feature that is not shipped yet.
+Do **not** publish camera privacy language before Webcam ships.
 
-Update all locale privacy pages in the Webcam implementation block, atomically with `/webcam-test`, preserving this meaning:
+In the Webcam block update all locale privacy pages to preserve:
 
 ```text
 Controller, keyboard, mouse, touch, frame-timing and camera data are processed locally.
 Camera video is not uploaded, recorded or stored by Hardware Inspect.
 ```
 
-Printer copy should state that the page generates a reference and does not inspect printer telemetry or upload documents.
+Printer page copy must say it generates a local reference, does not inspect printer telemetry and uploads no documents.
 
 ---
 
-# 14. SEO implementation requirements
+# 14. SEO generation
 
-For every new route:
+For each new route:
 
 ```text
 H1 + concise intro
 actual tool immediately
-useful explanatory content below
+useful explanation below
 limitations / measurement boundary
-RelatedTools only when semantically useful
+RelatedTools only when semantically relevant
 ```
 
-Avoid SEO sludge before the tool.
+Use the existing centralized canonical/hreflang pipeline. No hand-coded competing SEO tags.
 
-Use the existing centralized canonical/hreflang pipeline. Do not hand-code conflicting tags in components.
+Every registered V2 job must generate:
 
-Every registered route must generate:
-
-- one EN root URL;
-- five localized counterparts;
-- self canonical;
-- reciprocal `en`, `pt-BR`, `de`, `fr`, `es`, `ru` hreflang;
-- `x-default` to EN where current architecture emits it;
-- sitemap entry for every indexable alternate.
-
-Do not create synonym-route aliases merely to target phrases.
+```text
+1 EN root URL
+5 localized URLs
+self canonical
+reciprocal en / pt-BR / de / fr / es / ru hreflang
+x-default -> EN when emitted by current pipeline
+sitemap entries for every indexable alternate
+```
 
 Canonical intent ownership:
 
@@ -1038,13 +1048,13 @@ Canonical intent ownership:
   webcam test / webcam tester / computer camera test
 ```
 
-Structured data is optional. Do not delay shipping for it and do not invent ratings, reviews, usage counts or offers.
+No synonym route zoo. Structured data is optional; no fake ratings/reviews/usage/offers.
 
 ---
 
-# 15. Measurement-honesty contract
+# 15. Measurement language
 
-Allowed language families:
+Allowed families:
 
 ```text
 Observed
@@ -1054,6 +1064,7 @@ Visual inspection
 May indicate
 Worth investigating
 Not detected in this browser test
+Controlled reference
 ```
 
 Avoid:
@@ -1074,24 +1085,17 @@ Automatic repair
 Specific boundaries:
 
 ```text
-Printer
-  controlled printable reference; no printer telemetry
-
-Monitor / Uniformity / Burn-In
-  visual inspection only; no physical luminance/colorimeter measurement
-
-Resolution
-  browser-reported CSS screen size + estimated device-pixel dimensions
-
-Webcam
-  permissioned browser media stream + track/browser observations
+Printer        controlled printable reference; no printer telemetry
+Display V2     visual inspection; no physical luminance/colorimeter measurement
+Resolution     browser-reported CSS values + estimated device pixels
+Webcam         permissioned local browser stream + track/browser observations
 ```
 
 ---
 
-# 16. Testing strategy
+# 16. QA
 
-Automated minimum after review:
+Automated minimum **after both review passes**:
 
 ```bash
 pnpm typecheck
@@ -1099,129 +1103,115 @@ pnpm test
 pnpm build
 ```
 
-Add pure tests where applicable for:
+Add pure tests for applicable:
 
-- screen-info calculation/rounding;
-- display-pattern ordering/definitions;
-- camera error normalization;
+- encoded gray/pattern definitions and order;
+- screen-info `Math.round` calculation;
+- camera error normalization/lifecycle helpers;
 - print-profile state logic.
 
-Do not mock a printer into a fake physical-output verdict or mock display defects into proof of panel behavior.
-
-Manual browser targets:
+Manual targets:
 
 ```text
-Desktop: Chrome, Edge, Firefox; Safari where available
-Mobile: iOS Safari, Android Chrome for responsive/fullscreen/camera behavior
+Desktop: Chrome / Edge / Firefox; Safari where available
+Mobile: iOS Safari / Android Chrome for responsive/fullscreen/camera behavior
 ```
 
-### Printer manual QA
+Printer manual QA:
 
-- Chrome and Firefox print preview;
-- A4 + Letter;
-- portrait layout;
+- Chrome + Firefox print preview;
+- A4 + Letter portrait;
 - 100% / Actual Size guidance;
-- essential vector/color elements survive without relying on background graphics;
-- site chrome hidden from print.
+- no site chrome;
+- essential foreground/color/vector content without background-graphics dependency.
 
-### Webcam manual QA
+Webcam manual QA:
 
-- allow;
-- deny;
-- previously denied;
-- no camera;
-- two cameras if available;
-- switch;
+- allow / deny / previously denied / no camera;
+- two cameras + switch if available;
 - stop;
-- navigate away while streaming;
+- navigation away;
 - another app holding camera if reproducible;
-- inspect network once to confirm no media upload.
+- network inspection once for no media upload.
 
-### Display pattern QA
+Display manual QA:
 
 - in-page stage;
-- fullscreen;
-- fullscreen rejection/unavailable fallback;
-- keyboard navigation;
-- touch navigation;
-- Esc;
-- high-DPI screen;
+- fullscreen and rejection/unavailable fallback;
+- keyboard/touch/click navigation;
+- Esc/fullscreen state;
+- high-DPI;
 - mobile orientation;
-- controls hide/restore.
+- control overlay hide/restore.
 
-Headless/mocked checks may prove state, rendering and cleanup logic. They are not proof of real printer output, real camera hardware or physical panel defects.
+Mocks/headless checks validate logic/state/rendering, not real printer output, real camera hardware or physical panel defects.
 
 ---
 
-# 17. Release sequencing — atomic waves
+# 17. Atomic implementation waves
 
-Each wave is a coherent production-valid block. Follow the repository review-before-validation workflow for every block.
+Each block follows:
 
-## Wave 0 — Foundation + existing SEO patch
+```text
+implementation
+-> self-review #1
+-> fixes
+-> visual/UX review
+-> fixes
+-> self-review #2 final diff
+-> fixes
+-> build/typecheck/tests/CI
+-> validation fixes/rerun
+-> squash merge
+```
+
+## Wave 0 — Foundation
 
 Do:
 
-1. unify English page content through the shared ToolPage/content source;
-2. prepare `camera` / `printer` channel types and icon capability only;
-3. replace implicit related sibling/fallback behavior with a typed capped relation graph for the **currently implemented** catalog;
-4. make homepage category generation and column distribution data-driven using implemented groups only;
-5. apply approved existing-page SEO/copy upgrades;
-6. keep all current controllers/measurements unchanged.
+1. converge EN root pages onto shared ToolPage/content source;
+2. prepare camera/printer channel + icon typing, without ToolIds;
+3. replace implicit RelatedTools sibling/fallback logic with explicit capped relations for currently implemented tools;
+4. make homepage category/column/hero model data-driven from implemented groups;
+5. apply existing-page SEO/copy patch;
+6. preserve all current controller/measurement behavior.
 
-Do **not**:
+Do not:
 
-- register any unfinished V2 ToolId;
-- expose empty Camera/Printer categories;
-- publish camera privacy copy before Webcam exists.
+- register unfinished V2 ToolIds;
+- expose empty Camera/Printer groups;
+- show Camera/Print in hero before those jobs ship;
+- publish camera privacy copy yet.
 
 ## Wave 1 — Printer
 
-Atomically add:
+Atomically add ToolId + component/controller + all six locales + Printer homepage/hero representation + SEO/hreflang/sitemap + print QA.
 
-```text
-printer-test-page ToolId
-Printer component/controller
-all six locale content entries
-Printer homepage group
-SEO/canonical/hreflang/sitemap
-print QA
-```
+## Wave 2 — Monitor
 
-## Wave 2 — Display pattern foundation + Monitor
+Add shared Display Pattern Engine and atomically register Monitor Test with all locales/SEO/QA.
 
-Build the shared Display Pattern Engine, then atomically register `/monitor-test` with all locale/SEO/QA requirements.
+## Wave 3 — Uniformity
 
-## Wave 3 — Screen Uniformity
-
-Reuse the same engine; atomically register `/screen-uniformity-test` with all locales and QA.
+Reuse engine; atomically register Screen Uniformity with all locales/SEO/QA.
 
 ## Wave 4 — OLED Burn-In
 
-Reuse the same engine; atomically register `/oled-burn-in-test` with all locales and safety/inspection QA.
+Reuse engine; atomically register OLED Burn-In with all locales/SEO/safety QA.
 
-## Wave 5 — Screen Resolution
+## Wave 5 — Resolution
 
-Add the screen-info helper and atomically register `/screen-resolution-checker` with all locales and measurement-honesty tests.
+Add screen-info helper; atomically register Resolution Checker with all locales/SEO/calculation QA.
 
 ## Wave 6 — Webcam
 
-Add CameraService and atomically register `/webcam-test` with all locales, camera-specific privacy copy and permission/lifecycle QA.
+Add CameraService; atomically register Webcam Test with all locales, Camera homepage/hero representation, privacy update and permission/lifecycle QA.
 
 ---
 
-# 18. Search Console operating plan after release
+# 18. Post-release evidence
 
-Do not immediately start another broad keyword-research wave.
-
-After shipping, use first-party evidence:
-
-- sitemap discovery/indexing;
-- page-level impressions/clicks;
-- actual query vocabulary;
-- absorbed sub-intent impressions;
-- cannibalization/canonical anomalies.
-
-Watch query groups:
+After V2, stop broad keyword expansion and use first-party data:
 
 ```text
 Printer:     printer test page / print test page / color printer test page
@@ -1232,110 +1222,99 @@ Burn-in:     oled burn in test / screen burn test / image retention test
 Webcam:      webcam test / webcam tester / camera test online / computer camera test
 ```
 
-Do not split a route because of one or two impressions. Require a clearly independent repeated intent plus a real SERP/user-job boundary.
+Do not split a route because of one or two impressions. Require repeated independent intent plus a real SERP/user-job boundary.
 
 ---
 
-# 19. Definition of Done for Expansion V2
-
-Expansion V2 is complete only when all applicable gates pass.
+# 19. Expansion V2 Definition of Done
 
 ### Product
 
-- six approved routes exist and work;
-- no rejected synonym routes exist;
-- existing tools are not functionally regressed;
-- all measurement/inspection language remains honest.
+- six approved jobs exist and work;
+- no rejected synonym routes;
+- existing tools not functionally regressed;
+- honest measurement/inspection language.
 
 ### Architecture
 
-- routes use central tool definitions;
-- Camera/Printer channels are typed;
-- EN presentation has one content source with localized architecture;
-- homepage no longer assumes exactly five channels;
-- only implemented channels are exposed;
-- related selection is explicit and max 3;
-- CameraService lifecycle is cleaned up;
-- Display pattern logic is shared where appropriate.
+- central typed tool definitions;
+- Camera/Printer channels typed;
+- EN presentation one source;
+- homepage data-driven and exposes only implemented groups;
+- explicit RelatedTools max 3;
+- CameraService lifecycle cleaned up;
+- shared Display pattern logic;
+- no generic new service layer.
 
-### SEO
+### SEO/localization
 
-- titles/H1/meta match this contract or a reviewed equivalent;
-- canonicals/hreflang are correct;
-- sitemap contains all approved generated pages and no synonym zoo;
-- existing Gamepad/Stick Drift/NKRO/DPI/Mouse Hz wording upgrades are applied.
-
-### Localization
-
-- each registered new tool has complete `en`, `pt-BR`, `de`, `fr`, `es`, `ru` content;
-- no locale falls back to English placeholder text;
-- local primary wording follows the approved vocabulary/meaning.
+- approved title/H1/meta or reviewed equivalent;
+- correct canonical/hreflang/sitemap;
+- complete `en`, `pt-BR`, `de`, `fr`, `es`, `ru` for every registered new job;
+- no English placeholder fallback;
+- no synonym landing pages;
+- existing SEO patch applied.
 
 ### Privacy
 
-- camera video is not uploaded/recorded/stored;
-- Printer uploads nothing and does not claim telemetry;
-- privacy page reflects Camera only when Webcam ships;
+- camera media not uploaded/recorded/stored;
+- Printer uploads nothing and claims no telemetry;
+- camera privacy copy ships atomically with Webcam;
 - no backend/account flow.
 
 ### Quality
 
-- source review #1 complete;
-- visual/UX review complete;
-- final-diff review #2 complete;
-- `pnpm typecheck` passes;
-- `pnpm test` passes;
-- `pnpm build` passes including SEO output guard;
-- applicable Printer/Display/Webcam manual QA is recorded honestly;
-- 1366×768 desktop UX and applicable mobile layouts remain usable.
+- self-review #1;
+- visual/UX review;
+- self-review #2 final diff;
+- typecheck/test/build/SEO guard green;
+- applicable real/manual Printer/Display/Webcam checks recorded honestly;
+- 1366×768 desktop and applicable mobile layouts usable.
 
 ---
 
 # 20. Anti-goals
 
-Do not:
+Do not add:
 
 ```text
-add GPU in this wave
-add controller vibration
-add monitor ghosting
-add MIDI
-add audio tools
-add CPS / reaction-time games
-add generic CPU/RAM/system benchmark pages
-add WebHID/WebUSB “just because”
-add backend analytics storage
-add accounts
-add persistent/shareable diagnostic histories
-add AI hardware diagnosis
-add automatic warranty verdicts
-add burn-in repair/flashing
-add fake hardware scores
-add localized slugs
-add a UI framework
-redesign all existing tools
-pre-register placeholder ToolIds
-expose empty homepage categories
+GPU
+controller vibration
+monitor ghosting
+MIDI/audio
+CPS/reaction-time
+CPU/RAM/system benchmark pages
+WebHID/WebUSB experiments
+backend analytics storage
+accounts
+persistent/shareable diagnostic history
+AI diagnosis
+automatic warranty verdicts
+burn-in repair/flashing
+fake hardware scores
+localized slugs
+UI framework
+redesign of all existing tools
+placeholder ToolIds
+empty homepage categories
 ```
 
-If an implementation detail appears to require an anti-goal, stop that detail and preserve the approved scope.
+If a requested detail needs an anti-goal, stop that detail and preserve scope.
 
 ---
 
-# 21. Final product thesis
+# 21. Product thesis
 
-HardwareInspect should remain:
+Keep HardwareInspect as:
 
 ```text
 focused device diagnostics
 + browser-observable signals
-+ controlled visual/output test patterns
++ controlled visual/output references
 + explicit measurement boundaries
 + no install
 + no account
 + local-first behavior
 ```
 
-V2 strengthens this shape without turning the site into a generic “all computer tools” directory.
-
-After the wave ships, stop broad expansion research and use GSC/first-party evidence to choose the next move. GPU is the most credible larger WATCH experiment only if real evidence justifies another development wave.
+V2 strengthens that shape without turning the site into a generic “all computer tools” directory. After V2, let first-party GSC evidence decide whether any WATCH direction deserves another wave.
