@@ -1,13 +1,7 @@
 import { getToolDefinitionsByChannel, toolDefinitions, type ToolDefinition } from './tool-definitions';
 import type { ToolChannel, ToolIconKind } from './tool-types';
 
-export interface ToolGroup {
-  readonly id: ToolChannel;
-  readonly icon: ToolIconKind;
-  readonly tools: readonly ToolDefinition[];
-}
-
-const implementedGroups = [
+export const implementedGroupDefinitions = [
   { id: 'controller', icon: 'gamepad' },
   { id: 'mouse', icon: 'mouse' },
   { id: 'keyboard', icon: 'keyboard' },
@@ -15,7 +9,15 @@ const implementedGroups = [
   { id: 'touch', icon: 'touch' },
 ] as const satisfies readonly { readonly id: ToolChannel; readonly icon: ToolIconKind }[];
 
-export const toolGroups: readonly ToolGroup[] = implementedGroups.map((group) => ({
+export type ImplementedToolChannel = (typeof implementedGroupDefinitions)[number]['id'];
+
+export interface ToolGroup {
+  readonly id: ImplementedToolChannel;
+  readonly icon: ToolIconKind;
+  readonly tools: readonly ToolDefinition[];
+}
+
+export const toolGroups: readonly ToolGroup[] = implementedGroupDefinitions.map((group) => ({
   ...group,
   tools: getToolDefinitionsByChannel(group.id),
 }));
