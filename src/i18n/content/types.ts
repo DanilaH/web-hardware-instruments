@@ -1,5 +1,5 @@
 import type { ToolId } from '../../config/tool-definitions';
-import type { ToolChannel } from '../../config/tools';
+import type { ImplementedToolChannel } from '../../config/tools';
 
 export interface ToolContentSection {
   readonly heading: string;
@@ -29,6 +29,7 @@ export interface HomeContent {
   readonly boundarySignals: string;
   readonly boundaryObserved: string;
   readonly boundaryNoUpload: string;
+  /** @deprecated Homepage signal labels are now keyed by channel in home-signals.ts. */
   readonly inputs: readonly string[];
   readonly categoryAria: string;
   readonly chooseTool: string;
@@ -60,7 +61,7 @@ export interface SiteContent {
     readonly privacy: string;
   };
   readonly relatedTools: string;
-  readonly categories: Record<ToolChannel, string>;
+  readonly categories: Record<ImplementedToolChannel, string>;
   readonly home: HomeContent;
   readonly about: SupportPageContent;
   readonly privacy: SupportPageContent;
