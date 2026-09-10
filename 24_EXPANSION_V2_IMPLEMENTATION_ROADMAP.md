@@ -1,7 +1,7 @@
 # HardwareInspect Expansion V2 — Implementation Roadmap
 
 **Status:** execution roadmap, non-normative  
-**Authority:** `23_HARDWARE_EXPANSION_V2_SPEC.md` owns product/technical decisions. This file only sequences the work against the current repository shape.
+**Authority:** `23_HARDWARE_EXPANSION_V2_SPEC.md` owns product/technical decisions. This file sequences work against the current repository shape.
 
 If this roadmap conflicts with `AGENTS.md`, `19`, `18`, `23`, `20`, or `22`, the normative documents win.
 
@@ -9,26 +9,24 @@ If this roadmap conflicts with `AGENTS.md`, `19`, `18`, `23`, `20`, or `22`, the
 
 # 0. Current code seams
 
-The current implementation has several concrete seams that V2 must address before adding routes:
+V2 should address only the concrete seams that block clean expansion:
 
-1. `src/pages/*.astro` — 18 English tool routes still hardcode page presentation/content and related links.
-2. `src/components/pages/ToolPage.astro` — localized routes already use the shared content model and an exhaustive ToolId/component map.
-3. `src/i18n/content/{locale}.ts` — already supplies typed page content for every ToolId and every implemented locale.
-4. `src/config/tool-definitions.ts` — stable ToolId/href/icon/channel registry, but current related logic returns all same-channel siblings and a Touch fallback.
-5. `src/config/tools.ts` — duplicates English name/description/group data and also carries a second related-tools implementation.
-6. `src/pages/index.astro` — localized content is already used for tool labels, but layout still assumes exactly five groups through fixed slices and positional hero inputs.
-7. `src/components/navigation/RelatedTools.astro` — already renders nothing for an empty final list, so singleton Camera/Printer support mainly requires relation-source cleanup.
-8. `src/components/icons/ToolIcon.astro` — duplicates the icon-kind union locally instead of importing the canonical type.
+1. `src/pages/*.astro` — 18 EN tool routes still duplicate page presentation/content/related links.
+2. `src/components/pages/ToolPage.astro` — localized routes already use shared content + exhaustive ToolId/component mapping.
+3. `src/i18n/content/{locale}.ts` — typed content exists for every current ToolId/locale.
+4. `src/config/tool-definitions.ts` — owns stable ids/hrefs but imports `ToolChannel`/`ToolIconKind` from `tools.ts`; related logic is implicit all-siblings + Touch fallback.
+5. `src/config/tools.ts` — duplicates EN names/descriptions/group data and a second related-tools algorithm.
+6. `src/pages/index.astro` — localized catalog labels already exist, but columns use fixed slices and hero inputs use positional indices.
+7. `src/components/navigation/RelatedTools.astro` — already renders nothing when its final set is empty.
+8. `src/components/icons/ToolIcon.astro` — duplicates the icon-kind union locally.
 
-The roadmap should reduce these specific duplication points without turning Foundation into a general architecture rewrite.
+Foundation should remove these specific duplication/ownership problems without becoming a general architecture rewrite.
 
 ---
 
 # 1. Branch / merge model
 
-Use small production-valid waves rather than one giant six-tool diff.
-
-Recommended sequence:
+Use small production-valid waves:
 
 ```text
 PR A  docs + Foundation
@@ -40,7 +38,7 @@ PR F  Screen Resolution
 PR G  Webcam
 ```
 
-Each PR follows the repository workflow independently:
+Every PR independently follows:
 
 ```text
 implementation
@@ -55,7 +53,7 @@ implementation
 -> squash merge
 ```
 
-Do not merge a route with incomplete locale content or placeholder behavior.
+Never merge a route with incomplete locale content or placeholder behavior.
 
 ---
 
@@ -63,108 +61,118 @@ Do not merge a route with incomplete locale content or placeholder behavior.
 
 ## A0. Documentation integration
 
-Already required before product code:
+Before product code:
 
 - add normalized `23_HARDWARE_EXPANSION_V2_SPEC.md`;
-- integrate V2 into `AGENTS.md`, `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`, and `05_SEO_CONTENT.md`;
+- integrate V2 authority into `AGENTS.md`, `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`, `05_SEO_CONTENT.md`;
 - keep current-state catalog documents at 18 until routes actually ship;
-- independently review the merged contracts before code changes.
+- independently review the merged contracts.
 
-## A1. Converge English tool pages onto ToolPage
+## A1. Converge EN tool pages onto ToolPage
 
-Goal: one presentation content source for EN and localized routes.
-
-For each existing English root route, reduce page file to a thin wrapper around:
+For each current root tool route, reduce the page to a thin wrapper:
 
 ```astro
 <ToolPage locale="en" toolId="..." />
 ```
 
-Do this mechanically; do not alter controllers/components.
+Before removing the old page body, compare H1/title/meta/sections/related intent and any page-specific wrapper that materially affects UX. Apply the approved V2 EN SEO wording in `src/i18n/content/en.ts` before the shared content becomes authoritative.
 
-Before deletion of each old page body, compare:
+Do not alter tool controllers/components in this step.
 
-- H1;
-- title/meta;
-- explanatory sections;
-- related-tool intent;
-- any page-specific layout wrapper that materially affects the tool.
+## A2. Establish stable type/registry ownership
 
-Apply the V2 approved EN SEO wording in `src/i18n/content/en.ts` before wrappers become authoritative.
+Current dependency direction is awkward: `tool-definitions.ts` imports `ToolChannel` and `ToolIconKind` from presentation-oriented `tools.ts`, while `ToolIcon.astro` duplicates the icon union.
 
-Expected risk: medium because it touches every English route but should be presentation-only.
-
-## A2. Collapse registry duplication narrowly
-
-Target ownership:
+Use one small stable type owner, preferably:
 
 ```text
+src/config/tool-types.ts
+  ToolChannel
+  ToolIconKind
+```
+
+Then:
+
+```text
+tool-definitions.ts -> imports stable types
+ tools.ts            -> imports stable types
+ ToolIcon.astro       -> imports ToolIconKind
+ i18n content types   -> imports ToolChannel from stable type module
+```
+
+Do not create a generic domain-model layer beyond these two stable unions.
+
+Target stable ownership after cleanup:
+
+```text
+tool-types.ts
+  channel/icon type vocabulary
+
 tool-definitions.ts
-  stable ToolId / href / icon / channel / explicit relation IDs
+  ToolId / href / icon / channel / explicit relation IDs
 
 i18n content
   localized names / descriptions / SEO / sections
 
-tools.ts or replacement group helper
-  group ordering only, derived from definitions + content where possible
+tools.ts
+  current group ordering/catalog projection only; no second relation algorithm
 ```
 
-Do not retain two separate related-tool algorithms.
+## A3. Collapse relation duplication
 
-Preferred implementation:
+Use one typed `Record<ToolId, readonly ToolId[]>` relation graph in the stable config layer (or an equivalently narrow typed structure).
 
-- put a typed `Record<ToolId, readonly ToolId[]>` relation graph in the stable definition layer or a nearby stable config module;
-- `getRelatedToolDefinitions()` resolves only that graph;
-- every relation set length <= 3;
-- no singleton fallback;
-- `RelatedTools.astro` naturally renders nothing for an empty set;
-- remove/deprecate `getRelatedTools()` duplicate logic in `tools.ts` if no caller needs it.
+Requirements:
 
-Do not over-normalize into a generic graph framework.
+- every set <= 3;
+- no implicit all-sibling expansion;
+- no singleton Touch fallback;
+- `getRelatedToolDefinitions()` resolves only the explicit graph;
+- delete the duplicate `getRelatedTools()` algorithm in `tools.ts` when callers are migrated/absent;
+- `RelatedTools.astro` keeps rendering nothing for an empty set.
 
-## A3. Prepare channel/icon typing, not routes
+Do not create graph abstractions/frameworks.
 
-Add `camera` and `printer` to `ToolChannel` and add icon kinds needed for future groups.
+## A4. Prepare channel/icon capability, not routes
 
-Do **not** add any V2 ToolId yet.
+Add `camera` and `printer` to `ToolChannel` and add future icon kinds needed for those taxonomy groups.
 
-Ensure every exhaustive `Record<ToolChannel, ...>` in content/style/config is updated without exposing empty groups.
+Do **not** add V2 ToolIds.
 
-Prefer `ToolIcon.astro` to import the canonical `ToolIconKind` type instead of maintaining a second union if the import direction stays clean.
+Update exhaustive `Record<ToolChannel,...>` content/config requirements without exposing empty groups. Camera/Printer visual treatment stays neutral per `23`.
 
-Camera/Printer visual treatment remains neutral per `23`; do not invent two bright family colors.
+## A5. Make homepage data-driven
 
-## A4. Make homepage data-driven
-
-Current hardcoded assumptions to remove:
+Remove:
 
 ```text
 content.inputs[0..4]
-groups.slice(0, 2) / groups.slice(2)
-fixed five-column category rail styling
+fixed groups.slice(0,2) / groups.slice(2)
+fixed five-column rail assumptions
 ```
 
 Target:
 
-- implemented tool groups drive the category rail;
-- hero input rows are keyed by channel/group identity, not array index;
-- columns are derived from group count with a deterministic balanced split;
-- with current five groups the rendered experience should remain visually equivalent or improve only where necessary;
+- implemented tool groups alone drive category rail/catalog;
+- hero input rows are keyed by channel identity, not positional array indices;
+- column split is derived from actual implemented groups;
+- current five-group page must remain compact and coherent;
+- full seven-group state must support approximately 4/3 distribution;
 - Camera/Printer do not render until real tools exist;
-- later Printer/Webcam waves only add data, not homepage-specific branching.
+- later Printer/Webcam waves should mostly add data rather than homepage branches.
 
-Suggested deterministic split:
+A simple starting point is:
 
 ```ts
 const splitIndex = Math.ceil(groups.length / 2);
-const columns = [groups.slice(0, splitIndex), groups.slice(splitIndex)];
 ```
 
-Review actual 5-group and future 7-group balance visually before treating this formula as final; 1366x768 compactness is the gate, not formula purity.
+but this is **not** a contractual formula. Review current 5-group and expected 7-group balance; choose the smallest deterministic rule that preserves 1366×768 UX. Do not preserve the old 2/3 split merely for diff similarity if 3/2 is visibly better, and do not accept 3/2 merely because the formula is elegant.
 
-## A5. Existing EN SEO patch
+## A6. Existing EN SEO patch
 
-Apply exactly the `23` presentation changes to:
+Apply only the approved `23` presentation changes:
 
 - Gamepad Tester;
 - Stick Drift;
@@ -173,35 +181,35 @@ Apply exactly the `23` presentation changes to:
 - Keyboard Rollover;
 - Keyboard Tester supporting wording.
 
-Dead Pixel and Touch remain mostly unchanged.
+Dead Pixel and Touch remain mostly unchanged. No aliases, new routes, measurement changes, or runtime behavior changes.
 
-Do not create aliases or change algorithms/runtime messages merely for keyword coverage.
-
-## A6. Foundation review focus
+## A7. Foundation review focus
 
 Self-review #1:
 
-- no V2 routes registered;
-- every current EN URL still resolves to the same tool component;
-- no diagnostic controller/service changed;
-- no relation set exceeds 3;
-- localized related links remain locale-preserving;
-- no English content was lost during wrapper conversion;
-- homepage shows only 5 implemented groups.
+- no V2 ToolId/route registered;
+- every EN route still resolves to the identical tool component;
+- no controller/acquisition service changed;
+- stable type imports have no cycle/inverted ownership;
+- one relation algorithm only, max 3;
+- localized related links preserve locale;
+- no EN content lost during wrapper conversion;
+- homepage exposes only 5 implemented groups.
 
 Visual/UX review:
 
-- EN + at least one long-string locale homepage at 1366x768, 1024x768, ~390px;
-- representative Controller/Mouse/Keyboard/Display/Touch pages EN vs localized parity;
-- RelatedTools 0/1/2/3 handling where reachable;
-- keyboard/focus order unchanged.
+- EN + long-string locale homepages at 1366×768, 1024×768, ~390px;
+- representative page from every current family, EN vs localized parity;
+- RelatedTools 0/1/2/3 rendering where reachable;
+- keyboard/focus order unchanged;
+- homepage visual hierarchy not degraded by data-driven refactor.
 
 Self-review #2:
 
 - final diff remains Foundation-only;
 - no placeholder V2 route/content;
-- no stale duplicate related algorithm;
-- no unexpected SEO route changes.
+- no duplicate relation/type source remains;
+- no unexpected route/SEO changes.
 
 Only then run build/typecheck/tests/CI.
 
@@ -209,78 +217,44 @@ Only then run build/typecheck/tests/CI.
 
 # 3. PR B — Printer Test Page
 
-Atomic additions:
+Atomically add:
 
 - `printer-test-page` ToolId/definition;
-- printer icon/group becomes visible;
+- printer group/icon becomes visible;
 - all six locale content entries;
-- Printer component/controller and print pattern;
+- Printer component/controller + print pattern;
 - Full/Color/Grayscale profile state;
 - A4/Letter state;
 - print CSS and site-chrome suppression;
-- Print hero/boundary representation becomes visible;
-- sitemap/canonical/hreflang via existing pipeline;
-- current-state docs/tool count update from 18 -> 19 where appropriate.
+- Print browser-boundary/hero representation;
+- sitemap/canonical/hreflang through existing pipeline;
+- current-state docs/tool count 18 -> 19 where appropriate.
 
-Implementation preference:
+Prefer semantic HTML/SVG foreground shapes for essential print diagnostics. Avoid Canvas if it complicates print fidelity. No printer service and no PDF generator.
 
-- use semantic HTML/SVG foreground shapes for essential printed diagnostics;
-- avoid Canvas if it complicates print fidelity;
-- no printer service;
-- no PDF generation.
+Tests: pure profile/reference composition only. Do not fake physical print QA.
 
-Tests:
-
-- pure profile composition/state;
-- deterministic reference content selection;
-- no attempt to unit-test physical print quality.
-
-Manual gate:
-
-- Chrome + Firefox print preview;
-- A4 + Letter portrait;
-- essential colors/lines without background-graphics requirement;
-- no site header/footer in print;
-- cancellation returns usable page.
+Manual: Chrome/Firefox print preview, A4/Letter portrait, foreground colors/lines without background-graphics dependency, no site chrome, cancellation leaves UI usable.
 
 ---
 
-# 4. PR C — Monitor Test + Display Pattern Engine
+# 4. PR C — Monitor + Display Pattern Engine
 
-First create the narrow shared pattern primitive required by three real routes.
+Create only the narrow shared primitive required by Monitor/Uniformity/OLED: deterministic pattern definitions/order, active index, manual navigation, fullscreen integration, overlay hide/show and cleanup.
 
-Engine should own only pattern definitions/order, active index, navigation, fullscreen integration, hide/show overlay, and cleanup.
+Use exact Monitor sequence from `23`, including encoded 5% and 50% gray references. Do not duplicate Dead Pixel/Backlight/Refresh/Frame Skipping logic.
 
-Monitor exact sequence comes from `23` and includes encoded 5%/50% gray references.
+Register ToolId only with all six locale entries/SEO/relations/QA.
 
-Do not duplicate Dead Pixel/Backlight/Refresh/Frame Skipping logic inside Monitor Test.
-
-Add all six locales atomically with ToolId registration.
-
-Manual gate:
-
-- normal stage + fullscreen + rejected fullscreen fallback;
-- Space/Arrow/click/tap navigation;
-- Esc/fullscreen observer behavior;
-- hide/show controls;
-- high-DPI/mobile orientation;
-- no scrolling inside active stage.
+Manual: normal stage, fullscreen/rejection fallback, Space/Arrows/click/tap, Esc/fullscreen state, overlay hide/show, high-DPI/mobile orientation, no active-stage scrolling.
 
 ---
 
 # 5. PR D — Screen Uniformity
 
-Reuse Display Pattern Engine; do not fork fullscreen/navigation code.
+Reuse Display Pattern Engine. Exact encoded presets: 5/10/25/50/75/100%. No score, luminance claim, pass/fail or physical defect verdict.
 
-Presets use the exact encoded gray rule:
-
-```text
-5 / 10 / 25 / 50 / 75 / 100%
-```
-
-No score, luminance claim, pass/fail or physical defect verdict.
-
-A free slider is optional and should be skipped unless the preset UI has a concrete usability gap.
+Skip the optional free slider unless presets reveal a concrete UX gap.
 
 All six locales + route/SEO/relations atomically.
 
@@ -288,17 +262,9 @@ All six locales + route/SEO/relations atomically.
 
 # 6. PR E — OLED Burn-In
 
-Reuse Display Pattern Engine.
+Reuse Display Pattern Engine and exact short sequence from `23`.
 
-Exact short pattern sequence from `23`.
-
-Hard safety review:
-
-- no flashing;
-- no repair mode;
-- no high-brightness timer/loop;
-- no burn-in percentage;
-- copy distinguishes burn-in vs temporary retention vs uniformity/tint.
+Hard safety review: no flashing, repair mode, high-brightness loop/timer, burn-in percentage; copy distinguishes burn-in, temporary retention and uniformity/tint.
 
 All six locales atomically.
 
@@ -306,7 +272,7 @@ All six locales atomically.
 
 # 7. PR F — Screen Resolution Checker
 
-Add a small pure/browser-info helper rather than a service abstraction.
+Add a small browser-info/pure helper, not a service abstraction.
 
 Exact estimate:
 
@@ -317,49 +283,33 @@ Math.round(screen.height * devicePixelRatio)
 
 Render immediately; update on resize/orientation.
 
-Pure tests should cover:
-
-- estimate rounding;
-- CSS vs estimated device-pixel values;
-- optional orientation handling;
-- resize/update formatting where pure extraction is possible.
-
-Never label estimated dimensions native/physical panel resolution.
+Pure tests cover rounding, CSS vs estimated device pixels, optional orientation and formatting/extraction where practical. Never label estimate native/physical panel resolution.
 
 All six locales atomically.
 
 ---
 
-# 8. PR G — Webcam Test
+# 8. PR G — Webcam
 
 Add the only new V2 acquisition service: `CameraService`.
 
-Service owns getUserMedia/video-device acquisition, device enumeration, switching, track settings, errors and cleanup. UI owns selection/presentation.
+Service owns getUserMedia/video-device acquisition, post-permission enumeration, switching, track settings, normalized errors and cleanup. UI owns selection/presentation.
 
-Hard requirements:
+Hard requirements: permission only after Start; always `audio:false`; no capture/recording/upload/backend; Stop/navigation/destroy stop active tracks; switching cleans old stream; normalized denied/no-device/in-use/unavailable/switch-failure/ended states.
 
-- permission only after Start;
-- `audio: false` always;
-- no capture/recording/upload/backend;
-- Stop/navigation/destroy stop active tracks;
-- switching cleans up old stream;
-- normalized denied/no-device/in-use/unavailable/switch-failure/ended states.
+Update privacy in all six locales in this PR, not earlier. Camera group/hero appears only now.
 
-Update privacy content in all six locales in this same PR, not earlier.
-
-Camera group + hero boundary appears only now.
-
-Manual gate includes allow/deny/previously-denied/no-camera/switch/stop/navigation and DevTools network confirmation of no media upload.
+Manual: allow/deny/previously-denied/no-camera/switch/stop/navigation and DevTools network confirmation of no media upload.
 
 ---
 
 # 9. Cross-wave SEO/localization gate
 
-For every newly registered ToolId verify in built output:
+For every newly registered ToolId verify built output:
 
 ```text
-6 semantic pages: EN + pt-BR + de + fr + es + ru
-self canonical for each
+6 pages: EN + pt-BR + de + fr + es + ru
+self canonical each
 reciprocal 6-locale hreflang + x-default where current pipeline emits it
 correct html lang
 same semantic language-switch target
@@ -369,7 +319,7 @@ no rejected synonym URLs
 no English placeholder leak
 ```
 
-Tool count should progress only with real merged jobs:
+Tool count moves only with real merged jobs:
 
 ```text
 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24
@@ -377,19 +327,19 @@ Tool count should progress only with real merged jobs:
 
 ---
 
-# 10. Scope stop conditions
+# 10. Stop conditions
 
-Stop/review instead of improvising if implementation appears to require:
+Stop/review instead of improvising if work appears to require:
 
 - placeholder ToolId/routes;
-- a second locale availability system;
+- second locale-availability system;
 - generic HardwareManager/service locator;
 - another framework/runtime dependency;
 - printer hardware APIs;
 - camera audio;
 - upload/storage/backend;
-- display calibration/physical measurement claims;
-- more than 3 RelatedTools;
+- display calibration/physical-measurement claims;
+- >3 RelatedTools;
 - synonym routes;
 - new WATCH items;
 - broad redesign of existing tools.
@@ -401,14 +351,14 @@ Stop/review instead of improvising if implementation appears to require:
 After all six routes:
 
 - catalog count = 24;
-- current-state IA/docs updated to actual 7-channel catalog;
-- no stale “18 current tools” statement remains in normative/current-state docs;
+- current-state IA/docs reflect actual 7-channel catalog;
+- stale “18 current tools” claims are removed from normative/current-state docs;
 - full static SEO matrix verified;
 - representative locale visual parity verified;
 - all new runtime modules mount cleanly;
 - lifecycle/cleanup verified;
-- manual Printer/Display/Webcam limitations recorded honestly;
-- production deployment smoke passes;
-- sitemap resubmission/monitoring follows normal Search Console/Bing/Yandex process.
+- Printer/Display/Webcam manual limitations recorded honestly;
+- production smoke passes;
+- sitemap/webmaster monitoring follows normal operational process.
 
-Then stop broad expansion work and observe first-party search evidence before approving another product wave.
+Then stop broad expansion and observe first-party search evidence before another product wave.
