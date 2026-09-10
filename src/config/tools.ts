@@ -2,18 +2,23 @@ import { getToolDefinitionsByChannel, toolDefinitions, type ToolDefinition } fro
 import type { ToolChannel, ToolIconKind } from './tool-types';
 
 export const implementedGroupDefinitions = [
-  { id: 'controller', icon: 'gamepad' },
-  { id: 'mouse', icon: 'mouse' },
-  { id: 'keyboard', icon: 'keyboard' },
-  { id: 'display', icon: 'refresh' },
-  { id: 'touch', icon: 'touch' },
-] as const satisfies readonly { readonly id: ToolChannel; readonly icon: ToolIconKind }[];
+  { id: 'controller', icon: 'gamepad', signalIcon: 'gamepad' },
+  { id: 'mouse', icon: 'mouse', signalIcon: 'mouse' },
+  { id: 'keyboard', icon: 'keyboard', signalIcon: 'keyboard' },
+  { id: 'display', icon: 'refresh', signalIcon: 'fps' },
+  { id: 'touch', icon: 'touch', signalIcon: 'touch' },
+] as const satisfies readonly {
+  readonly id: ToolChannel;
+  readonly icon: ToolIconKind;
+  readonly signalIcon: ToolIconKind;
+}[];
 
 export type ImplementedToolChannel = (typeof implementedGroupDefinitions)[number]['id'];
 
 export interface ToolGroup {
   readonly id: ImplementedToolChannel;
   readonly icon: ToolIconKind;
+  readonly signalIcon: ToolIconKind;
   readonly tools: readonly ToolDefinition[];
 }
 
