@@ -97,7 +97,15 @@ export const mountDisplayInspectionStage = ({
     }
 
     const enteredFullscreen = await fullscreen.request(stage);
-    if (destroyed || !active) return;
+
+    // The user may have exited the test while the browser permission/UI for
+    // requestFullscreen() was still pending. Never let that late resolution
+    // strand an inactive, hidden stage in fullscreen.
+    if (destroyed || !active) {
+      if (!destroyed && fullscreen.getActiveElement() === stage) await fullscreen.exit();
+      return;
+    }
+
     if (!enteredFullscreen) fullscreenNote.textContent = fullscreenUnavailableMessage;
     syncFullscreenState();
   };
