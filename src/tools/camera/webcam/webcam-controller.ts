@@ -98,7 +98,7 @@ export const mountWebcamTest = (
   const setControls = (): void => {
     startButton.hidden = active || busy;
     stopButton.hidden = !active;
-    stopButton.disabled = busy;
+    stopButton.disabled = false;
     cameraSelect.disabled = busy;
   };
 
@@ -170,18 +170,19 @@ export const mountWebcamTest = (
 
   const service = serviceFactory(handleStreamEnded);
 
-  const refreshLiveUi = async (stream: MediaStream, version: number): Promise<boolean> => {
-    if (!isCurrentOperation(version)) return false;
-    attachStream(stream);
-
+  const refreshDeviceOptions = async (version: number): Promise<void> => {
     const nextDevices = await service.listVideoDevices();
-    if (!isCurrentOperation(version)) return false;
+    if (!isCurrentOperation(version) || !active) return;
 
     devices = nextDevices;
     const settings = service.getSettings();
     renderDeviceOptions(settings);
     renderSettings(service);
-    return true;
+  };
+
+  const showLiveStream = (stream: MediaStream): void => {
+    attachStream(stream);
+    renderSettings(service);
   };
 
   const handleStart = async (): Promise<void> => {
@@ -194,18 +195,19 @@ export const mountWebcamTest = (
     try {
       const stream = await service.start();
       if (!isCurrentOperation(version)) return;
+
       active = true;
-      const rendered = await refreshLiveUi(stream, version);
-      if (!rendered || !isCurrentOperation(version)) return;
+      busy = false;
+      showLiveStream(stream);
       setStatus(messages.live, 'live');
+      setControls();
+      void refreshDeviceOptions(version);
     } catch (error) {
       if (!isCurrentOperation(version)) return;
       active = false;
+      busy = false;
       clearStreamUi();
       setStatus(errorMessage(messages, normalizeControllerErrorCode(error)), 'error');
-    } finally {
-      if (!isCurrentOperation(version)) return;
-      busy = false;
       setControls();
     }
   };
@@ -232,17 +234,19 @@ export const mountWebcamTest = (
     try {
       const stream = await service.switchDevice(deviceId);
       if (!isCurrentOperation(version)) return;
-      const rendered = await refreshLiveUi(stream, version);
-      if (!rendered || !isCurrentOperation(version)) return;
+
+      busy = false;
+      showLiveStream(stream);
       setStatus(messages.live, 'live');
+      setControls();
+      void refreshDeviceOptions(version);
     } catch (error) {
       if (!isCurrentOperation(version)) return;
+      busy = false;
       // CameraService keeps the previous stream alive when replacement acquisition fails.
+      renderDeviceOptions(service.getSettings());
       renderSettings(service);
       setStatus(errorMessage(messages, normalizeControllerErrorCode(error)), 'error');
-    } finally {
-      if (!isCurrentOperation(version)) return;
-      busy = false;
       setControls();
     }
   };
