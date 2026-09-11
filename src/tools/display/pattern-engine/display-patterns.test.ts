@@ -5,6 +5,7 @@ import {
   encodedGrayReference,
   monitorPatterns,
   moveDisplayPatternIndex,
+  oledBurnInPatterns,
   screenUniformityPatterns,
 } from './display-patterns';
 
@@ -66,11 +67,36 @@ describe('display pattern references', () => {
     );
   });
 
-  it('wraps manual navigation for Monitor and Uniformity sequence lengths', () => {
+  it('keeps the exact OLED Burn-In P0 sequence and encoded gray values', () => {
+    expect(oledBurnInPatterns.map((pattern) => pattern.id)).toEqual([
+      'red',
+      'green',
+      'blue',
+      'white',
+      'gray-50',
+      'gray-25',
+      'gray-75',
+      'black',
+    ]);
+    expect(oledBurnInPatterns.map((pattern) => pattern.kind === 'solid' ? pattern.value : null)).toEqual([
+      '#ff0000',
+      '#00ff00',
+      '#0000ff',
+      '#ffffff',
+      encodedGrayReference(50),
+      encodedGrayReference(25),
+      encodedGrayReference(75),
+      '#000000',
+    ]);
+  });
+
+  it('wraps manual navigation for all implemented display-pattern sequence lengths', () => {
     expect(moveDisplayPatternIndex(0, -1, 12)).toBe(11);
     expect(moveDisplayPatternIndex(11, 1, 12)).toBe(0);
     expect(moveDisplayPatternIndex(5, 1, 12)).toBe(6);
     expect(moveDisplayPatternIndex(0, -1, 6)).toBe(5);
     expect(moveDisplayPatternIndex(5, 1, 6)).toBe(0);
+    expect(moveDisplayPatternIndex(0, -1, 8)).toBe(7);
+    expect(moveDisplayPatternIndex(7, 1, 8)).toBe(0);
   });
 });
