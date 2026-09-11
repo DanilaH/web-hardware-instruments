@@ -72,6 +72,7 @@ Jobs:
 /dead-pixel-test
 /backlight-bleed-test
 /monitor-test
+/screen-uniformity-test
 ```
 
 Jobs:
@@ -81,9 +82,10 @@ Jobs:
 - camera-assisted frame-skipping evidence;
 - fullscreen solid-color pixel inspection;
 - fullscreen black-screen backlight inspection;
-- guided manual monitor inspection with solid fields, gradients, near-black/near-white references, and a sharpness grid.
+- guided manual monitor inspection with solid fields, gradients, near-black/near-white references, and a sharpness grid;
+- manual gray-field inspection for uneven brightness, tint, banding, clouding, mura-like variation and dirty-screen-effect-like patches.
 
-Monitor Test is the broad Display-entry diagnostic. It uses the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; it does not provide automatic pass/fail, measured contrast, measured response time, or color certification.
+Monitor Test is the broad Display-entry diagnostic. Screen Uniformity Test is the focused gray-field companion. Both reuse the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; neither provides automatic pass/fail, measured luminance uniformity, contrast, response time, color delta, or panel-health certification.
 
 ### Touch
 
@@ -178,13 +180,18 @@ FPS
 
 Monitor Test
 ↔ Dead Pixel
+↔ Screen Uniformity
 ↔ Refresh Rate
-↔ Screen Uniformity when that route is actually implemented
+
+Screen Uniformity
+↔ Monitor Test
+↔ Backlight Bleed
+↔ OLED Burn-In only when that route is actually implemented
 
 Dead Pixel
 ↔ Monitor Test
+↔ Screen Uniformity
 ↔ Backlight Bleed
-↔ Screen Uniformity when implemented, while respecting the maximum-three rule
 
 Backlight Bleed
 ↔ Dead Pixel
