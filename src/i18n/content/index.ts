@@ -16,6 +16,26 @@ import type { HomeContent, ResolvedSiteContent, SiteContent } from './types';
 export const implementedContentLocales = ['en', 'pt-BR', 'de', 'fr', 'es', 'ru'] as const satisfies readonly Locale[];
 export type ImplementedContentLocale = (typeof implementedContentLocales)[number];
 
+type PrinterHomeContent = Pick<
+  HomeContent,
+  'facts' | 'boundaryAria' | 'boundaryLocal' | 'boundarySignals' | 'boundaryObserved' | 'boundaryNoUpload'
+>;
+type PrinterHomepageCopy = Pick<HomeContent, 'metaDescription' | 'intro'>;
+
+const resolveHomeContent = (
+  base: HomeContent,
+  printerHome: PrinterHomeContent,
+  printerHomepageCopy: PrinterHomepageCopy,
+  facts: string,
+  printerSignal: string,
+): HomeContent => ({
+  ...base,
+  ...printerHome,
+  ...printerHomepageCopy,
+  facts,
+  inputs: [...base.inputs, printerSignal],
+});
+
 const baseContentByLocale = {
   en: enContent,
   'pt-BR': ptBRContent,
@@ -33,16 +53,13 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const screenUniformity = screenUniformityContentByLocale[locale];
   const oledBurnIn = oledBurnInContentByLocale[locale];
   const screenResolution = screenResolutionContentByLocale[locale];
-  const home: HomeContent = {
-    ...base.home,
-    ...printer.home,
-    ...printerHomepageCopy,
-    ...monitor.home,
-    ...screenUniformity.home,
-    ...oledBurnIn.home,
-    ...screenResolution.home,
-    inputs: [...base.home.inputs, printer.signal],
-  };
+  const home = resolveHomeContent(
+    base.home,
+    printer.home,
+    printerHomepageCopy,
+    screenResolution.home.facts,
+    printer.signal,
+  );
 
   return {
     ...base,
