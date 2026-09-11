@@ -2,7 +2,7 @@
 
 ## Current release boundary
 
-After the Screen Resolution Checker Expansion V2 wave, the 23-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, the V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker have passed their respective code-side implementation/review gates once this wave merges; each V2 job still needs its own wave-specific release evidence.
+After the Webcam Expansion V2 wave, the 24-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, and all six V2 jobs have passed their respective code-side implementation/review gates once this wave merges; each released route still needs applicable production/browser/hardware evidence rather than inferred validation.
 
 The production origin is already configured as:
 
@@ -26,7 +26,7 @@ es
 ru
 ```
 
-Every registered V2 ToolId must ship across this same set atomically. Localization must not duplicate or fork diagnostic logic.
+Every registered V2 ToolId ships across this same set atomically. Localization must not duplicate or fork diagnostic logic.
 
 ## Production verification
 
@@ -96,6 +96,21 @@ Display cluster:
 - estimated device-pixel dimensions stay visibly labelled as estimated and are not presented as native/physical panel resolution;
 - no Multi-Screen Window Placement permission is requested.
 
+Camera / Webcam Test:
+
+- camera permission is requested only after explicit Start Camera action;
+- the request uses video only and never requests microphone audio;
+- one-camera flow works even when device enumeration is unavailable or labels are limited;
+- live preview attaches to the permissioned local stream;
+- selected camera and browser/track-reported stream resolution are shown after start;
+- track-reported frame rate and aspect ratio are shown when available without becoming a quality score;
+- multiple enumerated video inputs can switch cleanly;
+- successful switching stops the replaced stream; failed switching does not destroy a still-valid previous stream;
+- Stop Camera releases every active owned track;
+- navigation/pagehide releases the active stream and bfcache restore does not silently reacquire it;
+- API unavailable, denied permission, no camera, unreadable/in-use, switch/constraint failure, and unexpected stream-ended states are actionable and do not expose raw exception text;
+- no camera frame is uploaded, recorded, persisted, or captured as a snapshot by Hardware Inspect.
+
 Printer Test Page:
 
 - Chrome print preview flow;
@@ -109,15 +124,15 @@ Printer Test Page:
 - cancelling print returns to a usable page;
 - no printer telemetry/health/nozzle/CMYK-certification claim.
 
-Physical printer output is useful optional evidence but must not be fabricated. Browser/headless print-media checks prove layout/flow, not ink/toner/device behavior.
+Physical printer output is useful optional evidence but must not be fabricated. Browser/headless print-media checks prove layout/flow, not ink/toner/device behavior. Mocked camera streams can prove state/lifecycle logic but are not evidence of a physical camera/browser combination.
 
 Every untested browser/hardware/physical-output case must be documented rather than inferred from mocks.
 
 ## Localization rollout
 
-The initial localization rollout is complete for `pt-BR`, `de`, `fr`, `es`, and `ru`. The phased L0–L4 sequence is historical implementation context; future V2 jobs do **not** repeat that phased release. Each new V2 ToolId ships all six locale versions together.
+The initial localization rollout is complete for `pt-BR`, `de`, `fr`, `es`, and `ru`. Every V2 job ships all six locale versions together.
 
-For every V2 localization wave verify:
+For V2 localization verify:
 
 - root EN route + all five locale-prefixed alternates exist;
 - correct `<html lang>`;
@@ -129,6 +144,8 @@ For every V2 localization wave verify:
 - no unexpected English leakage in the primary task flow;
 - measurement/capability wording remains no stronger than the English source;
 - sitemap contains every shipped alternate.
+
+For Webcam specifically, all six resolved Privacy pages must state that camera processing is local and camera video is not uploaded, recorded or stored by Hardware Inspect.
 
 ### Phase-2 language watchlist
 
@@ -159,7 +176,7 @@ locale-ready
 = code-complete + localized content/runtime coverage + routing/canonical/hreflang/sitemap QA
 ```
 
-This distinction is permanent. Translation passing tests does not prove real hardware or physical printer behavior.
+This distinction is permanent. Translation passing tests does not prove real hardware, physical printer output, or a real camera flow.
 
 ## Search Console / webmaster tools
 
@@ -167,13 +184,13 @@ For the production site:
 
 1. keep the existing `hardwareinspect.com` property/site registrations;
 2. keep the generated sitemap submitted;
-3. after a new wave reaches production, inspect the new root route and representative localized alternates when useful;
+3. after a new route reaches production, inspect the root route and representative localized alternates when useful;
 4. review canonical/language signals;
 5. monitor indexing, queries, CTR and page performance.
 
 Do not create separate site properties merely because a route has localized alternates unless a webmaster platform explicitly requires it.
 
-After each V2 wave:
+After production changes:
 
 1. verify new URLs appear in the sitemap;
 2. verify Google/Bing/Yandex recrawl/indexing state through the existing site properties where available;
@@ -189,10 +206,12 @@ After production or locale deployment:
 - 404s;
 - JS errors;
 - API unsupported errors;
-- device/permission failures where relevant;
+- camera/device permission or stream failures;
 - print-flow failures for Printer Test Page;
 - fullscreen/fallback/navigation failures for Monitor Test, Screen Uniformity Test and OLED Burn-In Test;
 - stale/incorrect screen or viewport values in Screen Resolution Checker after resize/orientation changes;
+- Webcam tracks that remain active after Stop/navigation/switch;
+- Webcam device switching or denied/no-device states that are not recoverable;
 - layout regressions from longer translated strings;
 - accidental indexing/noindex issues;
 - unexpected canonical selection;
@@ -229,9 +248,9 @@ Avoid:
 
 ## Future expansion trigger
 
-Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are implemented in the first five waves. Webcam remains the final approved V2 job and must follow its reviewed atomic wave.
+Expansion 1 and Hardware Expansion V2 are complete once Webcam merges. No seventh V2 route is pre-approved.
 
-Any diagnostic job **outside** that approved V2 set requires at least one strong condition:
+Any diagnostic job outside the current 24-tool catalog requires at least one strong condition:
 
 - external research validates independent search opportunity;
 - Search Console reveals recurring adjacent demand;
@@ -239,7 +258,7 @@ Any diagnostic job **outside** that approved V2 set requires at least one strong
 
 Adding an approved language version of an existing tool is governed by the localization architecture and is not a new diagnostic job.
 
-Technical ease alone is not enough for either new tools or unapproved phase-2 languages.
+Technical ease alone is not enough for either new tools or unapproved phase-2 languages. After V2, pause broad expansion work and use first-party evidence before opening another implementation wave.
 
 ## Future ad-placement boundary
 
