@@ -14,8 +14,11 @@ export const encodedGrayReference = (percent: number): string => {
   return `rgb(${channel} ${channel} ${channel})`;
 };
 
-const blackLevelPercents = [0, 5, 10, 15, 20, 25, 30, 35] as const;
-const whiteLevelPercents = [65, 70, 75, 80, 85, 90, 95, 100] as const;
+// Keep level references concentrated near the clipping boundaries instead of
+// spreading them across the whole tonal range. These remain encoded sRGB
+// references, not measured panel-luminance percentages.
+const blackLevelPercents = [0, 1, 2, 3, 4, 5, 7, 10] as const;
+const whiteLevelPercents = [90, 93, 95, 96, 97, 98, 99, 100] as const;
 
 export const monitorPatterns = [
   { id: 'white', kind: 'solid', value: '#ffffff' },
