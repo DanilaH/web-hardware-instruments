@@ -33,7 +33,7 @@ If `18`, `19`, and `23` appear to conflict on shared architecture, privacy, life
 
 `23_HARDWARE_EXPANSION_V2_SPEC.md` owns exact V2 route-specific decisions and may explicitly add V2 capability boundaries. It does not weaken shared global rules from `18`/`19` or existing Expansion 1 behavior from `20`.
 
-For localization work, `22_LOCALIZATION_SPEC.md` owns locale routing, translation/i18n architecture, localized SEO metadata, hreflang/canonical behavior, and terminology. It does **not** decide whether a new diagnostic route is approved. Expansion V2 routes are authorized by `23`; once a V2 ToolId is registered, the same `22` localization architecture applies and all six current locales must be complete atomically.
+For localization work, `22_LOCALIZATION_SPEC.md` owns locale routing, translation/i18n architecture, localized SEO metadata, hreflang/canonical behavior, and terminology. It does **not** decide whether a new diagnostic route is approved. Expansion V2 routes are authorized by `23`; once a V2 ToolId is registered, the same locale-routing/canonical/hreflang architecture applies and all six current locales must be complete atomically.
 
 The old E1.0 → E1.7 order is completed development history. It is **not** a current instruction to keep implementing Expansion 1 stages.
 
@@ -128,7 +128,7 @@ Playwright is appropriate only when a critical browser-flow/lifecycle test mater
 
 ## 5. Current project state
 
-The currently implemented production catalog contains 18 code-side-audited tools.
+After the Printer Expansion V2 wave, the implemented catalog contains 19 production jobs.
 
 ### Controller
 
@@ -173,12 +173,17 @@ The currently implemented production catalog contains 18 code-side-audited tools
 /touch-screen-test
 ```
 
-Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. Localization of the existing 18-tool catalog is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using the shared diagnostic logic and locale-aware routing/content architecture.
-
-Hardware Expansion V2 is now approved under `23_HARDWARE_EXPANSION_V2_SPEC.md` and adds exactly six planned production jobs:
+### Printer
 
 ```text
 /printer-test-page
+```
+
+Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. Localization is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using shared diagnostic logic and locale-aware routing/content architecture. Each registered V2 ToolId must be complete across the same six locales atomically.
+
+Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page is the first implemented V2 production job after Foundation. The remaining approved but not-yet-implemented jobs are:
+
+```text
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
@@ -186,13 +191,13 @@ Hardware Expansion V2 is now approved under `23_HARDWARE_EXPANSION_V2_SPEC.md` a
 /webcam-test
 ```
 
-These routes do **not** count as implemented merely because they are documented. Do not expose placeholders or empty Camera/Printer homepage categories. Register each V2 ToolId atomically with its real component, all six locale content entries, route generation, SEO metadata, relation decision and applicable tests.
+Do **not** count the remaining routes as implemented merely because they are documented. Do not expose placeholders or an empty Camera homepage category. Register each remaining V2 ToolId atomically with its real component, all six locale content entries, route generation, SEO metadata, relation decision and applicable tests.
 
 The old E1.0 → E1.7 sequence is retained in historical/supporting documents only to explain how the catalog was built and reviewed. There is no approved E1.8.
 
-Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, localization, and UX polish are legitimate cross-catalog maintenance work.
+Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement/capability contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, localization, and UX polish are legitimate cross-catalog maintenance work.
 
-New product scope outside the implemented catalog and the six approved V2 routes still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
+New product scope outside the implemented catalog and the remaining approved V2 routes still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
 
 ## 6. Durable measurement boundaries
 
@@ -231,11 +236,11 @@ light instrument chassis
 + state/signal-driven motion only
 ```
 
-The existing five chromatic channel colors map to Controller, Mouse, Keyboard, Display, and Touch. Expansion V2 adds Camera and Printer as taxonomy channels, but does not automatically add two new bright channel colors. Use the neutral instrument treatment for Camera/Printer unless an explicit reviewed visual-system update approves a restrained extension.
+The existing five chromatic channel colors map to Controller, Mouse, Keyboard, Display, and Touch. Expansion V2 adds Camera and Printer as taxonomy channels, but does not automatically add two new bright channel colors. Printer uses the neutral instrument treatment; Camera should do the same unless an explicit reviewed visual-system update approves a restrained extension.
 
 Channel colors reinforce family identity and active signal; they do not replace success/warning/error semantics and must not turn the catalog into a rainbow UI.
 
-No decorative gradient washes, glass, neon, gaming chrome, nested dashboard cards, ornamental charts, fake instrument readouts, or generic AI/SaaS visual chrome.
+No decorative gradient washes, glass, neon, gaming chrome, nested dashboard cards, ornamental charts, fake instrument readouts, or generic AI/SaaS visual chrome. Functional gradients inside the Printer reference or a display test pattern are diagnostic content, not decorative chrome.
 
 A CSS `linear-gradient()` is allowed when it is only the implementation primitive for a functional technical grid/reference ruling. Judge the rendered purpose, not the CSS function name. `17_FUNCTIONAL_VISUAL_SYSTEM.md` owns the exact visual grammar if a supporting document contains older wording.
 
@@ -245,11 +250,11 @@ Localization must be tested for text expansion, especially German/French/Russian
 
 ## 8. Lifecycle and cleanup
 
-Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, media track, and bfcache/navigation transition needs an explicit cleanup/restart path.
+Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, media track, temporary print DOM/style, and bfcache/navigation transition needs an explicit cleanup/restart path.
 
 Browser capability services own acquisition lifecycle. Tool controllers own interpretation and presentation state.
 
-Camera switching/stop/destroy must stop replaced/active media tracks. Printer uses browser print UI and has no persistent hardware acquisition lifecycle.
+Camera switching/stop/destroy must stop replaced/active media tracks. Printer uses browser print UI and has no persistent hardware acquisition lifecycle; its temporary print root/page style must be removed after print/cancel and on controller destruction.
 
 Do not move held sets, counters, heuristic interpretation, or visual state into acquisition services merely for reuse.
 
@@ -265,7 +270,7 @@ Production indexing is enabled. Do not revert to `hardware-testing.invalid` or d
 
 Localized routes use the same HTTPS production origin, self-referencing canonicals, and the hreflang rules in `22_LOCALIZATION_SPEC.md`.
 
-Do not claim Search Console submission, indexing, real-device QA, real-printer QA, real-camera QA, or cross-browser QA that has not actually happened for newly released V2 routes.
+Do not claim Search Console submission, indexing, real-device QA, real-printer-output QA, real-camera QA, or cross-browser QA that has not actually happened for newly released V2 routes.
 
 For deployment/release checks, follow `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`, `12_LAUNCH_PLAN.md`, `22_LOCALIZATION_SPEC.md`, and V2-specific gates in `23_HARDWARE_EXPANSION_V2_SPEC.md`.
 

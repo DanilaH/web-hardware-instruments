@@ -14,6 +14,8 @@ pure math   browser capability service
           native browser API
 ```
 
+Not every tool needs a hardware capability service. Pure rendered-output tools such as Printer Test Page stay tool-local and use the narrow browser primitive they actually need.
+
 ## Recommended project shape
 
 Full-v1 shape:
@@ -49,7 +51,7 @@ src/
 └── types/
 ```
 
-Expansion 1 may add only the concrete folders/boundaries required by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not pre-create empty layers merely to match a future tree.
+Later approved expansions add only concrete folders/boundaries required by their owning specs. Do not pre-create empty layers merely to match a future tree.
 
 Keep the shape shallow.
 
@@ -61,12 +63,12 @@ Correct dependency shape:
 page
  ↓
 tool controller / UI binder
- ├──→ pure calculation helpers
- ├──→ browser capability service
- └──→ visualization renderer
+ ├──→ pure calculation/config helpers
+ ├──→ browser capability service when the job needs acquisition
+ └──→ visualization / rendered reference
 ```
 
-Pure calculation helpers must not import browser services, DOM, SVG, or Canvas code.
+Pure calculation/config helpers must not import browser services, DOM, SVG, or Canvas code.
 
 Browser capability services must not import tool-specific calculations or renderers.
 
@@ -97,6 +99,8 @@ One shared `FrameSampler` powers:
 `FrameSampler` owns native rAF acquisition and display visibility lifecycle. Tool controllers own their own warmup/window/calculation/trace/pattern semantics.
 
 Exact full-v1 reset behavior remains in `18_DECISIONS_AND_BOUNDARIES.md`; exact Frame Skipping semantics are in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+
+Expansion V2 display-pattern tools use the shared Display Pattern Engine defined by `23_HARDWARE_EXPANSION_V2_SPEC.md` when their waves ship. Do not overload `FrameSampler` with deterministic visual-pattern ownership.
 
 ### Keyboard
 
@@ -131,11 +135,45 @@ Expansion 1 adds `TouchInputService`, specialized for finger-touch Pointer Event
 
 Mouse/pen input must not be normalized as touch.
 
+### Printer
+
+Printer Test Page has **no printer capability service**.
+
+Its dependency shape is intentionally narrow:
+
+```text
+ToolPage
+  ↓
+PrinterTest.astro
+  ├── printer-pattern.ts     pure paper/profile configuration
+  └── printer-controller.ts  local UI state + temporary print DOM/style + window.print()
+```
+
+The printable reference is authored with local HTML/SVG foreground content. The controller may invoke browser print UI but must not detect printers, read telemetry, use WebUSB/WebHID, upload documents, or infer cartridge/nozzle state.
+
+Temporary print-only DOM/style is lifecycle state and must be removed after print/cancel and on destroy.
+
 ### Fullscreen
 
 Expansion 1 permits a small shared progressive-enhancement Fullscreen helper for Touch, Dead Pixel, and Backlight Bleed.
 
 It owns feature detection/request/exit/state observation/cleanup only. It is not a hardware acquisition service and every tool needs an in-page fallback.
+
+### Localization / V2 content composition
+
+The original six locale files remain the strict source for the pre-V2 catalog. Expansion V2 jobs may use **tool-local exhaustive locale bundles** to avoid repeatedly rewriting six very large files, provided all of these rules hold:
+
+```text
+one approved ToolId
++ all six locale entries
++ one shared implementation
++ composition through src/i18n/content/index.ts
+= one resolved getSiteContent(locale) contract
+```
+
+This is not a second locale-availability system and does not allow fallback content. A modular V2 ToolId enters the type unions only in the same atomic wave that registers its real tool implementation. `getSiteContent(locale)` remains the single resolved content API consumed by pages/homepage/navigation.
+
+Tool-local runtime strings may likewise use one exhaustive `Record<Locale, ...>` module when the new tool has self-contained controls. Existing global runtime-message contracts remain unchanged unless the shared runtime architecture itself needs to change.
 
 ### Analytics
 
@@ -153,7 +191,7 @@ interface ToolController {
 }
 ```
 
-Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, and subscriptions.
+Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, temporary print DOM/styles, media tracks, and subscriptions.
 
 ## TypeScript
 
@@ -186,13 +224,15 @@ Use native, purpose-specific rendering:
 
 ```text
 DOM/CSS → controls, text, result readouts, keyboard, simple state surfaces
-SVG     → controller, stick plots, deadzone geometry, mouse/touch visuals where useful
+SVG     → controller, stick plots, deadzone geometry, mouse/touch visuals, printable vector references
 Canvas  → FPS/refresh traces and Frame Skipping pattern
 ```
 
 Do not add a charting library.
 
 For Canvas, scale the backing store for `devicePixelRatio` so visuals stay crisp; rendering scale must never be mixed into measurement calculations.
+
+Printable diagnostic references should prefer HTML/SVG foreground/vector primitives for essential information so browser “background graphics” settings are not the sole carrier of the test content.
 
 ## Build output
 
@@ -212,6 +252,8 @@ frame timing series
 
 remain local by default.
 
+Printer reference markup is generated locally and no document/printer telemetry is uploaded.
+
 Analytics may record only coarse product events such as:
 
 ```text
@@ -220,7 +262,7 @@ tool_completed
 unsupported_browser
 ```
 
-Do not send raw key presses, pointer/touch streams, frame samples, or device identifiers.
+Do not send raw key presses, pointer/touch streams, frame samples, document contents, or device identifiers.
 
 ## Error handling
 
@@ -238,7 +280,7 @@ Do not rely on UA sniffing as the primary capability decision.
 
 ## Rule
 
-Native browser APIs remain the source of truth, but tool UI consumes them through small typed capability boundaries.
+Native browser APIs remain the source of truth for acquisition jobs, but tool UI consumes them through small typed capability boundaries.
 
 ```text
 Page / Tool UI
@@ -249,6 +291,8 @@ thin browser capability service
       ↓
 native browser API
 ```
+
+A tool that only renders a local reference and invokes a standard UI primitive does not need a fake capability service merely for architectural symmetry.
 
 ## Approved capability services
 
@@ -270,9 +314,15 @@ MouseInputService
 TouchInputService
 ```
 
-The Fullscreen helper is separate from this acquisition-service list.
+### Expansion V2
 
-Exact Expansion 1 responsibilities/profiles/events are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+```text
+CameraService   only when Webcam ships
+```
+
+Printer Test Page explicitly has no PrinterService. The Fullscreen helper, Display Pattern Engine, and screen-info helper are separate from this acquisition-service list.
+
+Exact Expansion 1 responsibilities/profiles/events are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Exact V2 capability boundaries are defined in `23_HARDWARE_EXPANSION_V2_SPEC.md`.
 
 ## Responsibilities
 

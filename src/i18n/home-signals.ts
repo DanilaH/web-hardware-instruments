@@ -1,5 +1,6 @@
 import type { ImplementedToolChannel } from '../config/tools';
 import type { ImplementedContentLocale } from './content';
+import { printerContentByLocale } from './content/printer';
 
 const homeSignalLabels = {
   en: {
@@ -8,6 +9,7 @@ const homeSignalLabels = {
     keyboard: 'Keyboard',
     display: 'Frames',
     touch: 'Touch',
+    printer: printerContentByLocale.en.signal,
   },
   'pt-BR': {
     controller: 'Controle',
@@ -15,6 +17,7 @@ const homeSignalLabels = {
     keyboard: 'Teclado',
     display: 'Frames',
     touch: 'Toque',
+    printer: printerContentByLocale['pt-BR'].signal,
   },
   de: {
     controller: 'Controller',
@@ -22,6 +25,7 @@ const homeSignalLabels = {
     keyboard: 'Tastatur',
     display: 'Frames',
     touch: 'Touch',
+    printer: printerContentByLocale.de.signal,
   },
   fr: {
     controller: 'Manette',
@@ -29,6 +33,7 @@ const homeSignalLabels = {
     keyboard: 'Clavier',
     display: 'Images',
     touch: 'Tactile',
+    printer: printerContentByLocale.fr.signal,
   },
   es: {
     controller: 'Gamepad',
@@ -36,6 +41,7 @@ const homeSignalLabels = {
     keyboard: 'Teclado',
     display: 'Frames',
     touch: 'Táctil',
+    printer: printerContentByLocale.es.signal,
   },
   ru: {
     controller: 'Геймпад',
@@ -43,6 +49,7 @@ const homeSignalLabels = {
     keyboard: 'Клавиатура',
     display: 'Кадры',
     touch: 'Касания',
+    printer: printerContentByLocale.ru.signal,
   },
 } as const satisfies Record<ImplementedContentLocale, Record<ImplementedToolChannel, string>>;
 

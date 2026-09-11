@@ -19,6 +19,7 @@ import MouseButtonTest from '../../tools/mouse/button/MouseButtonTest.astro';
 import MousePollingRateTest from '../../tools/mouse/polling/MousePollingRateTest.astro';
 import MouseScrollTest from '../../tools/mouse/scroll/MouseScrollTest.astro';
 import MouseTester from '../../tools/mouse/tester/MouseTester.astro';
+import PrinterTest from '../../tools/printer/test/PrinterTest.astro';
 import TouchScreenTest from '../../tools/touch/tester/TouchScreenTest.astro';
 import RelatedTools from '../navigation/RelatedTools.astro';
 
@@ -49,6 +50,7 @@ const toolComponents = {
   'dead-pixel-test': DeadPixelTest,
   'backlight-bleed-test': BacklightBleedTest,
   'touch-screen-test': TouchScreenTest,
+  'printer-test-page': PrinterTest,
 } as const;
 const ToolComponent = toolComponents[toolId];
 ---

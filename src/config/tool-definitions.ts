@@ -19,6 +19,7 @@ export const toolIds = [
   'dead-pixel-test',
   'backlight-bleed-test',
   'touch-screen-test',
+  'printer-test-page',
 ] as const;
 
 export type ToolId = (typeof toolIds)[number];
@@ -49,6 +50,7 @@ export const toolDefinitions: readonly ToolDefinition[] = [
   { id: 'dead-pixel-test', href: '/dead-pixel-test', icon: 'dead-pixel', channel: 'display' },
   { id: 'backlight-bleed-test', href: '/backlight-bleed-test', icon: 'backlight', channel: 'display' },
   { id: 'touch-screen-test', href: '/touch-screen-test', icon: 'touch', channel: 'touch' },
+  { id: 'printer-test-page', href: '/printer-test-page', icon: 'printer', channel: 'printer' },
 ];
 
 const relatedToolIds = {
@@ -70,6 +72,7 @@ const relatedToolIds = {
   'dead-pixel-test': ['backlight-bleed-test', 'refresh-rate-test'],
   'backlight-bleed-test': ['dead-pixel-test'],
   'touch-screen-test': ['dead-pixel-test', 'backlight-bleed-test'],
+  'printer-test-page': [],
 } as const satisfies Record<ToolId, readonly ToolId[]>;
 
 const toolById = new Map(toolDefinitions.map((tool) => [tool.id, tool] as const));

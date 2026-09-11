@@ -46,6 +46,14 @@ export interface SupportPageContent {
   readonly paragraphs: readonly string[];
 }
 
+// The six established locale files remain an exhaustive source for the pre-V2 catalog.
+// V2 jobs are composed atomically from tool-local locale bundles in content/index.ts.
+// Only already-implemented modular jobs belong in these unions; never add placeholders.
+export type ModularToolId = Extract<ToolId, 'printer-test-page'>;
+export type InlineLocaleToolId = Exclude<ToolId, ModularToolId>;
+export type ModularToolChannel = Extract<ImplementedToolChannel, 'printer'>;
+export type InlineLocaleToolChannel = Exclude<ImplementedToolChannel, ModularToolChannel>;
+
 export interface SiteContent {
   readonly nav: {
     readonly primaryAria: string;
@@ -61,9 +69,14 @@ export interface SiteContent {
     readonly privacy: string;
   };
   readonly relatedTools: string;
-  readonly categories: Record<ImplementedToolChannel, string>;
+  readonly categories: Record<InlineLocaleToolChannel, string>;
   readonly home: HomeContent;
   readonly about: SupportPageContent;
   readonly privacy: SupportPageContent;
+  readonly tools: Record<InlineLocaleToolId, ToolPageContent>;
+}
+
+export interface ResolvedSiteContent extends Omit<SiteContent, 'categories' | 'tools'> {
+  readonly categories: Record<ImplementedToolChannel, string>;
   readonly tools: Record<ToolId, ToolPageContent>;
 }

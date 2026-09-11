@@ -4,7 +4,7 @@ This repository contains a static Astro catalog of browser-based hardware diagno
 
 ## Current state
 
-The full-v1 catalog and Hardware Expansion 1 are **code-side complete and audited**. The visual-system refresh is rolled out across the homepage, shared shell, and all five hardware families.
+The full-v1 catalog, Hardware Expansion 1, localization, and the Hardware Expansion V2 Foundation are **code-side complete and audited**. Expansion V2 is shipping in atomic production-valid waves; Printer Test Page is the first V2 job added after Foundation.
 
 The production origin is configured as:
 
@@ -15,9 +15,9 @@ indexingEnabled = true
 
 Do not revert the product to the historical `hardware-testing.invalid` placeholder. Whether every external release step (real-device QA, deployment smoke, Search Console verification, sitemap submission) has been completed must be reported from current evidence rather than inferred from old planning text.
 
-Localization of the existing catalog is now an approved maintenance/SEO expansion. Initial locales are `pt-BR`, `de`, `fr`, `es`, and `ru`; the exact implementation contract is `22_LOCALIZATION_SPEC.md`.
+Implemented locales remain `en`, `pt-BR`, `de`, `fr`, `es`, and `ru`. Every registered V2 ToolId must ship atomically across the same six locales under `23_HARDWARE_EXPANSION_V2_SPEC.md` and the routing/i18n architecture of `22_LOCALIZATION_SPEC.md`.
 
-Implemented diagnostic routes:
+Implemented diagnostic routes after the Printer wave:
 
 ```text
 Controller
@@ -47,6 +47,9 @@ Display
 
 Touch
 /touch-screen-test
+
+Printer
+/printer-test-page
 ```
 
 Supporting routes:
@@ -57,7 +60,7 @@ Supporting routes:
 /privacy
 ```
 
-Localization does not add new diagnostic jobs. English remains at the existing root URLs; localized versions use locale prefixes while preserving the same semantic route slugs.
+Localization does not create additional diagnostic jobs. English remains at root URLs; localized versions use locale prefixes while preserving the same semantic route slugs.
 
 ## Source-of-truth ownership
 
@@ -69,6 +72,10 @@ Use the narrowest document that owns the decision:
 
 18_DECISIONS_AND_BOUNDARIES.md
   durable global + full-v1 exact algorithms, lifecycle, browser behavior
+
+23_HARDWARE_EXPANSION_V2_SPEC.md
+  exact Expansion V2 scope, route behavior, new capability boundaries, SEO/copy,
+  sequencing and route-specific QA
 
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
   exact Expansion 1 route behavior, algorithms, wording, route-specific QA
@@ -95,7 +102,7 @@ Use the narrowest document that owns the decision:
 
 If two documents appear to conflict on an exact behavior, do not average them. Prefer the document that explicitly owns that route/boundary; if ownership is still ambiguous, resolve the documentation before changing product code.
 
-`22_LOCALIZATION_SPEC.md` owns translated presentation and locale routing. It does not override diagnostic algorithms, browser semantics or measurement boundaries owned by `18` and `20`.
+`23_HARDWARE_EXPANSION_V2_SPEC.md` owns V2 jobs such as Printer Test Page. `22_LOCALIZATION_SPEC.md` still owns locale routing/canonical/hreflang architecture and does not override diagnostic or capability semantics.
 
 ## Supporting documents
 
@@ -114,6 +121,8 @@ These documents provide focused reference but do not override the ownership map 
 10_PERFORMANCE_ACCESSIBILITY.md   performance/accessibility baseline
 11_IMPLEMENTATION_PLAN.md         completed implementation history
 15_BACKLOG.md                     evidence-gated future opportunities
+24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md
+                                  non-normative atomic execution plan for approved V2 scope
 ```
 
 `03_TOOL_SPECS.md` was written around full v1 and remains useful for those original route contracts. `04_UX_UI.md` preserves durable task-first UX framing but defers exact current visual grammar to `17_FUNCTIONAL_VISUAL_SYSTEM.md`.
@@ -132,7 +141,7 @@ Historical statements about:
 
 must not be treated as current state when they conflict with the current production configuration and later source-of-truth documents.
 
-Permanent boundaries still apply: measurement honesty, native acquisition ownership, static/low-maintenance architecture, one real job per search landing, evidence-gated future scope, and the exact route algorithms in `18`/`20`.
+Permanent boundaries still apply: measurement honesty, native acquisition ownership, static/low-maintenance architecture, one real job per search landing, evidence-gated future scope, and the exact route algorithms/capability contracts in `18`/`20`/`23`.
 
 ## Review and validation workflow
 
@@ -172,7 +181,7 @@ measurement wording preserved
 
 Headless/browser-mocked checks are useful for code behavior, state transitions, geometry and locale rendering. They are not proof of real hardware behavior.
 
-Real hardware/browser/camera cases required by a route remain separate evidence and must not be fabricated merely because translation work passes automated checks.
+Real hardware/browser/camera/printer-output cases required by a route remain separate evidence and must not be fabricated merely because automated checks pass.
 
 ## Non-normative review/research context
 
