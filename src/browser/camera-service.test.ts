@@ -102,6 +102,38 @@ describe('CameraService', () => {
     expect(service.getSettings()).toMatchObject({ deviceId: 'first' });
   });
 
+  it('cancels a pending switch if the current stream ends first', async () => {
+    const firstTrack = createFakeTrack({ deviceId: 'first' });
+    const secondTrack = createFakeTrack({ deviceId: 'second' });
+    const firstStream = createFakeStream(firstTrack);
+    const secondStream = createFakeStream(secondTrack);
+    let resolveSecond: ((stream: MediaStream) => void) | undefined;
+    let callIndex = 0;
+    const getUserMedia = vi.fn(() => {
+      callIndex += 1;
+      if (callIndex === 1) return Promise.resolve(firstStream);
+      return new Promise<MediaStream>((resolve) => {
+        resolveSecond = resolve;
+      });
+    });
+    const onStreamEnded = vi.fn();
+    const service = createCameraService({
+      environment: createEnvironment(getUserMedia),
+      onStreamEnded,
+    });
+
+    await service.start();
+    const pendingSwitch = service.switchDevice('second');
+    firstTrack.end();
+    resolveSecond?.(secondStream);
+
+    await expect(pendingSwitch).rejects.toMatchObject({ code: 'request-failed' });
+    expect(firstTrack.stop).toHaveBeenCalledTimes(1);
+    expect(secondTrack.stop).toHaveBeenCalledTimes(1);
+    expect(service.getSettings()).toBeNull();
+    expect(onStreamEnded).toHaveBeenCalledWith(expect.objectContaining({ code: 'stream-ended' }));
+  });
+
   it('cannot resurrect a stream that resolves after stop', async () => {
     const track = createFakeTrack({ deviceId: 'late' });
     const stream = createFakeStream(track);
