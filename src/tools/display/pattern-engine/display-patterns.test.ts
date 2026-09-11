@@ -5,6 +5,7 @@ import {
   encodedGrayReference,
   monitorPatterns,
   moveDisplayPatternIndex,
+  screenUniformityPatterns,
 } from './display-patterns';
 
 describe('display pattern references', () => {
@@ -51,9 +52,25 @@ describe('display pattern references', () => {
     expect(white.values).toEqual([90, 93, 95, 96, 97, 98, 99, 100].map(encodedGrayReference));
   });
 
-  it('wraps manual navigation in both directions', () => {
+  it('keeps the exact Screen Uniformity P0 presets and encoded values', () => {
+    expect(screenUniformityPatterns.map((pattern) => pattern.id)).toEqual([
+      'gray-5',
+      'gray-10',
+      'gray-25',
+      'gray-50',
+      'gray-75',
+      'white-100',
+    ]);
+    expect(screenUniformityPatterns.map((pattern) => pattern.kind === 'solid' ? pattern.value : null)).toEqual(
+      [5, 10, 25, 50, 75, 100].map(encodedGrayReference),
+    );
+  });
+
+  it('wraps manual navigation for Monitor and Uniformity sequence lengths', () => {
     expect(moveDisplayPatternIndex(0, -1, 12)).toBe(11);
     expect(moveDisplayPatternIndex(11, 1, 12)).toBe(0);
     expect(moveDisplayPatternIndex(5, 1, 12)).toBe(6);
+    expect(moveDisplayPatternIndex(0, -1, 6)).toBe(5);
+    expect(moveDisplayPatternIndex(5, 1, 6)).toBe(0);
   });
 });

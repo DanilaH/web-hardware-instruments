@@ -35,6 +35,12 @@ export const monitorPatterns = [
   { id: 'sharpness-grid', kind: 'grid' },
 ] as const satisfies readonly DisplayPattern[];
 
+export const screenUniformityPatterns = [5, 10, 25, 50, 75, 100].map((percent) => ({
+  id: percent === 100 ? 'white-100' : `gray-${percent}`,
+  kind: 'solid' as const,
+  value: encodedGrayReference(percent),
+})) satisfies readonly DisplayPattern[];
+
 export const moveDisplayPatternIndex = (currentIndex: number, delta: -1 | 1, length: number): number => {
   if (length <= 0) return 0;
   return (currentIndex + delta + length) % length;

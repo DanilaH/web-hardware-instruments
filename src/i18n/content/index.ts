@@ -8,6 +8,7 @@ import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
+import { screenUniformityContentByLocale } from './screen-uniformity';
 import type { ResolvedSiteContent, SiteContent } from './types';
 
 export const implementedContentLocales = ['en', 'pt-BR', 'de', 'fr', 'es', 'ru'] as const satisfies readonly Locale[];
@@ -27,6 +28,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const printer = printerContentByLocale[locale];
   const printerHomepageCopy = printerHomepageCopyByLocale[locale];
   const monitor = monitorContentByLocale[locale];
+  const screenUniformity = screenUniformityContentByLocale[locale];
 
   return {
     ...base,
@@ -39,12 +41,14 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...printer.home,
       ...printerHomepageCopy,
       ...monitor.home,
+      ...screenUniformity.home,
       inputs: [...base.home.inputs, printer.signal],
     },
     tools: {
       ...base.tools,
       'printer-test-page': printer.tool,
       'monitor-test': monitor.tool,
+      'screen-uniformity-test': screenUniformity.tool,
     },
   };
 };
