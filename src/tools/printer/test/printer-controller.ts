@@ -13,6 +13,13 @@ export interface PrinterTestController {
 const selectedLabel = (select: HTMLSelectElement): string =>
   select.selectedOptions[0]?.textContent?.trim() ?? select.value;
 
+const stripCloneAccessibilityIds = (root: HTMLElement): void => {
+  root.removeAttribute('id');
+  root.removeAttribute('aria-labelledby');
+  root.querySelectorAll<HTMLElement>('[id]').forEach((element) => element.removeAttribute('id'));
+  root.querySelectorAll<HTMLElement>('[aria-labelledby]').forEach((element) => element.removeAttribute('aria-labelledby'));
+};
+
 export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
   const paperSelect = root.querySelector<HTMLSelectElement>('[data-printer-paper]');
   const profileSelect = root.querySelector<HTMLSelectElement>('[data-printer-profile]');
@@ -27,6 +34,7 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
 
   let activePrintRoot: HTMLElement | null = null;
   let activePageStyle: HTMLStyleElement | null = null;
+  let cleanupTimer: number | null = null;
   let destroyed = false;
 
   const readPaper = (): PrinterPaperSize =>
@@ -48,6 +56,10 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
   };
 
   const cleanupPrintMode = (): void => {
+    if (cleanupTimer !== null) {
+      window.clearTimeout(cleanupTimer);
+      cleanupTimer = null;
+    }
     document.documentElement.classList.remove('printer-print-mode');
     activePrintRoot?.remove();
     activePageStyle?.remove();
@@ -65,7 +77,10 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
     const paper = readPaper();
     const printRoot = document.createElement('div');
     printRoot.dataset.printerPrintRoot = '';
-    printRoot.append(sheet.cloneNode(true));
+
+    const printSheet = sheet.cloneNode(true) as HTMLElement;
+    stripCloneAccessibilityIds(printSheet);
+    printRoot.append(printSheet);
 
     const pageStyle = document.createElement('style');
     pageStyle.dataset.printerPageStyle = '';
@@ -80,9 +95,9 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
 
     window.print();
 
-    // window.print() returns after the dialog closes in target browsers. The
-    // timeout also covers cancellation paths where afterprint is inconsistent.
-    window.setTimeout(cleanupPrintMode, 0);
+    // Target browsers emit afterprint for both print and cancellation. Keep only
+    // a long emergency cleanup so a non-blocking print dialog cannot lose its DOM.
+    cleanupTimer = window.setTimeout(cleanupPrintMode, 60_000);
   };
 
   const handleStateChange = (): void => applyState();
