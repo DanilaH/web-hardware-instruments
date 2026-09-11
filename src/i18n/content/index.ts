@@ -3,6 +3,7 @@ import { deContent } from './de';
 import { enContent } from './en';
 import { esContent } from './es';
 import { frContent } from './fr';
+import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
@@ -23,6 +24,7 @@ const baseContentByLocale = {
 const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteContent => {
   const base = baseContentByLocale[locale];
   const printer = printerContentByLocale[locale];
+  const printerHomepageCopy = printerHomepageCopyByLocale[locale];
 
   return {
     ...base,
@@ -33,6 +35,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
     home: {
       ...base.home,
       ...printer.home,
+      ...printerHomepageCopy,
       inputs: [...base.home.inputs, printer.signal],
     },
     tools: {
