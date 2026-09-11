@@ -76,8 +76,8 @@ Hardware Expansion V2 has passed the project's expansion gate through completed 
 
 ```text
 /printer-test-page              implemented in the Printer wave
-/monitor-test                   approved next wave
-/screen-uniformity-test         approved
+/monitor-test                   implemented in the Monitor wave
+/screen-uniformity-test         approved next Display-pattern wave
 /oled-burn-in-test              approved
 /screen-resolution-checker      approved
 /webcam-test                    approved
@@ -168,7 +168,7 @@ Expansion V2 explicitly absorbs nearby synonym/sub-intent phrases into the six a
 
 # 7. Current implemented catalog and approved next waves
 
-Full-v1, Hardware Expansion 1, localization, V2 Foundation, and Printer Test Page are code-side implementation scope after the Printer wave.
+Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, and Monitor Test are code-side implementation scope after the Monitor wave.
 
 Current implemented production jobs:
 
@@ -197,6 +197,7 @@ Display
 /frame-skipping-test
 /dead-pixel-test
 /backlight-bleed-test
+/monitor-test
 
 Touch
 /touch-screen-test
@@ -205,13 +206,12 @@ Printer
 /printer-test-page
 ```
 
-Localization provides the approved language alternates for these same **19 jobs**.
+Localization provides the approved language alternates for these same **20 jobs**.
 
 Approved V2 jobs not yet part of the current catalog until their own atomic waves merge:
 
 ```text
 Display
-/monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
 /screen-resolution-checker
@@ -246,7 +246,7 @@ monitor ghosting test
 
 Adding a new **language version of an existing approved tool** is not a new diagnostic-scope expansion; it is governed by `22_LOCALIZATION_SPEC.md` and the approved locale decision.
 
-Future Audio/CPS/latency/other utility ideas remain out of scope until they independently satisfy this gate and receive a reviewed exact contract.
+Future Audio/CPS/latency/other utility ideas remain out of scope until they independently satisfy this gate and receive a reviewed exact contract before implementation.
 
 # 9. Measurement-honesty boundary
 

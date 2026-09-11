@@ -1,6 +1,14 @@
 import { createFullscreenHelper, type FullscreenHelper } from '../../../browser/fullscreen';
 
-export interface DisplayInspectionStageController { start(): void; stop(): void; showOverlay(): void; destroy(): void; isActive(): boolean; }
+export interface DisplayInspectionStageController {
+  start(): void;
+  stop(): void;
+  showOverlay(): void;
+  hideOverlay(): void;
+  destroy(): void;
+  isActive(): boolean;
+}
+
 interface DisplayInspectionStageOptions {
   root: HTMLElement;
   stage: HTMLElement;
@@ -11,57 +19,174 @@ interface DisplayInspectionStageOptions {
   fullscreen?: FullscreenHelper;
   overlayIdleMs?: number;
 }
-const requireElement = <T extends Element>(root: ParentNode, selector: string): T => { const element = root.querySelector<T>(selector); if (!element) throw new Error(`Display inspection stage is missing ${selector}`); return element; };
 
-export const mountDisplayInspectionStage = ({ root, stage, startButton, exitButton, fullscreenNote, fullscreenUnavailableMessage, fullscreen = createFullscreenHelper(), overlayIdleMs = 1_500 }: DisplayInspectionStageOptions): DisplayInspectionStageController => {
+const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
+  const element = root.querySelector<T>(selector);
+  if (!element) throw new Error(`Display inspection stage is missing ${selector}`);
+  return element;
+};
+
+export const mountDisplayInspectionStage = ({
+  root,
+  stage,
+  startButton,
+  exitButton,
+  fullscreenNote,
+  fullscreenUnavailableMessage,
+  fullscreen = createFullscreenHelper(),
+  overlayIdleMs = 1_500,
+}: DisplayInspectionStageOptions): DisplayInspectionStageController => {
   const overlay = requireElement<HTMLElement>(stage, '[data-inspection-overlay]');
   let active = false;
   let destroyed = false;
+  let fullscreenRequestPending = false;
   let overlayTimer: number | null = null;
-  const clearOverlayTimer = (): void => { if (overlayTimer !== null) { window.clearTimeout(overlayTimer); overlayTimer = null; } };
+
+  const clearOverlayTimer = (): void => {
+    if (overlayTimer !== null) {
+      window.clearTimeout(overlayTimer);
+      overlayTimer = null;
+    }
+  };
+
+  const hideOverlay = (): void => {
+    if (!active || destroyed) return;
+    clearOverlayTimer();
+    stage.dataset.overlayVisible = 'false';
+  };
+
   const hideOverlayLater = (): void => {
     clearOverlayTimer();
     if (!active || destroyed) return;
     overlayTimer = window.setTimeout(() => {
       overlayTimer = null;
       if (!active || destroyed) return;
-      if (overlay.contains(document.activeElement)) { stage.dataset.overlayVisible = 'true'; return; }
+      if (overlay.contains(document.activeElement)) {
+        stage.dataset.overlayVisible = 'true';
+        return;
+      }
       stage.dataset.overlayVisible = 'false';
     }, overlayIdleMs);
   };
-  const showOverlay = (): void => { if (!active || destroyed) return; stage.dataset.overlayVisible = 'true'; hideOverlayLater(); };
-  const syncFullscreenState = (): void => { if (destroyed) return; const stageIsFullscreen = fullscreen.getActiveElement() === stage; root.dataset.fullscreen = stageIsFullscreen ? 'true' : 'false'; if (active && !stageIsFullscreen) showOverlay(); };
+
+  const showOverlay = (): void => {
+    if (!active || destroyed) return;
+    stage.dataset.overlayVisible = 'true';
+    hideOverlayLater();
+  };
+
+  const syncFullscreenState = (): void => {
+    if (destroyed) return;
+    const stageIsFullscreen = fullscreen.getActiveElement() === stage;
+    root.dataset.fullscreen = stageIsFullscreen ? 'true' : 'false';
+    if (active && !stageIsFullscreen) showOverlay();
+  };
+
   const activate = async (): Promise<void> => {
     if (destroyed || active) return;
-    active = true; root.dataset.active = 'true'; stage.hidden = false; stage.dataset.overlayVisible = 'true'; fullscreenNote.textContent = ''; stage.focus({ preventScroll: true }); showOverlay();
-    if (!fullscreen.isSupported()) { fullscreenNote.textContent = fullscreenUnavailableMessage; return; }
+    active = true;
+    root.dataset.active = 'true';
+    stage.hidden = false;
+    stage.dataset.overlayVisible = 'true';
+    fullscreenNote.textContent = '';
+    stage.focus({ preventScroll: true });
+    showOverlay();
+
+    if (!fullscreen.isSupported()) {
+      fullscreenNote.textContent = fullscreenUnavailableMessage;
+      return;
+    }
+
+    fullscreenRequestPending = true;
     const enteredFullscreen = await fullscreen.request(stage);
-    if (destroyed || !active) return;
+    fullscreenRequestPending = false;
+
+    // Exit requests can race browser fullscreen permission/UI. A late success
+    // must never strand an inactive or destroyed stage in fullscreen.
+    if (destroyed || !active) {
+      if (fullscreen.getActiveElement() === stage) await fullscreen.exit();
+      if (destroyed) fullscreen.destroy();
+      return;
+    }
+
     if (!enteredFullscreen) fullscreenNote.textContent = fullscreenUnavailableMessage;
     syncFullscreenState();
   };
+
   const deactivate = async (): Promise<void> => {
     if (destroyed || !active) return;
     clearOverlayTimer();
     if (fullscreen.getActiveElement() === stage) {
       const exitedFullscreen = await fullscreen.exit();
       if (destroyed) return;
-      if (!exitedFullscreen && fullscreen.getActiveElement() === stage) { showOverlay(); return; }
+      if (!exitedFullscreen && fullscreen.getActiveElement() === stage) {
+        showOverlay();
+        return;
+      }
     }
-    active = false; clearOverlayTimer(); root.dataset.active = 'false'; root.dataset.fullscreen = 'false'; stage.hidden = true; stage.dataset.overlayVisible = 'true'; fullscreenNote.textContent = ''; startButton.focus({ preventScroll: true });
+    active = false;
+    clearOverlayTimer();
+    root.dataset.active = 'false';
+    root.dataset.fullscreen = 'false';
+    stage.hidden = true;
+    stage.dataset.overlayVisible = 'true';
+    fullscreenNote.textContent = '';
+    startButton.focus({ preventScroll: true });
   };
+
   const handleStart = (): void => { void activate(); };
   const handleExit = (event: Event): void => { event.stopPropagation(); void deactivate(); };
   const handleActivity = (): void => { showOverlay(); };
   const handleOverlayFocusOut = (): void => { hideOverlayLater(); };
-  startButton.addEventListener('click', handleStart); exitButton.addEventListener('click', handleExit); stage.addEventListener('pointermove', handleActivity); stage.addEventListener('pointerdown', handleActivity); stage.addEventListener('keydown', handleActivity); overlay.addEventListener('focusin', handleActivity); overlay.addEventListener('focusout', handleOverlayFocusOut);
+
+  startButton.addEventListener('click', handleStart);
+  exitButton.addEventListener('click', handleExit);
+  stage.addEventListener('pointermove', handleActivity);
+  stage.addEventListener('pointerdown', handleActivity);
+  stage.addEventListener('keydown', handleActivity);
+  overlay.addEventListener('focusin', handleActivity);
+  overlay.addEventListener('focusout', handleOverlayFocusOut);
   const unsubscribeFullscreen = fullscreen.subscribe(syncFullscreenState);
-  root.dataset.active = 'false'; root.dataset.fullscreen = 'false';
+
+  root.dataset.active = 'false';
+  root.dataset.fullscreen = 'false';
+
   return {
     start: () => { if (!destroyed) syncFullscreenState(); },
-    stop: () => { if (destroyed) return; clearOverlayTimer(); if (fullscreen.getActiveElement() === stage) void fullscreen.exit(); active = false; root.dataset.active = 'false'; root.dataset.fullscreen = 'false'; stage.hidden = true; stage.dataset.overlayVisible = 'true'; fullscreenNote.textContent = ''; },
+    stop: () => {
+      if (destroyed) return;
+      clearOverlayTimer();
+      if (fullscreen.getActiveElement() === stage) void fullscreen.exit();
+      active = false;
+      root.dataset.active = 'false';
+      root.dataset.fullscreen = 'false';
+      stage.hidden = true;
+      stage.dataset.overlayVisible = 'true';
+      fullscreenNote.textContent = '';
+    },
     showOverlay,
-    destroy: () => { if (destroyed) return; destroyed = true; clearOverlayTimer(); startButton.removeEventListener('click', handleStart); exitButton.removeEventListener('click', handleExit); stage.removeEventListener('pointermove', handleActivity); stage.removeEventListener('pointerdown', handleActivity); stage.removeEventListener('keydown', handleActivity); overlay.removeEventListener('focusin', handleActivity); overlay.removeEventListener('focusout', handleOverlayFocusOut); unsubscribeFullscreen(); fullscreen.destroy(); },
+    hideOverlay,
+    destroy: () => {
+      if (destroyed) return;
+      destroyed = true;
+      active = false;
+      clearOverlayTimer();
+      startButton.removeEventListener('click', handleStart);
+      exitButton.removeEventListener('click', handleExit);
+      stage.removeEventListener('pointermove', handleActivity);
+      stage.removeEventListener('pointerdown', handleActivity);
+      stage.removeEventListener('keydown', handleActivity);
+      overlay.removeEventListener('focusin', handleActivity);
+      overlay.removeEventListener('focusout', handleOverlayFocusOut);
+      unsubscribeFullscreen();
+
+      if (fullscreenRequestPending) return;
+      if (fullscreen.getActiveElement() === stage) {
+        void fullscreen.exit().finally(() => fullscreen.destroy());
+        return;
+      }
+      fullscreen.destroy();
+    },
     isActive: () => active && !destroyed,
   };
 };

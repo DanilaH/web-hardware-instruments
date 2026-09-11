@@ -1,0 +1,42 @@
+<div class="display-pattern-surface" data-display-pattern-surface data-pattern-kind="solid" aria-hidden="true">
+  <div class="display-pattern-surface__bars" data-display-pattern-bars></div>
+</div>
+
+<style>
+  .display-pattern-surface {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--display-pattern-color, #000);
+  }
+
+  .display-pattern-surface[data-pattern-kind='gradient'] {
+    background: var(--display-pattern-gradient);
+  }
+
+  .display-pattern-surface[data-pattern-kind='bars'] {
+    display: block;
+    background: #000;
+  }
+
+  .display-pattern-surface__bars {
+    display: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .display-pattern-surface[data-pattern-kind='bars'] .display-pattern-surface__bars {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+
+  .display-pattern-surface[data-pattern-kind='grid'] {
+    background-color: #fff;
+    background-image:
+      repeating-linear-gradient(90deg, rgb(20 20 20 / 0.24) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(0deg, rgb(20 20 20 / 0.24) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(90deg, #111 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(0deg, #111 0 1px, transparent 1px 64px);
+  }
+</style>
