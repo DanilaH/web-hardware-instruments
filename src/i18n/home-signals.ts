@@ -1,6 +1,7 @@
 import type { ImplementedToolChannel } from '../config/tools';
 import type { ImplementedContentLocale } from './content';
 import { printerContentByLocale } from './content/printer';
+import { webcamContentByLocale } from './content/webcam';
 
 const homeSignalLabels = {
   en: {
@@ -9,6 +10,7 @@ const homeSignalLabels = {
     keyboard: 'Keyboard',
     display: 'Frames',
     touch: 'Touch',
+    camera: webcamContentByLocale.en.signal,
     printer: printerContentByLocale.en.signal,
   },
   'pt-BR': {
@@ -17,6 +19,7 @@ const homeSignalLabels = {
     keyboard: 'Teclado',
     display: 'Frames',
     touch: 'Toque',
+    camera: webcamContentByLocale['pt-BR'].signal,
     printer: printerContentByLocale['pt-BR'].signal,
   },
   de: {
@@ -25,6 +28,7 @@ const homeSignalLabels = {
     keyboard: 'Tastatur',
     display: 'Frames',
     touch: 'Touch',
+    camera: webcamContentByLocale.de.signal,
     printer: printerContentByLocale.de.signal,
   },
   fr: {
@@ -33,6 +37,7 @@ const homeSignalLabels = {
     keyboard: 'Clavier',
     display: 'Images',
     touch: 'Tactile',
+    camera: webcamContentByLocale.fr.signal,
     printer: printerContentByLocale.fr.signal,
   },
   es: {
@@ -41,6 +46,7 @@ const homeSignalLabels = {
     keyboard: 'Teclado',
     display: 'Frames',
     touch: 'Táctil',
+    camera: webcamContentByLocale.es.signal,
     printer: printerContentByLocale.es.signal,
   },
   ru: {
@@ -49,6 +55,7 @@ const homeSignalLabels = {
     keyboard: 'Клавиатура',
     display: 'Кадры',
     touch: 'Касания',
+    camera: webcamContentByLocale.ru.signal,
     printer: printerContentByLocale.ru.signal,
   },
 } as const satisfies Record<ImplementedContentLocale, Record<ImplementedToolChannel, string>>;
