@@ -1,0 +1,264 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import type { ImplementedContentLocale } from '../../../i18n/content';
+import { getPrinterRuntimeMessages } from '../../../i18n/runtime/printer';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getPrinterRuntimeMessages(locale);
+---
+
+<ToolShell labelledBy="printer-test-tool-heading">
+  <h2 id="printer-test-tool-heading" class="printer-tool__sr">{messages.controlsHeading}</h2>
+
+  <div class="printer-tool" data-printer-test data-paper="a4" data-profile="full">
+    <div class="printer-tool__controls">
+      <label class="printer-field">
+        <span>{messages.paperSize}</span>
+        <select data-printer-paper>
+          <option value="a4">{messages.a4}</option>
+          <option value="letter">{messages.letter}</option>
+        </select>
+      </label>
+
+      <label class="printer-field">
+        <span>{messages.profile}</span>
+        <select data-printer-profile>
+          <option value="full">{messages.full}</option>
+          <option value="color">{messages.color}</option>
+          <option value="grayscale">{messages.grayscale}</option>
+        </select>
+      </label>
+
+      <button type="button" class="printer-action" data-printer-print>
+        {messages.printButton}
+      </button>
+    </div>
+
+    <p class="printer-tool__note">{messages.actualSizeNote}</p>
+
+    <div class="printer-preview" aria-label={messages.previewLabel}>
+      <article class="printer-sheet" data-printer-sheet data-paper="a4" data-profile="full">
+        <span class="printer-sheet__safe" aria-hidden="true"></span>
+
+        <header class="printer-sheet__header">
+          <div>
+            <strong>{messages.referenceTitle}</strong>
+            <span>{messages.actualSizeNote}</span>
+          </div>
+          <dl>
+            <div><dt>{messages.paperLabel}</dt><dd data-printer-paper-value>{messages.a4}</dd></div>
+            <div><dt>{messages.profileLabel}</dt><dd data-printer-profile-value>{messages.full}</dd></div>
+          </dl>
+        </header>
+
+        <section class="printer-reference printer-reference--text" aria-labelledby="printer-text-reference">
+          <h3 id="printer-text-reference">{messages.textSamples}</h3>
+          <div class="printer-text-samples">
+            <p class="printer-text-samples__xs">6 pt · {messages.sampleLine}</p>
+            <p class="printer-text-samples__sm">8 pt · {messages.sampleLine}</p>
+            <p class="printer-text-samples__md">10 pt · {messages.sampleLine}</p>
+            <p class="printer-text-samples__lg">14 pt · {messages.sampleLine}</p>
+            <p class="printer-text-samples__xl">20 pt · 0123456789 ABC xyz</p>
+          </div>
+        </section>
+
+        <div class="printer-reference-grid">
+          <section class="printer-reference" aria-labelledby="printer-line-reference">
+            <h3 id="printer-line-reference">{messages.lineGrid}</h3>
+            <svg class="printer-lines" viewBox="0 0 600 190" role="img" aria-label={messages.lineGrid}>
+              <defs>
+                <pattern id="printer-grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M20 0H0V20" fill="none" stroke="#555" stroke-width="0.6" />
+                </pattern>
+              </defs>
+              <rect x="1" y="1" width="598" height="188" fill="#fff" stroke="#111" stroke-width="1" />
+              <rect x="18" y="18" width="260" height="154" fill="url(#printer-grid-pattern)" stroke="#111" stroke-width="0.8" />
+              <line x1="310" y1="35" x2="575" y2="35" stroke="#111" stroke-width="0.4" />
+              <line x1="310" y1="65" x2="575" y2="65" stroke="#111" stroke-width="0.7" />
+              <line x1="310" y1="95" x2="575" y2="95" stroke="#111" stroke-width="1" />
+              <line x1="310" y1="125" x2="575" y2="125" stroke="#111" stroke-width="1.6" />
+              <line x1="310" y1="155" x2="575" y2="155" stroke="#111" stroke-width="2.4" />
+              <line x1="335" y1="18" x2="335" y2="172" stroke="#111" stroke-width="0.5" />
+              <line x1="385" y1="18" x2="385" y2="172" stroke="#111" stroke-width="0.9" />
+              <line x1="445" y1="18" x2="445" y2="172" stroke="#111" stroke-width="1.4" />
+            </svg>
+          </section>
+
+          <section class="printer-reference" aria-labelledby="printer-alignment-reference">
+            <h3 id="printer-alignment-reference">{messages.alignmentMarks}</h3>
+            <svg class="printer-alignment" viewBox="0 0 300 190" role="img" aria-label={messages.alignmentMarks}>
+              <rect x="1" y="1" width="298" height="188" fill="#fff" stroke="#111" stroke-width="1" />
+              <g fill="none" stroke="#111">
+                <circle cx="75" cy="95" r="40" stroke-width="0.8" />
+                <circle cx="75" cy="95" r="20" stroke-width="0.8" />
+                <line x1="20" y1="95" x2="130" y2="95" stroke-width="0.8" />
+                <line x1="75" y1="40" x2="75" y2="150" stroke-width="0.8" />
+                <circle cx="225" cy="95" r="40" stroke-width="1.4" />
+                <circle cx="225" cy="95" r="20" stroke-width="1.4" />
+                <line x1="170" y1="95" x2="280" y2="95" stroke-width="1.4" />
+                <line x1="225" y1="40" x2="225" y2="150" stroke-width="1.4" />
+              </g>
+              <g fill="#111">
+                <rect x="72" y="92" width="6" height="6" />
+                <rect x="222" y="92" width="6" height="6" />
+              </g>
+            </svg>
+          </section>
+        </div>
+
+        <section class="printer-reference printer-reference--grayscale" data-printer-grayscale aria-labelledby="printer-grayscale-reference">
+          <h3 id="printer-grayscale-reference">{messages.grayscaleScale}</h3>
+          <svg class="printer-tones" viewBox="0 0 800 150" role="img" aria-label={messages.grayscaleScale}>
+            <defs>
+              <linearGradient id="printer-gray-ramp" x1="0" x2="1">
+                <stop offset="0" stop-color="#000" />
+                <stop offset="1" stop-color="#fff" />
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="798" height="148" fill="#fff" stroke="#111" stroke-width="1" />
+            <g stroke="#111" stroke-width="0.5">
+              <rect x="20" y="20" width="90" height="48" fill="#000" />
+              <rect x="110" y="20" width="90" height="48" fill="#202020" />
+              <rect x="200" y="20" width="90" height="48" fill="#404040" />
+              <rect x="290" y="20" width="90" height="48" fill="#606060" />
+              <rect x="380" y="20" width="90" height="48" fill="#808080" />
+              <rect x="470" y="20" width="90" height="48" fill="#a0a0a0" />
+              <rect x="560" y="20" width="90" height="48" fill="#c8c8c8" />
+              <rect x="650" y="20" width="130" height="48" fill="#fff" />
+            </g>
+            <rect x="20" y="88" width="760" height="38" fill="url(#printer-gray-ramp)" stroke="#111" stroke-width="0.8" />
+          </svg>
+        </section>
+
+        <section class="printer-reference printer-reference--color" data-printer-color aria-labelledby="printer-color-reference">
+          <h3 id="printer-color-reference">{messages.colorPatches}</h3>
+          <svg class="printer-tones" viewBox="0 0 800 180" role="img" aria-label={messages.colorPatches}>
+            <defs>
+              <linearGradient id="printer-rgb-ramp" x1="0" x2="1">
+                <stop offset="0" stop-color="#f00" />
+                <stop offset="0.33" stop-color="#0f0" />
+                <stop offset="0.66" stop-color="#00f" />
+                <stop offset="1" stop-color="#f00" />
+              </linearGradient>
+            </defs>
+            <rect x="1" y="1" width="798" height="178" fill="#fff" stroke="#111" stroke-width="1" />
+            <g stroke="#111" stroke-width="0.7">
+              <rect x="20" y="20" width="95" height="58" fill="#f00" />
+              <rect x="115" y="20" width="95" height="58" fill="#0f0" />
+              <rect x="210" y="20" width="95" height="58" fill="#00f" />
+              <rect x="305" y="20" width="95" height="58" fill="#0ff" />
+              <rect x="400" y="20" width="95" height="58" fill="#f0f" />
+              <rect x="495" y="20" width="95" height="58" fill="#ff0" />
+              <rect x="590" y="20" width="95" height="58" fill="#000" />
+              <rect x="685" y="20" width="95" height="58" fill="#808080" />
+            </g>
+            <rect x="20" y="102" width="760" height="50" fill="url(#printer-rgb-ramp)" stroke="#111" stroke-width="0.8" />
+          </svg>
+        </section>
+
+        <footer class="printer-sheet__footer">
+          <span>hardwareinspect.com</span>
+          <span>{messages.actualSizeNote}</span>
+        </footer>
+      </article>
+    </div>
+  </div>
+</ToolShell>
+
+<script>
+  import { mountPrinterTest } from './printer-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-printer-test]');
+  if (root) {
+    const controller = mountPrinterTest(root);
+    window.addEventListener('pagehide', (event) => {
+      if (!event.persisted) controller.destroy();
+    });
+  }
+</script>
+
+<style>
+  .printer-tool { display: grid; gap: var(--space-4); }
+  .printer-tool__controls { display: flex; align-items: end; flex-wrap: wrap; gap: var(--space-3); }
+  .printer-field { min-width: 12rem; display: grid; gap: 0.38rem; color: var(--color-muted); font-size: 0.78rem; font-weight: 650; }
+  .printer-field select { min-height: 2.65rem; border: 1px solid var(--color-border-strong); border-radius: 0.35rem; background: var(--color-surface); padding: 0.5rem 2rem 0.5rem 0.65rem; color: var(--color-text); font: inherit; font-weight: 550; }
+  .printer-action { min-height: 2.65rem; border: 1px solid #303536; border-radius: 0.35rem; background: #242829; padding: 0.55rem 0.9rem; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .printer-field select:focus-visible, .printer-action:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+  .printer-tool__note { margin: 0; max-width: 54rem; color: var(--color-muted); font-size: 0.82rem; line-height: 1.55; }
+  .printer-preview { overflow: auto; border: 1px solid var(--color-border); border-radius: 0.45rem; background: #d8dbdc; padding: clamp(0.6rem, 2vw, 1.25rem); }
+  .printer-sheet { --paper-ratio: 210 / 297; position: relative; box-sizing: border-box; width: min(100%, 47rem); aspect-ratio: var(--paper-ratio); margin: 0 auto; overflow: hidden; border: 1px solid #a8adaf; background: #fff; padding: 4.5% 5%; color: #111; box-shadow: 0 0.35rem 1.4rem rgb(0 0 0 / 0.12); font-family: Arial, Helvetica, sans-serif; }
+  .printer-sheet[data-paper='letter'] { --paper-ratio: 8.5 / 11; }
+  .printer-sheet__safe { position: absolute; inset: 2.3%; border: 1px dashed #8b8b8b; pointer-events: none; }
+  .printer-sheet__header { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 1.4%; border-bottom: 1px solid #111; }
+  .printer-sheet__header > div { min-width: 0; display: grid; gap: 0.18rem; }
+  .printer-sheet__header strong { font-size: clamp(0.7rem, 1.7vw, 1.02rem); letter-spacing: 0.02em; }
+  .printer-sheet__header span { max-width: 31rem; font-size: clamp(0.42rem, 1vw, 0.6rem); line-height: 1.35; }
+  .printer-sheet__header dl { flex: 0 0 auto; margin: 0; display: grid; gap: 0.12rem; font-size: clamp(0.42rem, 1vw, 0.6rem); }
+  .printer-sheet__header dl div { display: flex; gap: 0.3rem; }
+  .printer-sheet__header dt { font-weight: 700; }
+  .printer-sheet__header dd { margin: 0; }
+  .printer-reference { position: relative; z-index: 1; margin-top: 2.1%; }
+  .printer-reference h3 { margin: 0 0 0.7%; font-size: clamp(0.5rem, 1.2vw, 0.72rem); text-transform: uppercase; letter-spacing: 0.06em; }
+  .printer-text-samples { border: 1px solid #111; padding: 1.1% 1.4%; }
+  .printer-text-samples p { margin: 0; overflow: hidden; color: #000; line-height: 1.25; white-space: nowrap; }
+  .printer-text-samples p + p { margin-top: 0.35%; }
+  .printer-text-samples__xs { font-size: clamp(0.25rem, 0.75vw, 6pt); }
+  .printer-text-samples__sm { font-size: clamp(0.32rem, 0.9vw, 8pt); }
+  .printer-text-samples__md { font-size: clamp(0.38rem, 1vw, 10pt); }
+  .printer-text-samples__lg { font-size: clamp(0.46rem, 1.2vw, 14pt); }
+  .printer-text-samples__xl { font-size: clamp(0.56rem, 1.45vw, 20pt); font-weight: 700; letter-spacing: 0.04em; }
+  .printer-reference-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 2%; }
+  .printer-lines, .printer-alignment, .printer-tones { display: block; width: 100%; height: auto; }
+  .printer-sheet[data-profile='color'] [data-printer-grayscale] { display: none; }
+  .printer-sheet[data-profile='grayscale'] [data-printer-color] { display: none; }
+  .printer-sheet__footer { position: absolute; z-index: 1; inset: auto 5% 2.9%; display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #111; padding-top: 0.8%; font-size: clamp(0.36rem, 0.85vw, 0.52rem); }
+  .printer-sheet__footer span:last-child { max-width: 70%; text-align: right; }
+  .printer-tool__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 42rem) {
+    .printer-tool__controls { align-items: stretch; }
+    .printer-field, .printer-action { width: 100%; }
+    .printer-reference-grid { grid-template-columns: 1fr; gap: 0; }
+    .printer-sheet { min-width: 30rem; }
+  }
+</style>
+
+<style is:global>
+  [data-printer-print-root] { display: none; }
+
+  @media print {
+    html.printer-print-mode body > :not([data-printer-print-root]) { display: none !important; }
+    html.printer-print-mode body { margin: 0 !important; background: #fff !important; }
+    html.printer-print-mode [data-printer-print-root] { display: block !important; margin: 0 !important; padding: 0 !important; }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet {
+      box-sizing: border-box !important;
+      width: 100% !important;
+      aspect-ratio: auto !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      overflow: visible !important;
+      border: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      color: #000 !important;
+      background: #fff !important;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__safe { inset: 0; }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__header { padding: 0 0 2.5mm; }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__header strong { font-size: 12pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__header span,
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__header dl { font-size: 6.5pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-reference { margin-top: 3mm; }
+    html.printer-print-mode [data-printer-print-root] .printer-reference h3 { margin-bottom: 1.2mm; font-size: 7.5pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples { padding: 2mm 2.5mm; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples__xs { font-size: 6pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples__sm { font-size: 8pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples__md { font-size: 10pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples__lg { font-size: 14pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-text-samples__xl { font-size: 20pt; }
+    html.printer-print-mode [data-printer-print-root] .printer-reference-grid { gap: 4mm; }
+    html.printer-print-mode [data-printer-print-root] .printer-sheet__footer { position: static; margin-top: 3mm; padding-top: 1.5mm; font-size: 6pt; }
+  }
+</style>
