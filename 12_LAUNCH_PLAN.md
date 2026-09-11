@@ -2,7 +2,7 @@
 
 ## Current release boundary
 
-After the Monitor Expansion V2 wave, the 20-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, the V2 Foundation, Printer Test Page, and Monitor Test have passed their respective code-side implementation/review gates once this wave merges; each V2 job still needs its own wave-specific release evidence.
+After the Screen Uniformity Expansion V2 wave, the 21-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, the V2 Foundation, Printer Test Page, Monitor Test, and Screen Uniformity Test have passed their respective code-side implementation/review gates once this wave merges; each V2 job still needs its own wave-specific release evidence.
 
 The production origin is already configured as:
 
@@ -84,7 +84,10 @@ Display cluster:
 - Frame Skipping checked with a real camera and multiple valid photographs; screenshots are not evidence;
 - Monitor Test start/fullscreen/fallback/exit flow checked in current desktop browsers;
 - Monitor Test click/tap/Space/arrow navigation and hide-controls behavior checked;
-- the 12 Monitor patterns are visually reviewed on a real display without turning that observation into proof that the panel has or lacks physical defects.
+- the 12 Monitor patterns are visually reviewed on a real display without turning that observation into proof that the panel has or lacks physical defects;
+- Screen Uniformity Test start/fullscreen/fallback/exit flow checked in current desktop browsers;
+- Screen Uniformity Test click/tap/Space/arrow navigation and hide-controls behavior checked;
+- the six encoded gray/white presets are visually reviewed on a real display from normal viewing conditions without converting visible variation into an automatic defect verdict.
 
 Printer Test Page:
 
@@ -181,7 +184,7 @@ After production or locale deployment:
 - API unsupported errors;
 - device/permission failures where relevant;
 - print-flow failures for Printer Test Page;
-- fullscreen/fallback/navigation failures for Monitor Test;
+- fullscreen/fallback/navigation failures for Monitor Test and Screen Uniformity Test;
 - layout regressions from longer translated strings;
 - accidental indexing/noindex issues;
 - unexpected canonical selection;
@@ -218,7 +221,7 @@ Avoid:
 
 ## Future expansion trigger
 
-Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page and Monitor Test are implemented in the first two waves, and the remaining V2 jobs follow their reviewed atomic waves.
+Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page, Monitor Test, and Screen Uniformity Test are implemented in the first three waves, and the remaining V2 jobs follow their reviewed atomic waves.
 
 Any diagnostic job **outside** that approved V2 set requires at least one strong condition:
 
