@@ -38,7 +38,7 @@ const messages = getMonitorRuntimeMessages(locale);
     <DisplayInspectionStage label={messages.stageAria} interactive={true}>
       <DisplayPatternSurface slot="surface" />
       <div class="monitor-overlay">
-        <div class="monitor-overlay__result">
+        <div class="monitor-overlay__result" role="status" aria-live="polite" aria-atomic="true">
           <strong data-monitor-pattern-label>{messages.patterns[0]}</strong>
           <span data-monitor-pattern-position>1 / {monitorPatterns.length}</span>
         </div>
