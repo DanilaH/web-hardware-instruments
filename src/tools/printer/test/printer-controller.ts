@@ -96,8 +96,10 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
     window.print();
 
     // Target browsers emit afterprint for both print and cancellation. Keep only
-    // a long emergency cleanup so a non-blocking print dialog cannot lose its DOM.
-    cleanupTimer = window.setTimeout(cleanupPrintMode, 60_000);
+    // a long emergency cleanup when the print DOM is still active after print().
+    if (activePrintRoot !== null) {
+      cleanupTimer = window.setTimeout(cleanupPrintMode, 60_000);
+    }
   };
 
   const handleStateChange = (): void => applyState();
