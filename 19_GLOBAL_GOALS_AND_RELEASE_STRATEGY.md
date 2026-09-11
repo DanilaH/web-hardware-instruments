@@ -72,18 +72,18 @@ The tools remain globally usable. Localization changes presentation/search targe
 
 Do not create geo-specific product behavior or country-specific synonym-page trees merely because search wording differs. Spanish remains one general `/es/` locale unless first-party evidence later justifies regional splits.
 
-Hardware Expansion V2 has now passed the project's expansion gate through completed research and a reviewed exact contract. It adds exactly these approved future production jobs:
+Hardware Expansion V2 has passed the project's expansion gate through completed research and a reviewed exact contract. Its approved jobs are:
 
 ```text
-/printer-test-page
-/monitor-test
-/screen-uniformity-test
-/oled-burn-in-test
-/screen-resolution-checker
-/webcam-test
+/printer-test-page              implemented in the Printer wave
+/monitor-test                   approved next wave
+/screen-uniformity-test         approved
+/oled-burn-in-test              approved
+/screen-resolution-checker      approved
+/webcam-test                    approved
 ```
 
-Exact implementation and sequencing live in `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+Exact implementation and sequencing live in `23_HARDWARE_EXPANSION_V2_SPEC.md` and the non-normative execution plan in `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md`.
 
 # 3. Core product promise
 
@@ -128,7 +128,7 @@ paid runtime APIs
 manual hardware catalogs
 ```
 
-Camera access in V2 is permissioned local browser media. Printer output in V2 is a generated local reference sent through browser printing. Neither creates a server-side media/document pipeline.
+Camera access in V2 is permissioned local browser media when Webcam ships. Printer output is a generated local reference sent through browser printing. Neither creates a server-side media/document pipeline.
 
 # 5. Product and visual boundary
 
@@ -166,9 +166,9 @@ Localized versions of the **same** semantic tool are allowed and expected under 
 
 Expansion V2 explicitly absorbs nearby synonym/sub-intent phrases into the six approved canonical routes rather than creating a route zoo. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns those boundaries.
 
-# 7. Current implemented catalog and approved next wave
+# 7. Current implemented catalog and approved next waves
 
-Full-v1, Hardware Expansion 1, and localization of the existing catalog are code-side complete/audited.
+Full-v1, Hardware Expansion 1, localization, V2 Foundation, and Printer Test Page are code-side implementation scope after the Printer wave.
 
 Current implemented production jobs:
 
@@ -200,16 +200,16 @@ Display
 
 Touch
 /touch-screen-test
-```
 
-Localization provides the approved language alternates for these same 18 jobs.
-
-Approved but not automatically implemented merely by documentation:
-
-```text
 Printer
 /printer-test-page
+```
 
+Localization provides the approved language alternates for these same **19 jobs**.
+
+Approved V2 jobs not yet part of the current catalog until their own atomic waves merge:
+
+```text
 Display
 /monitor-test
 /screen-uniformity-test
@@ -220,7 +220,7 @@ Camera
 /webcam-test
 ```
 
-Each V2 route becomes part of the current catalog only when its coherent block is actually merged with complete locale/content/SEO/tool implementation. No placeholders or empty homepage categories.
+Each remaining V2 route becomes part of the current catalog only when its coherent block is actually merged with complete locale/content/SEO/tool implementation. No placeholders or empty homepage categories.
 
 # 8. Expansion rule
 
