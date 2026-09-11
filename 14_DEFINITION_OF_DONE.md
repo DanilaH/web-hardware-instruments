@@ -22,13 +22,15 @@ Touch Screen Test follows its explicit mobile/tablet-oriented acceptance rules i
 
 Printer Test Page follows its print-specific acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: compact screen controls/preview, controlled printable output, and no printer-health verdict.
 
+Monitor Test follows its display-pattern acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact manual pattern order, progressive fullscreen with a large in-page fallback, touch/click/keyboard navigation, hideable overlay, and no automatic display-health verdict.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-After the Printer Expansion V2 wave, the implemented catalog contains 19 tools:
+After the Monitor Expansion V2 wave, the implemented catalog contains 20 tools:
 
 ### Controller
 
@@ -65,6 +67,7 @@ After the Printer Expansion V2 wave, the implemented catalog contains 19 tools:
 /frame-skipping-test
 /dead-pixel-test
 /backlight-bleed-test
+/monitor-test
 ```
 
 ### Touch
@@ -127,6 +130,8 @@ Examples include:
 - real keyboard simultaneous-key/guided-combination smoke;
 - real display/fullscreen inspection flow;
 - real camera evidence workflow for Frame Skipping.
+
+Monitor Test is a visual-inspection route. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, color, black-level, white-level, banding, geometry, or sharpness defects.
 
 Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
@@ -213,6 +218,20 @@ Primary view contains the compact keyboard, pressed state, and concise last-key/
 
 Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame Skipping semantics remain owned by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Do not duplicate their detailed algorithms here.
 
+### Monitor Test
+
+Exact sequence/pattern/navigation semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+static rendered pattern
+→ manual visual inspection
+→ user decides what looks unusual
+```
+
+No auto-advance, pass/fail, measured luminance, measured contrast ratio, response-time number, color certification, or automatic panel-health diagnosis.
+
 ### Printer Test Page
 
 Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
@@ -240,6 +259,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - `TouchInputService` owns finger-touch acquisition;
 - Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
+- the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor and future approved Uniformity/OLED routes without absorbing SEO/copy;
 - tool controllers own interpretation/presentation state rather than acquisition services;
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
@@ -293,6 +313,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - raw gamepad/device identifiers are not displayed, stored, or sent;
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
 - Printer Test Page generates a local reference and uploads no document;
+- Monitor Test renders deterministic local patterns and acquires no panel telemetry;
 - locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
@@ -333,5 +354,6 @@ For localization, sample every device/output family in every locale rather than 
 - Rollover/Ghosting never overclaim hardware certification;
 - Dead Pixel/Backlight remain visual inspection rather than automatic diagnosis;
 - Frame Skipping never claims browser-only automatic detection;
+- Monitor remains deterministic manual visual inspection without measured luminance/contrast/response-time/color-certification claims;
 - Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.
