@@ -117,10 +117,9 @@ export const mountWebcamTest = (
   };
 
   const currentDeviceLabel = (settings: MediaTrackSettings): string => {
-    const byId = settings.deviceId
-      ? devices.find((device) => device.deviceId === settings.deviceId)
-      : undefined;
-    return byId?.label || devices.find((device) => device.label)?.label || messages.currentCamera;
+    if (!settings.deviceId) return messages.currentCamera;
+    const device = devices.find((candidate) => candidate.deviceId === settings.deviceId);
+    return device?.label || messages.currentCamera;
   };
 
   const renderSettings = (service: CameraService): void => {
