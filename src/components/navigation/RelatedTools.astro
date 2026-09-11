@@ -26,7 +26,7 @@ const localizedTools = toolId
       description: content.tools[tool.id].shortDescription,
     }))
   : [];
-const relatedTools = localizedTools.length > 0 ? localizedTools : tools;
+const relatedTools = toolId ? localizedTools : tools;
 ---
 
 {relatedTools.length > 0 && (

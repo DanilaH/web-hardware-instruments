@@ -15,6 +15,7 @@
   --color-channel-keyboard: #69743f;
   --color-channel-display: #745f8d;
   --color-channel-touch: #3f8178;
+  --color-channel-neutral: #606a67;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;

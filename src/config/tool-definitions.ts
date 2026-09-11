@@ -1,4 +1,4 @@
-import type { ToolChannel, ToolIconKind } from './tools';
+import type { ToolChannel, ToolIconKind } from './tool-types';
 
 export const toolIds = [
   'gamepad-tester',
@@ -51,6 +51,27 @@ export const toolDefinitions: readonly ToolDefinition[] = [
   { id: 'touch-screen-test', href: '/touch-screen-test', icon: 'touch', channel: 'touch' },
 ];
 
+const relatedToolIds = {
+  'gamepad-tester': ['controller-stick-drift-test', 'controller-deadzone-test'],
+  'controller-stick-drift-test': ['controller-deadzone-test', 'gamepad-tester'],
+  'controller-deadzone-test': ['controller-stick-drift-test', 'gamepad-tester'],
+  'mouse-tester': ['mouse-button-test', 'mouse-scroll-test'],
+  'mouse-button-test': ['mouse-tester', 'double-click-test'],
+  'mouse-scroll-test': ['mouse-tester', 'mouse-button-test'],
+  'double-click-test': ['mouse-button-test', 'mouse-tester'],
+  'mouse-polling-rate-test': ['mouse-tester', 'mouse-dpi-test'],
+  'mouse-dpi-test': ['mouse-tester', 'mouse-polling-rate-test'],
+  'keyboard-tester': ['keyboard-rollover-test', 'keyboard-ghosting-test'],
+  'keyboard-rollover-test': ['keyboard-tester', 'keyboard-ghosting-test'],
+  'keyboard-ghosting-test': ['keyboard-rollover-test', 'keyboard-tester'],
+  'fps-test': ['refresh-rate-test', 'frame-skipping-test'],
+  'refresh-rate-test': ['fps-test', 'frame-skipping-test'],
+  'frame-skipping-test': ['refresh-rate-test', 'fps-test'],
+  'dead-pixel-test': ['backlight-bleed-test', 'refresh-rate-test'],
+  'backlight-bleed-test': ['dead-pixel-test'],
+  'touch-screen-test': ['dead-pixel-test', 'backlight-bleed-test'],
+} as const satisfies Record<ToolId, readonly ToolId[]>;
+
 const toolById = new Map(toolDefinitions.map((tool) => [tool.id, tool] as const));
 const toolByPath = new Map(toolDefinitions.map((tool) => [tool.href, tool] as const));
 
@@ -72,11 +93,5 @@ export const getToolIdBySemanticPath = (path: string): ToolId | null =>
 export const getToolDefinitionsByChannel = (channel: ToolChannel): readonly ToolDefinition[] =>
   toolDefinitions.filter((tool) => tool.channel === channel);
 
-const touchRelatedIds: readonly ToolId[] = ['mouse-tester', 'keyboard-tester', 'dead-pixel-test'];
-
-export const getRelatedToolDefinitions = (id: ToolId): readonly ToolDefinition[] => {
-  const current = getToolDefinition(id);
-  const siblings = getToolDefinitionsByChannel(current.channel).filter((tool) => tool.id !== id);
-  if (siblings.length > 0) return siblings;
-  return touchRelatedIds.map(getToolDefinition);
-};
+export const getRelatedToolDefinitions = (id: ToolId): readonly ToolDefinition[] =>
+  relatedToolIds[id].map(getToolDefinition);

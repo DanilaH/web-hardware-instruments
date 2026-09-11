@@ -65,10 +65,10 @@ export const enContent = {
     'gamepad-tester': {
       name: 'Gamepad Tester',
       shortDescription: 'Test controller buttons, sticks, D-pad, and triggers.',
-      seoTitle: 'Gamepad Tester — Test Controller Buttons & Sticks',
-      metaDescription: 'Test gamepad and controller buttons, sticks, D-pad, and triggers directly in your browser.',
+      seoTitle: 'Gamepad Tester — Test Controllers & Joysticks Online',
+      metaDescription: 'Test gamepad and controller buttons, analog sticks, D-pad and triggers directly in your browser. Works as a quick controller and joystick input checker.',
       h1: 'Gamepad Tester',
-      intro: 'Test controller buttons, sticks, D-pad, and triggers directly in your browser.',
+      intro: 'Test gamepad and controller buttons, sticks, D-pad, and triggers directly in your browser.',
       sections: [
         { heading: 'How to use the gamepad tester', paragraphs: ['Connect a controller, interact with it once if your browser requires it, then press buttons and move both sticks. The live controller view updates as browser-detected input changes.'] },
         { heading: 'Browser and controller limitations', paragraphs: ['Controllers with the standard browser mapping use the generic physical layout. Other mappings use numbered buttons and axes instead of guessing which physical control each value represents.', 'Gamepad exposure can vary by browser, operating system, and controller. A controller may need an initial button press or axis movement before the browser exposes it to the page.'] },
@@ -77,13 +77,13 @@ export const enContent = {
     'controller-stick-drift-test': {
       name: 'Controller Stick Drift Test',
       shortDescription: 'Measure observed analog-stick center offset while untouched.',
-      seoTitle: 'Controller Stick Drift Test — Check Analog Stick Drift',
+      seoTitle: 'Stick Drift Test — Check Controller Analog Stick Drift',
       metaDescription: 'Test controller stick drift in your browser by measuring the observed center offset of both analog sticks while untouched.',
-      h1: 'Controller Stick Drift Test',
+      h1: 'Stick Drift Test',
       intro: 'Measure how far both analog sticks sit from center while you are not touching them.',
       sections: [
         { heading: 'How to test controller stick drift', steps: ['Connect a standard-mapped controller.', 'Release both analog sticks and keep them untouched.', 'Start the test and leave the sticks alone for the 3-second sample.', 'Read the observed center offset for each stick.'] },
-        { heading: 'What the result means', paragraphs: ['The test averages the browser-reported horizontal and vertical center position for each stick, then reports the distance of that average from the exact center as a percentage.', 'The plots zoom into the central 20% radius so small offsets remain visible; the numeric percentage is the measurement. The trail is visual context, not a second score, and the test does not label a controller good or bad.'] },
+        { heading: 'What the result means', paragraphs: ['The test averages the browser-reported horizontal and vertical center position for each stick, then reports the distance of that average from the exact center as a percentage.', 'The plots zoom into the central 20% radius so small offsets remain visible; the numeric percentage is the measurement. The trail shows recent stick movement as visual context. It is not a second score and the test does not label a controller good or bad because games and controller software use different deadzones and tolerances.'] },
         { heading: 'Browser and mapping limitations', paragraphs: ['This browser test measures only controllers that expose the standard gamepad mapping. Non-standard controllers are not assigned guessed physical axes. If the tab becomes hidden or the selected controller disconnects during the sample, the measurement is cancelled and must be restarted.'] },
       ],
     },
@@ -96,8 +96,8 @@ export const enContent = {
       intro: 'Measure analog stick center noise and get a starting deadzone estimate.',
       sections: [
         { heading: 'How to test controller deadzone', steps: ['Connect a standard-mapped controller.', 'Select the left or right stick.', 'Release that stick and keep it untouched.', 'Start the 3-second sample.', 'Read the observed center noise and suggested starting deadzone.'] },
-        { heading: 'What the result means', paragraphs: ['The test measures the radial distance of each browser-reported stick sample from the exact center and uses the 95th percentile as observed center noise. The suggested starting deadzone adds one percentage point to that observed noise, capped at 100%, then rounds the displayed suggestion up to a whole percentage point.', 'The suggestion is a heuristic starting value, not a universal correct deadzone. Games and controller software can apply their own response curves, deadzones, and filtering.'] },
-        { heading: 'Browser and mapping limitations', paragraphs: ['This browser test measures only controllers that expose the standard gamepad mapping. Non-standard controllers are not assigned guessed physical axes. Hidden-tab or disconnect events cancel the sample.'] },
+        { heading: 'What the result means', paragraphs: ['The test measures the radial distance of each browser-reported stick sample from the exact center and uses the 95th percentile as observed center noise. The suggested starting deadzone adds one percentage point to that observed noise, capped at 100%, then rounds the displayed suggestion up to a whole percentage point.', 'The radial plot is a zoom of the central 20% radius rather than the full stick travel range, so small center noise remains visible. The suggestion is a heuristic starting value, not a universal correct deadzone. Games and controller software can apply their own response curves, deadzones, and filtering.'] },
+        { heading: 'Browser and mapping limitations', paragraphs: ['This browser test measures only controllers that expose the standard gamepad mapping. Non-standard controllers are not assigned guessed physical axes. If the tab becomes hidden or the selected controller disconnects during the sample, the measurement is cancelled and must be restarted.'] },
       ],
     },
     'mouse-tester': {
@@ -109,7 +109,7 @@ export const enContent = {
       intro: 'Quickly check whether this browser receives mouse buttons, wheel input, and movement.',
       sections: [
         { heading: 'How to test your mouse', steps: ['Move the pointer inside the test area.', 'Press the main, middle, secondary, or side buttons you want to check.', 'Scroll and watch the live overview for browser-detected input.'] },
-        { heading: 'What the result means', paragraphs: ['This page is a fast whole-mouse check: it shows the last semantic button role, how many button roles have appeared, whether wheel input arrived, and whether pointer movement was detected.'] },
+        { heading: 'What the result means', paragraphs: ['This page is a fast whole-mouse check: it shows the last semantic button role, how many button roles have appeared, whether wheel input arrived, and whether pointer movement was detected. For per-button held state and press counts, use Mouse Button Test.'] },
         { heading: 'Browser and hardware limitations', paragraphs: ['Browser button roles can reflect operating-system remapping, and some side-button behavior varies by browser, driver, or platform. A missing event can suggest an input problem, but this page does not certify overall mouse hardware health or measure latency, DPI, or hardware polling rate.'] },
       ],
     },
@@ -122,7 +122,7 @@ export const enContent = {
       intro: 'Check each semantic mouse button role, including Back/X1 and Forward/X2.',
       sections: [
         { heading: 'How to test mouse buttons', paragraphs: ['Press each button inside the test area. Held highlighting shows the current browser state and the counter records observed button-down events. Primary is usually the left button and Secondary usually the right, but OS remapping can change those semantic roles.'] },
-        { heading: 'Middle and side buttons', paragraphs: ['Back/X1 and Forward/X2 are additional browser button roles. Some browsers, operating systems, drivers, or mouse utilities can consume those buttons before the page sees them, so a missing X1/X2 event is not an automatic hardware verdict.'] },
+        { heading: 'Middle and side buttons', paragraphs: ['Back/X1 and Forward/X2 are additional browser button roles. The test listens for normal pointer presses and uses auxiliary-click events as a fallback for side buttons when available. Some browsers, operating systems, drivers, or mouse utilities can still consume those buttons before the page sees them, so a missing X1/X2 event is not an automatic hardware verdict.'] },
       ],
     },
     'mouse-scroll-test': {
@@ -134,7 +134,7 @@ export const enContent = {
       intro: 'Check whether browser wheel events arrive in the direction you expect.',
       sections: [
         { heading: 'How to test scrolling', paragraphs: ['Scroll steadily in one direction inside the test area, then reverse. The recent direction strip makes unexpected opposite events easy to spot without declaring a hardware verdict.'] },
-        { heading: 'If your scroll wheel jumps or stops registering', paragraphs: ['A steady scroll can help you reproduce missing browser events or unexpected opposite-direction events. Those observations do not by themselves prove a hardware fault, and wheel events can also come from a trackpad or another scrolling device.'] },
+        { heading: 'If your scroll wheel jumps or stops registering', paragraphs: ['A steady scroll can help you reproduce missing browser events or unexpected opposite-direction events. Those observations do not by themselves prove a hardware fault, and wheel events can also come from a trackpad or another scrolling device rather than a physical mouse wheel.'] },
       ],
     },
     'double-click-test': {
@@ -152,7 +152,7 @@ export const enContent = {
     'mouse-polling-rate-test': {
       name: 'Mouse Polling Rate Test',
       shortDescription: 'Measure the pointer sample rate observed by this browser.',
-      seoTitle: 'Mouse Polling Rate Test — Check Pointer Sample Rate',
+      seoTitle: 'Mouse Polling Rate Test — Check Mouse Hz Online',
       metaDescription: 'Measure the pointer sample rate this browser observes during a focused two-second mouse movement test.',
       h1: 'Mouse Polling Rate Test',
       intro: 'Measure the pointer sample rate observed by this browser while you move the mouse.',
@@ -170,8 +170,8 @@ export const enContent = {
       intro: 'Estimate mouse DPI by moving your mouse a measured physical distance.',
       sections: [
         { heading: 'How to test mouse DPI', steps: ['Measure a horizontal distance on your desk or mouse pad.', 'Enter that distance and start the test.', 'Move the mouse horizontally by exactly that physical distance.', 'Click once to finish and read the Estimated DPI result.'] },
-        { heading: 'What the result means', paragraphs: ['The browser reports relative movement units, while you provide the physical travel distance. The test divides the absolute net horizontal movement by that distance in inches to estimate DPI.'] },
-        { heading: 'Accuracy and browser limitations', paragraphs: ['Raw Pointer Lock is preferred when available. Regular Pointer Lock or unlocked browser movement can be affected by OS acceleration, browser or OS movement units, zoom or scaling, screen edges, and event processing. The result is always an estimate rather than a direct hardware DPI reading.'] },
+        { heading: 'What the result means', paragraphs: ['This mouse DPI analyzer estimates DPI from browser-observed movement over a physical distance you provide. The browser reports relative movement units, while you provide the physical travel distance. The test divides the absolute net horizontal movement by that distance in inches to estimate DPI.'] },
+        { heading: 'Accuracy and browser limitations', paragraphs: ['Raw Pointer Lock is preferred when available. Regular Pointer Lock or unlocked browser movement can be affected by OS acceleration, browser or OS movement units, zoom or scaling, screen edges, and event processing. The result is therefore always an estimate rather than a direct hardware DPI reading.'] },
       ],
     },
     'keyboard-tester': {
@@ -182,22 +182,22 @@ export const enContent = {
       h1: 'Keyboard Tester',
       intro: 'Press keys and see which keyboard input this browser page detects.',
       sections: [
-        { heading: 'How to use the keyboard tester', paragraphs: ['Press any key. When that physical position is included in the compact keyboard view, its keycap highlights while held. The latest browser-reported key and code are shown even when a dedicated keycap is not drawn.'] },
-        { heading: 'Physical code and visible labels', paragraphs: ['Highlighting follows <code>KeyboardEvent.code</code>, which represents a physical key position. The compact labels use a familiar reference layout, so they may not exactly match every keyboard locale or printed keycap.'] },
-        { heading: 'Browser and operating-system limitations', paragraphs: ['Some operating-system or browser-reserved shortcuts may never reach the page. A shortcut that is not observable here should not by itself be treated as proof of broken keyboard hardware.'] },
+        { heading: 'How to use the keyboard tester', paragraphs: ['Use this keyboard checker by pressing any key. When that physical position is included in the compact keyboard view, its keycap highlights while held. The latest browser-reported key and code are shown for detected keys even when a dedicated keycap is not drawn.'] },
+        { heading: 'Physical code and visible labels', paragraphs: ['Highlighting follows <code>KeyboardEvent.code</code>, which represents a physical key position. The compact visible labels use a familiar reference layout, so they may not exactly match every keyboard locale or printed keycap.'] },
+        { heading: 'Browser and operating-system limitations', paragraphs: ['Some operating-system or browser-reserved shortcuts may never reach the page. A shortcut that is not observable here should not by itself be treated as proof of broken keyboard hardware. This tester does not block normal Tab navigation or globally prevent default keyboard behavior.'] },
       ],
     },
     'keyboard-rollover-test': {
       name: 'Keyboard Rollover Test',
       shortDescription: 'See the largest simultaneous key set this browser detects.',
-      seoTitle: 'Keyboard Rollover Test — Check Simultaneous Keys',
+      seoTitle: 'Keyboard Rollover Test — NKRO & Simultaneous Key Check',
       metaDescription: 'Hold multiple keys and see the largest simultaneous key set your browser detects, with live keyboard highlighting.',
       h1: 'Keyboard Rollover Test',
       intro: 'See how many simultaneous key inputs this browser detects while you hold keys.',
       sections: [
         { heading: 'How to test keyboard rollover', steps: ['Hold several non-reserved keys at the same time.', 'Compare the physical keys you are holding with the highlighted browser-detected keys.', 'Watch Maximum detected together as you try different combinations.'] },
         { heading: 'What the result means', paragraphs: ['Maximum detected together is the largest simultaneous set of browser key events observed during this session. It is not an NKRO or hardware certification because operating-system and browser shortcuts can intercept some combinations before the page receives them.'] },
-        { heading: 'Why some combinations may differ', paragraphs: ['Keyboard matrix design, firmware, operating-system shortcuts, browser behavior, and remapping can all affect which codes reach a web page.'] },
+        { heading: 'NKRO testing and browser limitations', paragraphs: ['Keyboard matrix design, firmware, operating-system shortcuts, browser behavior, and remapping can all affect which codes reach a web page. Use the guided Keyboard Ghosting Test when you want to compare one known expected combination against what the browser receives together.'] },
       ],
     },
     'keyboard-ghosting-test': {
@@ -209,9 +209,9 @@ export const enContent = {
       intro: 'Try representative key chords and compare the exact keys you hold with what the browser receives together. There is no universal ghosting combination because keyboard matrix layouts differ by model.',
       sections: [
         { heading: 'How to run the guided test', steps: ['Choose one of the representative, non-reserved key combinations.', 'Select Start test and get ready during the short preparation period.', 'Hold every highlighted key throughout the 3-second observation.', 'Compare the best simultaneous browser-detected snapshot with the expected combination.'] },
-        { heading: 'Why these combinations', paragraphs: ['Ghosting and key blocking depend on the keyboard matrix. The presets are representative probes, not a canonical certification set.'] },
-        { heading: 'What a missing key means', paragraphs: ['A missing code means that key was not part of the best simultaneous browser-observed snapshot for this guided combination. The page cannot prove why: matrix behavior, firmware, remapping, shortcuts, browser handling, or how the keys were held can all affect the result.'] },
-        { heading: 'Why this is not an automatic ghosting verdict', paragraphs: ['A browser can only report key events that reach the page. This test does not directly inspect keyboard hardware and therefore does not label the keyboard as failed or ghosting-confirmed.'] },
+        { heading: 'Why these combinations', paragraphs: ["Ghosting and key blocking depend on the keyboard's internal matrix, so the same problematic combination does not apply to every model. The presets include common gaming chords, smaller three-key chords, and a clearly labelled six-key stress chord. They are representative probes, not a canonical certification set."] },
+        { heading: 'What a missing key means', paragraphs: ['A missing code means that key was not part of the best simultaneous browser-observed snapshot for this guided combination. The page cannot prove why: keyboard matrix behavior, firmware, remapping, operating-system shortcuts, browser handling, or the user not fully holding the instructed set can all affect the result.'] },
+        { heading: 'Why this is not an automatic ghosting verdict', paragraphs: ['A browser can only report key events that reach the page. This test knows the intended set because it gives you the exact combination to hold, but it still does not directly inspect keyboard hardware and therefore does not label the keyboard as failed or ghosting-confirmed.'] },
       ],
     },
     'fps-test': {
@@ -223,7 +223,7 @@ export const enContent = {
       intro: 'See the frame rate this browser page is delivering right now.',
       sections: [
         { heading: 'What this FPS test measures', paragraphs: ['The test observes <code>requestAnimationFrame</code> delivery for this page. It is useful for seeing the browser page’s current frame cadence and recent drops, but it cannot read FPS from another game or application.'] },
-        { heading: 'Why the number can change', paragraphs: ['Browser work, background activity, power-saving behavior, display changes, and a hidden tab can all affect observed frame delivery. Hidden-tab measurements are discarded before sampling resumes.'] },
+        { heading: 'Why the number can change', paragraphs: ['Browser work, background activity, power-saving behavior, display changes, and a hidden tab can all affect observed frame delivery. When the page becomes hidden, the measurement is discarded and starts with a fresh warmup when sampling resumes.'] },
       ],
     },
     'refresh-rate-test': {
@@ -246,9 +246,9 @@ export const enContent = {
       h1: 'Frame Skipping Test',
       intro: 'Photograph a browser-timed frame sequence and look for repeatable gaps in valid READY captures.',
       sections: [
-        { heading: 'How this frame skipping test works', paragraphs: ['The browser waits for a stable requestAnimationFrame cadence. While READY remains valid, every accepted browser frame advances the bright block by exactly one consecutive slot. Browser timing never inserts a visual gap to simulate a skipped refresh.'] },
-        { heading: 'Why a camera photo is required', paragraphs: ['A long-exposure camera photo can record several displayed pattern states in one image. A screenshot only captures the browser’s current rendered state and cannot show whether the physical display presented every refresh.'] },
-        { heading: 'How to interpret gaps', paragraphs: ['A repeatable missing position across multiple photos taken while the page says READY may indicate that the display did not present every pattern state. One bad photo is not a verdict; camera exposure or timing instability can also produce misleading gaps.'] },
+        { heading: 'How this frame skipping test works', paragraphs: ['The browser first waits for a stable requestAnimationFrame cadence. While READY remains valid, every accepted browser frame advances the bright block by exactly one consecutive slot. Browser timing is used only to decide whether the camera pattern is trustworthy; it never inserts a visual gap to simulate a skipped refresh.'] },
+        { heading: 'Why a camera photo is required', paragraphs: ['A long-exposure camera photo can record several displayed pattern states in one image. A screenshot only captures the browser’s current rendered state and cannot show whether the physical display actually presented every refresh. Use roughly 1/10 second or longer so several block positions can appear in one photo.'] },
+        { heading: 'How to interpret gaps', paragraphs: ['A repeatable missing position across multiple photos taken while the page says READY may indicate that the display did not present every pattern state. One bad photo is not a verdict: camera exposure, motion, timing instability, or photographing after READY was lost can also produce misleading gaps. This page does not automatically pass or fail the monitor.'] },
       ],
     },
     'dead-pixel-test': {
@@ -260,8 +260,8 @@ export const enContent = {
       intro: 'Inspect the screen against solid colors to visually spot pixels that stay dark, bright, or the wrong color.',
       sections: [
         { heading: 'How to inspect for dead or stuck pixels', steps: ['Clean the screen first so dust or smudges are not mistaken for pixel defects.', 'Start the test and inspect each solid background from a normal viewing distance.', 'Tap/click the stage or use Space / Arrow Right for the next color; Arrow Left goes back.', 'Look for a point that does not change consistently with the surrounding screen.'] },
-        { heading: 'Dead pixels and stuck pixels can look different', paragraphs: ['A dead pixel may remain dark while surrounding pixels light up. A stuck subpixel may remain bright or show the wrong color on some backgrounds. This page provides controlled colors for visual inspection; it does not read individual panel pixels.'] },
-        { heading: 'Visual inspection limits', paragraphs: ['Reflections, dirt, scaling, viewing distance, and unavailable fullscreen can affect inspection. The tool does not provide a pass/fail score, warranty classification, camera diagnosis, or flashing pixel-fixer mode.'] },
+        { heading: 'Dead pixels and stuck pixels can look different', paragraphs: ['A dead pixel may remain dark while surrounding pixels light up. A stuck subpixel may remain bright or show the wrong color on some backgrounds. This page only provides controlled solid colors for visual inspection; it does not read or diagnose individual panel pixels.'] },
+        { heading: 'Visual inspection limits', paragraphs: ['Browser chrome cannot be inspected when fullscreen is unavailable, and reflections, dirt, scaling, or viewing distance can make tiny marks look like pixel defects. The tool does not provide a pass/fail score, warranty classification, camera diagnosis, or flashing pixel-fixer mode.'] },
       ],
     },
     'backlight-bleed-test': {
@@ -272,9 +272,9 @@ export const enContent = {
       h1: 'Backlight Bleed Test',
       intro: 'Dim the room and visually inspect a black screen for obvious bright leakage or unevenness.',
       sections: [
-        { heading: 'How to inspect backlight bleed', steps: ['Use the room lighting and screen brightness that matter for normal use.', 'Start the black screen and inspect the panel from your normal viewing position.', 'Look for localized bright leakage around edges or corners rather than relying on a camera photo alone.'] },
-        { heading: 'Backlight bleed, IPS glow, and OLED are different', paragraphs: ['Backlight bleed applies to backlit LCD/LED panels. IPS glow changes with viewing angle and is not the same defect. OLED panels generate light per pixel and have no backlight, so this diagnosis does not apply to them.'] },
-        { heading: 'Why there is no pass/fail result', paragraphs: ['The browser does not measure emitted luminance or panel uniformity. Cameras can exaggerate glow, and acceptable unevenness depends on viewing conditions, so this tool is only a controlled visual inspection screen.'] },
+        { heading: 'How to inspect backlight bleed', steps: ['Use the room lighting and screen brightness that matter for how you normally use the display.', 'Start the black screen and inspect the panel from your normal viewing position.', 'Look for localized bright leakage around edges or corners rather than relying on a camera photo alone.'] },
+        { heading: 'Backlight bleed, IPS glow, and OLED are different', paragraphs: ['Backlight bleed applies to backlit LCD/LED panels and can appear as localized light leakage. IPS glow changes with viewing angle and can be more visible near corners without being the same defect. OLED panels generate light per pixel and have no backlight, so a black-screen observation should not be interpreted as a backlight-bleed diagnosis on OLED.'] },
+        { heading: 'Why there is no pass/fail result', paragraphs: ['The browser does not measure emitted luminance or panel uniformity. Cameras can exaggerate glow through exposure and image processing, while acceptable unevenness also depends on viewing conditions and use. This tool therefore provides only a controlled visual inspection screen and does not output Pass, No bleed, or Bad bleed.'] },
       ],
     },
     'touch-screen-test': {
@@ -285,10 +285,10 @@ export const enContent = {
       h1: 'Touch Screen Test',
       intro: 'Check where this browser receives finger input, how many touches it sees together, and whether unexpected touch input appears hands-off.',
       sections: [
-        { heading: 'How to test your touch screen', steps: ['Drag one or more fingers across the whole test area, including edges and corners.', 'Watch Coverage and Maximum detected together while you test.', 'If cells remain uncovered, use Check missed areas and sweep those areas again.', 'Optionally run the separate hands-off check for 15 seconds.'] },
+        { heading: 'How to test your touch screen', steps: ['Drag one or more fingers across the whole test area, including the edges and corners.', 'Watch Coverage and Maximum detected together while you test.', 'If cells remain uncovered, use Check missed areas and sweep those areas again.', 'Optionally run the separate hands-off check to observe unexpected touch-contact starts for 15 seconds.'] },
         { heading: 'What coverage means', paragraphs: ['Coverage is the portion of this browser test area where actual finger-touch samples were observed. The tool does not interpolate between samples and does not turn out-of-area captured movement into edge coverage.'] },
-        { heading: 'Missed areas, dead spots, and dead zones', paragraphs: ['The first and confirmation passes are stored separately. A cell is not detected in both passes only when neither pass received an in-area touch sample there. Repeatable misses may indicate a problem, but the browser cannot identify a failed hardware component.'] },
-        { heading: 'Ghost touch and unexpected input', paragraphs: ['The 15-second hands-off check can help observe unexpected touch-contact starts sometimes described as ghost touch. It does not confirm a fault, and a quiet run cannot prove the touchscreen healthy. Mouse and stylus input are intentionally excluded.'] },
+        { heading: 'Missed areas, dead spots, and dead zones', paragraphs: ['The first and confirmation passes are stored separately. A cell can be described as not detected in both passes only when neither pass received an in-area touch sample there. Repeatable missed areas may indicate a touch problem, but this browser test cannot identify the failed hardware component.'] },
+        { heading: 'Ghost touch and unexpected input', paragraphs: ['The 15-second hands-off check can help you observe unexpected touch-contact starts sometimes described as ghost touch. It does not confirm a ghost-touch fault, and a quiet run cannot rule out intermittent problems or prove that a touchscreen is healthy. Browser Pointer Events are not a hardware certification; mouse and stylus input are intentionally excluded, and fullscreen is optional.'] },
       ],
     },
   },
