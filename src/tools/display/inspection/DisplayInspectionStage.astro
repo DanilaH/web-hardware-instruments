@@ -21,6 +21,7 @@ const {
   style={`--inspection-color: ${initialColor};`}
   hidden
 >
+  <slot name="surface" />
   <div class="display-inspection-stage__overlay" data-inspection-overlay>
     <slot />
   </div>
@@ -47,7 +48,7 @@ const {
     top: var(--space-3);
     right: var(--space-3);
     z-index: 1;
-    max-width: min(28rem, calc(100% - 1.5rem));
+    max-width: min(34rem, calc(100% - 1.5rem));
     border: 1px solid #3d4244;
     border-radius: var(--radius-sm);
     background: #17191a;
