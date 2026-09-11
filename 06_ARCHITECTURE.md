@@ -102,7 +102,9 @@ Exact full-v1 reset behavior remains in `18_DECISIONS_AND_BOUNDARIES.md`; exact 
 
 Expansion V2 deterministic display-pattern tools use the shared Display Pattern Engine defined by `23_HARDWARE_EXPANSION_V2_SPEC.md`. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are production consumers. The engine owns pattern order/state, manual navigation, rendered pattern composition, overlay visibility, and integration with the existing Fullscreen helper. It does not own SEO copy, measurement claims, or hardware acquisition.
 
-Do not overload `FrameSampler` with deterministic visual-pattern ownership and do not create a second fullscreen framework for V2 display-pattern tools.
+Screen Resolution Checker does **not** use `FrameSampler` or the Display Pattern Engine. It uses a small tool-local screen-info helper that reads standard browser screen/viewport values and computes only the documented `Math.round(css * devicePixelRatio)` estimate. The helper is not a hardware acquisition service and does not request Multi-Screen Window Placement permission.
+
+Do not overload `FrameSampler` with deterministic visual-pattern ownership or screen-information reporting, and do not create a second fullscreen framework for V2 display-pattern tools.
 
 ### Keyboard
 
@@ -193,7 +195,7 @@ interface ToolController {
 }
 ```
 
-Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, temporary print DOM/styles, media tracks, and subscriptions.
+Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, temporary print DOM/styles, media tracks, resize/orientation listeners, and subscriptions.
 
 ## TypeScript
 
@@ -218,7 +220,7 @@ Do not introduce a global state library.
 
 Per-tool local state is enough.
 
-Acquisition services should not absorb presentation state merely to make it reusable.
+Acquisition services should not absorb presentation state merely to make them reusable.
 
 ## Rendering
 
@@ -255,7 +257,7 @@ frame timing series
 
 remain local by default.
 
-Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry.
+Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry. Screen Resolution Checker reads only browser-exposed screen/viewport values and requests no screen-enumeration permission.
 
 Analytics may record only coarse product events such as:
 
@@ -295,7 +297,7 @@ thin browser capability service
 native browser API
 ```
 
-A tool that only renders a local reference and invokes a standard UI primitive does not need a fake capability service merely for architectural symmetry.
+A tool that only renders a local reference or reads passive standard browser properties does not need a fake capability service merely for architectural symmetry.
 
 ## Approved capability services
 
