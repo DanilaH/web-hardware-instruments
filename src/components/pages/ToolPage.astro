@@ -9,6 +9,7 @@ import FrameSkippingTest from '../../tools/display/frame-skipping/FrameSkippingT
 import MonitorTest from '../../tools/display/monitor/MonitorTest.astro';
 import OledBurnInTest from '../../tools/display/oled/OledBurnInTest.astro';
 import RefreshRateTest from '../../tools/display/refresh-rate/RefreshRateTest.astro';
+import ScreenResolutionChecker from '../../tools/display/resolution/ScreenResolutionChecker.astro';
 import ScreenUniformityTest from '../../tools/display/uniformity/ScreenUniformityTest.astro';
 import ControllerDeadzoneTest from '../../tools/gamepad/deadzone/ControllerDeadzoneTest.astro';
 import ControllerStickDriftTest from '../../tools/gamepad/drift/ControllerStickDriftTest.astro';
@@ -55,6 +56,7 @@ const toolComponents = {
   'monitor-test': MonitorTest,
   'screen-uniformity-test': ScreenUniformityTest,
   'oled-burn-in-test': OledBurnInTest,
+  'screen-resolution-checker': ScreenResolutionChecker,
   'touch-screen-test': TouchScreenTest,
   'printer-test-page': PrinterTest,
 } as const;
