@@ -79,7 +79,16 @@ export const mountWebcamTest = (
   let active = false;
   let busy = false;
   let destroyed = false;
+  let operationVersion = 0;
   let devices: readonly CameraDevice[] = [];
+
+  const beginOperation = (): number => {
+    operationVersion += 1;
+    return operationVersion;
+  };
+
+  const isCurrentOperation = (version: number): boolean =>
+    !destroyed && operationVersion === version;
 
   const setStatus = (text: string, state: 'idle' | 'working' | 'live' | 'error'): void => {
     status.textContent = text;
@@ -151,6 +160,7 @@ export const mountWebcamTest = (
 
   const handleStreamEnded = (error: CameraServiceError): void => {
     if (destroyed) return;
+    beginOperation();
     active = false;
     busy = false;
     clearStreamUi();
@@ -160,34 +170,41 @@ export const mountWebcamTest = (
 
   const service = serviceFactory(handleStreamEnded);
 
-  const refreshLiveUi = async (stream: MediaStream): Promise<void> => {
+  const refreshLiveUi = async (stream: MediaStream, version: number): Promise<boolean> => {
+    if (!isCurrentOperation(version)) return false;
     attachStream(stream);
-    devices = await service.listVideoDevices();
+
+    const nextDevices = await service.listVideoDevices();
+    if (!isCurrentOperation(version)) return false;
+
+    devices = nextDevices;
     const settings = service.getSettings();
     renderDeviceOptions(settings);
     renderSettings(service);
+    return true;
   };
 
   const handleStart = async (): Promise<void> => {
     if (destroyed || busy || active) return;
+    const version = beginOperation();
     busy = true;
     setStatus(messages.starting, 'working');
     setControls();
 
     try {
       const stream = await service.start();
-      if (destroyed) {
-        service.stop();
-        return;
-      }
+      if (!isCurrentOperation(version)) return;
       active = true;
-      await refreshLiveUi(stream);
+      const rendered = await refreshLiveUi(stream, version);
+      if (!rendered || !isCurrentOperation(version)) return;
       setStatus(messages.live, 'live');
     } catch (error) {
+      if (!isCurrentOperation(version)) return;
       active = false;
       clearStreamUi();
       setStatus(errorMessage(messages, normalizeControllerErrorCode(error)), 'error');
     } finally {
+      if (!isCurrentOperation(version)) return;
       busy = false;
       setControls();
     }
@@ -195,6 +212,7 @@ export const mountWebcamTest = (
 
   const handleStop = (): void => {
     if (destroyed) return;
+    beginOperation();
     service.stop();
     active = false;
     busy = false;
@@ -206,23 +224,24 @@ export const mountWebcamTest = (
   const handleDeviceChange = async (): Promise<void> => {
     const deviceId = cameraSelect.value;
     if (destroyed || busy || !active || !deviceId) return;
+    const version = beginOperation();
     busy = true;
     setStatus(messages.switching, 'working');
     setControls();
 
     try {
       const stream = await service.switchDevice(deviceId);
-      if (destroyed) {
-        service.stop();
-        return;
-      }
-      await refreshLiveUi(stream);
+      if (!isCurrentOperation(version)) return;
+      const rendered = await refreshLiveUi(stream, version);
+      if (!rendered || !isCurrentOperation(version)) return;
       setStatus(messages.live, 'live');
     } catch (error) {
+      if (!isCurrentOperation(version)) return;
       // CameraService keeps the previous stream alive when replacement acquisition fails.
       renderSettings(service);
       setStatus(errorMessage(messages, normalizeControllerErrorCode(error)), 'error');
     } finally {
+      if (!isCurrentOperation(version)) return;
       busy = false;
       setControls();
     }
@@ -242,13 +261,14 @@ export const mountWebcamTest = (
     stop: handleStop,
     destroy: () => {
       if (destroyed) return;
+      operationVersion += 1;
+      destroyed = true;
       startButton.removeEventListener('click', onStart);
       stopButton.removeEventListener('click', handleStop);
       cameraSelect.removeEventListener('change', onDeviceChange);
       service.destroy();
       video.pause();
       video.srcObject = null;
-      destroyed = true;
     },
   };
 };
