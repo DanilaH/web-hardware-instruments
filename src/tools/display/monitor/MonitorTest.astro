@@ -1,0 +1,132 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import type { ImplementedContentLocale } from '../../../i18n/content';
+import { getMonitorRuntimeMessages } from '../../../i18n/runtime/monitor';
+import DisplayInspectionStage from '../inspection/DisplayInspectionStage.astro';
+import DisplayPatternSurface from '../pattern-engine/DisplayPatternSurface.astro';
+import { monitorPatterns } from '../pattern-engine/display-patterns';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getMonitorRuntimeMessages(locale);
+---
+
+<ToolShell labelledBy="monitor-test-tool-heading">
+  <h2 id="monitor-test-tool-heading" class="monitor-tool__sr">{messages.controlsHeading}</h2>
+
+  <div
+    class="monitor-tool"
+    data-monitor-test
+    data-messages={JSON.stringify(messages)}
+    data-active="false"
+    data-fullscreen="false"
+  >
+    <div class="monitor-tool__preflight">
+      <div class="monitor-tool__status-row">
+        <span class="monitor-tool__signal" aria-hidden="true"></span>
+        <strong>{messages.visualInspection}</strong>
+      </div>
+      <p class="monitor-tool__instruction">{messages.instruction}</p>
+      <button type="button" class="monitor-action monitor-action--primary" data-monitor-start>{messages.start}</button>
+      <div class="monitor-tool__sequence" aria-label={messages.sequenceAria}>
+        {monitorPatterns.map((pattern, index) => (
+          <span class="monitor-chip" data-pattern-id={pattern.id}>{messages.patterns[index]}</span>
+        ))}
+      </div>
+    </div>
+
+    <DisplayInspectionStage label={messages.stageAria} interactive={true}>
+      <DisplayPatternSurface slot="surface" />
+      <div class="monitor-overlay">
+        <div class="monitor-overlay__result">
+          <strong data-monitor-pattern-label>{messages.patterns[0]}</strong>
+          <span data-monitor-pattern-position>1 / {monitorPatterns.length}</span>
+        </div>
+        <span class="monitor-overlay__hint">{messages.nextHint}</span>
+        <div class="monitor-overlay__controls">
+          <button type="button" data-inspection-control data-monitor-previous>{messages.previous}</button>
+          <button type="button" data-inspection-control data-monitor-next>{messages.next}</button>
+          <button type="button" data-inspection-control data-monitor-hide>{messages.hideControls}</button>
+          <button type="button" data-inspection-control data-inspection-exit>{messages.exit}</button>
+        </div>
+      </div>
+    </DisplayInspectionStage>
+
+    <p class="monitor-tool__fullscreen-note" data-inspection-fullscreen-note role="status" aria-live="polite"></p>
+  </div>
+</ToolShell>
+
+<script>
+  import type { MonitorRuntimeMessages } from '../../../i18n/runtime/monitor';
+  import { mountDisplayPatternEngine } from '../pattern-engine/display-pattern-engine';
+  import { monitorPatterns } from '../pattern-engine/display-patterns';
+
+  const requireElement = <T extends Element>(root: ParentNode, selector: string): T => {
+    const element = root.querySelector<T>(selector);
+    if (!element) throw new Error(`Monitor Test is missing ${selector}`);
+    return element;
+  };
+
+  const root = document.querySelector<HTMLElement>('[data-monitor-test]');
+  if (root) {
+    const messages = JSON.parse(root.dataset.messages ?? '{}') as MonitorRuntimeMessages;
+    const stage = requireElement<HTMLElement>(root, '[data-inspection-stage]');
+    const controller = mountDisplayPatternEngine({
+      root,
+      stage,
+      startButton: requireElement<HTMLButtonElement>(root, '[data-monitor-start]'),
+      exitButton: requireElement<HTMLButtonElement>(root, '[data-inspection-exit]'),
+      previousButton: requireElement<HTMLButtonElement>(root, '[data-monitor-previous]'),
+      nextButton: requireElement<HTMLButtonElement>(root, '[data-monitor-next]'),
+      hideButton: requireElement<HTMLButtonElement>(root, '[data-monitor-hide]'),
+      fullscreenNote: requireElement<HTMLElement>(root, '[data-inspection-fullscreen-note]'),
+      patternSurface: requireElement<HTMLElement>(root, '[data-display-pattern-surface]'),
+      patternLabel: requireElement<HTMLElement>(root, '[data-monitor-pattern-label]'),
+      patternPosition: requireElement<HTMLElement>(root, '[data-monitor-pattern-position]'),
+      patterns: monitorPatterns,
+      labels: messages.patterns,
+      fullscreenUnavailableMessage: messages.fullScreenUnavailable,
+    });
+
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) controller.start();
+    });
+  }
+</script>
+
+<style>
+  .monitor-tool { display: grid; gap: var(--space-3); }
+  .monitor-tool__preflight { display: grid; gap: var(--space-4); }
+  .monitor-tool[data-active='true'] .monitor-tool__preflight { display: none; }
+  .monitor-tool__status-row { min-height: 1.5rem; display: flex; align-items: center; gap: 0.55rem; color: var(--color-muted); font-size: 0.85rem; }
+  .monitor-tool__status-row strong { color: var(--color-text); font-size: 0.9rem; }
+  .monitor-tool__signal { width: 0.55rem; height: 0.55rem; flex: 0 0 auto; border-radius: 50%; background: var(--color-signal); }
+  .monitor-tool__instruction, .monitor-tool__fullscreen-note { margin: 0; }
+  .monitor-tool__instruction { max-width: 50rem; font-size: 0.95rem; }
+  .monitor-action { min-height: 2.65rem; width: fit-content; border: 1px solid var(--color-border); border-radius: 0.35rem; background: #fff; padding: 0.55rem 0.9rem; color: var(--color-text); cursor: pointer; }
+  .monitor-action--primary { border-color: var(--color-signal); background: color-mix(in srgb, var(--color-signal) 10%, white); font-weight: 650; }
+  .monitor-tool__sequence { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .monitor-chip { display: inline-flex; align-items: center; min-height: 1.8rem; border: 1px solid var(--color-border); border-radius: 999px; padding: 0.25rem 0.48rem; color: var(--color-muted); font-size: 0.72rem; }
+  .monitor-overlay { display: grid; gap: 0.45rem; min-width: min(29rem, 100%); font-size: 0.78rem; }
+  .monitor-overlay__result { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .monitor-overlay__result strong { font-size: 0.9rem; }
+  .monitor-overlay__result span, .monitor-overlay__hint { color: #c6cbcd; }
+  .monitor-overlay__controls { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .monitor-overlay button { min-height: 2rem; border: 1px solid #62696c; border-radius: 0.3rem; background: #242829; padding: 0.3rem 0.5rem; color: #fff; cursor: pointer; }
+  .monitor-tool__fullscreen-note { min-height: 1.15rem; color: var(--color-muted); font-size: 0.78rem; }
+  .monitor-tool__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+  @media (max-width: 40rem) {
+    .monitor-action { width: 100%; }
+    .monitor-overlay { min-width: 0; }
+    .monitor-overlay__result { align-items: flex-start; flex-direction: column; gap: 0.1rem; }
+    .monitor-overlay__controls button { flex: 1 1 auto; }
+  }
+</style>
