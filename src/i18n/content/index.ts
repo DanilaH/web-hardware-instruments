@@ -11,7 +11,7 @@ import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
 import { screenResolutionContentByLocale } from './screen-resolution';
 import { screenUniformityContentByLocale } from './screen-uniformity';
-import type { ResolvedSiteContent, SiteContent } from './types';
+import type { HomeContent, ResolvedSiteContent, SiteContent } from './types';
 
 export const implementedContentLocales = ['en', 'pt-BR', 'de', 'fr', 'es', 'ru'] as const satisfies readonly Locale[];
 export type ImplementedContentLocale = (typeof implementedContentLocales)[number];
@@ -33,6 +33,16 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const screenUniformity = screenUniformityContentByLocale[locale];
   const oledBurnIn = oledBurnInContentByLocale[locale];
   const screenResolution = screenResolutionContentByLocale[locale];
+  const home: HomeContent = {
+    ...base.home,
+    ...printer.home,
+    ...printerHomepageCopy,
+    ...monitor.home,
+    ...screenUniformity.home,
+    ...oledBurnIn.home,
+    ...screenResolution.home,
+    inputs: [...base.home.inputs, printer.signal],
+  };
 
   return {
     ...base,
@@ -40,16 +50,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...base.categories,
       printer: printer.category,
     },
-    home: {
-      ...base.home,
-      ...printer.home,
-      ...printerHomepageCopy,
-      ...monitor.home,
-      ...screenUniformity.home,
-      ...oledBurnIn.home,
-      ...screenResolution.home,
-      inputs: [...base.home.inputs, printer.signal],
-    },
+    home,
     tools: {
       ...base.tools,
       'printer-test-page': printer.tool,
