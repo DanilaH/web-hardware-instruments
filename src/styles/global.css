@@ -238,6 +238,7 @@ body[data-channel] .tool-shell {
 [data-channel='keyboard'] { --channel: var(--color-channel-keyboard); }
 [data-channel='display'] { --channel: var(--color-channel-display); }
 [data-channel='touch'] { --channel: var(--color-channel-touch); }
+[data-channel='printer'] { --channel: var(--color-channel-neutral); }
 
 body[data-channel] {
   --color-signal: var(--channel);
