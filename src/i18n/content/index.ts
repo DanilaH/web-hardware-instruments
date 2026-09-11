@@ -4,6 +4,7 @@ import { enContent } from './en';
 import { esContent } from './es';
 import { frContent } from './fr';
 import { monitorContentByLocale } from './monitor';
+import { oledBurnInContentByLocale } from './oled-burn-in';
 import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
@@ -29,6 +30,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const printerHomepageCopy = printerHomepageCopyByLocale[locale];
   const monitor = monitorContentByLocale[locale];
   const screenUniformity = screenUniformityContentByLocale[locale];
+  const oledBurnIn = oledBurnInContentByLocale[locale];
 
   return {
     ...base,
@@ -42,6 +44,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...printerHomepageCopy,
       ...monitor.home,
       ...screenUniformity.home,
+      ...oledBurnIn.home,
       inputs: [...base.home.inputs, printer.signal],
     },
     tools: {
@@ -49,6 +52,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       'printer-test-page': printer.tool,
       'monitor-test': monitor.tool,
       'screen-uniformity-test': screenUniformity.tool,
+      'oled-burn-in-test': oledBurnIn.tool,
     },
   };
 };

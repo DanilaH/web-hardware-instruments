@@ -78,8 +78,8 @@ Hardware Expansion V2 has passed the project's expansion gate through completed 
 /printer-test-page              implemented in the Printer wave
 /monitor-test                   implemented in the Monitor wave
 /screen-uniformity-test         implemented in the Screen Uniformity wave
-/oled-burn-in-test              approved next Display-pattern wave
-/screen-resolution-checker      approved
+/oled-burn-in-test              implemented in the OLED Burn-In wave
+/screen-resolution-checker      approved next wave
 /webcam-test                    approved
 ```
 
@@ -168,7 +168,7 @@ Expansion V2 explicitly absorbs nearby synonym/sub-intent phrases into the six a
 
 # 7. Current implemented catalog and approved next waves
 
-Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, Monitor Test, and Screen Uniformity Test are code-side implementation scope after the Screen Uniformity wave.
+Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are code-side implementation scope after the OLED Burn-In wave.
 
 Current implemented production jobs:
 
@@ -199,6 +199,7 @@ Display
 /backlight-bleed-test
 /monitor-test
 /screen-uniformity-test
+/oled-burn-in-test
 
 Touch
 /touch-screen-test
@@ -207,13 +208,12 @@ Printer
 /printer-test-page
 ```
 
-Localization provides the approved language alternates for these same **21 jobs**.
+Localization provides the approved language alternates for these same **22 jobs**.
 
 Approved V2 jobs not yet part of the current catalog until their own atomic waves merge:
 
 ```text
 Display
-/oled-burn-in-test
 /screen-resolution-checker
 
 Camera

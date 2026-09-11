@@ -73,6 +73,7 @@ Jobs:
 /backlight-bleed-test
 /monitor-test
 /screen-uniformity-test
+/oled-burn-in-test
 ```
 
 Jobs:
@@ -83,9 +84,10 @@ Jobs:
 - fullscreen solid-color pixel inspection;
 - fullscreen black-screen backlight inspection;
 - guided manual monitor inspection with solid fields, gradients, near-black/near-white references, and a sharpness grid;
-- manual gray-field inspection for uneven brightness, tint, banding, clouding, mura-like variation and dirty-screen-effect-like patches.
+- manual gray-field inspection for uneven brightness, tint, banding, clouding, mura-like variation and dirty-screen-effect-like patches;
+- manual solid/gray-field inspection for persistent image shapes while keeping burn-in, temporary retention and other uniformity artifacts distinct.
 
-Monitor Test is the broad Display-entry diagnostic. Screen Uniformity Test is the focused gray-field companion. Both reuse the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; neither provides automatic pass/fail, measured luminance uniformity, contrast, response time, color delta, or panel-health certification.
+Monitor Test is the broad Display-entry diagnostic. Screen Uniformity Test is the focused gray-field companion. OLED Burn-In Test is the focused persistent-image inspection companion. All three reuse the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; none provides automatic pass/fail, measured luminance uniformity, burn-in percentage, contrast, response time, color delta, repair behavior or panel-health certification.
 
 ### Touch
 
@@ -181,12 +183,17 @@ FPS
 Monitor Test
 ↔ Dead Pixel
 ↔ Screen Uniformity
-↔ Refresh Rate
+↔ OLED Burn-In
 
 Screen Uniformity
+↔ OLED Burn-In
 ↔ Monitor Test
 ↔ Backlight Bleed
-↔ OLED Burn-In only when that route is actually implemented
+
+OLED Burn-In
+↔ Screen Uniformity
+↔ Monitor Test
+↔ Dead Pixel
 
 Dead Pixel
 ↔ Monitor Test

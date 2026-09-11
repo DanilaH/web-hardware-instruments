@@ -7,6 +7,7 @@ import DeadPixelTest from '../../tools/display/dead-pixel/DeadPixelTest.astro';
 import FpsTest from '../../tools/display/fps/FpsTest.astro';
 import FrameSkippingTest from '../../tools/display/frame-skipping/FrameSkippingTest.astro';
 import MonitorTest from '../../tools/display/monitor/MonitorTest.astro';
+import OledBurnInTest from '../../tools/display/oled/OledBurnInTest.astro';
 import RefreshRateTest from '../../tools/display/refresh-rate/RefreshRateTest.astro';
 import ScreenUniformityTest from '../../tools/display/uniformity/ScreenUniformityTest.astro';
 import ControllerDeadzoneTest from '../../tools/gamepad/deadzone/ControllerDeadzoneTest.astro';
@@ -53,6 +54,7 @@ const toolComponents = {
   'backlight-bleed-test': BacklightBleedTest,
   'monitor-test': MonitorTest,
   'screen-uniformity-test': ScreenUniformityTest,
+  'oled-burn-in-test': OledBurnInTest,
   'touch-screen-test': TouchScreenTest,
   'printer-test-page': PrinterTest,
 } as const;

@@ -100,7 +100,7 @@ One shared `FrameSampler` powers:
 
 Exact full-v1 reset behavior remains in `18_DECISIONS_AND_BOUNDARIES.md`; exact Frame Skipping semantics are in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
-Expansion V2 deterministic display-pattern tools use the shared Display Pattern Engine defined by `23_HARDWARE_EXPANSION_V2_SPEC.md`. Monitor Test and Screen Uniformity Test are production consumers; OLED Burn-In reuses the same primitive when its own atomic wave ships. The engine owns pattern order/state, manual navigation, rendered pattern composition, overlay visibility, and integration with the existing Fullscreen helper. It does not own SEO copy, measurement claims, or hardware acquisition.
+Expansion V2 deterministic display-pattern tools use the shared Display Pattern Engine defined by `23_HARDWARE_EXPANSION_V2_SPEC.md`. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are production consumers. The engine owns pattern order/state, manual navigation, rendered pattern composition, overlay visibility, and integration with the existing Fullscreen helper. It does not own SEO copy, measurement claims, or hardware acquisition.
 
 Do not overload `FrameSampler` with deterministic visual-pattern ownership and do not create a second fullscreen framework for V2 display-pattern tools.
 
@@ -157,7 +157,7 @@ Temporary print-only DOM/style is lifecycle state and must be removed after prin
 
 ### Fullscreen
 
-Expansion 1 permits a small shared progressive-enhancement Fullscreen helper for Touch, Dead Pixel, and Backlight Bleed. Monitor Test, Screen Uniformity Test, and later V2 display-pattern routes reuse the same helper through shared display-inspection infrastructure.
+Expansion 1 permits a small shared progressive-enhancement Fullscreen helper for Touch, Dead Pixel, and Backlight Bleed. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test reuse the same helper through shared display-inspection infrastructure.
 
 It owns feature detection/request/exit/state observation/cleanup only. It is not a hardware acquisition service and every tool needs an in-page fallback.
 
@@ -255,7 +255,7 @@ frame timing series
 
 remain local by default.
 
-Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test and Screen Uniformity Test render deterministic local patterns and acquire no panel telemetry.
+Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry.
 
 Analytics may record only coarse product events such as:
 

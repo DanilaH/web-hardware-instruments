@@ -41,6 +41,17 @@ export const screenUniformityPatterns = [5, 10, 25, 50, 75, 100].map((percent) =
   value: encodedGrayReference(percent),
 })) satisfies readonly DisplayPattern[];
 
+export const oledBurnInPatterns = [
+  { id: 'red', kind: 'solid', value: '#ff0000' },
+  { id: 'green', kind: 'solid', value: '#00ff00' },
+  { id: 'blue', kind: 'solid', value: '#0000ff' },
+  { id: 'white', kind: 'solid', value: '#ffffff' },
+  { id: 'gray-50', kind: 'solid', value: encodedGrayReference(50) },
+  { id: 'gray-25', kind: 'solid', value: encodedGrayReference(25) },
+  { id: 'gray-75', kind: 'solid', value: encodedGrayReference(75) },
+  { id: 'black', kind: 'solid', value: '#000000' },
+] as const satisfies readonly DisplayPattern[];
+
 export const moveDisplayPatternIndex = (currentIndex: number, delta: -1 | 1, length: number): number => {
   if (length <= 0) return 0;
   return (currentIndex + delta + length) % length;
