@@ -7,6 +7,7 @@ export const implementedGroupDefinitions = [
   { id: 'keyboard', icon: 'keyboard', signalIcon: 'keyboard' },
   { id: 'display', icon: 'refresh', signalIcon: 'fps' },
   { id: 'touch', icon: 'touch', signalIcon: 'touch' },
+  { id: 'printer', icon: 'printer', signalIcon: 'printer' },
 ] as const satisfies readonly {
   readonly id: ToolChannel;
   readonly icon: ToolIconKind;
