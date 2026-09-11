@@ -6,6 +6,7 @@ import BacklightBleedTest from '../../tools/display/backlight-bleed/BacklightBle
 import DeadPixelTest from '../../tools/display/dead-pixel/DeadPixelTest.astro';
 import FpsTest from '../../tools/display/fps/FpsTest.astro';
 import FrameSkippingTest from '../../tools/display/frame-skipping/FrameSkippingTest.astro';
+import MonitorTest from '../../tools/display/monitor/MonitorTest.astro';
 import RefreshRateTest from '../../tools/display/refresh-rate/RefreshRateTest.astro';
 import ControllerDeadzoneTest from '../../tools/gamepad/deadzone/ControllerDeadzoneTest.astro';
 import ControllerStickDriftTest from '../../tools/gamepad/drift/ControllerStickDriftTest.astro';
@@ -49,6 +50,7 @@ const toolComponents = {
   'frame-skipping-test': FrameSkippingTest,
   'dead-pixel-test': DeadPixelTest,
   'backlight-bleed-test': BacklightBleedTest,
+  'monitor-test': MonitorTest,
   'touch-screen-test': TouchScreenTest,
   'printer-test-page': PrinterTest,
 } as const;
