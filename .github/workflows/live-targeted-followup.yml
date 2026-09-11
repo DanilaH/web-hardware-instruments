@@ -1,0 +1,92 @@
+name: Live Targeted Follow-up
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-targeted-followup.yml'
+
+jobs:
+  targeted:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Install probe dependencies
+        run: npm install --no-save --package-lock=false playwright@1.55.0 axe-core@4.10.3
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run targeted live probe
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          import { createRequire } from 'node:module';
+          const require = createRequire(import.meta.url);
+          const axeSource = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
+          const origin = 'https://hardwareinspect.com';
+
+          async function redirectChain(start) {
+            const chain=[];
+            let url=start;
+            for (let i=0;i<6;i++) {
+              const r=await fetch(url,{redirect:'manual'});
+              const loc=r.headers.get('location');
+              chain.push({url,status:r.status,location:loc});
+              if (!loc || r.status < 300 || r.status >= 400) break;
+              url=new URL(loc,url).href;
+            }
+            return chain;
+          }
+
+          for (const u of ['http://hardwareinspect.com/','https://www.hardwareinspect.com/','http://www.hardwareinspect.com/']) {
+            console.log('REDIRECT_CHAIN', JSON.stringify(await redirectChain(u)));
+          }
+          const root=await fetch(origin+'/',{redirect:'manual'});
+          console.log('ROOT_HEADERS', JSON.stringify(Object.fromEntries(root.headers.entries())));
+
+          const browser=await chromium.launch({headless:true,args:['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream']});
+          const context=await browser.newContext({permissions:['camera']});
+          const page=await context.newPage();
+          await page.goto(origin+'/webcam-test',{waitUntil:'load'});
+          await page.locator('[data-webcam-start]').click();
+          await page.waitForFunction(() => document.querySelector('[data-webcam-test]')?.getAttribute('data-state') === 'live', null, {timeout:10000});
+          let videoReady=false;
+          try {
+            await page.waitForFunction(() => {
+              const v=document.querySelector('[data-webcam-video]');
+              return v && v.readyState >= 2 && v.videoWidth > 0 && v.srcObject instanceof MediaStream && v.srcObject.getVideoTracks().some(t => t.readyState === 'live');
+            }, null, {timeout:10000});
+            videoReady=true;
+          } catch {}
+          const webcam=await page.evaluate(() => {
+            const v=document.querySelector('[data-webcam-video]');
+            const stream=v?.srcObject;
+            return {
+              state:document.querySelector('[data-webcam-test]')?.getAttribute('data-state'),
+              readyState:v?.readyState,
+              videoWidth:v?.videoWidth,
+              videoHeight:v?.videoHeight,
+              paused:v?.paused,
+              trackStates:stream instanceof MediaStream ? stream.getVideoTracks().map(t=>({readyState:t.readyState,muted:t.muted,label:t.label,settings:t.getSettings()})) : []
+            };
+          });
+          console.log('WEBCAM_NATIVE_FAKE', JSON.stringify({videoReady,...webcam}));
+
+          for (const path of ['/mouse-polling-rate-test','/touch-screen-test']) {
+            await page.goto(origin+path,{waitUntil:'load'});
+            await page.addScriptTag({content:axeSource});
+            const result=await page.evaluate(async () => {
+              const r=await window.axe.run(document,{runOnly:{type:'rule',values:['aria-prohibited-attr']}});
+              return r.violations.map(v=>({id:v.id,impact:v.impact,help:v.help,nodes:v.nodes.map(n=>({target:n.target,html:n.html,failureSummary:n.failureSummary}))}));
+            });
+            console.log('AXE_DETAIL', path, JSON.stringify(result));
+            const labelledGeneric=await page.evaluate(() => [...document.querySelectorAll('[aria-label]')].map(el=>({tag:el.tagName.toLowerCase(),role:el.getAttribute('role'),ariaLabel:el.getAttribute('aria-label'),class:el.getAttribute('class')})));
+            console.log('ARIA_LABELLED', path, JSON.stringify(labelledGeneric));
+          }
+
+          await browser.close();
+          NODE
