@@ -9,6 +9,7 @@ import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
+import { screenResolutionContentByLocale } from './screen-resolution';
 import { screenUniformityContentByLocale } from './screen-uniformity';
 import type { ResolvedSiteContent, SiteContent } from './types';
 
@@ -31,6 +32,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const monitor = monitorContentByLocale[locale];
   const screenUniformity = screenUniformityContentByLocale[locale];
   const oledBurnIn = oledBurnInContentByLocale[locale];
+  const screenResolution = screenResolutionContentByLocale[locale];
 
   return {
     ...base,
@@ -45,6 +47,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...monitor.home,
       ...screenUniformity.home,
       ...oledBurnIn.home,
+      ...screenResolution.home,
       inputs: [...base.home.inputs, printer.signal],
     },
     tools: {
@@ -53,6 +56,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       'monitor-test': monitor.tool,
       'screen-uniformity-test': screenUniformity.tool,
       'oled-burn-in-test': oledBurnIn.tool,
+      'screen-resolution-checker': screenResolution.tool,
     },
   };
 };
