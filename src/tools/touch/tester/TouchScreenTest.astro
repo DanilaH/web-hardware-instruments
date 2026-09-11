@@ -20,7 +20,7 @@ const cells = Array.from({ length: touchGridCellCount }, (_, index) => index);
       <div><span>{messages.maximum}</span><strong class="measurement-value" data-touch-maximum>0</strong></div>
       <div class="touch-tool__metric--primary"><span>{messages.coverage}</span><strong class="measurement-value" data-touch-coverage>0%</strong></div>
     </div>
-    <div class="touch-tool__surface" data-touch-surface aria-label={messages.surfaceAria}>
+    <div class="touch-tool__surface" data-touch-surface role="region" aria-label={messages.surfaceAria}>
       <div class="touch-tool__grid" aria-hidden="true">{cells.map((index) => <span data-touch-cell={index} data-coverage="open"></span>)}</div>
       <svg class="touch-tool__overlay" data-touch-overlay viewBox="0 0 1000 625" preserveAspectRatio="none" aria-hidden="true"></svg>
       <span class="touch-tool__surface-label" aria-hidden="true">{messages.sweep}</span>
