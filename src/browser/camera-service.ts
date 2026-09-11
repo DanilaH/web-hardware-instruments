@@ -107,6 +107,7 @@ export const createCameraService = (options: CameraServiceOptions = {}): CameraS
 
   const handleTrackEnded = (): void => {
     if (!activeStream || !activeTrack) return;
+    operationVersion += 1;
     const endedStream = activeStream;
     activeTrack.removeEventListener('ended', handleTrackEnded);
     activeStream = null;
