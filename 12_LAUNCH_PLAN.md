@@ -2,7 +2,7 @@
 
 ## Current release boundary
 
-The full 18-tool hardware catalog is implemented and code-side audited.
+After the Printer Expansion V2 wave, the 19-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, and the V2 Foundation have already passed their respective code-side review/validation gates; each V2 job still needs its own wave-specific release evidence.
 
 The production origin is already configured as:
 
@@ -15,9 +15,10 @@ Historical instructions referring to `hardware-testing.invalid`, deferred domain
 
 Do not infer that every external release step has been completed merely from the code configuration. Current production status must be verified from actual deployment/Search Console evidence.
 
-Localization of the existing catalog is now approved under `22_LOCALIZATION_SPEC.md` for:
+Implemented locales are:
 
 ```text
+en
 pt-BR
 de
 fr
@@ -25,7 +26,7 @@ es
 ru
 ```
 
-Localization is an additive release stream over the same 18 diagnostic jobs. It must not duplicate or fork diagnostic logic.
+Every registered V2 ToolId must ship across this same set atomically. Localization must not duplicate or fork diagnostic logic.
 
 ## Production verification
 
@@ -43,7 +44,7 @@ Localization is an additive release stream over the same 18 diagnostic jobs. It 
 - metadata is complete and unique for each search landing;
 - privacy page is accurate;
 - analytics is tested if custom analytics is enabled;
-- no raw device/input data is sent to analytics;
+- no raw device/input/document/media data is sent to analytics;
 - unsupported-browser states are tested;
 - mobile smoke is complete;
 - current Chrome, Edge, and Firefox desktop smoke is complete where the tool is desktop-relevant;
@@ -82,64 +83,41 @@ Display cluster:
 - Dead Pixel and Backlight Bleed fullscreen/fallback flow checked on real display hardware;
 - Frame Skipping checked with a real camera and multiple valid photographs; screenshots are not evidence.
 
-Every untested browser/hardware case must be documented rather than inferred from mocks.
+Printer Test Page:
+
+- Chrome print preview flow;
+- Firefox print preview flow;
+- A4 portrait fit;
+- Letter portrait fit;
+- Full / Color / Grayscale profile output;
+- explicit 100% / Actual Size guidance;
+- no site chrome in print output;
+- essential text/line/alignment/grayscale/color references are foreground/vector content rather than depending only on background-graphics printing;
+- cancelling print returns to a usable page;
+- no printer telemetry/health/nozzle/CMYK-certification claim.
+
+Physical printer output is useful optional evidence but must not be fabricated. Browser/headless print-media checks prove layout/flow, not ink/toner/device behavior.
+
+Every untested browser/hardware/physical-output case must be documented rather than inferred from mocks.
 
 ## Localization rollout
 
-### Phase L0 — i18n infrastructure
+The initial localization rollout is complete for `pt-BR`, `de`, `fr`, `es`, and `ru`. The phased L0–L4 sequence is historical implementation context; future V2 jobs do **not** repeat that phased release. Each new V2 ToolId ships all six locale versions together.
 
-Before shipping any translated URL:
+For every V2 localization wave verify:
 
-- introduce the locale registry/routing helpers from `22_LOCALIZATION_SPEC.md`;
-- preserve all existing English URLs and behavior;
-- make `<html lang>` locale-aware;
-- make canonical generation locale-aware;
-- implement reciprocal hreflang generation;
-- make tool catalog / related-tool links locale-aware;
-- extract all user-visible runtime controller strings from hardcoded English into typed locale messages;
-- keep diagnostic algorithms/services/renderers single-source;
-- add locale-aware sitemap output through the existing Astro static build.
-
-### Phase L1 — pt-BR validation locale
-
-Ship `pt-BR` first because it has the strongest sampled quantitative evidence.
-
-Before indexing the locale verify representative pages from every device cluster:
-
-```text
-/pt-br/gamepad-tester
-/pt-br/mouse-tester
-/pt-br/keyboard-tester
-/pt-br/refresh-rate-test
-/pt-br/touch-screen-test
-```
-
-Checks:
-
-- 200 response;
-- `lang="pt-BR"`;
+- root EN route + all five locale-prefixed alternates exist;
+- correct `<html lang>`;
 - self canonical;
-- reciprocal `en` + `pt-BR` hreflang;
+- reciprocal `en` / `pt-BR` / `de` / `fr` / `es` / `ru` hreflang;
 - localized H1/title/meta;
-- localized primary tool status/actions/errors;
-- localized navigation and related-tool links;
+- localized primary controls/status/errors/instructions;
+- localized navigation and related-tool links where applicable;
 - no unexpected English leakage in the primary task flow;
-- measurement wording remains no stronger than the English source;
-- sitemap contains each shipped localized URL.
+- measurement/capability wording remains no stronger than the English source;
+- sitemap contains every shipped alternate.
 
-### Phase L2 — de + fr
-
-After the architecture is clean, add German and French using the same message/content contracts. Do not fork components or controllers.
-
-### Phase L3 — es
-
-Add one general Spanish `/es/` locale. Do not create `es-ES`/`es-MX` regional duplicates without first-party evidence.
-
-### Phase L4 — ru
-
-Add Russian `/ru/`. Exact Russia/Yandex keyword volume is not claimed; measure this locale primarily from real indexing/GSC and, where available, Yandex evidence.
-
-### Phase-2 watchlist
+### Phase-2 language watchlist
 
 Do not automatically add:
 
@@ -158,37 +136,38 @@ code-complete
 = implementation + source-of-truth compliance + review + visual/headless review + automated validation
 
 release-ready
-= code-complete + applicable real-device/browser/camera checks
+= code-complete + applicable real-device/browser/camera/print-preview/display checks
 ```
 
-For a translated locale, add:
+For a translated route, add:
 
 ```text
 locale-ready
 = code-complete + localized content/runtime coverage + routing/canonical/hreflang/sitemap QA
 ```
 
-This distinction is permanent. Translation passing tests does not prove real hardware behavior.
+This distinction is permanent. Translation passing tests does not prove real hardware or physical printer behavior.
 
-## Search Console
+## Search Console / webmaster tools
 
 For the production site:
 
-1. verify access to the `hardwareinspect.com` property;
-2. submit/verify the generated sitemap;
-3. inspect the homepage and representative English tool URLs;
-4. review canonical/site-name/favicon signals;
+1. keep the existing `hardwareinspect.com` property/site registrations;
+2. keep the generated sitemap submitted;
+3. after a new wave reaches production, inspect the new root route and representative localized alternates when useful;
+4. review canonical/language signals;
 5. monitor indexing, queries, CTR and page performance.
 
-After each localization wave:
+Do not create separate site properties merely because a route has localized alternates unless a webmaster platform explicitly requires it.
 
-1. verify localized URLs appear in the sitemap;
-2. inspect representative localized URLs;
-3. verify Google-selected canonical and detected language;
-4. monitor impressions/clicks by page and country;
-5. review actual localized query vocabulary;
-6. look for accidental English/localized cannibalization or incorrect alternate selection;
-7. tune titles/copy only when query/CTR evidence supports it.
+After each V2 wave:
+
+1. verify new URLs appear in the sitemap;
+2. verify Google/Bing/Yandex recrawl/indexing state through the existing site properties where available;
+3. monitor impressions/clicks by page and country;
+4. review actual localized query vocabulary;
+5. look for accidental English/localized cannibalization or incorrect alternate selection;
+6. tune titles/copy only when query/CTR evidence supports it.
 
 ## Initial monitoring
 
@@ -197,7 +176,8 @@ After production or locale deployment:
 - 404s;
 - JS errors;
 - API unsupported errors;
-- device connection failures;
+- device/permission failures where relevant;
+- print-flow failures for Printer Test Page;
 - layout regressions from longer translated strings;
 - accidental indexing/noindex issues;
 - unexpected canonical selection;
@@ -223,7 +203,7 @@ Do not overreact to early low traffic before the site has had a reasonable crawl
 Avoid:
 
 - changing English URLs casually;
-- translating slugs in the first localization implementation;
+- translating slugs in the current localization model;
 - creating synonym pages;
 - auto-redirecting by IP/geography;
 - rewriting every title weekly;
@@ -234,15 +214,15 @@ Avoid:
 
 ## Future expansion trigger
 
-The existing Expansion 1 catalog is complete. It no longer needs implementation-time revalidation.
+Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page is the first implemented V2 job after Foundation, and the remaining V2 jobs follow their reviewed atomic waves.
 
-Any **new diagnostic job** requires at least one strong condition:
+Any diagnostic job **outside** that approved V2 set requires at least one strong condition:
 
 - external research validates independent search opportunity;
 - Search Console reveals recurring adjacent demand;
 - the tool materially strengthens an already-successful cluster.
 
-Adding an approved language version of an existing tool is governed by `22_LOCALIZATION_SPEC.md` and is not a new diagnostic job.
+Adding an approved language version of an existing tool is governed by the localization architecture and is not a new diagnostic job.
 
 Technical ease alone is not enough for either new tools or unapproved phase-2 languages.
 
@@ -257,5 +237,3 @@ When monetization is introduced later:
 - no ad may cover or shift the live visualization/result;
 - first preferred placement is below the completed primary tool/result;
 - ad layout must preserve the one-screen diagnostic UX where that gate applies.
-
-Do not render empty ad placeholders before monetization is enabled.
