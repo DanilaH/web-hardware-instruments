@@ -39,6 +39,7 @@ export const mountDisplayInspectionStage = ({
   const overlay = requireElement<HTMLElement>(stage, '[data-inspection-overlay]');
   let active = false;
   let destroyed = false;
+  let fullscreenRequestPending = false;
   let overlayTimer: number | null = null;
 
   const clearOverlayTimer = (): void => {
@@ -96,13 +97,15 @@ export const mountDisplayInspectionStage = ({
       return;
     }
 
+    fullscreenRequestPending = true;
     const enteredFullscreen = await fullscreen.request(stage);
+    fullscreenRequestPending = false;
 
-    // The user may have exited the test while the browser permission/UI for
-    // requestFullscreen() was still pending. Never let that late resolution
-    // strand an inactive, hidden stage in fullscreen.
+    // Exit requests can race browser fullscreen permission/UI. A late success
+    // must never strand an inactive or destroyed stage in fullscreen.
     if (destroyed || !active) {
-      if (!destroyed && fullscreen.getActiveElement() === stage) await fullscreen.exit();
+      if (fullscreen.getActiveElement() === stage) await fullscreen.exit();
+      if (destroyed) fullscreen.destroy();
       return;
     }
 
@@ -166,6 +169,7 @@ export const mountDisplayInspectionStage = ({
     destroy: () => {
       if (destroyed) return;
       destroyed = true;
+      active = false;
       clearOverlayTimer();
       startButton.removeEventListener('click', handleStart);
       exitButton.removeEventListener('click', handleExit);
@@ -175,6 +179,12 @@ export const mountDisplayInspectionStage = ({
       overlay.removeEventListener('focusin', handleActivity);
       overlay.removeEventListener('focusout', handleOverlayFocusOut);
       unsubscribeFullscreen();
+
+      if (fullscreenRequestPending) return;
+      if (fullscreen.getActiveElement() === stage) {
+        void fullscreen.exit().finally(() => fullscreen.destroy());
+        return;
+      }
       fullscreen.destroy();
     },
     isActive: () => active && !destroyed,
