@@ -128,7 +128,7 @@ Playwright is appropriate only when a critical browser-flow/lifecycle test mater
 
 ## 5. Current project state
 
-After the Printer Expansion V2 wave, the implemented catalog contains 19 production jobs.
+After the Monitor Expansion V2 wave, the implemented catalog contains 20 production jobs.
 
 ### Controller
 
@@ -165,6 +165,7 @@ After the Printer Expansion V2 wave, the implemented catalog contains 19 product
 /frame-skipping-test
 /dead-pixel-test
 /backlight-bleed-test
+/monitor-test
 ```
 
 ### Touch
@@ -181,10 +182,9 @@ After the Printer Expansion V2 wave, the implemented catalog contains 19 product
 
 Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. Localization is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using shared diagnostic logic and locale-aware routing/content architecture. Each registered V2 ToolId must be complete across the same six locales atomically.
 
-Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page is the first implemented V2 production job after Foundation. The remaining approved but not-yet-implemented jobs are:
+Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page and Monitor Test are the first two implemented V2 production jobs after Foundation. The remaining approved but not-yet-implemented jobs are:
 
 ```text
-/monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
 /screen-resolution-checker
