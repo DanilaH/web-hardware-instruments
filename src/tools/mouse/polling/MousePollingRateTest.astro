@@ -14,7 +14,7 @@ const messages = getRuntimeMessages(locale).polling;
     <div class="status"><span aria-hidden="true"></span><strong data-polling-status role="status" aria-live="polite">{messages.ready}</strong></div>
     <p class="instruction">{messages.instruction}</p>
     <div class="surface">
-      <div class="move-field" data-polling-surface aria-label={messages.surfaceAria}><span aria-hidden="true">{messages.moveContinuously}</span><i aria-hidden="true"></i></div>
+      <div class="move-field" data-polling-surface role="region" aria-label={messages.surfaceAria}><span aria-hidden="true">{messages.moveContinuously}</span><i aria-hidden="true"></i></div>
       <div class="result">
         <span>{messages.observedRate}</span>
         <strong data-polling-rate>—</strong>
