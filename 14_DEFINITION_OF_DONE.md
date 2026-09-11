@@ -26,13 +26,15 @@ Monitor Test follows its display-pattern acceptance rules in `23_HARDWARE_EXPANS
 
 Screen Uniformity Test follows its focused gray-field acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact encoded presets, manual navigation, progressive fullscreen/fallback, hideable controls, natural DSE wording, and no uniformity score or defect verdict.
 
+OLED Burn-In Test follows its persistent-image inspection acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact eight-pattern sequence, manual navigation, progressive fullscreen/fallback, clear burn-in-versus-retention wording, and no flashing, repair claim, score, percentage or automatic verdict.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-After the Screen Uniformity Expansion V2 wave, the implemented catalog contains 21 tools:
+After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 tools:
 
 ### Controller
 
@@ -71,6 +73,7 @@ After the Screen Uniformity Expansion V2 wave, the implemented catalog contains 
 /backlight-bleed-test
 /monitor-test
 /screen-uniformity-test
+/oled-burn-in-test
 ```
 
 ### Touch
@@ -134,7 +137,7 @@ Examples include:
 - real display/fullscreen inspection flow;
 - real camera evidence workflow for Frame Skipping.
 
-Monitor Test and Screen Uniformity Test are visual-inspection routes. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, luminance, tint, banding, clouding, mura, DSE, black-level, white-level, geometry, or sharpness defects.
+Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are visual-inspection routes. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, luminance, tint, banding, clouding, mura, DSE, burn-in, retention, black-level, white-level, geometry, or sharpness defects.
 
 Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
@@ -249,6 +252,20 @@ deterministic encoded gray/white fields
 
 No measured luminance-uniformity percentage, panel-variance score, color delta, pass/fail, universal maximum-brightness instruction, or guarantee that visible variation is a defect.
 
+### OLED Burn-In Test
+
+Exact solid/gray sequence and navigation semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+deterministic solid/gray fields
+→ manual visual comparison
+→ user checks whether the same persistent shape appears across multiple fields and real content
+```
+
+No flashing pixel-fixer sequence, repair mode, long high-brightness loop, burn-in percentage, timer encouraging hours of static display, pass/fail, or claim that the browser can distinguish permanent burn-in from temporary retention, tint, mura or another uniformity issue.
+
 ### Printer Test Page
 
 Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
@@ -276,7 +293,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - `TouchInputService` owns finger-touch acquisition;
 - Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
-- the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor, Screen Uniformity, and future approved OLED routes without absorbing SEO/copy;
+- the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor, Screen Uniformity, and OLED Burn-In without absorbing SEO/copy;
 - tool controllers own interpretation/presentation state rather than acquisition services;
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
@@ -330,7 +347,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - raw gamepad/device identifiers are not displayed, stored, or sent;
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
 - Printer Test Page generates a local reference and uploads no document;
-- Monitor Test and Screen Uniformity Test render deterministic local patterns and acquire no panel telemetry;
+- Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry;
 - locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
@@ -373,5 +390,6 @@ For localization, sample every device/output family in every locale rather than 
 - Frame Skipping never claims browser-only automatic detection;
 - Monitor remains deterministic manual visual inspection without measured luminance/contrast/response-time/color-certification claims;
 - Screen Uniformity remains deterministic encoded gray-field visual inspection without measured uniformity/color-delta/pass-fail claims;
+- OLED Burn-In remains deterministic manual visual inspection without flashing/repair behavior, burn-in percentage, pass/fail, or claims distinguishing permanent burn-in from temporary retention or other panel artifacts;
 - Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.
