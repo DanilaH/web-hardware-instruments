@@ -27,13 +27,13 @@ Supporting references when relevant:
 - `02_INFORMATION_ARCHITECTURE.md` — current catalog/navigation model;
 - `12_LAUNCH_PLAN.md` — production/release execution checklist;
 - `11_IMPLEMENTATION_PLAN.md` — completed implementation history plus maintenance workflow;
-- `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md` — non-normative execution roadmap for the approved V2 scope once present.
+- `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md` — non-normative execution history/roadmap for the approved V2 scope.
 
 If `18`, `19`, and `23` appear to conflict on shared architecture, privacy, lifecycle, measurement honesty, browser behavior, or scope, stop and report the conflict. Do not guess or invent a compromise.
 
 `23_HARDWARE_EXPANSION_V2_SPEC.md` owns exact V2 route-specific decisions and may explicitly add V2 capability boundaries. It does not weaken shared global rules from `18`/`19` or existing Expansion 1 behavior from `20`.
 
-For localization work, `22_LOCALIZATION_SPEC.md` owns locale routing, translation/i18n architecture, localized SEO metadata, hreflang/canonical behavior, and terminology. It does **not** decide whether a new diagnostic route is approved. Expansion V2 routes are authorized by `23`; once a V2 ToolId is registered, the same locale-routing/canonical/hreflang architecture applies and all six current locales must be complete atomically.
+For localization work, `22_LOCALIZATION_SPEC.md` owns locale routing, translation/i18n architecture, localized SEO metadata, hreflang/canonical behavior, and terminology. It does **not** decide whether a new diagnostic route is approved. Expansion V2 routes are authorized by `23`; each registered V2 ToolId uses the same locale-routing/canonical/hreflang architecture and all six current locales must remain complete atomically.
 
 The old E1.0 → E1.7 order is completed development history. It is **not** a current instruction to keep implementing Expansion 1 stages.
 
@@ -50,7 +50,7 @@ The old E1.0 → E1.7 order is completed development history. It is **not** a cu
 - Primary interaction must satisfy the applicable one-screen/device-class UX acceptance rules.
 - Raw hardware/input/media streams remain local and must not be sent to analytics.
 
-Approved acquisition boundaries across implemented/approved scope:
+Approved acquisition boundaries across implemented scope:
 
 ```text
 GamepadService
@@ -59,7 +59,7 @@ KeyboardInputService
 MouseMovementService
 MouseInputService
 TouchInputService
-CameraService          Expansion V2 only, when Webcam ships
+CameraService
 ```
 
 The shared Fullscreen utility is a progressive-enhancement helper, not a hardware acquisition service. The V2 Display Pattern Engine and screen-info helper are deterministic/shared tool primitives, not generic hardware-service layers. Printer Test Page does not get a printer hardware service.
@@ -128,7 +128,7 @@ Playwright is appropriate only when a critical browser-flow/lifecycle test mater
 
 ## 5. Current project state
 
-After the Screen Resolution Checker Expansion V2 wave, the implemented catalog contains 23 production jobs.
+After the Webcam Expansion V2 wave, the implemented catalog contains 24 production jobs.
 
 ### Controller
 
@@ -177,27 +177,27 @@ After the Screen Resolution Checker Expansion V2 wave, the implemented catalog c
 /touch-screen-test
 ```
 
+### Camera
+
+```text
+/webcam-test
+```
+
 ### Printer
 
 ```text
 /printer-test-page
 ```
 
-Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. Localization is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using shared diagnostic logic and locale-aware routing/content architecture. Each registered V2 ToolId must be complete across the same six locales atomically.
+Full v1, Hardware Expansion 1, localization, and Hardware Expansion V2 are implementation-complete code-side. Localization is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using shared diagnostic logic and locale-aware routing/content architecture. Every registered ToolId must remain complete across the same six locales where localization applies.
 
-Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are the first five implemented V2 production jobs after Foundation. The only remaining approved but not-yet-implemented job is:
+Hardware Expansion V2 is complete under `23_HARDWARE_EXPANSION_V2_SPEC.md` with Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, Screen Resolution Checker, and Webcam Test all registered as real production jobs. There are no remaining approved V2 placeholder routes or follow-on implementation waves.
 
-```text
-/webcam-test
-```
-
-Do **not** count Webcam as implemented merely because it is documented. Do not expose an empty Camera homepage category. Register the remaining V2 ToolId atomically with its real component, all six locale content entries, route generation, SEO metadata, relation decision and applicable tests.
-
-The old E1.0 → E1.7 sequence is retained in historical/supporting documents only to explain how the catalog was built and reviewed. There is no approved E1.8.
+The old E1.0 → E1.7 sequence and V2 A→G sequence are retained in historical/supporting documents only to explain how the catalog was built and reviewed. There is no approved E1.8 or automatic V3 expansion.
 
 Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement/capability contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, localization, and UX polish are legitimate cross-catalog maintenance work.
 
-New product scope outside the implemented catalog and the remaining approved V2 route still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
+New product scope outside the implemented catalog requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
 
 ## 6. Durable measurement boundaries
 
@@ -236,7 +236,7 @@ light instrument chassis
 + state/signal-driven motion only
 ```
 
-The existing five chromatic channel colors map to Controller, Mouse, Keyboard, Display, and Touch. Expansion V2 adds Camera and Printer as taxonomy channels, but does not automatically add two new bright channel colors. Printer uses the neutral instrument treatment; Camera should do the same unless an explicit reviewed visual-system update approves a restrained extension.
+The existing five chromatic channel colors map to Controller, Mouse, Keyboard, Display, and Touch. Expansion V2 adds Camera and Printer as taxonomy channels, but does not automatically add two new bright channel colors. Printer uses the neutral instrument treatment; Camera does the same unless an explicit reviewed visual-system update approves a restrained extension.
 
 Channel colors reinforce family identity and active signal; they do not replace success/warning/error semantics and must not turn the catalog into a rainbow UI.
 
@@ -254,7 +254,7 @@ Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fu
 
 Browser capability services own acquisition lifecycle. Tool controllers own interpretation and presentation state.
 
-Screen Resolution Checker owns only resize/orientation subscriptions and passive browser-property reads; stop/destroy must remove those listeners. Camera switching/stop/destroy must stop replaced/active media tracks. Printer uses browser print UI and has no persistent hardware acquisition lifecycle; its temporary print root/page style must be removed after print/cancel and on controller destruction.
+Screen Resolution Checker owns only resize/orientation subscriptions and passive browser-property reads; stop/destroy must remove those listeners. Camera switching/stop/destroy must stop replaced/active media tracks, and pending permission/acquisition work must not resurrect a stream after stop/destroy/navigation. Printer uses browser print UI and has no persistent hardware acquisition lifecycle; its temporary print root/page style must be removed after print/cancel and on controller destruction.
 
 Do not move held sets, counters, heuristic interpretation, or visual state into acquisition services merely for reuse.
 
