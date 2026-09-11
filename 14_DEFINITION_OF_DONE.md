@@ -24,13 +24,15 @@ Printer Test Page follows its print-specific acceptance rules in `23_HARDWARE_EX
 
 Monitor Test follows its display-pattern acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact manual pattern order, progressive fullscreen with a large in-page fallback, touch/click/keyboard navigation, hideable overlay, and no automatic display-health verdict.
 
+Screen Uniformity Test follows its focused gray-field acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact encoded presets, manual navigation, progressive fullscreen/fallback, hideable controls, natural DSE wording, and no uniformity score or defect verdict.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-After the Monitor Expansion V2 wave, the implemented catalog contains 20 tools:
+After the Screen Uniformity Expansion V2 wave, the implemented catalog contains 21 tools:
 
 ### Controller
 
@@ -68,6 +70,7 @@ After the Monitor Expansion V2 wave, the implemented catalog contains 20 tools:
 /dead-pixel-test
 /backlight-bleed-test
 /monitor-test
+/screen-uniformity-test
 ```
 
 ### Touch
@@ -131,7 +134,7 @@ Examples include:
 - real display/fullscreen inspection flow;
 - real camera evidence workflow for Frame Skipping.
 
-Monitor Test is a visual-inspection route. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, color, black-level, white-level, banding, geometry, or sharpness defects.
+Monitor Test and Screen Uniformity Test are visual-inspection routes. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, luminance, tint, banding, clouding, mura, DSE, black-level, white-level, geometry, or sharpness defects.
 
 Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
@@ -232,6 +235,20 @@ static rendered pattern
 
 No auto-advance, pass/fail, measured luminance, measured contrast ratio, response-time number, color certification, or automatic panel-health diagnosis.
 
+### Screen Uniformity Test
+
+Exact gray-preset/navigation semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+deterministic encoded gray/white fields
+→ manual visual comparison
+→ user checks whether visible variation persists across levels and real content
+```
+
+No measured luminance-uniformity percentage, panel-variance score, color delta, pass/fail, universal maximum-brightness instruction, or guarantee that visible variation is a defect.
+
 ### Printer Test Page
 
 Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
@@ -259,7 +276,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - `TouchInputService` owns finger-touch acquisition;
 - Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
-- the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor and future approved Uniformity/OLED routes without absorbing SEO/copy;
+- the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor, Screen Uniformity, and future approved OLED routes without absorbing SEO/copy;
 - tool controllers own interpretation/presentation state rather than acquisition services;
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
@@ -313,7 +330,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - raw gamepad/device identifiers are not displayed, stored, or sent;
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
 - Printer Test Page generates a local reference and uploads no document;
-- Monitor Test renders deterministic local patterns and acquires no panel telemetry;
+- Monitor Test and Screen Uniformity Test render deterministic local patterns and acquire no panel telemetry;
 - locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
@@ -355,5 +372,6 @@ For localization, sample every device/output family in every locale rather than 
 - Dead Pixel/Backlight remain visual inspection rather than automatic diagnosis;
 - Frame Skipping never claims browser-only automatic detection;
 - Monitor remains deterministic manual visual inspection without measured luminance/contrast/response-time/color-certification claims;
+- Screen Uniformity remains deterministic encoded gray-field visual inspection without measured uniformity/color-delta/pass-fail claims;
 - Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.
