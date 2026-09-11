@@ -20,13 +20,15 @@ A primary tool page is not done unless all applicable requirements pass:
 
 Touch Screen Test follows its explicit mobile/tablet-oriented acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
 
+Printer Test Page follows its print-specific acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: compact screen controls/preview, controlled printable output, and no printer-health verdict.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-The implemented code-side-audited catalog contains 18 tools:
+After the Printer Expansion V2 wave, the implemented catalog contains 19 tools:
 
 ### Controller
 
@@ -71,11 +73,17 @@ The implemented code-side-audited catalog contains 18 tools:
 /touch-screen-test
 ```
 
+### Printer
+
+```text
+/printer-test-page
+```
+
 Supporting public routes include `/`, `/about`, `/privacy`, and `/404` behavior.
 
 Every listed tool is a real implementation, not a placeholder.
 
-`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. `22_LOCALIZATION_SPEC.md` owns approved locale routing/content/i18n/SEO behavior. The old sequential implementation order is historical process context, not an ongoing completion requirement.
+`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns implemented/approved V2 route behavior and capability boundaries. `22_LOCALIZATION_SPEC.md` owns approved locale routing/content/i18n/SEO architecture. The old sequential implementation order is historical process context, not an ongoing completion requirement.
 
 ## 3. Code-complete gate
 
@@ -103,7 +111,9 @@ For localization work, code-complete additionally requires:
 - localized navigation/related links stay in the same locale;
 - no measurement claim becomes stronger through translation.
 
-Mock/headless browser input may validate state, rendering, geometry and locale output. It is never proof of real hardware behavior.
+For an Expansion V2 ToolId, code-complete additionally requires complete content/runtime UI for all six currently implemented locales before route generation is treated as releasable. No English placeholder fallback.
+
+Mock/headless browser input may validate state, rendering, geometry and locale output. It is never proof of real hardware or physical print behavior.
 
 ## 4. Release-ready gate
 
@@ -117,6 +127,8 @@ Examples include:
 - real keyboard simultaneous-key/guided-combination smoke;
 - real display/fullscreen inspection flow;
 - real camera evidence workflow for Frame Skipping.
+
+Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
 A route may be code-complete while external hardware is unavailable. Do not claim validation that did not occur.
 
@@ -139,7 +151,7 @@ For production changes, verify rather than assume:
 - released routes return 200;
 - canonical URLs use the production origin;
 - robots and sitemap output are correct;
-- required real-device/browser/camera QA is complete for affected behavior where relevant;
+- required real-device/browser/camera/print-path QA is complete for affected behavior where relevant;
 - Google Search Console access/property state is known;
 - sitemap submission/status is known;
 - final production smoke is performed after deployment.
@@ -156,7 +168,7 @@ For localized release, additionally verify:
 - no forced IP/geography redirect is introduced;
 - primary UI/runtime content does not leak English unexpectedly.
 
-Do not treat mock/headless checks as proof of real hardware coverage.
+Do not treat mock/headless checks as proof of real hardware or real printed output.
 
 ## 6. Tool-specific durable boundaries
 
@@ -201,6 +213,20 @@ Primary view contains the compact keyboard, pressed state, and concise last-key/
 
 Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame Skipping semantics remain owned by `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`. Do not duplicate their detailed algorithms here.
 
+### Printer Test Page
+
+Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+local HTML/SVG reference
+→ browser print flow
+→ user visually inspects the physical output
+```
+
+No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK isolation, certified color accuracy, or automatic root-cause verdict.
+
 ## 7. Technical
 
 - Astro static output;
@@ -212,11 +238,12 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - `MouseMovementService` owns Mouse DPI movement/Pointer Lock acquisition;
 - `MouseInputService` owns ordinary Mouse/Mouse Polling acquisition;
 - `TouchInputService` owns finger-touch acquisition;
+- Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
 - tool controllers own interpretation/presentation state rather than acquisition services;
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
-- cleanup covers rAF, listeners, timers, locks/capture, fullscreen observers, and bfcache-relevant lifecycle;
+- cleanup covers rAF, listeners, timers, locks/capture, fullscreen observers, temporary print DOM/styles, and bfcache-relevant lifecycle;
 - no unnecessary framework/backend/database/runtime dependency;
 - locale strings are injected/selected explicitly rather than read from a mutable global locale singleton.
 
@@ -233,7 +260,7 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - homepage and related-tool navigation remain scannable as the catalog grows;
 - localized alternates use self canonicals + reciprocal hreflang;
 - English root routes remain stable;
-- translated slugs are not introduced in localization v1.
+- translated slugs are not introduced in the current localization model.
 
 ## 9. Performance
 
@@ -265,11 +292,12 @@ Exact Mouse, Touch, Rollover, Ghosting, Dead Pixel, Backlight Bleed, and Frame S
 - privacy copy matches reality;
 - raw gamepad/device identifiers are not displayed, stored, or sent;
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
+- Printer Test Page generates a local reference and uploads no document;
 - locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
 
-For a coherent maintenance block:
+For a coherent maintenance/expansion block:
 
 ```text
 implementation
@@ -286,12 +314,13 @@ implementation
 
 If a validation fix changes semantics or UX, re-review the impacted part. Compile/test-only corrections do not require restarting unrelated review work.
 
-For localization, sample every device family in every locale rather than validating only one translated page.
+For localization, sample every device/output family in every locale rather than validating only one translated page.
 
 ## 13. Exact-boundary compliance
 
 - global/full-v1 dependency and measurement behavior matches `18_DECISIONS_AND_BOUNDARIES.md`;
 - Expansion 1 exact behavior matches `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`;
+- Expansion V2 exact behavior matches `23_HARDWARE_EXPANSION_V2_SPEC.md`;
 - localization behavior matches `22_LOCALIZATION_SPEC.md`;
 - scope/release decisions match `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md`;
 - no arbitrary result thresholds are invented outside source-of-truth;
@@ -304,4 +333,5 @@ For localization, sample every device family in every locale rather than validat
 - Rollover/Ghosting never overclaim hardware certification;
 - Dead Pixel/Backlight remain visual inspection rather than automatic diagnosis;
 - Frame Skipping never claims browser-only automatic detection;
+- Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.
