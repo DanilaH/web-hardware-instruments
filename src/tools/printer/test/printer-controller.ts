@@ -1,5 +1,6 @@
 import {
   getPrinterPaperDefinition,
+  getPrinterProfileDefinition,
   isPrinterPaperSize,
   isPrinterProfile,
   type PrinterPaperSize,
@@ -59,9 +60,20 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
   const sheet = root.querySelector<HTMLElement>('[data-printer-sheet]');
   const paperValue = root.querySelector<HTMLElement>('[data-printer-paper-value]');
   const profileValue = root.querySelector<HTMLElement>('[data-printer-profile-value]');
+  const grayscaleSection = root.querySelector<HTMLElement>('[data-printer-grayscale]');
+  const colorSection = root.querySelector<HTMLElement>('[data-printer-color]');
 
-  if (!paperSelect || !profileSelect || !printButton || !sheet || !paperValue || !profileValue) {
-    throw new Error('Printer Test Page is missing required controls.');
+  if (
+    !paperSelect
+    || !profileSelect
+    || !printButton
+    || !sheet
+    || !paperValue
+    || !profileValue
+    || !grayscaleSection
+    || !colorSection
+  ) {
+    throw new Error('Printer Test Page is missing required controls or reference sections.');
   }
 
   let activePrintRoot: HTMLElement | null = null;
@@ -78,6 +90,7 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
   const applyState = (): void => {
     const paper = readPaper();
     const profile = readProfile();
+    const profileDefinition = getPrinterProfileDefinition(profile);
 
     root.dataset.paper = paper;
     root.dataset.profile = profile;
@@ -85,6 +98,8 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
     sheet.dataset.profile = profile;
     paperValue.textContent = selectedLabel(paperSelect);
     profileValue.textContent = selectedLabel(profileSelect);
+    grayscaleSection.hidden = !profileDefinition.showGrayscale;
+    colorSection.hidden = !profileDefinition.showColor;
   };
 
   const cleanupPrintMode = (): void => {
