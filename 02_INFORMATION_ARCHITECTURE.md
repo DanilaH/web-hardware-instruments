@@ -71,6 +71,7 @@ Jobs:
 /frame-skipping-test
 /dead-pixel-test
 /backlight-bleed-test
+/monitor-test
 ```
 
 Jobs:
@@ -79,7 +80,10 @@ Jobs:
 - browser-visible display cadence estimate;
 - camera-assisted frame-skipping evidence;
 - fullscreen solid-color pixel inspection;
-- fullscreen black-screen backlight inspection.
+- fullscreen black-screen backlight inspection;
+- guided manual monitor inspection with solid fields, gradients, near-black/near-white references, and a sharpness grid.
+
+Monitor Test is the broad Display-entry diagnostic. It uses the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; it does not provide automatic pass/fail, measured contrast, measured response time, or color certification.
 
 ### Touch
 
@@ -172,12 +176,19 @@ FPS
 ↔ Refresh Rate
 ↔ Frame Skipping
 
-Dead Pixel
-↔ Backlight Bleed
+Monitor Test
+↔ Dead Pixel
 ↔ Refresh Rate
+↔ Screen Uniformity when that route is actually implemented
+
+Dead Pixel
+↔ Monitor Test
+↔ Backlight Bleed
+↔ Screen Uniformity when implemented, while respecting the maximum-three rule
 
 Backlight Bleed
 ↔ Dead Pixel
+↔ Monitor Test
 
 Frame Skipping
 ↔ Refresh Rate
@@ -187,7 +198,7 @@ Printer Test Page
 → no RelatedTools while Printer remains a singleton channel
 ```
 
-This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count.
+This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count, and do not link to approved-but-unimplemented V2 routes.
 
 ## Supporting routes
 
