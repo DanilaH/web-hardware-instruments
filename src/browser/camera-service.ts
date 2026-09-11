@@ -102,6 +102,7 @@ export const createCameraService = (options: CameraServiceOptions = {}): CameraS
 
   let activeStream: MediaStream | null = null;
   let activeTrack: MediaStreamTrack | null = null;
+  let operationVersion = 0;
   let destroyed = false;
 
   const handleTrackEnded = (): void => {
@@ -129,6 +130,7 @@ export const createCameraService = (options: CameraServiceOptions = {}): CameraS
   const acquire = async (deviceId?: string): Promise<MediaStream> => {
     if (destroyed || !environment) throw new CameraServiceError('api-unavailable');
 
+    const requestVersion = ++operationVersion;
     const video: boolean | MediaTrackConstraints = deviceId
       ? { deviceId: { exact: deviceId } }
       : true;
@@ -138,6 +140,11 @@ export const createCameraService = (options: CameraServiceOptions = {}): CameraS
       stream = await environment.getUserMedia({ video, audio: false });
     } catch (error) {
       throw normalizeCameraError(error);
+    }
+
+    if (destroyed || requestVersion !== operationVersion) {
+      stopStreamTracks(stream);
+      throw new CameraServiceError('request-failed');
     }
 
     const track = stream.getVideoTracks()[0];
@@ -167,6 +174,7 @@ export const createCameraService = (options: CameraServiceOptions = {}): CameraS
     switchDevice: (deviceId) => acquire(deviceId),
     getSettings: () => activeTrack?.getSettings() ?? null,
     stop: () => {
+      operationVersion += 1;
       activeTrack?.removeEventListener('ended', handleTrackEnded);
       const stream = activeStream;
       activeStream = null;
