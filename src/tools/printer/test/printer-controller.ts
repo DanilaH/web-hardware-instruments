@@ -13,11 +13,43 @@ export interface PrinterTestController {
 const selectedLabel = (select: HTMLSelectElement): string =>
   select.selectedOptions[0]?.textContent?.trim() ?? select.value;
 
-const stripCloneAccessibilityIds = (root: HTMLElement): void => {
-  root.removeAttribute('id');
-  root.removeAttribute('aria-labelledby');
-  root.querySelectorAll<HTMLElement>('[id]').forEach((element) => element.removeAttribute('id'));
-  root.querySelectorAll<HTMLElement>('[aria-labelledby]').forEach((element) => element.removeAttribute('aria-labelledby'));
+const rewriteCloneIds = (root: HTMLElement): void => {
+  const idMap = new Map<string, string>();
+  const elementsWithIds = root.querySelectorAll<HTMLElement | SVGElement>('[id]');
+
+  elementsWithIds.forEach((element) => {
+    const sourceId = element.id;
+    const printId = `printer-print-${sourceId}`;
+    idMap.set(sourceId, printId);
+    element.id = printId;
+  });
+
+  const elements = [root, ...root.querySelectorAll<HTMLElement | SVGElement>('*')];
+  elements.forEach((element) => {
+    const labelledBy = element.getAttribute('aria-labelledby');
+    if (labelledBy) {
+      element.setAttribute(
+        'aria-labelledby',
+        labelledBy
+          .split(/\s+/)
+          .map((id) => idMap.get(id) ?? id)
+          .join(' '),
+      );
+    }
+
+    for (const attribute of ['fill', 'stroke', 'clip-path', 'filter', 'mask', 'href', 'xlink:href']) {
+      const value = element.getAttribute(attribute);
+      if (!value) continue;
+
+      let rewritten = value;
+      for (const [sourceId, printId] of idMap) {
+        rewritten = rewritten
+          .replaceAll(`url(#${sourceId})`, `url(#${printId})`)
+          .replaceAll(`#${sourceId}`, `#${printId}`);
+      }
+      if (rewritten !== value) element.setAttribute(attribute, rewritten);
+    }
+  });
 };
 
 export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
@@ -79,7 +111,7 @@ export const mountPrinterTest = (root: HTMLElement): PrinterTestController => {
     printRoot.dataset.printerPrintRoot = '';
 
     const printSheet = sheet.cloneNode(true) as HTMLElement;
-    stripCloneAccessibilityIds(printSheet);
+    rewriteCloneIds(printSheet);
     printRoot.append(printSheet);
 
     const pageStyle = document.createElement('style');
