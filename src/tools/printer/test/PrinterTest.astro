@@ -186,40 +186,38 @@ const messages = getPrinterRuntimeMessages(locale);
   .printer-action { min-height: 2.65rem; border: 1px solid #303536; border-radius: 0.35rem; background: #242829; padding: 0.55rem 0.9rem; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
   .printer-field select:focus-visible, .printer-action:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
   .printer-tool__note { margin: 0; max-width: 54rem; color: var(--color-muted); font-size: 0.82rem; line-height: 1.55; }
-  .printer-preview { overflow: auto; border: 1px solid var(--color-border); border-radius: 0.45rem; background: #d8dbdc; padding: clamp(0.6rem, 2vw, 1.25rem); }
+  .printer-preview { overflow: hidden; border: 1px solid var(--color-border); border-radius: 0.45rem; background: #d8dbdc; padding: clamp(0.6rem, 2vw, 1.25rem); }
   .printer-sheet { --paper-ratio: 210 / 297; position: relative; box-sizing: border-box; width: min(100%, 47rem); aspect-ratio: var(--paper-ratio); margin: 0 auto; overflow: hidden; border: 1px solid #a8adaf; background: #fff; padding: 4.5% 5%; color: #111; box-shadow: 0 0.35rem 1.4rem rgb(0 0 0 / 0.12); font-family: Arial, Helvetica, sans-serif; }
   .printer-sheet[data-paper='letter'] { --paper-ratio: 8.5 / 11; }
   .printer-sheet__safe { position: absolute; inset: 2.3%; border: 1px dashed #8b8b8b; pointer-events: none; }
   .printer-sheet__header { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 1.4%; border-bottom: 1px solid #111; }
   .printer-sheet__header > div { min-width: 0; display: grid; gap: 0.18rem; }
-  .printer-sheet__header strong { font-size: clamp(0.7rem, 1.7vw, 1.02rem); letter-spacing: 0.02em; }
-  .printer-sheet__header span { max-width: 31rem; font-size: clamp(0.42rem, 1vw, 0.6rem); line-height: 1.35; }
-  .printer-sheet__header dl { flex: 0 0 auto; margin: 0; display: grid; gap: 0.12rem; font-size: clamp(0.42rem, 1vw, 0.6rem); }
+  .printer-sheet__header strong { font-size: clamp(0.55rem, 1.7vw, 1.02rem); letter-spacing: 0.02em; }
+  .printer-sheet__header span { max-width: 31rem; font-size: clamp(0.34rem, 1vw, 0.6rem); line-height: 1.35; }
+  .printer-sheet__header dl { flex: 0 0 auto; margin: 0; display: grid; gap: 0.12rem; font-size: clamp(0.34rem, 1vw, 0.6rem); }
   .printer-sheet__header dl div { display: flex; gap: 0.3rem; }
   .printer-sheet__header dt { font-weight: 700; }
   .printer-sheet__header dd { margin: 0; }
   .printer-reference { position: relative; z-index: 1; margin-top: 2.1%; }
-  .printer-reference h3 { margin: 0 0 0.7%; font-size: clamp(0.5rem, 1.2vw, 0.72rem); text-transform: uppercase; letter-spacing: 0.06em; }
+  .printer-reference h3 { margin: 0 0 0.7%; font-size: clamp(0.4rem, 1.2vw, 0.72rem); text-transform: uppercase; letter-spacing: 0.06em; }
   .printer-text-samples { border: 1px solid #111; padding: 1.1% 1.4%; }
   .printer-text-samples p { margin: 0; overflow: hidden; color: #000; line-height: 1.25; white-space: nowrap; }
   .printer-text-samples p + p { margin-top: 0.35%; }
-  .printer-text-samples__xs { font-size: clamp(0.25rem, 0.75vw, 6pt); }
-  .printer-text-samples__sm { font-size: clamp(0.32rem, 0.9vw, 8pt); }
-  .printer-text-samples__md { font-size: clamp(0.38rem, 1vw, 10pt); }
-  .printer-text-samples__lg { font-size: clamp(0.46rem, 1.2vw, 14pt); }
-  .printer-text-samples__xl { font-size: clamp(0.56rem, 1.45vw, 20pt); font-weight: 700; letter-spacing: 0.04em; }
+  .printer-text-samples__xs { font-size: clamp(0.2rem, 0.75vw, 6pt); }
+  .printer-text-samples__sm { font-size: clamp(0.25rem, 0.9vw, 8pt); }
+  .printer-text-samples__md { font-size: clamp(0.3rem, 1vw, 10pt); }
+  .printer-text-samples__lg { font-size: clamp(0.36rem, 1.2vw, 14pt); }
+  .printer-text-samples__xl { font-size: clamp(0.44rem, 1.45vw, 20pt); font-weight: 700; letter-spacing: 0.04em; }
   .printer-reference-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 2fr 1fr; gap: 2%; }
   .printer-lines, .printer-alignment, .printer-tones { display: block; width: 100%; height: auto; }
   .printer-sheet[data-profile='color'] [data-printer-grayscale] { display: none; }
   .printer-sheet[data-profile='grayscale'] [data-printer-color] { display: none; }
-  .printer-sheet__footer { position: absolute; z-index: 1; inset: auto 5% 2.9%; display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #111; padding-top: 0.8%; font-size: clamp(0.36rem, 0.85vw, 0.52rem); }
+  .printer-sheet__footer { position: absolute; z-index: 1; inset: auto 5% 2.9%; display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #111; padding-top: 0.8%; font-size: clamp(0.3rem, 0.85vw, 0.52rem); }
   .printer-sheet__footer span:last-child { max-width: 70%; text-align: right; }
   .printer-tool__sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   @media (max-width: 42rem) {
     .printer-tool__controls { align-items: stretch; }
     .printer-field, .printer-action { width: 100%; }
-    .printer-reference-grid { grid-template-columns: 1fr; gap: 0; }
-    .printer-sheet { min-width: 30rem; }
   }
 </style>
 
