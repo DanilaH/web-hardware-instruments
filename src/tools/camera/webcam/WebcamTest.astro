@@ -84,7 +84,7 @@ const messages = getWebcamRuntimeMessages(locale);
 <style>
   .webcam-tool {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .webcam-status-row {
@@ -160,8 +160,7 @@ const messages = getWebcamRuntimeMessages(locale);
 
   .webcam-preview {
     position: relative;
-    min-height: 18rem;
-    aspect-ratio: 16 / 9;
+    height: clamp(13.5rem, 34vh, 18rem);
     overflow: hidden;
     border: 1px solid #cfd4d6;
     border-radius: 0.75rem;
@@ -189,7 +188,7 @@ const messages = getWebcamRuntimeMessages(locale);
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) 0;
+    padding: 0.55rem 0;
     border-bottom: 1px solid #e3e6e7;
   }
 
@@ -211,15 +210,15 @@ const messages = getWebcamRuntimeMessages(locale);
   }
 
   .webcam-details {
-    padding-top: var(--space-2);
+    padding-top: 0.15rem;
   }
 
   .webcam-details h3 {
-    margin: 0 0 var(--space-3);
-    font-size: 0.8rem;
+    margin: 0 0 0.45rem;
+    font-size: 0.75rem;
     color: var(--color-muted);
     font-weight: 700;
-    letter-spacing: 0.055em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
   }
 
@@ -232,14 +231,14 @@ const messages = getWebcamRuntimeMessages(locale);
 
   .webcam-metric {
     min-width: 0;
-    padding: var(--space-3);
+    padding: 0.65rem 0.75rem;
     border-right: 1px solid #e3e6e7;
   }
 
   .webcam-metric:last-child { border-right: 0; }
-  .webcam-metric dt { color: var(--color-muted); font-size: 0.72rem; line-height: 1.3; }
-  .webcam-metric dd { margin: 0.35rem 0 0; overflow-wrap: anywhere; font-size: 1rem; font-weight: 700; line-height: 1.25; }
-  .webcam-metric--camera dd { font-size: 0.9rem; }
+  .webcam-metric dt { color: var(--color-muted); font-size: 0.7rem; line-height: 1.3; }
+  .webcam-metric dd { margin: 0.25rem 0 0; overflow-wrap: anywhere; font-size: 0.95rem; font-weight: 700; line-height: 1.25; }
+  .webcam-metric--camera dd { font-size: 0.86rem; }
 
   .webcam-tool__sr {
     position: absolute;
@@ -262,7 +261,7 @@ const messages = getWebcamRuntimeMessages(locale);
   @media (max-width: 34rem) {
     .webcam-actions { display: grid; grid-template-columns: 1fr; }
     .webcam-action { width: 100%; }
-    .webcam-preview { min-height: 12rem; }
+    .webcam-preview { height: clamp(11rem, 36vh, 14rem); }
     .webcam-select-row { grid-template-columns: 1fr; gap: var(--space-2); }
     .webcam-metrics { grid-template-columns: 1fr; }
     .webcam-metric,
