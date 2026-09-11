@@ -11,7 +11,8 @@ import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
 import { screenResolutionContentByLocale } from './screen-resolution';
 import { screenUniformityContentByLocale } from './screen-uniformity';
-import type { HomeContent, ResolvedSiteContent, SiteContent } from './types';
+import type { HomeContent, ResolvedSiteContent, SiteContent, SupportPageContent } from './types';
+import { webcamContentByLocale } from './webcam';
 
 export const implementedContentLocales = ['en', 'pt-BR', 'de', 'fr', 'es', 'ru'] as const satisfies readonly Locale[];
 export type ImplementedContentLocale = (typeof implementedContentLocales)[number];
@@ -21,19 +22,29 @@ type PrinterHomeContent = Pick<
   'facts' | 'boundaryAria' | 'boundaryLocal' | 'boundarySignals' | 'boundaryObserved' | 'boundaryNoUpload'
 >;
 type PrinterHomepageCopy = Pick<HomeContent, 'metaDescription' | 'intro'>;
+type WebcamHomeContent = Pick<HomeContent, 'facts' | 'metaDescription' | 'intro'>;
 
 const resolveHomeContent = (
   base: HomeContent,
   printerHome: PrinterHomeContent,
   printerHomepageCopy: PrinterHomepageCopy,
-  facts: string,
+  webcamHome: WebcamHomeContent,
   printerSignal: string,
+  cameraSignal: string,
 ): HomeContent => ({
   ...base,
   ...printerHome,
   ...printerHomepageCopy,
-  facts,
-  inputs: [...base.inputs, printerSignal],
+  ...webcamHome,
+  inputs: [...base.inputs, cameraSignal, printerSignal],
+});
+
+const resolvePrivacyContent = (
+  base: SupportPageContent,
+  cameraParagraphs: readonly string[],
+): SupportPageContent => ({
+  ...base,
+  paragraphs: [...base.paragraphs, ...cameraParagraphs],
 });
 
 const baseContentByLocale = {
@@ -53,21 +64,26 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const screenUniformity = screenUniformityContentByLocale[locale];
   const oledBurnIn = oledBurnInContentByLocale[locale];
   const screenResolution = screenResolutionContentByLocale[locale];
+  const webcam = webcamContentByLocale[locale];
   const home = resolveHomeContent(
     base.home,
     printer.home,
     printerHomepageCopy,
-    screenResolution.home.facts,
+    webcam.home,
     printer.signal,
+    webcam.signal,
   );
+  const privacy = resolvePrivacyContent(base.privacy, webcam.privacyParagraphs);
 
   return {
     ...base,
     categories: {
       ...base.categories,
+      camera: webcam.category,
       printer: printer.category,
     },
     home,
+    privacy,
     tools: {
       ...base.tools,
       'printer-test-page': printer.tool,
@@ -75,6 +91,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       'screen-uniformity-test': screenUniformity.tool,
       'oled-burn-in-test': oledBurnIn.tool,
       'screen-resolution-checker': screenResolution.tool,
+      'webcam-test': webcam.tool,
     },
   };
 };
