@@ -4,7 +4,7 @@ This repository contains a static Astro catalog of browser-based hardware diagno
 
 ## Current state
 
-The full-v1 catalog, Hardware Expansion 1, localization, and the Hardware Expansion V2 Foundation are **code-side complete and audited**. Expansion V2 is shipping in atomic production-valid waves; Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are the first four V2 jobs added after Foundation.
+The full-v1 catalog, Hardware Expansion 1, localization, and the Hardware Expansion V2 Foundation are **code-side complete and audited**. Expansion V2 is shipping in atomic production-valid waves; Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are the first five V2 jobs added after Foundation.
 
 The production origin is configured as:
 
@@ -17,7 +17,7 @@ Do not revert the product to the historical `hardware-testing.invalid` placehold
 
 Implemented locales remain `en`, `pt-BR`, `de`, `fr`, `es`, and `ru`. Every registered V2 ToolId must ship atomically across the same six locales under `23_HARDWARE_EXPANSION_V2_SPEC.md` and the routing/i18n architecture of `22_LOCALIZATION_SPEC.md`.
 
-Implemented diagnostic routes after the OLED Burn-In wave:
+Implemented diagnostic routes after the Screen Resolution Checker wave:
 
 ```text
 Controller
@@ -47,6 +47,7 @@ Display
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
+/screen-resolution-checker
 
 Touch
 /touch-screen-test
@@ -105,7 +106,7 @@ Use the narrowest document that owns the decision:
 
 If two documents appear to conflict on an exact behavior, do not average them. Prefer the document that explicitly owns that route/boundary; if ownership is still ambiguous, resolve the documentation before changing product code.
 
-`23_HARDWARE_EXPANSION_V2_SPEC.md` owns V2 jobs such as Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test. `22_LOCALIZATION_SPEC.md` still owns locale routing/canonical/hreflang architecture and does not override diagnostic or capability semantics.
+`23_HARDWARE_EXPANSION_V2_SPEC.md` owns V2 jobs such as Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker. `22_LOCALIZATION_SPEC.md` still owns locale routing/canonical/hreflang architecture and does not override diagnostic or capability semantics.
 
 ## Supporting documents
 

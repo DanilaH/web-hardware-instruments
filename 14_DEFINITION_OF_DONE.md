@@ -28,13 +28,15 @@ Screen Uniformity Test follows its focused gray-field acceptance rules in `23_HA
 
 OLED Burn-In Test follows its persistent-image inspection acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: exact eight-pattern sequence, manual navigation, progressive fullscreen/fallback, clear burn-in-versus-retention wording, and no flashing, repair claim, score, percentage or automatic verdict.
 
+Screen Resolution Checker follows its browser-information acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: immediate browser-reported screen size, clearly labelled estimated device-pixel dimensions, viewport/available-area/DPR/color-depth/orientation details, resize/orientation updates, no permission request, and no native-panel-resolution claim.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 tools:
+After the Screen Resolution Checker Expansion V2 wave, the implemented catalog contains 23 tools:
 
 ### Controller
 
@@ -74,6 +76,7 @@ After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 to
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
+/screen-resolution-checker
 ```
 
 ### Touch
@@ -138,6 +141,8 @@ Examples include:
 - real camera evidence workflow for Frame Skipping.
 
 Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are visual-inspection routes. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, luminance, tint, banding, clouding, mura, DSE, burn-in, retention, black-level, white-level, geometry, or sharpness defects.
+
+Screen Resolution Checker is a browser-information route rather than a hardware measurement. Release readiness requires resize/orientation smoke in representative browsers and confirmation that reported/estimated terminology stays intact; it does not require or prove access to the monitor's exact native/physical panel resolution.
 
 Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
@@ -266,6 +271,21 @@ deterministic solid/gray fields
 
 No flashing pixel-fixer sequence, repair mode, long high-brightness loop, burn-in percentage, timer encouraging hours of static display, pass/fail, or claim that the browser can distinguish permanent burn-in from temporary retention, tint, mura or another uniformity issue.
 
+### Screen Resolution Checker
+
+Exact browser fields and estimate semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+browser-reported CSS screen/viewport values
++ devicePixelRatio
+→ Math.round(CSS pixels × DPR) estimate
+→ clearly labelled estimated device-pixel dimensions
+```
+
+No permission, Multi-Screen Window Placement request, EDID/native-panel readout, physical-pixel certification, or claim that the estimate is exact hardware resolution. Resize and relevant orientation changes must refresh applicable values.
+
 ### Printer Test Page
 
 Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
@@ -294,6 +314,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
 - the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor, Screen Uniformity, and OLED Burn-In without absorbing SEO/copy;
+- Screen Resolution Checker uses the narrow pure screen-info helper from `23_HARDWARE_EXPANSION_V2_SPEC.md`; it reads standard browser values and computes only the documented `Math.round(css * dpr)` estimate without a capability service or permission API;
 - tool controllers own interpretation/presentation state rather than acquisition services;
 - no duplicate native acquisition loops/listeners without an explicit new capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
@@ -348,6 +369,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
 - Printer Test Page generates a local reference and uploads no document;
 - Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry;
+- Screen Resolution Checker reads only standard browser-reported screen/window values locally and requests no permission;
 - locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
 
 ## 12. QA workflow
@@ -391,5 +413,6 @@ For localization, sample every device/output family in every locale rather than 
 - Monitor remains deterministic manual visual inspection without measured luminance/contrast/response-time/color-certification claims;
 - Screen Uniformity remains deterministic encoded gray-field visual inspection without measured uniformity/color-delta/pass-fail claims;
 - OLED Burn-In remains deterministic manual visual inspection without flashing/repair behavior, burn-in percentage, pass/fail, or claims distinguishing permanent burn-in from temporary retention or other panel artifacts;
+- Screen Resolution Checker reports browser CSS-pixel values and visibly labelled estimated device-pixel dimensions only; it never presents the DPR estimate as exact native/physical panel resolution;
 - Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.

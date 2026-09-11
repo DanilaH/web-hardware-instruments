@@ -9,11 +9,32 @@ import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
 import { ruContent } from './ru';
+import { screenResolutionContentByLocale } from './screen-resolution';
 import { screenUniformityContentByLocale } from './screen-uniformity';
-import type { ResolvedSiteContent, SiteContent } from './types';
+import type { HomeContent, ResolvedSiteContent, SiteContent } from './types';
 
 export const implementedContentLocales = ['en', 'pt-BR', 'de', 'fr', 'es', 'ru'] as const satisfies readonly Locale[];
 export type ImplementedContentLocale = (typeof implementedContentLocales)[number];
+
+type PrinterHomeContent = Pick<
+  HomeContent,
+  'facts' | 'boundaryAria' | 'boundaryLocal' | 'boundarySignals' | 'boundaryObserved' | 'boundaryNoUpload'
+>;
+type PrinterHomepageCopy = Pick<HomeContent, 'metaDescription' | 'intro'>;
+
+const resolveHomeContent = (
+  base: HomeContent,
+  printerHome: PrinterHomeContent,
+  printerHomepageCopy: PrinterHomepageCopy,
+  facts: string,
+  printerSignal: string,
+): HomeContent => ({
+  ...base,
+  ...printerHome,
+  ...printerHomepageCopy,
+  facts,
+  inputs: [...base.inputs, printerSignal],
+});
 
 const baseContentByLocale = {
   en: enContent,
@@ -31,6 +52,14 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const monitor = monitorContentByLocale[locale];
   const screenUniformity = screenUniformityContentByLocale[locale];
   const oledBurnIn = oledBurnInContentByLocale[locale];
+  const screenResolution = screenResolutionContentByLocale[locale];
+  const home = resolveHomeContent(
+    base.home,
+    printer.home,
+    printerHomepageCopy,
+    screenResolution.home.facts,
+    printer.signal,
+  );
 
   return {
     ...base,
@@ -38,21 +67,14 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...base.categories,
       printer: printer.category,
     },
-    home: {
-      ...base.home,
-      ...printer.home,
-      ...printerHomepageCopy,
-      ...monitor.home,
-      ...screenUniformity.home,
-      ...oledBurnIn.home,
-      inputs: [...base.home.inputs, printer.signal],
-    },
+    home,
     tools: {
       ...base.tools,
       'printer-test-page': printer.tool,
       'monitor-test': monitor.tool,
       'screen-uniformity-test': screenUniformity.tool,
       'oled-burn-in-test': oledBurnIn.tool,
+      'screen-resolution-checker': screenResolution.tool,
     },
   };
 };

@@ -128,7 +128,7 @@ Playwright is appropriate only when a critical browser-flow/lifecycle test mater
 
 ## 5. Current project state
 
-After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 production jobs.
+After the Screen Resolution Checker Expansion V2 wave, the implemented catalog contains 23 production jobs.
 
 ### Controller
 
@@ -168,6 +168,7 @@ After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 pr
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
+/screen-resolution-checker
 ```
 
 ### Touch
@@ -184,20 +185,19 @@ After the OLED Burn-In Expansion V2 wave, the implemented catalog contains 22 pr
 
 Full v1 and Hardware Expansion 1 are implementation-complete and code-side audited. Localization is implemented for English plus `pt-BR`, `de`, `fr`, `es`, and `ru` using shared diagnostic logic and locale-aware routing/content architecture. Each registered V2 ToolId must be complete across the same six locales atomically.
 
-Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are the first four implemented V2 production jobs after Foundation. The remaining approved but not-yet-implemented jobs are:
+Hardware Expansion V2 is approved under `23_HARDWARE_EXPANSION_V2_SPEC.md`. Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are the first five implemented V2 production jobs after Foundation. The only remaining approved but not-yet-implemented job is:
 
 ```text
-/screen-resolution-checker
 /webcam-test
 ```
 
-Do **not** count the remaining routes as implemented merely because they are documented. Do not expose placeholders or an empty Camera homepage category. Register each remaining V2 ToolId atomically with its real component, all six locale content entries, route generation, SEO metadata, relation decision and applicable tests.
+Do **not** count Webcam as implemented merely because it is documented. Do not expose an empty Camera homepage category. Register the remaining V2 ToolId atomically with its real component, all six locale content entries, route generation, SEO metadata, relation decision and applicable tests.
 
 The old E1.0 → E1.7 sequence is retained in historical/supporting documents only to explain how the catalog was built and reviewed. There is no approved E1.8.
 
 Reviewed maintenance may touch any current route when it preserves that route's user job, exact measurement/capability contract, privacy boundary, and architecture ownership. Correctness, accessibility, IA, SEO, maintainability, localization, and UX polish are legitimate cross-catalog maintenance work.
 
-New product scope outside the implemented catalog and the remaining approved V2 routes still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
+New product scope outside the implemented catalog and the remaining approved V2 route still requires fresh evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and a reviewed exact contract before implementation.
 
 ## 6. Durable measurement boundaries
 
@@ -218,7 +218,7 @@ Examples:
 - Frame Skipping uses browser timing only for readiness/sequential pattern control; real camera photos provide the physical evidence.
 - Printer Test Page is a controlled printable reference, not printer telemetry or exact CMYK/nozzle isolation.
 - Monitor/Uniformity/OLED Burn-In are visual-inspection tools, not luminance/colorimeter measurements, pass/fail or repair systems.
-- Screen Resolution Checker reports browser CSS-pixel values and estimated device-pixel dimensions, not guaranteed physical/native panel resolution.
+- Screen Resolution Checker reports browser CSS-pixel values and estimated device-pixel dimensions using `Math.round(css * DPR)`, not guaranteed physical/native panel resolution; zoom, OS scaling and browser/privacy behavior can affect reported values.
 - Webcam reports a permissioned browser media stream and browser/track observations; it does not upload media or produce a camera-quality score.
 
 Use `18`, `20`, and `23` for the exact formulas/state machines/contracts. Localization must preserve the same certainty/uncertainty level in every language.
@@ -250,11 +250,11 @@ Localization must be tested for text expansion, especially German/French/Russian
 
 ## 8. Lifecycle and cleanup
 
-Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, media track, temporary print DOM/style, and bfcache/navigation transition needs an explicit cleanup/restart path.
+Every relevant rAF loop, timer, listener, subscription, pointer lock/capture, fullscreen observer/state, resize/orientation listener, media track, temporary print DOM/style, and bfcache/navigation transition needs an explicit cleanup/restart path.
 
 Browser capability services own acquisition lifecycle. Tool controllers own interpretation and presentation state.
 
-Camera switching/stop/destroy must stop replaced/active media tracks. Printer uses browser print UI and has no persistent hardware acquisition lifecycle; its temporary print root/page style must be removed after print/cancel and on controller destruction.
+Screen Resolution Checker owns only resize/orientation subscriptions and passive browser-property reads; stop/destroy must remove those listeners. Camera switching/stop/destroy must stop replaced/active media tracks. Printer uses browser print UI and has no persistent hardware acquisition lifecycle; its temporary print root/page style must be removed after print/cancel and on controller destruction.
 
 Do not move held sets, counters, heuristic interpretation, or visual state into acquisition services merely for reuse.
 

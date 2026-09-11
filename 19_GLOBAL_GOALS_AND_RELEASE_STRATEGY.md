@@ -79,8 +79,8 @@ Hardware Expansion V2 has passed the project's expansion gate through completed 
 /monitor-test                   implemented in the Monitor wave
 /screen-uniformity-test         implemented in the Screen Uniformity wave
 /oled-burn-in-test              implemented in the OLED Burn-In wave
-/screen-resolution-checker      approved next wave
-/webcam-test                    approved
+/screen-resolution-checker      implemented in the Screen Resolution Checker wave
+/webcam-test                    approved next wave
 ```
 
 Exact implementation and sequencing live in `23_HARDWARE_EXPANSION_V2_SPEC.md` and the non-normative execution plan in `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md`.
@@ -168,7 +168,7 @@ Expansion V2 explicitly absorbs nearby synonym/sub-intent phrases into the six a
 
 # 7. Current implemented catalog and approved next waves
 
-Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are code-side implementation scope after the OLED Burn-In wave.
+Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are code-side implementation scope after the Screen Resolution Checker wave.
 
 Current implemented production jobs:
 
@@ -200,6 +200,7 @@ Display
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
+/screen-resolution-checker
 
 Touch
 /touch-screen-test
@@ -208,19 +209,16 @@ Printer
 /printer-test-page
 ```
 
-Localization provides the approved language alternates for these same **22 jobs**.
+Localization provides the approved language alternates for these same **23 jobs**.
 
 Approved V2 jobs not yet part of the current catalog until their own atomic waves merge:
 
 ```text
-Display
-/screen-resolution-checker
-
 Camera
 /webcam-test
 ```
 
-Each remaining V2 route becomes part of the current catalog only when its coherent block is actually merged with complete locale/content/SEO/tool implementation. No placeholders or empty homepage categories.
+The remaining Webcam route becomes part of the current catalog only when its coherent block is actually merged with complete locale/content/SEO/tool implementation. No placeholder or empty Camera homepage category.
 
 # 8. Expansion rule
 
@@ -266,6 +264,8 @@ controlled reference
 ```
 
 Do not silently upgrade browser observations into hardware certification, pass/fail verdicts, warranty claims, inferred device health, exact physical panel resolution, exact printer color/nozzle state, or exact camera quality.
+
+Screen Resolution Checker reports browser-exposed CSS screen/viewport values plus an explicitly estimated `Math.round(css × DPR)` device-pixel size. It must never relabel that estimate as native or physical panel resolution.
 
 Translation must preserve the same epistemic strength. A localized phrase that sounds more certain than the English source is wrong even if linguistically natural.
 

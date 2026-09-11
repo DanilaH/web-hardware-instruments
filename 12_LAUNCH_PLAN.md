@@ -2,7 +2,7 @@
 
 ## Current release boundary
 
-After the OLED Burn-In Expansion V2 wave, the 22-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, the V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test have passed their respective code-side implementation/review gates once this wave merges; each V2 job still needs its own wave-specific release evidence.
+After the Screen Resolution Checker Expansion V2 wave, the 23-tool hardware/output catalog is implemented code-side. Full v1, Expansion 1, localization, the V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker have passed their respective code-side implementation/review gates once this wave merges; each V2 job still needs its own wave-specific release evidence.
 
 The production origin is already configured as:
 
@@ -90,7 +90,11 @@ Display cluster:
 - the six encoded gray/white presets are visually reviewed on a real display from normal viewing conditions without converting visible variation into an automatic defect verdict;
 - OLED Burn-In Test start/fullscreen/fallback/exit flow checked in current desktop browsers;
 - OLED Burn-In Test click/tap/Space/arrow navigation and hide-controls behavior checked;
-- the eight OLED solid/gray patterns are visually reviewed on a real display without treating a visible shape as proof of permanent burn-in, temporary retention, panel uniformity failure, tint or mura.
+- the eight OLED solid/gray patterns are visually reviewed on a real display without treating a visible shape as proof of permanent burn-in, temporary retention, panel uniformity failure, tint or mura;
+- Screen Resolution Checker shows an immediate browser-reported screen size without a Start action;
+- viewport values update on resize and orientation-dependent values update when applicable;
+- estimated device-pixel dimensions stay visibly labelled as estimated and are not presented as native/physical panel resolution;
+- no Multi-Screen Window Placement permission is requested.
 
 Printer Test Page:
 
@@ -188,6 +192,7 @@ After production or locale deployment:
 - device/permission failures where relevant;
 - print-flow failures for Printer Test Page;
 - fullscreen/fallback/navigation failures for Monitor Test, Screen Uniformity Test and OLED Burn-In Test;
+- stale/incorrect screen or viewport values in Screen Resolution Checker after resize/orientation changes;
 - layout regressions from longer translated strings;
 - accidental indexing/noindex issues;
 - unexpected canonical selection;
@@ -224,7 +229,7 @@ Avoid:
 
 ## Future expansion trigger
 
-Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page, Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are implemented in the first four waves, and the remaining V2 jobs follow their reviewed atomic waves.
+Expansion 1 is complete. Expansion V2 is approved only for the exact six jobs in `23_HARDWARE_EXPANSION_V2_SPEC.md`; Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are implemented in the first five waves. Webcam remains the final approved V2 job and must follow its reviewed atomic wave.
 
 Any diagnostic job **outside** that approved V2 set requires at least one strong condition:
 

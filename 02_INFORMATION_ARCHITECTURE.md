@@ -74,6 +74,7 @@ Jobs:
 /monitor-test
 /screen-uniformity-test
 /oled-burn-in-test
+/screen-resolution-checker
 ```
 
 Jobs:
@@ -85,9 +86,12 @@ Jobs:
 - fullscreen black-screen backlight inspection;
 - guided manual monitor inspection with solid fields, gradients, near-black/near-white references, and a sharpness grid;
 - manual gray-field inspection for uneven brightness, tint, banding, clouding, mura-like variation and dirty-screen-effect-like patches;
-- manual solid/gray-field inspection for persistent image shapes while keeping burn-in, temporary retention and other uniformity artifacts distinct.
+- manual solid/gray-field inspection for persistent image shapes while keeping burn-in, temporary retention and other uniformity artifacts distinct;
+- immediate browser-reported screen/viewport values plus explicitly estimated device-pixel dimensions.
 
-Monitor Test is the broad Display-entry diagnostic. Screen Uniformity Test is the focused gray-field companion. OLED Burn-In Test is the focused persistent-image inspection companion. All three reuse the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; none provides automatic pass/fail, measured luminance uniformity, burn-in percentage, contrast, response time, color delta, repair behavior or panel-health certification.
+Monitor Test is the broad Display-entry diagnostic. Screen Uniformity Test is the focused gray-field companion. OLED Burn-In Test is the focused persistent-image inspection companion. Screen Resolution Checker is the browser-information companion and does not use the Display Pattern Engine or claim native panel resolution.
+
+The three visual-inspection routes reuse the shared deterministic Display Pattern Engine and progressive fullscreen enhancement; none provides automatic pass/fail, measured luminance uniformity, burn-in percentage, contrast, response time, color delta, repair behavior or panel-health certification. Screen Resolution Checker instead reads standard browser screen/viewport values without requesting multi-screen permission.
 
 ### Touch
 
@@ -194,6 +198,11 @@ OLED Burn-In
 ↔ Screen Uniformity
 ↔ Monitor Test
 ↔ Dead Pixel
+
+Screen Resolution Checker
+↔ Monitor Test
+↔ Refresh Rate
+↔ Screen Uniformity
 
 Dead Pixel
 ↔ Monitor Test

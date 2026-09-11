@@ -21,6 +21,7 @@ export const toolIds = [
   'monitor-test',
   'screen-uniformity-test',
   'oled-burn-in-test',
+  'screen-resolution-checker',
   'touch-screen-test',
   'printer-test-page',
 ] as const;
@@ -55,6 +56,7 @@ export const toolDefinitions: readonly ToolDefinition[] = [
   { id: 'monitor-test', href: '/monitor-test', icon: 'frame-skip', channel: 'display' },
   { id: 'screen-uniformity-test', href: '/screen-uniformity-test', icon: 'backlight', channel: 'display' },
   { id: 'oled-burn-in-test', href: '/oled-burn-in-test', icon: 'dead-pixel', channel: 'display' },
+  { id: 'screen-resolution-checker', href: '/screen-resolution-checker', icon: 'refresh', channel: 'display' },
   { id: 'touch-screen-test', href: '/touch-screen-test', icon: 'touch', channel: 'touch' },
   { id: 'printer-test-page', href: '/printer-test-page', icon: 'printer', channel: 'printer' },
 ];
@@ -80,6 +82,7 @@ const relatedToolIds = {
   'monitor-test': ['dead-pixel-test', 'screen-uniformity-test', 'oled-burn-in-test'],
   'screen-uniformity-test': ['oled-burn-in-test', 'monitor-test', 'backlight-bleed-test'],
   'oled-burn-in-test': ['screen-uniformity-test', 'monitor-test', 'dead-pixel-test'],
+  'screen-resolution-checker': ['monitor-test', 'refresh-rate-test', 'screen-uniformity-test'],
   'touch-screen-test': ['dead-pixel-test', 'backlight-bleed-test'],
   'printer-test-page': [],
 } as const satisfies Record<ToolId, readonly ToolId[]>;
