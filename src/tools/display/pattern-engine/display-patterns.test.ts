@@ -1,0 +1,54 @@
+import { describe, expect, it } from 'vitest';
+
+import {
+  encodedGrayChannel,
+  encodedGrayReference,
+  monitorPatterns,
+  moveDisplayPatternIndex,
+} from './display-patterns';
+
+describe('display pattern references', () => {
+  it('uses the documented encoded sRGB gray references', () => {
+    expect(encodedGrayChannel(5)).toBe(13);
+    expect(encodedGrayChannel(10)).toBe(26);
+    expect(encodedGrayChannel(25)).toBe(64);
+    expect(encodedGrayChannel(50)).toBe(128);
+    expect(encodedGrayChannel(75)).toBe(191);
+    expect(encodedGrayChannel(100)).toBe(255);
+    expect(encodedGrayReference(5)).toBe('rgb(13 13 13)');
+    expect(encodedGrayReference(50)).toBe('rgb(128 128 128)');
+  });
+
+  it('keeps the exact Monitor P0 sequence', () => {
+    expect(monitorPatterns.map((pattern) => pattern.id)).toEqual([
+      'white',
+      'black',
+      'red',
+      'green',
+      'blue',
+      'gray-50',
+      'gray-5',
+      'grayscale-gradient',
+      'color-gradient',
+      'black-level',
+      'white-level',
+      'sharpness-grid',
+    ]);
+  });
+
+  it('builds deterministic black and white level ramps', () => {
+    const black = monitorPatterns.find((pattern) => pattern.id === 'black-level');
+    const white = monitorPatterns.find((pattern) => pattern.id === 'white-level');
+    expect(black?.kind).toBe('bars');
+    expect(white?.kind).toBe('bars');
+    if (black?.kind !== 'bars' || white?.kind !== 'bars') throw new Error('Expected level patterns');
+    expect(black.values).toEqual([0, 5, 10, 15, 20, 25, 30, 35].map(encodedGrayReference));
+    expect(white.values).toEqual([65, 70, 75, 80, 85, 90, 95, 100].map(encodedGrayReference));
+  });
+
+  it('wraps manual navigation in both directions', () => {
+    expect(moveDisplayPatternIndex(0, -1, 12)).toBe(11);
+    expect(moveDisplayPatternIndex(11, 1, 12)).toBe(0);
+    expect(moveDisplayPatternIndex(5, 1, 12)).toBe(6);
+  });
+});
