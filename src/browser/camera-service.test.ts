@@ -102,6 +102,42 @@ describe('CameraService', () => {
     expect(service.getSettings()).toMatchObject({ deviceId: 'first' });
   });
 
+  it('cannot resurrect a stream that resolves after stop', async () => {
+    const track = createFakeTrack({ deviceId: 'late' });
+    const stream = createFakeStream(track);
+    let resolveStream: ((stream: MediaStream) => void) | undefined;
+    const getUserMedia = vi.fn(() => new Promise<MediaStream>((resolve) => {
+      resolveStream = resolve;
+    }));
+    const service = createCameraService({ environment: createEnvironment(getUserMedia) });
+
+    const pendingStart = service.start();
+    service.stop();
+    resolveStream?.(stream);
+
+    await expect(pendingStart).rejects.toMatchObject({ code: 'request-failed' });
+    expect(track.stop).toHaveBeenCalledTimes(1);
+    expect(service.getSettings()).toBeNull();
+  });
+
+  it('cannot resurrect a stream that resolves after destroy', async () => {
+    const track = createFakeTrack({ deviceId: 'late' });
+    const stream = createFakeStream(track);
+    let resolveStream: ((stream: MediaStream) => void) | undefined;
+    const getUserMedia = vi.fn(() => new Promise<MediaStream>((resolve) => {
+      resolveStream = resolve;
+    }));
+    const service = createCameraService({ environment: createEnvironment(getUserMedia) });
+
+    const pendingStart = service.start();
+    service.destroy();
+    resolveStream?.(stream);
+
+    await expect(pendingStart).rejects.toMatchObject({ code: 'request-failed' });
+    expect(track.stop).toHaveBeenCalledTimes(1);
+    expect(service.getSettings()).toBeNull();
+  });
+
   it('stops every active stream track and normalizes unexpected stream ending', async () => {
     const videoTrack = createFakeTrack();
     const extraStop = vi.fn();
