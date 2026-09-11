@@ -1,0 +1,15 @@
+name: Temporary Caddy Validate
+
+on:
+  pull_request:
+    paths:
+      - 'deploy/Caddyfile.example'
+      - '.github/workflows/validate-caddy-temp.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Caddyfile
+        run: docker run --rm -v "$PWD/deploy/Caddyfile.example:/etc/caddy/Caddyfile:ro" caddy:2.10.2-alpine caddy validate --config /etc/caddy/Caddyfile
