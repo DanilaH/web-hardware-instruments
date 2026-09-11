@@ -2,6 +2,7 @@
 import type { ToolId } from '../../config/tool-definitions';
 import { getSiteContent, type ImplementedContentLocale } from '../../i18n/content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import WebcamTest from '../../tools/camera/webcam/WebcamTest.astro';
 import BacklightBleedTest from '../../tools/display/backlight-bleed/BacklightBleedTest.astro';
 import DeadPixelTest from '../../tools/display/dead-pixel/DeadPixelTest.astro';
 import FpsTest from '../../tools/display/fps/FpsTest.astro';
@@ -58,6 +59,7 @@ const toolComponents = {
   'oled-burn-in-test': OledBurnInTest,
   'screen-resolution-checker': ScreenResolutionChecker,
   'touch-screen-test': TouchScreenTest,
+  'webcam-test': WebcamTest,
   'printer-test-page': PrinterTest,
 } as const;
 const ToolComponent = toolComponents[toolId];
