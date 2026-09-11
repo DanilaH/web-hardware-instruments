@@ -1,0 +1,106 @@
+name: Temporary Live Production Recheck
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-recheck-temp.yml'
+
+jobs:
+  live-recheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install browser audit dependencies
+        run: |
+          npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
+          npx playwright install --with-deps chromium
+      - name: Recheck live production
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          import AxeBuilder from '@axe-core/playwright';
+
+          const report = { http: {}, pages: {} };
+
+          const root = await fetch('https://hardwareinspect.com/', { redirect: 'manual' });
+          report.http.root = {
+            status: root.status,
+            hsts: root.headers.get('strict-transport-security'),
+          };
+          if (root.status !== 200) throw new Error(`Root status ${root.status}`);
+          if (root.headers.get('strict-transport-security') !== 'max-age=31536000') {
+            throw new Error(`Unexpected HSTS: ${root.headers.get('strict-transport-security')}`);
+          }
+
+          const www = await fetch('http://www.hardwareinspect.com/', { redirect: 'manual' });
+          report.http.httpWww = {
+            status: www.status,
+            location: www.headers.get('location'),
+          };
+          if (www.status !== 308) throw new Error(`http://www status ${www.status}`);
+          if (www.headers.get('location') !== 'https://hardwareinspect.com/') {
+            throw new Error(`Unexpected http://www location: ${www.headers.get('location')}`);
+          }
+
+          const browser = await chromium.launch({ headless: true });
+          try {
+            const checks = [
+              {
+                name: 'mouse-polling',
+                url: 'https://hardwareinspect.com/mouse-polling-rate-test',
+                selector: '[data-polling-surface]',
+              },
+              {
+                name: 'touch-screen',
+                url: 'https://hardwareinspect.com/touch-screen-test',
+                selector: '[data-touch-surface]',
+              },
+            ];
+
+            for (const check of checks) {
+              const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
+              const consoleErrors = [];
+              const pageErrors = [];
+              page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
+              page.on('pageerror', err => pageErrors.push(String(err)));
+
+              const response = await page.goto(check.url, { waitUntil: 'networkidle', timeout: 60000 });
+              const status = response?.status() ?? 0;
+              const role = await page.locator(check.selector).getAttribute('role');
+              const ariaLabel = await page.locator(check.selector).getAttribute('aria-label');
+              const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+              const axe = await new AxeBuilder({ page })
+                .withTags(['wcag2a', 'wcag2aa'])
+                .analyze();
+              const prohibited = axe.violations.filter(v => v.id === 'aria-prohibited-attr');
+
+              report.pages[check.name] = {
+                status,
+                role,
+                ariaLabel,
+                overflow,
+                consoleErrors,
+                pageErrors,
+                axeViolations: axe.violations.map(v => ({ id: v.id, impact: v.impact, nodes: v.nodes.length })),
+              };
+
+              if (status !== 200) throw new Error(`${check.name}: status ${status}`);
+              if (role !== 'region') throw new Error(`${check.name}: expected role=region, got ${role}`);
+              if (!ariaLabel) throw new Error(`${check.name}: missing aria-label`);
+              if (prohibited.length) throw new Error(`${check.name}: aria-prohibited-attr still present`);
+              if (overflow) throw new Error(`${check.name}: horizontal overflow`);
+              if (consoleErrors.length || pageErrors.length) {
+                throw new Error(`${check.name}: browser errors detected`);
+              }
+              await page.close();
+            }
+          } finally {
+            await browser.close();
+          }
+
+          console.log(JSON.stringify(report, null, 2));
+          NODE
