@@ -9,7 +9,7 @@ Exact implementation ownership remains:
   global + full-v1 exact algorithms / lifecycle / browser behavior
 
 23_HARDWARE_EXPANSION_V2_SPEC.md
-  exact approved Hardware Expansion V2 scope / route behavior / new capability boundaries /
+  exact Hardware Expansion V2 scope / route behavior / capability boundaries /
   V2 SEO patches / sequencing / route-specific QA
 
 20_POST_V1_HARDWARE_EXPANSION_SPEC.md
@@ -19,7 +19,7 @@ Exact implementation ownership remains:
   locale set / i18n architecture / localized routing / SEO / runtime strings / hreflang QA
 ```
 
-The E1.0 → E1.7 sequence recorded in older documents is completed development history, not the current implementation roadmap.
+The E1.0 → E1.7 sequence and the V2 atomic-wave sequence recorded in older documents are completed development history once Webcam merges, not an instruction to continue expanding scope.
 
 # 1. Business thesis
 
@@ -72,18 +72,18 @@ The tools remain globally usable. Localization changes presentation/search targe
 
 Do not create geo-specific product behavior or country-specific synonym-page trees merely because search wording differs. Spanish remains one general `/es/` locale unless first-party evidence later justifies regional splits.
 
-Hardware Expansion V2 has passed the project's expansion gate through completed research and a reviewed exact contract. Its approved jobs are:
+Hardware Expansion V2 passed the project's expansion gate through completed research and a reviewed exact contract. Its six approved jobs are implemented code-side once the Webcam wave merges:
 
 ```text
-/printer-test-page              implemented in the Printer wave
-/monitor-test                   implemented in the Monitor wave
-/screen-uniformity-test         implemented in the Screen Uniformity wave
-/oled-burn-in-test              implemented in the OLED Burn-In wave
-/screen-resolution-checker      implemented in the Screen Resolution Checker wave
-/webcam-test                    approved next wave
+/printer-test-page              Printer wave
+/monitor-test                   Monitor wave
+/screen-uniformity-test         Screen Uniformity wave
+/oled-burn-in-test              OLED Burn-In wave
+/screen-resolution-checker      Screen Resolution Checker wave
+/webcam-test                    Webcam wave
 ```
 
-Exact implementation and sequencing live in `23_HARDWARE_EXPANSION_V2_SPEC.md` and the non-normative execution plan in `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md`.
+Exact behavior remains governed by `23_HARDWARE_EXPANSION_V2_SPEC.md`. The wave order in `24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md` becomes implementation history after completion.
 
 # 3. Core product promise
 
@@ -114,7 +114,7 @@ optional lightweight analytics
 future display ads
 ```
 
-Localization must preserve static generation and single-source diagnostic logic. Expansion V2 must preserve the same low-maintenance operating model.
+Localization and hardware expansion must preserve static generation and single-source diagnostic logic.
 
 Avoid features that create recurring operational burden without strong evidence of value:
 
@@ -128,7 +128,7 @@ paid runtime APIs
 manual hardware catalogs
 ```
 
-Camera access in V2 is permissioned local browser media when Webcam ships. Printer output is a generated local reference sent through browser printing. Neither creates a server-side media/document pipeline.
+Webcam uses permissioned local browser media only. Printer output is a generated local reference sent through browser printing. Neither creates a server-side media/document pipeline.
 
 # 5. Product and visual boundary
 
@@ -146,7 +146,7 @@ controlled diagnostic patterns
 
 Every visual must improve task execution, state recognition, or diagnostic understanding.
 
-Localization may require copy/layout adjustments, and V2 adds Camera/Printer taxonomy, but neither is permission to redesign the visual system or create a seven-color rainbow taxonomy.
+Localization may require copy/layout adjustments. Camera and Printer are implemented taxonomy channels, but neither is permission to redesign the visual system or create a seven-color rainbow taxonomy.
 
 # 6. SEO boundary
 
@@ -164,11 +164,11 @@ Tool first. Supporting search content comes after the primary interaction/result
 
 Localized versions of the **same** semantic tool are allowed and expected under approved locale prefixes. They are language alternates, not independent new product intents.
 
-Expansion V2 explicitly absorbs nearby synonym/sub-intent phrases into the six approved canonical routes rather than creating a route zoo. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns those boundaries.
+Expansion V2 absorbs nearby synonym/sub-intent phrases into its six canonical routes rather than creating a route zoo. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns those boundaries.
 
-# 7. Current implemented catalog and approved next waves
+# 7. Current implemented catalog
 
-Full-v1, Hardware Expansion 1, localization, V2 Foundation, Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are code-side implementation scope after the Screen Resolution Checker wave.
+Full-v1, Hardware Expansion 1, localization, and Hardware Expansion V2 are code-side implementation scope once the Webcam wave merges.
 
 Current implemented production jobs:
 
@@ -205,24 +205,20 @@ Display
 Touch
 /touch-screen-test
 
+Camera
+/webcam-test
+
 Printer
 /printer-test-page
 ```
 
-Localization provides the approved language alternates for these same **23 jobs**.
+Localization provides approved language alternates for these same **24 jobs**.
 
-Approved V2 jobs not yet part of the current catalog until their own atomic waves merge:
-
-```text
-Camera
-/webcam-test
-```
-
-The remaining Webcam route becomes part of the current catalog only when its coherent block is actually merged with complete locale/content/SEO/tool implementation. No placeholder or empty Camera homepage category.
+There are no remaining pre-approved V2 placeholder routes. Future production expansion returns to the evidence gate below.
 
 # 8. Expansion rule
 
-A new tool outside the implemented catalog is normally built only when at least one strong reason exists:
+A new tool outside the implemented catalog is built only when at least one strong reason exists:
 
 ```text
 research validates independent demand/opportunity
@@ -232,8 +228,6 @@ the tool materially strengthens a successful existing cluster
 
 Being technically possible is not enough.
 
-Expansion V2 satisfies this gate only for the six routes explicitly approved in `23_HARDWARE_EXPANSION_V2_SPEC.md`.
-
 The following remain WATCH, not current commitments:
 
 ```text
@@ -242,7 +236,7 @@ GPU browser test / stress test
 monitor ghosting test
 ```
 
-Adding a new **language version of an existing approved tool** is not a new diagnostic-scope expansion; it is governed by `22_LOCALIZATION_SPEC.md` and the approved locale decision.
+Adding a new **language version of an existing approved tool** is not a new diagnostic-scope expansion; it is governed by `22_LOCALIZATION_SPEC.md` and a separate locale decision.
 
 Future Audio/CPS/latency/other utility ideas remain out of scope until they independently satisfy this gate and receive a reviewed exact contract before implementation.
 
@@ -266,6 +260,8 @@ controlled reference
 Do not silently upgrade browser observations into hardware certification, pass/fail verdicts, warranty claims, inferred device health, exact physical panel resolution, exact printer color/nozzle state, or exact camera quality.
 
 Screen Resolution Checker reports browser-exposed CSS screen/viewport values plus an explicitly estimated `Math.round(css × DPR)` device-pixel size. It must never relabel that estimate as native or physical panel resolution.
+
+Webcam Test reports a permissioned browser media stream and track/browser-reported values. It does not score image quality, record/upload video, or claim sensor-level specifications beyond what the active track reports.
 
 Translation must preserve the same epistemic strength. A localized phrase that sounds more certain than the English source is wrong even if linguistically natural.
 
@@ -336,7 +332,7 @@ For localization and V2, evaluate page/query/country evidence separately where p
 
 A technically working site does not prove the business hypothesis. Early low traffic is also not proof of failure before a reasonable indexing/ranking window.
 
-After V2 ships, pause broad expansion research and use first-party GSC/query evidence to decide whether another diagnostic deserves production work.
+After V2, pause broad expansion work and use first-party GSC/query evidence to decide whether another diagnostic deserves production work.
 
 # 13. Monetization boundary
 
