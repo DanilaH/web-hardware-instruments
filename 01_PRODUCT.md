@@ -56,11 +56,11 @@ collect indexing/impression/query evidence
 expand only when research, Search Console, or material cluster value supports the next page
 ```
 
-Post-v1 Hardware Expansion 1 has already passed that promotion gate through completed search/SERP research and cluster-fit review. Its approved scope and exact implementation contract live in `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Post-v1 Hardware Expansion 1 passed that promotion gate through completed search/SERP research and cluster-fit review. Hardware Expansion V2 later passed the same gate for exactly the six jobs governed by `23_HARDWARE_EXPANSION_V2_SPEC.md`; those jobs still ship in atomic reviewed waves rather than appearing as placeholders.
 
-Do not reclassify approved Expansion 1 routes as unvalidated backlog during implementation. Future scope outside Expansion 1 still follows the normal validation rule.
+Do not reclassify approved Expansion 1 or V2 routes as unvalidated backlog during their implementation. Future scope outside the approved V2 set still follows the normal validation rule.
 
-Public deployment is currently deferred until a real production domain is purchased. That sequencing decision does not weaken the evidence requirement for future expansion or the quality gates for approved routes.
+The production origin is live at `https://hardwareinspect.com` with indexing enabled. Historical planning text about deferring public deployment until a domain purchase is obsolete; current release state is verified from production/Search Console evidence under `19_GLOBAL_GOALS_AND_RELEASE_STRATEGY.md` and `12_LAUNCH_PLAN.md`.
 
 ## Product priority order
 
@@ -100,7 +100,7 @@ Feature richness is deliberately last.
 
 - Verify that physical key presses register
 
-These describe the completed full-v1 catalog. Approved post-v1 Mouse, Touch, Keyboard, and Display jobs are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; do not duplicate their exact semantics here.
+These describe the completed full-v1 catalog. Approved post-v1 Mouse, Touch, Keyboard, and Display jobs are defined in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; approved V2 jobs such as Printer Test Page are defined in `23_HARDWARE_EXPANSION_V2_SPEC.md`. Do not duplicate their exact semantics here.
 
 ## Core UX promise
 
@@ -139,7 +139,7 @@ Do not require scrolling between input and result where the desktop one-screen g
 
 The result should appear in the same tool region whenever possible.
 
-Touch/mobile-first diagnostics follow their explicit device-class acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` rather than forcing a desktop-shaped interaction onto mobile hardware.
+Touch/mobile-first diagnostics follow their explicit device-class acceptance rules in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` rather than forcing a desktop-shaped interaction onto mobile hardware. V2 routes may define their own device/output-specific acceptance in `23_HARDWARE_EXPANSION_V2_SPEC.md`.
 
 ## Primary action rule
 
@@ -151,6 +151,7 @@ Examples:
 Start test
 Measure DPI
 Connect / press any controller button
+Print Test Page
 ```
 
 If no explicit action is necessary, start automatically after the required device/input is available.
@@ -185,6 +186,7 @@ Estimated
 Browser-reported
 Measured in this browser session
 Visual inspection
+Controlled reference
 ```
 
 Avoid:
@@ -195,6 +197,7 @@ Exact monitor Hz
 Exact physical latency
 Guaranteed hardware DPI
 Automatic hardware-health verdicts from browser observation
+Exact printer telemetry/nozzle state from a printable reference
 ```
 
 ## Product principles
@@ -208,7 +211,7 @@ Automatic hardware-health verdicts from browser observation
 7. Result near the action
 8. No login
 9. No install
-10. No upload of raw test data
+10. No upload of raw test data/documents/media
 11. Honest limitations
 12. No fake diagnostics
 13. No decorative complexity
@@ -229,7 +232,7 @@ Automatic hardware-health verdicts from browser observation
 - technical details do not dominate the primary tool;
 - static page content remains crawlable.
 
-Expansion 1 adds route-specific code-complete and release-ready criteria in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` and `14_DEFINITION_OF_DONE.md`.
+Expansion 1 adds route-specific code-complete and release-ready criteria in `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`; Expansion V2 adds its route-specific criteria in `23_HARDWARE_EXPANSION_V2_SPEC.md`; cross-project completion gates remain in `14_DEFINITION_OF_DONE.md`.
 
 ## Non-goals
 
