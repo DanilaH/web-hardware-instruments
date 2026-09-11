@@ -66,9 +66,11 @@ describe('display pattern references', () => {
     );
   });
 
-  it('wraps manual navigation in both directions', () => {
+  it('wraps manual navigation for Monitor and Uniformity sequence lengths', () => {
     expect(moveDisplayPatternIndex(0, -1, 12)).toBe(11);
     expect(moveDisplayPatternIndex(11, 1, 12)).toBe(0);
     expect(moveDisplayPatternIndex(5, 1, 12)).toBe(6);
+    expect(moveDisplayPatternIndex(0, -1, 6)).toBe(5);
+    expect(moveDisplayPatternIndex(5, 1, 6)).toBe(0);
   });
 });
