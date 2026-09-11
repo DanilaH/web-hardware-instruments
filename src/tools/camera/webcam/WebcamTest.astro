@@ -1,0 +1,271 @@
+---
+import ToolShell from '../../../components/tool-shell/ToolShell.astro';
+import type { ImplementedContentLocale } from '../../../i18n/content';
+import { getWebcamRuntimeMessages } from '../../../i18n/runtime/webcam';
+
+interface Props { locale?: ImplementedContentLocale; }
+const { locale = 'en' } = Astro.props;
+const messages = getWebcamRuntimeMessages(locale);
+---
+
+<ToolShell labelledBy="webcam-tool-heading">
+  <h2 id="webcam-tool-heading" class="webcam-tool__sr">{messages.controlsHeading}</h2>
+
+  <div class="webcam-tool" data-webcam-test data-messages={JSON.stringify(messages)} data-state="idle">
+    <div class="webcam-status-row">
+      <span class="webcam-status-dot" aria-hidden="true"></span>
+      <strong data-webcam-status role="status" aria-live="polite" aria-atomic="true">{messages.privacy}</strong>
+    </div>
+
+    <div class="webcam-actions">
+      <button type="button" class="webcam-action webcam-action--primary" data-webcam-start>{messages.start}</button>
+      <button type="button" class="webcam-action" data-webcam-stop hidden>{messages.stop}</button>
+    </div>
+
+    <div class="webcam-preview" data-webcam-preview hidden>
+      <video
+        data-webcam-video
+        autoplay
+        muted
+        playsinline
+        aria-label={messages.currentCamera}
+      ></video>
+      <div class="webcam-preview__frame" aria-hidden="true"></div>
+    </div>
+
+    <div class="webcam-select-row" data-webcam-select-row hidden>
+      <label for="webcam-device-select">{messages.cameraSelect}</label>
+      <select id="webcam-device-select" data-webcam-select></select>
+    </div>
+
+    <section class="webcam-details" data-webcam-details aria-labelledby="webcam-stream-info-heading" hidden>
+      <h3 id="webcam-stream-info-heading">{messages.streamInfo}</h3>
+      <dl class="webcam-metrics">
+        <div class="webcam-metric webcam-metric--camera">
+          <dt>{messages.currentCamera}</dt>
+          <dd data-webcam-camera-name>{messages.currentCamera}</dd>
+        </div>
+        <div class="webcam-metric">
+          <dt>{messages.resolution}</dt>
+          <dd data-webcam-resolution>{messages.unavailableValue}</dd>
+        </div>
+        <div class="webcam-metric">
+          <dt>{messages.frameRate}</dt>
+          <dd data-webcam-frame-rate>{messages.unavailableValue}</dd>
+        </div>
+        <div class="webcam-metric">
+          <dt>{messages.aspectRatio}</dt>
+          <dd data-webcam-aspect-ratio>{messages.unavailableValue}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</ToolShell>
+
+<script>
+  import type { WebcamRuntimeMessages } from '../../../i18n/runtime/webcam';
+  import { mountWebcamTest } from './webcam-controller';
+
+  const root = document.querySelector<HTMLElement>('[data-webcam-test]');
+  if (root) {
+    const messages = JSON.parse(root.dataset.messages ?? '{}') as WebcamRuntimeMessages;
+    const controller = mountWebcamTest(root, messages);
+
+    window.addEventListener('pagehide', (event) => {
+      if (event.persisted) {
+        controller.stop();
+        return;
+      }
+      controller.destroy();
+    });
+  }
+</script>
+
+<style>
+  .webcam-tool {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .webcam-status-row {
+    min-height: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .webcam-status-row strong {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .webcam-status-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-top: 0.35rem;
+    flex: 0 0 auto;
+    border: 1px solid #aeb4b7;
+    border-radius: 50%;
+    background: #dfe2e3;
+  }
+
+  .webcam-tool[data-state='working'] .webcam-status-dot {
+    border-color: #8b7a54;
+    background: #c2aa72;
+  }
+
+  .webcam-tool[data-state='live'] .webcam-status-dot {
+    border-color: #4f8064;
+    background: #65a17e;
+  }
+
+  .webcam-tool[data-state='error'] .webcam-status-dot {
+    border-color: #8c5555;
+    background: #b36a6a;
+  }
+
+  .webcam-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .webcam-action {
+    min-height: 2.65rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid #cfd4d6;
+    border-radius: 0.55rem;
+    background: #fff;
+    color: var(--color-text);
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .webcam-action--primary {
+    border-color: #283236;
+    background: #283236;
+    color: #fff;
+  }
+
+  .webcam-action:hover:not(:disabled) { border-color: #8d969a; }
+  .webcam-action--primary:hover:not(:disabled) { border-color: #111719; background: #111719; }
+  .webcam-action:disabled { cursor: wait; opacity: 0.58; }
+  .webcam-action:focus-visible,
+  .webcam-select-row select:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-signal) 28%, transparent); outline-offset: 2px; }
+
+  .webcam-preview {
+    position: relative;
+    height: clamp(13.5rem, 34vh, 18rem);
+    overflow: hidden;
+    border: 1px solid #cfd4d6;
+    border-radius: 0.75rem;
+    background: #111719;
+  }
+
+  .webcam-preview video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    background: #111719;
+  }
+
+  .webcam-preview__frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.2);
+  }
+
+  .webcam-select-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #e3e6e7;
+  }
+
+  .webcam-select-row label {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    font-weight: 650;
+  }
+
+  .webcam-select-row select {
+    min-width: 0;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid #cfd4d6;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: var(--color-text);
+    font: inherit;
+  }
+
+  .webcam-details {
+    padding-top: 0.15rem;
+  }
+
+  .webcam-details h3 {
+    margin: 0 0 0.45rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .webcam-metrics {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-block: 1px solid #e3e6e7;
+  }
+
+  .webcam-metric {
+    min-width: 0;
+    padding: 0.65rem 0.75rem;
+    border-right: 1px solid #e3e6e7;
+  }
+
+  .webcam-metric:last-child { border-right: 0; }
+  .webcam-metric dt { color: var(--color-muted); font-size: 0.7rem; line-height: 1.3; }
+  .webcam-metric dd { margin: 0.25rem 0 0; overflow-wrap: anywhere; font-size: 0.95rem; font-weight: 700; line-height: 1.25; }
+  .webcam-metric--camera dd { font-size: 0.86rem; }
+
+  .webcam-tool__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 52rem) {
+    .webcam-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .webcam-metric:nth-child(2) { border-right: 0; }
+    .webcam-metric:nth-child(-n + 2) { border-bottom: 1px solid #e3e6e7; }
+  }
+
+  @media (max-width: 34rem) {
+    .webcam-actions { display: grid; grid-template-columns: 1fr; }
+    .webcam-action { width: 100%; }
+    .webcam-preview { height: clamp(11rem, 36vh, 14rem); }
+    .webcam-select-row { grid-template-columns: 1fr; gap: var(--space-2); }
+    .webcam-metrics { grid-template-columns: 1fr; }
+    .webcam-metric,
+    .webcam-metric:nth-child(2) { border-right: 0; border-bottom: 1px solid #e3e6e7; }
+    .webcam-metric:last-child { border-bottom: 0; }
+  }
+</style>

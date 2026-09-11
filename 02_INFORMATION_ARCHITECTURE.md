@@ -109,6 +109,22 @@ One substantial route owns:
 
 Do not split thin synonym Touch routes without fresh query evidence.
 
+### Camera
+
+```text
+/webcam-test
+```
+
+One substantial route owns:
+
+- explicit-action browser camera permission;
+- a local live video preview;
+- selected-camera switching when multiple video inputs are enumerated after permission;
+- browser/track-reported stream resolution, frame rate when available, and aspect ratio;
+- clean stream stop/release on stop, switching and navigation.
+
+Camera is a singleton channel. Webcam Test does not request microphone audio, record or upload media, persist snapshots, score camera quality, or expose unrelated RelatedTools.
+
 ### Printer
 
 ```text
@@ -136,6 +152,7 @@ Mouse
 Keyboard
 Display
 Touch
+Camera
 Printer
 ```
 
@@ -150,7 +167,7 @@ Homepage rules:
 - prefer a compact multi-column list on desktop and one column on narrow mobile;
 - do not add autoplay previews, dashboard metrics, filters, search, or category tabs unless future catalog scale creates a real need.
 
-Printer appears as a neutral output/reference channel. The homepage browser-boundary model may describe locally rendered test patterns, but must not imply printer telemetry or hardware acquisition.
+Camera and Printer use neutral taxonomy treatment. The homepage browser-boundary model may describe permissioned local camera input and locally rendered print references, but must not imply media upload, printer telemetry or broader hardware access.
 
 ## Related-tool model
 
@@ -217,11 +234,14 @@ Frame Skipping
 ↔ Refresh Rate
 ↔ FPS
 
+Webcam Test
+→ no RelatedTools while Camera remains a singleton channel
+
 Printer Test Page
 → no RelatedTools while Printer remains a singleton channel
 ```
 
-This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count, and do not link to approved-but-unimplemented V2 routes.
+This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count.
 
 ## Supporting routes
 

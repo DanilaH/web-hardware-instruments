@@ -139,6 +139,34 @@ Expansion 1 adds `TouchInputService`, specialized for finger-touch Pointer Event
 
 Mouse/pen input must not be normalized as touch.
 
+### Camera
+
+Webcam Test uses the V2 `CameraService` as its single media-acquisition boundary.
+
+```text
+ToolPage
+  ↓
+WebcamTest.astro / webcam-controller.ts
+  ↓
+CameraService
+  ↓
+navigator.mediaDevices
+```
+
+`CameraService` owns:
+
+- `getUserMedia` feature detection and video-only acquisition;
+- optional video-device enumeration after permission;
+- selected-device switching;
+- active stream/track ownership;
+- browser-reported track settings;
+- normalized acquisition errors and stream-ended handling;
+- stopping/releasing every active track on stop/destroy/replacement.
+
+The tool controller owns presentation state, `<video>` attachment, localized status/errors, device-select UI and formatting of track settings. It never requests microphone audio, records/captures media, uploads frames, or introduces a backend.
+
+A failed switch must not destroy a still-valid existing stream. A successful switch replaces the prior stream and stops its tracks cleanly.
+
 ### Printer
 
 Printer Test Page has **no printer capability service**.
@@ -165,7 +193,7 @@ It owns feature detection/request/exit/state observation/cleanup only. It is not
 
 ### Localization / V2 content composition
 
-The original six locale files remain the strict source for the pre-V2 catalog. Expansion V2 jobs may use **tool-local exhaustive locale bundles** to avoid repeatedly rewriting six very large files, provided all of these rules hold:
+The original six locale files remain the strict source for the pre-V2 catalog. Expansion V2 jobs use **tool-local exhaustive locale bundles** where appropriate to avoid repeatedly rewriting six very large files, provided all of these rules hold:
 
 ```text
 one approved ToolId
@@ -177,7 +205,9 @@ one approved ToolId
 
 This is not a second locale-availability system and does not allow fallback content. A modular V2 ToolId enters the type unions only in the same atomic wave that registers its real tool implementation. `getSiteContent(locale)` remains the single resolved content API consumed by pages/homepage/navigation.
 
-Tool-local runtime strings may likewise use one exhaustive `Record<Locale, ...>` module when the new tool has self-contained controls. Existing global runtime-message contracts remain unchanged unless the shared runtime architecture itself needs to change.
+Tool-local runtime strings may likewise use one exhaustive `Record<Locale, ...>` module when the tool has self-contained controls. Existing global runtime-message contracts remain unchanged unless the shared runtime architecture itself needs to change.
+
+Webcam additionally composes the camera privacy statements into all six resolved Privacy pages in the same atomic wave as the route; camera privacy text must not exist as a false product claim before camera acquisition is actually shipped.
 
 ### Analytics
 
@@ -196,6 +226,8 @@ interface ToolController {
 ```
 
 Cleanup includes relevant event listeners, rAF loops, timers, pointer lock, fullscreen observers/state, temporary print DOM/styles, media tracks, resize/orientation listeners, and subscriptions.
+
+Camera pagehide/navigation must stop the active stream. A bfcache restore does not silently reacquire camera access; the user can explicitly start it again.
 
 ## TypeScript
 
@@ -228,9 +260,10 @@ Use native, purpose-specific rendering:
 
 ```text
 DOM/CSS → controls, text, result readouts, keyboard, simple state surfaces,
-          deterministic display patterns/gradients/grids
+          deterministic display patterns/gradients/grids, webcam preview shell
 SVG     → controller, stick plots, deadzone geometry, mouse/touch visuals, printable vector references
 Canvas  → FPS/refresh traces and Frame Skipping pattern
+video   → permissioned Webcam media stream preview
 ```
 
 Do not add a charting library.
@@ -253,11 +286,12 @@ pressed keys
 mouse movement/button/wheel streams
 touch contact streams
 frame timing series
+camera video frames
 ```
 
 remain local by default.
 
-Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry. Screen Resolution Checker reads only browser-exposed screen/viewport values and requests no screen-enumeration permission.
+Printer reference markup is generated locally and no document/printer telemetry is uploaded. Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry. Screen Resolution Checker reads only browser-exposed screen/viewport values and requests no screen-enumeration permission. Webcam video remains attached locally to the page's `<video>` element; Hardware Inspect does not record, upload or persist it.
 
 Analytics may record only coarse product events such as:
 
@@ -267,13 +301,13 @@ tool_completed
 unsupported_browser
 ```
 
-Do not send raw key presses, pointer/touch streams, frame samples, document contents, or device identifiers.
+Do not send raw key presses, pointer/touch streams, frame samples, camera frames, document contents, or device identifiers.
 
 ## Error handling
 
 Browser feature failures must be represented as user-readable states.
 
-Do not throw uncaught exceptions for unsupported APIs.
+Do not throw uncaught exceptions or expose raw exception stacks for unsupported/denied/unreadable media APIs.
 
 ## Feature detection
 
@@ -322,7 +356,7 @@ TouchInputService
 ### Expansion V2
 
 ```text
-CameraService   only when Webcam ships
+CameraService
 ```
 
 Printer Test Page explicitly has no PrinterService. The Fullscreen helper, Display Pattern Engine, and screen-info helper are separate from this acquisition-service list.
@@ -338,7 +372,7 @@ A capability service may contain:
 - polling;
 - normalization;
 - typed snapshots/samples/events;
-- subscriptions;
+- subscriptions/callbacks required for acquisition lifecycle;
 - lifecycle/cleanup;
 - directly relevant browser quirks.
 
@@ -374,11 +408,12 @@ This is a small correctness boundary, not an architecture project.
 
 For approved acquisition services:
 
-- `subscribe()` never implicitly starts acquisition;
-- the owning tool controller explicitly starts acquisition when appropriate;
-- `stop()` stops polling/listeners but keeps the instance reusable;
-- `destroy()` is idempotent, stops acquisition, removes remaining listeners/subscribers, and makes the instance unusable;
-- only one active listener/loop set exists per service instance/capability on a page.
+- acquisition starts only from the owning tool's explicit lifecycle/action;
+- `stop()` stops/releases native acquisition while keeping the instance reusable where the service contract allows it;
+- `destroy()` is idempotent, stops acquisition, removes remaining listeners/subscribers/callback ownership, and makes the instance unusable;
+- only one active listener/loop/stream set exists per service instance/capability on a page.
+
+For `CameraService`, successful switching acquires the replacement before releasing the previous valid stream; stop/destroy/replacement stop every track they own.
 
 Because Astro navigation is page-based, a fresh service instance per tool-page load is expected. No cross-page singleton is required.
 
@@ -387,6 +422,8 @@ Because Astro navigation is page-based, a fresh service instance per tool-page l
 Use plain CSS, CSS custom properties, and Astro-scoped styles.
 
 Do not add Tailwind, CSS-in-JS runtime, or component/UI library.
+
+Camera and Printer use the neutral taxonomy channel by default rather than creating new bright channel colors; semantic live/error state may use restrained success/error colors inside the tool.
 
 ## Runtime dependency boundary
 

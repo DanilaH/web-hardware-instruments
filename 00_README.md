@@ -4,7 +4,7 @@ This repository contains a static Astro catalog of browser-based hardware diagno
 
 ## Current state
 
-The full-v1 catalog, Hardware Expansion 1, localization, and the Hardware Expansion V2 Foundation are **code-side complete and audited**. Expansion V2 is shipping in atomic production-valid waves; Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker are the first five V2 jobs added after Foundation.
+The full-v1 catalog, Hardware Expansion 1, localization, and Hardware Expansion V2 are **code-side complete and audited** once the Webcam wave merges. Expansion V2 shipped atomically as Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, Screen Resolution Checker, and Webcam Test.
 
 The production origin is configured as:
 
@@ -15,9 +15,9 @@ indexingEnabled = true
 
 Do not revert the product to the historical `hardware-testing.invalid` placeholder. Whether every external release step (real-device QA, deployment smoke, Search Console verification, sitemap submission) has been completed must be reported from current evidence rather than inferred from old planning text.
 
-Implemented locales remain `en`, `pt-BR`, `de`, `fr`, `es`, and `ru`. Every registered V2 ToolId must ship atomically across the same six locales under `23_HARDWARE_EXPANSION_V2_SPEC.md` and the routing/i18n architecture of `22_LOCALIZATION_SPEC.md`.
+Implemented locales remain `en`, `pt-BR`, `de`, `fr`, `es`, and `ru`. Every registered V2 ToolId ships atomically across the same six locales under `23_HARDWARE_EXPANSION_V2_SPEC.md` and the routing/i18n architecture of `22_LOCALIZATION_SPEC.md`.
 
-Implemented diagnostic routes after the Screen Resolution Checker wave:
+Implemented diagnostic routes after the Webcam wave:
 
 ```text
 Controller
@@ -51,6 +51,9 @@ Display
 
 Touch
 /touch-screen-test
+
+Camera
+/webcam-test
 
 Printer
 /printer-test-page
@@ -106,7 +109,7 @@ Use the narrowest document that owns the decision:
 
 If two documents appear to conflict on an exact behavior, do not average them. Prefer the document that explicitly owns that route/boundary; if ownership is still ambiguous, resolve the documentation before changing product code.
 
-`23_HARDWARE_EXPANSION_V2_SPEC.md` owns V2 jobs such as Printer Test Page, Monitor Test, Screen Uniformity Test, OLED Burn-In Test, and Screen Resolution Checker. `22_LOCALIZATION_SPEC.md` still owns locale routing/canonical/hreflang architecture and does not override diagnostic or capability semantics.
+`23_HARDWARE_EXPANSION_V2_SPEC.md` owns the six V2 jobs, including Webcam Test and its `CameraService` boundary. `22_LOCALIZATION_SPEC.md` still owns locale routing/canonical/hreflang architecture and does not override diagnostic or capability semantics.
 
 ## Supporting documents
 
@@ -126,7 +129,7 @@ These documents provide focused reference but do not override the ownership map 
 11_IMPLEMENTATION_PLAN.md         completed implementation history
 15_BACKLOG.md                     evidence-gated future opportunities
 24_EXPANSION_V2_IMPLEMENTATION_ROADMAP.md
-                                  non-normative atomic execution plan for approved V2 scope
+                                  non-normative execution history for the completed V2 scope
 ```
 
 `03_TOOL_SPECS.md` was written around full v1 and remains useful for those original route contracts. `04_UX_UI.md` preserves durable task-first UX framing but defers exact current visual grammar to `17_FUNCTIONAL_VISUAL_SYSTEM.md`.

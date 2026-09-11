@@ -23,6 +23,7 @@ export const toolIds = [
   'oled-burn-in-test',
   'screen-resolution-checker',
   'touch-screen-test',
+  'webcam-test',
   'printer-test-page',
 ] as const;
 
@@ -58,6 +59,7 @@ export const toolDefinitions: readonly ToolDefinition[] = [
   { id: 'oled-burn-in-test', href: '/oled-burn-in-test', icon: 'dead-pixel', channel: 'display' },
   { id: 'screen-resolution-checker', href: '/screen-resolution-checker', icon: 'refresh', channel: 'display' },
   { id: 'touch-screen-test', href: '/touch-screen-test', icon: 'touch', channel: 'touch' },
+  { id: 'webcam-test', href: '/webcam-test', icon: 'camera', channel: 'camera' },
   { id: 'printer-test-page', href: '/printer-test-page', icon: 'printer', channel: 'printer' },
 ];
 
@@ -84,6 +86,7 @@ const relatedToolIds = {
   'oled-burn-in-test': ['screen-uniformity-test', 'monitor-test', 'dead-pixel-test'],
   'screen-resolution-checker': ['monitor-test', 'refresh-rate-test', 'screen-uniformity-test'],
   'touch-screen-test': ['dead-pixel-test', 'backlight-bleed-test'],
+  'webcam-test': [],
   'printer-test-page': [],
 } as const satisfies Record<ToolId, readonly ToolId[]>;
 

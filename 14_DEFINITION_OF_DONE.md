@@ -30,13 +30,15 @@ OLED Burn-In Test follows its persistent-image inspection acceptance rules in `2
 
 Screen Resolution Checker follows its browser-information acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: immediate browser-reported screen size, clearly labelled estimated device-pixel dimensions, viewport/available-area/DPR/color-depth/orientation details, resize/orientation updates, no permission request, and no native-panel-resolution claim.
 
+Webcam Test follows its media-acquisition acceptance rules in `23_HARDWARE_EXPANSION_V2_SPEC.md`: permission only after Start Camera, local live preview, video-only acquisition, actionable failure states, optional post-permission camera switching, browser/track-reported stream information, explicit Stop Camera, and no recording/upload/quality score.
+
 Localized pages must preserve the same UX gate despite longer/shorter translated strings. Translation is not permission to move the primary task below the fold or introduce English fallback copy into the main interaction.
 
 Failure here blocks completion even when code and tests are technically correct.
 
 ## 2. Current product catalog
 
-After the Screen Resolution Checker Expansion V2 wave, the implemented catalog contains 23 tools:
+After the Webcam Expansion V2 wave, the implemented catalog contains 24 tools:
 
 ### Controller
 
@@ -85,6 +87,12 @@ After the Screen Resolution Checker Expansion V2 wave, the implemented catalog c
 /touch-screen-test
 ```
 
+### Camera
+
+```text
+/webcam-test
+```
+
 ### Printer
 
 ```text
@@ -95,7 +103,7 @@ Supporting public routes include `/`, `/about`, `/privacy`, and `/404` behavior.
 
 Every listed tool is a real implementation, not a placeholder.
 
-`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns implemented/approved V2 route behavior and capability boundaries. `22_LOCALIZATION_SPEC.md` owns approved locale routing/content/i18n/SEO architecture. The old sequential implementation order is historical process context, not an ongoing completion requirement.
+`18_DECISIONS_AND_BOUNDARIES.md` owns exact durable full-v1 measurement/browser decisions. `20_POST_V1_HARDWARE_EXPANSION_SPEC.md` remains the exact contract for Expansion 1 behavior. `23_HARDWARE_EXPANSION_V2_SPEC.md` owns V2 route behavior and capability boundaries. `22_LOCALIZATION_SPEC.md` owns approved locale routing/content/i18n/SEO architecture. Completed wave order is historical process context, not an ongoing scope commitment.
 
 ## 3. Code-complete gate
 
@@ -108,7 +116,7 @@ A change is code-complete only when its affected routes/components satisfy all a
 - unsupported/cancelled/waiting states are readable;
 - target visual/headless review passes;
 - measurement wording remains honest;
-- raw input remains local;
+- raw input/media remains local;
 - no unrelated product scope leaks into the change;
 - final self-review is performed on the final diff;
 - build, typecheck, tests, and required CI are green after review.
@@ -125,7 +133,9 @@ For localization work, code-complete additionally requires:
 
 For an Expansion V2 ToolId, code-complete additionally requires complete content/runtime UI for all six currently implemented locales before route generation is treated as releasable. No English placeholder fallback.
 
-Mock/headless browser input may validate state, rendering, geometry and locale output. It is never proof of real hardware or physical print behavior.
+For Webcam, all six resolved Privacy pages must also state that camera processing is local and camera video is not uploaded, recorded or stored by Hardware Inspect.
+
+Mock/headless browser input may validate state, rendering, geometry, locale output and service lifecycle. It is never proof of real hardware behavior, a physical camera environment or physical print behavior.
 
 ## 4. Release-ready gate
 
@@ -138,13 +148,16 @@ Examples include:
 - real touch-device coverage/multi-touch/fullscreen smoke;
 - real keyboard simultaneous-key/guided-combination smoke;
 - real display/fullscreen inspection flow;
-- real camera evidence workflow for Frame Skipping.
+- real camera evidence workflow for Frame Skipping;
+- real permission/live-preview/stop/switch smoke for Webcam Test.
 
 Monitor Test, Screen Uniformity Test, and OLED Burn-In Test are visual-inspection routes. Release readiness requires browser/fullscreen/fallback/input smoke on a real display, but such smoke does not prove that the panel has or lacks pixel, uniformity, luminance, tint, banding, clouding, mura, DSE, burn-in, retention, black-level, white-level, geometry, or sharpness defects.
 
 Screen Resolution Checker is a browser-information route rather than a hardware measurement. Release readiness requires resize/orientation smoke in representative browsers and confirmation that reported/estimated terminology stays intact; it does not require or prove access to the monitor's exact native/physical panel resolution.
 
-Printer Test Page is different: it does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
+Webcam Test requires a real browser/camera smoke for explicit permission, one-camera preview, Stop cleanup, and device switching where multiple cameras are available. A mocked `MediaStream` proves service/controller behavior but is not evidence of a real camera/browser combination or image quality.
+
+Printer Test Page does not acquire printer hardware. Release readiness requires browser print-path QA for Chrome and Firefox, A4 and Letter portrait, Actual Size guidance, hidden site chrome, and printable foreground/vector references. Automated/headless print-media checks are not proof of physical printer output.
 
 A route may be code-complete while external hardware is unavailable. Do not claim validation that did not occur.
 
@@ -184,7 +197,7 @@ For localized release, additionally verify:
 - no forced IP/geography redirect is introduced;
 - primary UI/runtime content does not leak English unexpectedly.
 
-Do not treat mock/headless checks as proof of real hardware or real printed output.
+Do not treat mock/headless checks as proof of real hardware, real camera output or real printed output.
 
 ## 6. Tool-specific durable boundaries
 
@@ -286,6 +299,21 @@ browser-reported CSS screen/viewport values
 
 No permission, Multi-Screen Window Placement request, EDID/native-panel readout, physical-pixel certification, or claim that the estimate is exact hardware resolution. Resize and relevant orientation changes must refresh applicable values.
 
+### Webcam Test
+
+Exact permission/stream/device/lifecycle semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
+
+Durable boundary:
+
+```text
+explicit Start Camera
+→ permissioned getUserMedia({ video: true, audio: false })
+→ local live preview + browser/track-reported stream information
+→ explicit stop/switch/navigation cleanup
+```
+
+No microphone permission, recording, snapshot persistence, frame upload, backend media path, camera-quality score, or claim that track settings equal the camera sensor's maximum hardware specifications. Enumeration is post-permission and optional to the one-camera flow.
+
 ### Printer Test Page
 
 Exact paper/profile/output semantics remain owned by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
@@ -304,21 +332,22 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 
 - Astro static output;
 - strict TypeScript with `noUncheckedIndexedAccess`;
-- plain CSS and native DOM/SVG/Canvas;
+- plain CSS and native DOM/SVG/Canvas/video;
 - shared typed `GamepadService`;
 - shared typed `FrameSampler`;
 - `KeyboardInputService` owns keyboard acquisition;
 - `MouseMovementService` owns Mouse DPI movement/Pointer Lock acquisition;
 - `MouseInputService` owns ordinary Mouse/Mouse Polling acquisition;
 - `TouchInputService` owns finger-touch acquisition;
+- `CameraService` owns Webcam feature detection, video-only `getUserMedia`, post-permission enumeration, stream switching/settings/error normalization and track cleanup;
 - Printer Test Page uses local markup/SVG plus `window.print()` and has no printer capability service;
 - shared Fullscreen utility is progressive enhancement, not hardware acquisition;
 - the V2 Display Pattern Engine owns deterministic pattern state/navigation/rendering composition for Monitor, Screen Uniformity, and OLED Burn-In without absorbing SEO/copy;
 - Screen Resolution Checker uses the narrow pure screen-info helper from `23_HARDWARE_EXPANSION_V2_SPEC.md`; it reads standard browser values and computes only the documented `Math.round(css * dpr)` estimate without a capability service or permission API;
 - tool controllers own interpretation/presentation state rather than acquisition services;
-- no duplicate native acquisition loops/listeners without an explicit new capability boundary;
+- no duplicate native acquisition loops/listeners/streams without an explicit capability boundary;
 - pure helpers/renderers do not import browser acquisition services;
-- cleanup covers rAF, listeners, timers, locks/capture, fullscreen observers, temporary print DOM/styles, and bfcache-relevant lifecycle;
+- cleanup covers rAF, listeners, timers, locks/capture, fullscreen observers, temporary print DOM/styles, media tracks, resize/orientation and bfcache-relevant lifecycle;
 - no unnecessary framework/backend/database/runtime dependency;
 - locale strings are injected/selected explicitly rather than read from a mutable global locale singleton.
 
@@ -346,6 +375,7 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - bounded histories/trails/sample buffers;
 - avoid avoidable DOM churn in measurement hot paths;
 - no per-sample DOM writes in high-frequency polling/timing paths;
+- Webcam does not add frame-by-frame analysis in P0;
 - localization must not introduce a heavy runtime i18n framework when static typed data is sufficient.
 
 ## 10. Accessibility
@@ -359,18 +389,20 @@ No printer service, printer detection, cartridge/nozzle telemetry, exact CMYK is
 - `touch-action: none` only on the active touch diagnostic surface;
 - no global keyboard `preventDefault()` to force reserved shortcuts;
 - responsive reordering must preserve a sensible reading/focus order;
+- Webcam device select has a real label and camera start/stop/error states remain understandable without relying on preview video alone;
 - translated labels/ARIA/live-region copy remain understandable and correctly associated.
 
 ## 11. Privacy
 
-- raw hardware/input streams remain local;
+- raw hardware/input/media streams remain local;
 - privacy copy matches reality;
 - raw gamepad/device identifiers are not displayed, stored, or sent;
 - raw mouse/touch/pointer/key/frame streams are not sent to analytics;
+- Webcam requests video only; camera video is not uploaded, recorded, stored or snapshotted by Hardware Inspect, and navigation/stop/destroy release active tracks;
 - Printer Test Page generates a local reference and uploads no document;
 - Monitor Test, Screen Uniformity Test, and OLED Burn-In Test render deterministic local patterns and acquire no panel telemetry;
 - Screen Resolution Checker reads only standard browser-reported screen/window values locally and requests no permission;
-- locale preference may be stored only if implemented transparently and without changing the raw-input privacy boundary.
+- locale preference may be stored only if implemented transparently and without changing the raw-input/privacy boundary.
 
 ## 12. QA workflow
 
@@ -414,5 +446,6 @@ For localization, sample every device/output family in every locale rather than 
 - Screen Uniformity remains deterministic encoded gray-field visual inspection without measured uniformity/color-delta/pass-fail claims;
 - OLED Burn-In remains deterministic manual visual inspection without flashing/repair behavior, burn-in percentage, pass/fail, or claims distinguishing permanent burn-in from temporary retention or other panel artifacts;
 - Screen Resolution Checker reports browser CSS-pixel values and visibly labelled estimated device-pixel dimensions only; it never presents the DPR estimate as exact native/physical panel resolution;
+- Webcam requires explicit permission action, requests no audio, keeps media local, cleans up tracks on stop/switch/navigation and never emits a camera-quality score;
 - Printer never claims telemetry, exact nozzle/CMYK isolation, certified color accuracy, or automatic hardware diagnosis;
 - translated wording never increases certainty beyond the owning English measurement contract.
