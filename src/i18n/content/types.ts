@@ -49,7 +49,7 @@ export interface SupportPageContent {
 // The six established locale files remain an exhaustive source for the pre-V2 catalog.
 // V2 jobs are composed atomically from tool-local locale bundles in content/index.ts.
 // Only already-implemented modular jobs belong in these unions; never add placeholders.
-export type ModularToolId = Extract<ToolId, 'printer-test-page' | 'monitor-test' | 'screen-uniformity-test' | 'oled-burn-in-test'>;
+export type ModularToolId = Extract<ToolId, 'printer-test-page' | 'monitor-test' | 'screen-uniformity-test' | 'oled-burn-in-test' | 'screen-resolution-checker'>;
 export type InlineLocaleToolId = Exclude<ToolId, ModularToolId>;
 export type ModularToolChannel = Extract<ImplementedToolChannel, 'printer'>;
 export type InlineLocaleToolChannel = Exclude<ImplementedToolChannel, ModularToolChannel>;
