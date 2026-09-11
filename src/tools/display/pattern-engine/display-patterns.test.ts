@@ -19,6 +19,11 @@ describe('display pattern references', () => {
     expect(encodedGrayReference(50)).toBe('rgb(128 128 128)');
   });
 
+  it('clamps encoded gray references to the supported percentage range', () => {
+    expect(encodedGrayReference(-5)).toBe('rgb(0 0 0)');
+    expect(encodedGrayReference(105)).toBe('rgb(255 255 255)');
+  });
+
   it('keeps the exact Monitor P0 sequence', () => {
     expect(monitorPatterns.map((pattern) => pattern.id)).toEqual([
       'white',
@@ -36,14 +41,14 @@ describe('display pattern references', () => {
     ]);
   });
 
-  it('builds deterministic black and white level ramps', () => {
+  it('keeps black and white level references concentrated near clipping boundaries', () => {
     const black = monitorPatterns.find((pattern) => pattern.id === 'black-level');
     const white = monitorPatterns.find((pattern) => pattern.id === 'white-level');
     expect(black?.kind).toBe('bars');
     expect(white?.kind).toBe('bars');
     if (black?.kind !== 'bars' || white?.kind !== 'bars') throw new Error('Expected level patterns');
-    expect(black.values).toEqual([0, 5, 10, 15, 20, 25, 30, 35].map(encodedGrayReference));
-    expect(white.values).toEqual([65, 70, 75, 80, 85, 90, 95, 100].map(encodedGrayReference));
+    expect(black.values).toEqual([0, 1, 2, 3, 4, 5, 7, 10].map(encodedGrayReference));
+    expect(white.values).toEqual([90, 93, 95, 96, 97, 98, 99, 100].map(encodedGrayReference));
   });
 
   it('wraps manual navigation in both directions', () => {
