@@ -2,7 +2,7 @@
 
 This document describes the **current** catalog structure and internal-linking model.
 
-Exact route behavior remains owned by `18_DECISIONS_AND_BOUNDARIES.md` and `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`.
+Exact route behavior remains owned by `18_DECISIONS_AND_BOUNDARIES.md`, `20_POST_V1_HARDWARE_EXPANSION_SPEC.md`, and for implemented Expansion V2 jobs by `23_HARDWARE_EXPANSION_V2_SPEC.md`.
 
 ## IA principles
 
@@ -97,11 +97,26 @@ One substantial route owns:
 
 Do not split thin synonym Touch routes without fresh query evidence.
 
+### Printer
+
+```text
+/printer-test-page
+```
+
+One substantial route owns:
+
+- local A4/Letter printable reference generation;
+- Full / Color / Grayscale print profiles;
+- text, fine-line, alignment, grayscale, and color visual references;
+- browser print handoff through `window.print()`.
+
+Printer is a singleton channel. It does not expose printer telemetry, cartridge/nozzle state, WebUSB/WebHID behavior, or unrelated RelatedTools.
+
 ## Homepage
 
-The catalog is now large enough that a single flat list is no longer the preferred IA.
+The catalog is large enough that a single flat list is no longer the preferred IA.
 
-Use the five device clusters above as compact homepage sections:
+Use the currently implemented device/output clusters as compact homepage sections:
 
 ```text
 Controller
@@ -109,6 +124,7 @@ Mouse
 Keyboard
 Display
 Touch
+Printer
 ```
 
 The grouping exists for scanability, not to create category landing pages by default.
@@ -121,6 +137,8 @@ Homepage rules:
 - use simple functional glyphs only;
 - prefer a compact multi-column list on desktop and one column on narrow mobile;
 - do not add autoplay previews, dashboard metrics, filters, search, or category tabs unless future catalog scale creates a real need.
+
+Printer appears as a neutral output/reference channel. The homepage browser-boundary model may describe locally rendered test patterns, but must not imply printer telemetry or hardware acquisition.
 
 ## Related-tool model
 
@@ -164,6 +182,9 @@ Backlight Bleed
 Frame Skipping
 ↔ Refresh Rate
 ↔ FPS
+
+Printer Test Page
+→ no RelatedTools while Printer remains a singleton channel
 ```
 
 This is a relevance guide, not a demand to create a complete graph. Do not add cross-links just to increase link count.
