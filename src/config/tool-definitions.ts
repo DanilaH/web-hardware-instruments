@@ -18,6 +18,7 @@ export const toolIds = [
   'frame-skipping-test',
   'dead-pixel-test',
   'backlight-bleed-test',
+  'monitor-test',
   'touch-screen-test',
   'printer-test-page',
 ] as const;
@@ -49,6 +50,7 @@ export const toolDefinitions: readonly ToolDefinition[] = [
   { id: 'frame-skipping-test', href: '/frame-skipping-test', icon: 'frame-skip', channel: 'display' },
   { id: 'dead-pixel-test', href: '/dead-pixel-test', icon: 'dead-pixel', channel: 'display' },
   { id: 'backlight-bleed-test', href: '/backlight-bleed-test', icon: 'backlight', channel: 'display' },
+  { id: 'monitor-test', href: '/monitor-test', icon: 'frame-skip', channel: 'display' },
   { id: 'touch-screen-test', href: '/touch-screen-test', icon: 'touch', channel: 'touch' },
   { id: 'printer-test-page', href: '/printer-test-page', icon: 'printer', channel: 'printer' },
 ];
@@ -69,8 +71,9 @@ const relatedToolIds = {
   'fps-test': ['refresh-rate-test', 'frame-skipping-test'],
   'refresh-rate-test': ['fps-test', 'frame-skipping-test'],
   'frame-skipping-test': ['refresh-rate-test', 'fps-test'],
-  'dead-pixel-test': ['backlight-bleed-test', 'refresh-rate-test'],
-  'backlight-bleed-test': ['dead-pixel-test'],
+  'dead-pixel-test': ['monitor-test', 'backlight-bleed-test', 'refresh-rate-test'],
+  'backlight-bleed-test': ['dead-pixel-test', 'monitor-test'],
+  'monitor-test': ['dead-pixel-test', 'refresh-rate-test'],
   'touch-screen-test': ['dead-pixel-test', 'backlight-bleed-test'],
   'printer-test-page': [],
 } as const satisfies Record<ToolId, readonly ToolId[]>;
