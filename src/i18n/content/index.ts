@@ -3,6 +3,7 @@ import { deContent } from './de';
 import { enContent } from './en';
 import { esContent } from './es';
 import { frContent } from './fr';
+import { monitorContentByLocale } from './monitor';
 import { printerHomepageCopyByLocale } from './printer-home';
 import { printerContentByLocale } from './printer';
 import { ptBRContent } from './pt-BR';
@@ -25,6 +26,7 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
   const base = baseContentByLocale[locale];
   const printer = printerContentByLocale[locale];
   const printerHomepageCopy = printerHomepageCopyByLocale[locale];
+  const monitor = monitorContentByLocale[locale];
 
   return {
     ...base,
@@ -36,11 +38,13 @@ const resolveSiteContent = (locale: ImplementedContentLocale): ResolvedSiteConte
       ...base.home,
       ...printer.home,
       ...printerHomepageCopy,
+      ...monitor.home,
       inputs: [...base.home.inputs, printer.signal],
     },
     tools: {
       ...base.tools,
       'printer-test-page': printer.tool,
+      'monitor-test': monitor.tool,
     },
   };
 };
