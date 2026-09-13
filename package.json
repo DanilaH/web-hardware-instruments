@@ -12,7 +12,8 @@
     "dev": "astro dev",
     "build": "astro build && node scripts/check-seo-output.mjs",
     "typecheck": "astro check",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "indexnow:submit": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.3",
