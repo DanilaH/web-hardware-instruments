@@ -15,8 +15,7 @@ jobs:
           node --input-type=module <<'NODE'
           const host = 'https://hardwareinspect.com';
           const seen = new Set();
-          const decodeXml = (s) => s.replaceAll('&amp;', '&');
-          const locations = (s) => [...s.matchAll(/<loc>([\s\S]*?)<\/loc>/giu)].map(m => decodeXml(m[1].trim()));
+          const locations = (s) => [...s.matchAll(/<loc>([\s\S]*?)<\/loc>/giu)].map(m => m[1].trim().replaceAll('&amp;', '&'));
           async function read(url) {
             if (seen.has(url)) return [];
             seen.add(url);
@@ -28,7 +27,7 @@ jobs:
             if (!/<urlset\b/iu.test(xml)) throw new Error(`Not a sitemap: ${url}`);
             return loc;
           }
-          const all = [...new Set(await read(`${host}/sitemap-index.xml`))];
+          const all = [...new Set((await read(`${host}/sitemap-index.xml`)).map(raw => new URL(raw).href))];
           const localeNames = ['en', 'de', 'es', 'fr', 'pt-br', 'ru'];
           const byLocale = Object.fromEntries(localeNames.map(locale => [locale, []]));
           for (const raw of all) {
@@ -49,7 +48,8 @@ jobs:
             }
             if (!added) break;
           }
-          const remain = all.filter(url => !selected.includes(url));
+          const chosen = new Set(selected);
+          const remain = all.filter(url => !chosen.has(url));
           if (all.length !== 162 || selected.length !== 150 || remain.length !== 12) {
             throw new Error(`Unexpected count: all=${all.length}, selected=${selected.length}, remain=${remain.length}`);
           }
