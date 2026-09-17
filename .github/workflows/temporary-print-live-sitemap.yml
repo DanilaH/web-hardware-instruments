@@ -1,63 +1,11 @@
 name: Temporary live sitemap URL extraction
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/temporary-print-live-sitemap.yml'
+  workflow_dispatch:
 
 jobs:
   print-live-sitemap:
+    if: false
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch canonical URLs from production (read only)
-        shell: bash
-        run: |
-          node --input-type=module <<'NODE'
-          const host = 'https://hardwareinspect.com';
-          const seen = new Set();
-          const locations = (s) => [...s.matchAll(/<loc>([\s\S]*?)<\/loc>/giu)].map(m => m[1].trim().replaceAll('&amp;', '&'));
-          async function read(url) {
-            if (seen.has(url)) return [];
-            seen.add(url);
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`${url} returned ${response.status}`);
-            const xml = await response.text();
-            const loc = locations(xml);
-            if (/<sitemapindex\b/iu.test(xml)) return (await Promise.all(loc.map(read))).flat();
-            if (!/<urlset\b/iu.test(xml)) throw new Error(`Not a sitemap: ${url}`);
-            return loc;
-          }
-          const all = [...new Set((await read(`${host}/sitemap-index.xml`)).map(raw => new URL(raw).href))];
-          const localeNames = ['en', 'de', 'es', 'fr', 'pt-br', 'ru'];
-          const byLocale = Object.fromEntries(localeNames.map(locale => [locale, []]));
-          for (const raw of all) {
-            const url = new URL(raw);
-            if (url.origin !== host) throw new Error(`Unexpected host: ${raw}`);
-            const locale = localeNames.find(lang => lang !== 'en' && (url.pathname.toLowerCase() === `/${lang}` || url.pathname.toLowerCase().startsWith(`/${lang}/`))) ?? 'en';
-            byLocale[locale].push(url.href);
-          }
-          for (const urls of Object.values(byLocale)) urls.sort();
-          const selected = [];
-          for (let i = 0; selected.length < 150; i++) {
-            let added = 0;
-            for (const locale of localeNames) {
-              if (byLocale[locale][i] && selected.length < 150) {
-                selected.push(byLocale[locale][i]);
-                added++;
-              }
-            }
-            if (!added) break;
-          }
-          const chosen = new Set(selected);
-          const remain = all.filter(url => !chosen.has(url));
-          if (all.length !== 162 || selected.length !== 150 || remain.length !== 12) {
-            throw new Error(`Unexpected count: all=${all.length}, selected=${selected.length}, remain=${remain.length}`);
-          }
-          console.log('LOCALE_COUNTS', JSON.stringify(Object.fromEntries(Object.entries(byLocale).map(([locale, urls]) => [locale, urls.length]))));
-          console.log('BEGIN_150_URLS');
-          selected.forEach(url => console.log(url));
-          console.log('END_150_URLS');
-          console.log('BEGIN_REMAINING_12');
-          remain.forEach(url => console.log(url));
-          console.log('END_REMAINING_12');
-          NODE
+      - run: echo 'retired'
